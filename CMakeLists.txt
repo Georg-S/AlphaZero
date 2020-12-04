@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 set(CMAKE_CXX_STANDARD 17)
 project(Prototype)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 if (UNIX)
 	list(APPEND CMAKE_PREFIX_PATH "/home/georg/Documents/Code/Libraries/libtorch")
