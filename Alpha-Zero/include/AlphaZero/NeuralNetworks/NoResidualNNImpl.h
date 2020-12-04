@@ -1,7 +1,6 @@
 #ifndef PROTOTYPE_NORESIDUALNNIMPL_H
 #define PROTOTYPE_NORESIDUALNNIMPL_H
 
-//Most of it is from https://github.com/suragnair
 #include <torch/torch.h>
 #include <torch/nn.h>
 #include <tuple>
@@ -31,46 +30,46 @@ struct NoResidualNNImpl : public torch::nn::Module {
 		this->height = height;
 
 		convBody1 = register_module("convBody1", torch::nn::Conv2d(torch::nn::Conv2dOptions(numPlanes, numFilters, 3).padding(1).stride(1)));
-		normBody1 = register_module("normBody1", torch::nn::BatchNorm(numFilters));
+		normBody1 = register_module("normBody1", torch::nn::BatchNorm2d(numFilters));
 
 		convBody2 = register_module("convBody2", torch::nn::Conv2d(torch::nn::Conv2dOptions(numFilters, numFilters, 3).padding(1).stride(1)));
-		normBody2 = register_module("normBody2", torch::nn::BatchNorm(numFilters));
+		normBody2 = register_module("normBody2", torch::nn::BatchNorm2d(numFilters));
 
 		convBody3 = register_module("convBody3", torch::nn::Conv2d(torch::nn::Conv2dOptions(numFilters, numFilters, 3).padding(1).stride(1)));
-		normBody3 = register_module("normBody3", torch::nn::BatchNorm(numFilters));
+		normBody3 = register_module("normBody3", torch::nn::BatchNorm2d(numFilters));
 
 		convBody4 = register_module("convBody4", torch::nn::Conv2d(torch::nn::Conv2dOptions(numFilters, numFilters, 3).padding(1).stride(1)));
-		normBody4 = register_module("normBody4", torch::nn::BatchNorm(numFilters));
+		normBody4 = register_module("normBody4", torch::nn::BatchNorm2d(numFilters));
 
 		convBody5 = register_module("convBody5", torch::nn::Conv2d(torch::nn::Conv2dOptions(numFilters, numFilters, 3).padding(1).stride(1)));
-		normBody5 = register_module("normBody5", torch::nn::BatchNorm(numFilters));
+		normBody5 = register_module("normBody5", torch::nn::BatchNorm2d(numFilters));
 
 		convBody6 = register_module("convBody6", torch::nn::Conv2d(torch::nn::Conv2dOptions(numFilters, numFilters, 3).padding(1)));
-		normBody6 = register_module("normBody6", torch::nn::BatchNorm(numFilters));
+		normBody6 = register_module("normBody6", torch::nn::BatchNorm2d(numFilters));
 
 		convBody7 = register_module("convBody7", torch::nn::Conv2d(torch::nn::Conv2dOptions(numFilters, numFilters, 3).padding(1)));
-		normBody7 = register_module("normBody7", torch::nn::BatchNorm(numFilters));
+		normBody7 = register_module("normBody7", torch::nn::BatchNorm2d(numFilters));
 
 		convBody8 = register_module("convBody8", torch::nn::Conv2d(torch::nn::Conv2dOptions(numFilters, numFilters, 3).padding(1)));
-		normBody8 = register_module("normBody8", torch::nn::BatchNorm(numFilters));
+		normBody8 = register_module("normBody8", torch::nn::BatchNorm2d(numFilters));
 
 		convBody9 = register_module("convBody9", torch::nn::Conv2d(torch::nn::Conv2dOptions(numFilters, numFilters, 3).padding(1)));
-		normBody9 = register_module("normBody9", torch::nn::BatchNorm(numFilters));
+		normBody9 = register_module("normBody9", torch::nn::BatchNorm2d(numFilters));
 
 		convBody10 = register_module("convBody10", torch::nn::Conv2d(torch::nn::Conv2dOptions(numFilters, numFilters, 3).padding(1)));
-		normBody10 = register_module("normBody10", torch::nn::BatchNorm(numFilters));
+		normBody10 = register_module("normBody10", torch::nn::BatchNorm2d(numFilters));
 
 		convBody11 = register_module("convBody11", torch::nn::Conv2d(torch::nn::Conv2dOptions(numFilters, numFilters, 3).padding(1)));
-		normBody11 = register_module("normBody11", torch::nn::BatchNorm(numFilters));
+		normBody11 = register_module("normBody11", torch::nn::BatchNorm2d(numFilters));
 
 		convValue = register_module("convValue", torch::nn::Conv2d(torch::nn::Conv2dOptions(numFilters, valueFilters, 1)));
-		normValue = register_module("normValue", torch::nn::BatchNorm(valueFilters));
+		normValue = register_module("normValue", torch::nn::BatchNorm2d(valueFilters));
 
 		linearValue1 = register_module("linearValue1", torch::nn::Linear(valueLinearSize, 256));
 		linearValue2 = register_module("linearValue2", torch::nn::Linear(256, 1));
 
 		convPolicy = register_module("convPolicy", torch::nn::Conv2d(torch::nn::Conv2dOptions(numFilters, policyFilters, 1)));
-		normPolicy = register_module("normPolicy", torch::nn::BatchNorm(policyFilters));
+		normPolicy = register_module("normPolicy", torch::nn::BatchNorm2d(policyFilters));
 		linearPolicy = register_module("linearPolicy", torch::nn::Linear(policyLinearSize, numOutputs));
 	}
 
@@ -146,25 +145,25 @@ struct NoResidualNNImpl : public torch::nn::Module {
 	torch::nn::Conv2d convBody10 = nullptr;
 	torch::nn::Conv2d convBody11 = nullptr;
 
-	torch::nn::BatchNorm normBody1 = nullptr;
-	torch::nn::BatchNorm normBody2 = nullptr;
-	torch::nn::BatchNorm normBody3 = nullptr;
-	torch::nn::BatchNorm normBody4 = nullptr;
-	torch::nn::BatchNorm normBody5 = nullptr;
-	torch::nn::BatchNorm normBody6 = nullptr;
-	torch::nn::BatchNorm normBody7 = nullptr;
-	torch::nn::BatchNorm normBody8 = nullptr;
-	torch::nn::BatchNorm normBody9 = nullptr;
-	torch::nn::BatchNorm normBody10 = nullptr;
-	torch::nn::BatchNorm normBody11 = nullptr;
+	torch::nn::BatchNorm2d normBody1 = nullptr;
+	torch::nn::BatchNorm2d normBody2 = nullptr;
+	torch::nn::BatchNorm2d normBody3 = nullptr;
+	torch::nn::BatchNorm2d normBody4 = nullptr;
+	torch::nn::BatchNorm2d normBody5 = nullptr;
+	torch::nn::BatchNorm2d normBody6 = nullptr;
+	torch::nn::BatchNorm2d normBody7 = nullptr;
+	torch::nn::BatchNorm2d normBody8 = nullptr;
+	torch::nn::BatchNorm2d normBody9 = nullptr;
+	torch::nn::BatchNorm2d normBody10 = nullptr;
+	torch::nn::BatchNorm2d normBody11 = nullptr;
 
 	torch::nn::Conv2d convValue = nullptr;
-	torch::nn::BatchNorm normValue = nullptr;
+	torch::nn::BatchNorm2d normValue = nullptr;
 	torch::nn::Linear linearValue1 = nullptr;
 	torch::nn::Linear linearValue2 = nullptr;
 
 	torch::nn::Conv2d convPolicy = nullptr;
-	torch::nn::BatchNorm normPolicy = nullptr;
+	torch::nn::BatchNorm2d normPolicy = nullptr;
 	torch::nn::Linear linearPolicy = nullptr;
 
 	int width;
