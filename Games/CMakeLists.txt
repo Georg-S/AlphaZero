@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.15)
-target_link_libraries(AlphaZero)
 project(Games)
 set(CMAKE_CXX_STANDARD 17)
 
