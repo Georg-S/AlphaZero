@@ -1,15 +1,15 @@
 #include <iostream>
 #include <string>
 #include <chrono>
+#include <omp.h>
+#include <utility>
+#include <chrono>
+#include <NeuralNetworks/DefaultNoResidual.h>
+#include <QApplication>
 #include "GameHandling/ChessHandler.h"
 #include "GameHandling/ConnectFourHandler.h"
 #include "GameHandling/TicTacToeHandler.h"
-#include <QApplication>
 #include "UI/MainWindow.h"
-#include <omp.h>
-#include <AlphaZero/NeuralNetworks/DefaultNoResidual.h>
-#include <utility>
-#include <chrono>
 
 void initRNGS(){
     srand(time(NULL));

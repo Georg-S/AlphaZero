@@ -3,7 +3,7 @@
 
 #include <string>
 #include <iostream>
-#include <AlphaZero/Game.h>
+#include <Game.h>
 #include <AI/Ai.h>
 #include <AI/NeuralNetAi.h>
 

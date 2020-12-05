@@ -2,8 +2,8 @@
 #define PROTOTYPE_CHESSHANDLER_H
 
 #include <chrono>
-#include <AlphaZero/AlphaZeroTraining.h>
-#include <AlphaZero/NeuralNetworks/DefaultNoResidual.h>
+#include <AlphaZeroTraining.h>
+#include <NeuralNetworks/DefaultNoResidual.h>
 #include <Chess/Chess.h>
 #include <Chess/ReducedChessAdapter.h>
 #include <Chess/MinMaxAi.h>

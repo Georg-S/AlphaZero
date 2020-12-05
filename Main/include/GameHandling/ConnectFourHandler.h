@@ -5,8 +5,8 @@
 #include <string>
 #include <chrono>
 #include <fstream>
-#include <AlphaZero/AlphaZeroTraining.h>
-#include <AlphaZero/NeuralNetworks/DefaultNoResidual.h>
+#include <AlphaZeroTraining.h>
+#include <NeuralNetworks/DefaultNoResidual.h>
 #include <ConnectFour/ConnectFourAdapter.h>
 #include <ConnectFour/ConnectFour.h>
 #include <ConnectFour/MinMaxAi.h>
