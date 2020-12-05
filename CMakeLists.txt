@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 set(CMAKE_CXX_STANDARD 17)
-project(Prototype)
+project(DeepReinforcementLearning)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 if (UNIX)
@@ -8,10 +8,10 @@ if (UNIX)
 endif(UNIX)
 if	(WIN32)
 	list(APPEND CMAKE_PREFIX_PATH $ENV{Libtorch_DEBUG})
-#	list(APPEND CMAKE_PREFIX_PATH $ENV{Libtorch_RELEASE})
+	list(APPEND CMAKE_PREFIX_PATH $ENV{Libtorch_RELEASE})
 endif(WIN32)
 
-find_package(torch REQUIRED)
+find_package(Torch REQUIRED)
 find_package(OpenMP REQUIRED)
 
 if (OPENMP_FOUND)
@@ -21,7 +21,7 @@ if (OPENMP_FOUND)
 endif()
 
 
-add_subdirectory(Alpha-Zero)
+add_subdirectory(AlphaZero)
 add_subdirectory(Games)
 add_subdirectory(Unit_Tests)
 add_subdirectory(Main)

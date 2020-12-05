@@ -1,4 +1,4 @@
-#include "AlphaZero/NeuralNetworks/DefaultNoResidual.h"
+#include "NeuralNetworks/DefaultNoResidual.h"
 
 DefaultNoResidual::DefaultNoResidual(int64_t numPlanes, int64_t width, int64_t height, int64_t numOutputs,
                                      torch::DeviceType device) {

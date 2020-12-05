@@ -1,4 +1,4 @@
-#include "AlphaZero/MonteCarloTreeSearch.h"
+#include "MonteCarloTreeSearch.h"
 
 MonteCarloTreeSearch::MonteCarloTreeSearch() {
 

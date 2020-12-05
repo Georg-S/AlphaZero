@@ -1,4 +1,4 @@
-#include "AlphaZero/AlphaZeroTraining.h"
+#include "AlphaZeroTraining.h"
 
 AlphaZeroTraining::AlphaZeroTraining(int actionCount, NeuralNetwork *currentBest, torch::DeviceType device) {
     this->neuralNet = currentBest;

@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <AlphaZero/NeuralNetworks/NoResidualNNImpl.h>
+#include <NeuralNetworks/NoResidualNNImpl.h>
 
 TEST(NeuralNet, net_returns_same_value_after_save_and_load){
     torch::Tensor input = torch::rand({1,1,3,3});

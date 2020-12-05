@@ -2,9 +2,9 @@
 #define PROTOTYPE_NEURALNETAI_H
 
 #include <cfloat>
-#include <AlphaZero/MonteCarloTreeSearch.h>
-#include <AlphaZero/NeuralNetworks/NeuralNetwork.h>
-#include <AlphaZero/Game.h>
+#include <MonteCarloTreeSearch.h>
+#include <NeuralNetworks/NeuralNetwork.h>
+#include <Game.h>
 #include "Ai.h"
 
 

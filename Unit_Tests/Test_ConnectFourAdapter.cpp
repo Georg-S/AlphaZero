@@ -1,7 +1,7 @@
 #include <map>
 #include <tuple>
 #include <gtest/gtest.h>
-#include <AlphaZero/MonteCarloTreeSearch.h>
+#include <MonteCarloTreeSearch.h>
 #include <ConnectFour/ConnectFourAdapter.h>
 #include <ConnectFour/ConnectFour.h>
 

@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include <AlphaZero/Game.h>
+#include <Game.h>
 #include "GameLogic.h"
 #include "Board.h"
 

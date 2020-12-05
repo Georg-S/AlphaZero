@@ -1,4 +1,4 @@
-#include "AlphaZero/Training.h"
+#include "Training.h"
 
 Training::Training(int actionCount, NeuralNetwork* net) {
     this->currentBest = net;

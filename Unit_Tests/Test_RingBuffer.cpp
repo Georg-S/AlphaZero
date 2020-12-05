@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <AlphaZero/RingBuffer.h>
+#include <RingBuffer.h>
 
 TEST(RingBuffer, creation){
     RingBuffer rbuf = RingBuffer<int>(3);

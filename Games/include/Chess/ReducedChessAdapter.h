@@ -1,7 +1,7 @@
 #ifndef PROTOTYPE_REDUCEDCHESSADAPTER_H
 #define PROTOTYPE_REDUCEDCHESSADAPTER_H
 
-#include <AlphaZero/Game.h>
+#include <Game.h>
 #include "Pieces/Queen.h"
 #include "GameLogic.h"
 #include "Board.h"

@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include <AlphaZero/MonteCarloTreeSearch.h>
-#include <AlphaZero/NeuralNetworks/DefaultNoResidual.h>
+#include <MonteCarloTreeSearch.h>
+#include <NeuralNetworks/DefaultNoResidual.h>
 #include <TicTacToe/TicTacToeAdapter.h>
 #include <tuple>
 

@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <AlphaZero/Training.h>
+#include <Training.h>
 #include <iostream>
 #include <TicTacToe/TicTacToeAdapter.h>
 
