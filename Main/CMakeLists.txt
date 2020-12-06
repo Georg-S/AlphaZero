@@ -101,3 +101,26 @@ add_executable(Main
 
 target_include_directories(Main PUBLIC include)
 target_link_libraries(Main AlphaZero Games Qt5::Widgets)
+
+
+if (MSVC)
+  file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
+  add_custom_command(TARGET Main
+                     POST_BUILD
+                     COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                     ${TORCH_DLLS}
+                     $<TARGET_FILE_DIR:Main>)
+
+  add_custom_command(TARGET Main
+                     POST_BUILD
+                     COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                     "$ENV{SDL2_BIN}/SDL2.dll"
+                     $<TARGET_FILE_DIR:Main>)
+
+file(GLOB SDL2_IMAGE_DLLS "$ENV{SDL2IMAGE_BIN}/*.dll")
+add_custom_command(TARGET Main
+                     POST_BUILD
+                     COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                     ${SDL2_IMAGE_DLLS}
+                     $<TARGET_FILE_DIR:Main>)
+endif (MSVC)

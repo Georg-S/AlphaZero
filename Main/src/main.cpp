@@ -64,6 +64,7 @@ double calculateNetOutputTogether(int count) {
 int main(int argc, char* argv[]) {
     initRNGS();
 
+	/*
 	int count = 60;
 	double singleTime = calculateNetOutputSingle(count);
 	double togetherTime = calculateNetOutputTogether(count);
@@ -74,12 +75,11 @@ int main(int argc, char* argv[]) {
 	}
 
 	std::cout << "Count: " << count << " Single Time: " << singleTime << " Together Time" << togetherTime << std::endl;
+	*/
 
-	/*
     QApplication app(argc, argv);
     MainWindow w;
     w.show();
 
     return app.exec();
-	*/
 }
