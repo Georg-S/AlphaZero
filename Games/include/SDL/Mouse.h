@@ -7,21 +7,21 @@
 
 class Mouse {
 public:
-    Mouse();
-    ~Mouse();
+	Mouse();
+	~Mouse();
 
-    void update();
-    bool isLeftPressed();
-    bool isRightPressed();
-    bool isNewLeftClick();
-    void getMousePosition(int &x, int &y);
-    int getMousePositionX();
-    int getMousePositionY();
+	void update();
+	bool isLeftPressed();
+	bool isRightPressed();
+	bool isNewLeftClick();
+	void getMousePosition(int& x, int& y);
+	int getMousePositionX();
+	int getMousePositionY();
 
 private:
-    bool lastTickLeftClicked = false;
-    bool newLeftClick = false;
-    MouseInformation mouseInfo{};
+	bool lastTickLeftClicked = false;
+	bool newLeftClick = false;
+	MouseInformation mouseInfo{};
 };
 
 

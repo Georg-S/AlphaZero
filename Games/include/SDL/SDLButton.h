@@ -9,25 +9,25 @@
 class SDLButton
 {
 public:
-    SDLButton(SDLHandler* sdlHandler, int x, int y, int width, int height, std::string unselectedFilePath, std::string selectedFilePath);
-    ~SDLButton();
-    void updateButton(const MouseInformation &mouseInformation);
-    bool wasClicked();
-    void destroy();
+	SDLButton(SDLHandler* sdlHandler, int x, int y, int width, int height, std::string unselectedFilePath, std::string selectedFilePath);
+	~SDLButton();
+	void updateButton(const MouseInformation& mouseInformation);
+	bool wasClicked();
+	void destroy();
 private:
-    bool isMouseOverButton(const int &mousePositionX, const int &mousePositionY);
+	bool isMouseOverButton(int mousePositionX, int mousePositionY);
 
-    SDLHandler* sdlHandler;
-    RenderingElement* unselected;
-    RenderingElement* selected;
-    bool clicked = false;
+	SDLHandler* sdlHandler;
+	RenderingElement* unselected;
+	RenderingElement* selected;
+	bool clicked = false;
 
-    int x;
-    int y;
-    int width;
-    int height;
-    std::string unselectedFilePath;
-    std::string selectedFilePath;
+	int x;
+	int y;
+	int width;
+	int height;
+	std::string unselectedFilePath;
+	std::string selectedFilePath;
 };
 
 

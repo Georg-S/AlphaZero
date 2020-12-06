@@ -13,44 +13,43 @@
 #include "PlayerColor.h"
 
 
-
 class ConnectFour {
 
 public:
-    ConnectFour();
-    ConnectFour(cn4::PlayerColor aiColor, Ai* ai);
-    ~ConnectFour();
+	ConnectFour();
+	ConnectFour(cn4::PlayerColor aiColor, Ai* ai);
+	~ConnectFour();
 
-    void gameLoop();
-    void updateGame();
+	void gameLoop();
+	void updateGame();
 
 private:
-    void update1PlayerGame();
-    void update2PlayerGame();
-    void updateAiMove();
-    void updateHumanMove();
-    int getAction();
-    int getActionFromMouseInput();
-    int getActionFromKeyboard();
-    static bool isValidInput(const cn4::Board &board, const int &action);
-    static char convertPlayerColorToChar(const cn4::PlayerColor &playerColor);
+	void update1PlayerGame();
+	void update2PlayerGame();
+	void updateAiMove();
+	void updateHumanMove();
+	int getAction();
+	int getActionFromMouseInput();
+	int getActionFromKeyboard();
+	static bool isValidInput(const cn4::Board& board, int action);
+	static char convertPlayerColorToChar(const cn4::PlayerColor& playerColor);
 
-    void handleGameOver(const cn4::Board &board);
+	void handleGameOver(const cn4::Board& board);
 
-    static void printBoardToConsole(const cn4::Board &board);
-    static cn4::PlayerColor getNextPlayer(const cn4::PlayerColor &player);
-    std::string convertBoardToString(const cn4::Board &board);
-    void outputBoard(const cn4::Board &board);
+	static void printBoardToConsole(const cn4::Board& board);
+	static cn4::PlayerColor getNextPlayer(const cn4::PlayerColor& player);
+	std::string convertBoardToString(const cn4::Board& board);
+	void outputBoard(const cn4::Board& board);
 
-    Ai* ai;
-    cn4::PlayerColor currentPlayerColor;
-    cn4::PlayerColor aiColor;
-    int playerCount;
-    cn4::Board board;
-    bool gameOver = false;
-    bool useGraphicalRender = true;
-    cn4::Renderer* renderer;
-    Mouse mouse = Mouse();
+	Ai* ai;
+	cn4::PlayerColor currentPlayerColor;
+	cn4::PlayerColor aiColor;
+	int playerCount;
+	cn4::Board board;
+	bool gameOver = false;
+	bool useGraphicalRender = true;
+	cn4::Renderer* renderer;
+	Mouse mouse = Mouse();
 };
 
 

@@ -3,9 +3,9 @@
 
 #include <string>
 
-class Ai{
+class Ai {
 public:
-    virtual int getMove(std::string state, int playerColor) = 0;
+	virtual int getMove(std::string state, int playerColor) = 0;
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_AI_H

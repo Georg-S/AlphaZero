@@ -11,48 +11,48 @@
 
 
 struct RenderingElement {
-    SDL_Rect transform;
-    SDL_Texture* texture;
-    bool render = true;
+	SDL_Rect transform;
+	SDL_Texture* texture;
+	bool render = true;
 };
 
 class SDLHandler
 {
 public:
-    SDLHandler(int screenWidth, int screenHeight);
-    ~SDLHandler();
+	SDLHandler(int screenWidth, int screenHeight);
+	~SDLHandler();
 
-    bool start(const std::string &windowName);
-    void updateRendering();
-    RenderingElement* createAndPushFrontRenderElement(std::string fileName, int x, int y, int width, int height);
-    RenderingElement* createAndPushBackRenderElement(std::string fileName, int x, int y, int width, int height);
-    void clear();
-    void deleteRenderingElement(RenderingElement* element);
-    static void changePositionOfRenderingElement(RenderingElement* element, int x, int y);
-    void close();
-    void setToForeground(RenderingElement* element);
-    void getWindowPosition(int* x, int* y);
-    void updateQuit();
+	bool start(const std::string& windowName);
+	void updateRendering();
+	RenderingElement* createAndPushFrontRenderElement(std::string fileName, int x, int y, int width, int height);
+	RenderingElement* createAndPushBackRenderElement(std::string fileName, int x, int y, int width, int height);
+	void clear();
+	void deleteRenderingElement(RenderingElement* element);
+	static void changePositionOfRenderingElement(RenderingElement* element, int x, int y);
+	void close();
+	void setToForeground(RenderingElement* element);
+	void getWindowPosition(int* x, int* y);
+	void updateQuit();
 
-    bool exit = false;
-    SDL_Event event;
+	bool exit = false;
+	SDL_Event event;
 
 private:
-    SDL_Texture* createAndReturnTexture(std::string fileName);
-    bool initialize(const std::string &windowName);
-    bool initializeVideo();
-    bool initializeWindow(const std::string &windowName);
-    bool initializeRenderer();
-    bool initializeTime();
-    bool initializeImageFlags();
-    int getIndex(RenderingElement* element);
+	SDL_Texture* createAndReturnTexture(std::string fileName);
+	bool initialize(const std::string& windowName);
+	bool initializeVideo();
+	bool initializeWindow(const std::string& windowName);
+	bool initializeRenderer();
+	bool initializeTime();
+	bool initializeImageFlags();
+	int getIndex(RenderingElement* element);
 
-    std::vector<RenderingElement*> elements;
-    SDL_Window* window = NULL;
-    SDL_Renderer* renderer = NULL;
-    int m_screenWidth;
-    int m_screenHeight;
-    uint32_t startTime;
+	std::vector<RenderingElement*> elements;
+	SDL_Window* window = NULL;
+	SDL_Renderer* renderer = NULL;
+	int m_screenWidth;
+	int m_screenHeight;
+	uint32_t startTime;
 };
 
 
