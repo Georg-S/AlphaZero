@@ -11,13 +11,18 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
-void MainWindow::setup() {
+void MainWindow::setup() 
+{
 	ui->setupUi(this);
-	mainMenu = new MainMenu(mainMenu);
+	auto setHomeButtonVisibility = [&](bool value) {ui->HomeButton->setVisible(value); };
+	setHomeButtonVisibility(false);
+	mainMenu = new MainMenu(setHomeButtonVisibility, mainMenu);
 	ui->verticalLayout->addWidget(mainMenu);
 }
 
-void MainWindow::on_HomeButton_clicked() {
+void MainWindow::on_HomeButton_clicked() 
+{
 	mainMenu->reset();
 	ui->verticalLayout->addWidget(mainMenu);
+	ui->HomeButton->setVisible(false);
 }

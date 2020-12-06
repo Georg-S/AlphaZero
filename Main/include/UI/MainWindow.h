@@ -2,6 +2,7 @@
 #define DEEPREINFORCEMENTLEARNING_MAINWINDOW_H
 
 #include <iostream>
+#include <functional>
 #include <QtWidgets/QMainWindow>
 #include <qlabel.h>
 #include <qdebug.h>
@@ -23,7 +24,6 @@ private slots:
 	void on_HomeButton_clicked();
 private:
 	void setup();
-
 	Ui::MainWindow* ui;
 	MainMenu* mainMenu;
 };

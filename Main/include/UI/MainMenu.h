@@ -2,6 +2,7 @@
 #define DEEPREINFORCEMENTLEARNING_MAINMENU_H
 
 #include <iostream>
+#include <functional>
 #include <QWidget>
 #include "ui_MainMenu.h"
 #include "UI/ConnectFour/ConnectFourMainMenu.h"
@@ -12,12 +13,11 @@ class MainMenu : public QWidget {
 	Q_OBJECT;
 
 public:
-	explicit MainMenu(QWidget* w, QWidget* parent = nullptr);
+	explicit MainMenu(std::function<void(bool test)> setHomeButtonVisibility, QWidget* w, QWidget* parent = nullptr);
 	~MainMenu();
-
 	void reset();
-	Ui::MainMenuForm* mainMenuForm;
 
+	Ui::MainMenuForm* mainMenuForm;
 
 private slots:
 	void on_ConnectFourButton_clicked();
@@ -27,6 +27,7 @@ private:
 	TicTacToeMainMenu* ticTacToeMainMenu;
 	ConnectFourMainMenu* connectFourMainMenu;
 	ChessMainMenu* chessMainMenu;
+	std::function<void(bool test)> setHomeButtonVisibility;
 };
 
 
