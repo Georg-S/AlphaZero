@@ -3,12 +3,11 @@
 
 #include <torch/torch.h>
 #include <torch/nn.h>
-#include <tuple>
-
 #include <torch/nn/pimpl.h>
 #include <torch/ordered_dict.h>
 #include <torch/serialize/archive.h>
 #include <torch/types.h>
+#include <tuple>
 
 struct NoResidualNNImpl : public torch::nn::Module {
 	NoResidualNNImpl(int64_t numPlanes, int64_t width, int64_t height, int64_t numOutputs) {
