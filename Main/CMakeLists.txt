@@ -103,6 +103,17 @@ target_include_directories(Main PUBLIC include)
 target_link_libraries(Main AlphaZero Games Qt5::Widgets)
 
 
+add_custom_command(TARGET Main 
+    POST_BUILD 
+    COMMAND ${CMAKE_COMMAND} -E make_directory 
+    "$<TARGET_FILE_DIR:Main>/Images")
+
+add_custom_command(TARGET Main
+                    POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_directory
+                    "${CMAKE_SOURCE_DIR}/Images"
+                    "$<TARGET_FILE_DIR:Main>/Images")
+
 if (MSVC)
     set_property(TARGET Main PROPERTY WIN32_EXECUTABLE true)
 
