@@ -90,7 +90,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-add_executable(Main 
+add_executable(Main
     ${GameHandlingFiles} 
     ${UIFiles}
     ${UIConnectFourFiles}
@@ -104,23 +104,25 @@ target_link_libraries(Main AlphaZero Games Qt5::Widgets)
 
 
 if (MSVC)
-  file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
-  add_custom_command(TARGET Main
-                     POST_BUILD
-                     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                     ${TORCH_DLLS}
-                     $<TARGET_FILE_DIR:Main>)
+    set_property(TARGET Main PROPERTY WIN32_EXECUTABLE true)
 
-  add_custom_command(TARGET Main
-                     POST_BUILD
-                     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                     "$ENV{SDL2_BIN}/SDL2.dll"
-                     $<TARGET_FILE_DIR:Main>)
+    file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
+    add_custom_command(TARGET Main
+                        POST_BUILD
+                        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                        ${TORCH_DLLS}
+                        $<TARGET_FILE_DIR:Main>)
 
-file(GLOB SDL2_IMAGE_DLLS "$ENV{SDL2IMAGE_BIN}/*.dll")
-add_custom_command(TARGET Main
-                     POST_BUILD
-                     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                     ${SDL2_IMAGE_DLLS}
-                     $<TARGET_FILE_DIR:Main>)
+    add_custom_command(TARGET Main
+                        POST_BUILD
+                        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                        "$ENV{SDL2_BIN}/SDL2.dll"
+                        $<TARGET_FILE_DIR:Main>)
+
+    file(GLOB SDL2_IMAGE_DLLS "$ENV{SDL2IMAGE_BIN}/*.dll")
+    add_custom_command(TARGET Main
+                        POST_BUILD
+                        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                        ${SDL2_IMAGE_DLLS}
+                        $<TARGET_FILE_DIR:Main>)
 endif (MSVC)
