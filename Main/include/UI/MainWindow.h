@@ -16,15 +16,15 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 
 public:
-	explicit MainWindow(QWidget *parent = 0);
+	explicit MainWindow(QWidget* parent = 0);
 	~MainWindow();
 
 private slots:
-    void on_HomeButton_clicked();
+	void on_HomeButton_clicked();
 private:
-    void setup();
+	void setup();
 
-	Ui::MainWindow *ui;
+	Ui::MainWindow* ui;
 	MainMenu* mainMenu;
 };
 

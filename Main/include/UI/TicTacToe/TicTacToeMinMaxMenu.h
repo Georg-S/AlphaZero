@@ -11,19 +11,19 @@
 #define slots Q_SLOTS
 
 class TicTacToeMinMaxMenu : public QWidget {
-    Q_OBJECT;
+	Q_OBJECT;
 
 public:
-    explicit TicTacToeMinMaxMenu(QWidget* w, QWidget* parent = nullptr);
-    ~TicTacToeMinMaxMenu();
+	explicit TicTacToeMinMaxMenu(QWidget* w, QWidget* parent = nullptr);
+	~TicTacToeMinMaxMenu();
 
-    void reset();
+	void reset();
 private slots:
-    void on_PlayButton_clicked();
+	void on_PlayButton_clicked();
 
 private:
-    Ui::TwoPlayerMinMaxWidget* ticTacToeMinMax;
-    TicTacToeHandler gameHandler;
+	Ui::TwoPlayerMinMaxWidget* ticTacToeMinMax;
+	TicTacToeHandler gameHandler;
 };
 
 

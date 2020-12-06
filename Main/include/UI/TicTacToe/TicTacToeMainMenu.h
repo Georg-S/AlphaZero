@@ -13,25 +13,25 @@
 #define slots Q_SLOTS
 
 class TicTacToeMainMenu : public QWidget {
-    Q_OBJECT;
+	Q_OBJECT;
 
 public:
-    explicit TicTacToeMainMenu(QWidget* w, QWidget* parent = nullptr);
-    ~TicTacToeMainMenu();
+	explicit TicTacToeMainMenu(QWidget* w, QWidget* parent = nullptr);
+	~TicTacToeMainMenu();
 
-    void reset();
+	void reset();
 
 private slots:
-    void on_MinMaxButton_clicked();
-    void on_TwoPlayerButton_clicked();
-    void on_NeuralNetButton_clicked();
-    void on_TrainingButton_clicked();
+	void on_MinMaxButton_clicked();
+	void on_TwoPlayerButton_clicked();
+	void on_NeuralNetButton_clicked();
+	void on_TrainingButton_clicked();
 private:
-    Ui::TicTacToeMain* gameMainUi;
-    TicTacToeTraining* trainingMenu;
-    TicTacToeMinMaxMenu* minMaxMenu;
-    TicTacToeNeuralNetMenu* neuralNetMenu;
-    TicTacToeHandler handler;
+	Ui::TicTacToeMain* gameMainUi;
+	TicTacToeTraining* trainingMenu;
+	TicTacToeMinMaxMenu* minMaxMenu;
+	TicTacToeNeuralNetMenu* neuralNetMenu;
+	TicTacToeHandler handler;
 
 };
 

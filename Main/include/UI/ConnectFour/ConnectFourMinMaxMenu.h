@@ -11,21 +11,21 @@
 #define slots Q_SLOTS
 
 
-class ConnectFourMinMaxMenu : public QWidget{
-Q_OBJECT;
+class ConnectFourMinMaxMenu : public QWidget {
+	Q_OBJECT;
 
 public:
-    explicit ConnectFourMinMaxMenu(QWidget* w, QWidget* parent = nullptr);
-    ~ConnectFourMinMaxMenu();
+	explicit ConnectFourMinMaxMenu(QWidget* w, QWidget* parent = nullptr);
+	~ConnectFourMinMaxMenu();
 
-    void reset();
+	void reset();
 
 private slots:
-    void on_PlayButton_clicked();
+	void on_PlayButton_clicked();
 
 private:
-    Ui::TwoPlayerMinMaxWidget* connectFourMinMax;
-    ConnectFourHandler gameHandler;
+	Ui::TwoPlayerMinMaxWidget* connectFourMinMax;
+	ConnectFourHandler gameHandler;
 
 };
 

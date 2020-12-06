@@ -10,19 +10,19 @@
 #define slots Q_SLOTS
 
 class ChessMinMaxMenu : public QWidget {
-    Q_OBJECT;
+	Q_OBJECT;
 public:
-    explicit ChessMinMaxMenu(QWidget* w, QWidget* parent = nullptr);
-    ~ChessMinMaxMenu();
+	explicit ChessMinMaxMenu(QWidget* w, QWidget* parent = nullptr);
+	~ChessMinMaxMenu();
 
-    void reset();
+	void reset();
 
 private slots:
-    void on_PlayButton_clicked();
+	void on_PlayButton_clicked();
 
 private:
-    Ui::TwoPlayerMinMaxWidget* chessMinMax;
-    ChessHandler gameHandler;
+	Ui::TwoPlayerMinMaxWidget* chessMinMax;
+	ChessHandler gameHandler;
 };
 
 

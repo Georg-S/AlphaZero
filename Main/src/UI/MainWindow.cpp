@@ -1,26 +1,23 @@
 #include "UI/MainWindow.h"
 
 
-MainWindow::MainWindow(QWidget *parent) :
-        QMainWindow(parent),
-        ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
-    setup();
+	setup();
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+	delete ui;
 }
 
 void MainWindow::setup() {
-    ui->setupUi(this);
-    mainMenu = new MainMenu(mainMenu);
-    ui->verticalLayout->addWidget(mainMenu);
+	ui->setupUi(this);
+	mainMenu = new MainMenu(mainMenu);
+	ui->verticalLayout->addWidget(mainMenu);
 }
 
 void MainWindow::on_HomeButton_clicked() {
-    mainMenu->reset();
-    ui->verticalLayout->addWidget(mainMenu);
-
+	mainMenu->reset();
+	ui->verticalLayout->addWidget(mainMenu);
 }

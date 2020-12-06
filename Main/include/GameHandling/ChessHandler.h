@@ -13,29 +13,29 @@
 
 class ChessHandler {
 public:
-    ChessHandler();
-    ~ChessHandler();
+	ChessHandler();
+	~ChessHandler();
 
-    void chessAgainstNeuralNetAi(chess::PieceColor playerColor, std::string netName, int mctsCount, bool randomize, torch::DeviceType device);
-    void chessAgainstMinMaxAi(int minMaxDepth, chess::PieceColor playerColor);
+	void chessAgainstNeuralNetAi(chess::PieceColor playerColor, std::string netName, int mctsCount, bool randomize, torch::DeviceType device);
+	void chessAgainstMinMaxAi(int minMaxDepth, chess::PieceColor playerColor);
 
-    void runTrainingWithDefaultParameters(torch::DeviceType device);
-    void runTraining(const TrainingParameters &params);
+	void runTrainingWithDefaultParameters(torch::DeviceType device);
+	void runTraining(const TrainingParameters& params);
 
-    static void startTwoPlayerChessGame();
-    void traininingPerformanceTest(torch::DeviceType device);
-    void setTrainingParameters(AlphaZeroTraining &training, const TrainingParameters &params);
+	static void startTwoPlayerChessGame();
+	void traininingPerformanceTest(torch::DeviceType device);
+	void setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params);
 
 private:
-    void loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraining &chessZero);
-    void loadPerformanceTestParameters(AlphaZeroTraining &chessZero);
+	void loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraining& chessZero);
+	void loadPerformanceTestParameters(AlphaZeroTraining& chessZero);
 
-    std::string preTrainedPath = "NeuralNets/PreTrained/Chess";
-    std::string trainingPath = "NeuralNets/Training/Chess";
+	std::string preTrainedPath = "NeuralNets/PreTrained/Chess";
+	std::string trainingPath = "NeuralNets/Training/Chess";
 
 
-    int minMaxDepth = 3;
-    int mctsCount = 800;
+	int minMaxDepth = 3;
+	int mctsCount = 800;
 };
 
 

@@ -11,26 +11,26 @@
 #include "GameHandling/ChessHandler.h"
 #define slots Q_SLOTS
 
-class ChessMainMenu : public QWidget{
-    Q_OBJECT;
+class ChessMainMenu : public QWidget {
+	Q_OBJECT;
 
 public:
-    explicit ChessMainMenu(QWidget* w, QWidget* parent = nullptr);
-    ~ChessMainMenu();
+	explicit ChessMainMenu(QWidget* w, QWidget* parent = nullptr);
+	~ChessMainMenu();
 
-    void reset();
+	void reset();
 
 private slots:
-    void on_MinMaxButton_clicked();
-    void on_TwoPlayerButton_clicked();
-    void on_NeuralNetButton_clicked();
-    void on_TrainingButton_clicked();
+	void on_MinMaxButton_clicked();
+	void on_TwoPlayerButton_clicked();
+	void on_NeuralNetButton_clicked();
+	void on_TrainingButton_clicked();
 
 private:
-    Ui::ChessMain* gameMainUi;
-    ChessTrainingMenu* trainingMenu;
-    ChessMinMaxMenu* minMaxMenu;
-    ChessNeuralNetMenu* neuralNetMenu;
+	Ui::ChessMain* gameMainUi;
+	ChessTrainingMenu* trainingMenu;
+	ChessMinMaxMenu* minMaxMenu;
+	ChessNeuralNetMenu* neuralNetMenu;
 };
 
 

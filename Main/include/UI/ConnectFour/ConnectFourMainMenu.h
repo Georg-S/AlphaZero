@@ -13,27 +13,27 @@
 #define slots Q_SLOTS
 
 class ConnectFourMainMenu : public QWidget {
-    Q_OBJECT;
+	Q_OBJECT;
 
 public:
-    explicit ConnectFourMainMenu(QWidget* w, QWidget* parent = nullptr);
-    ~ConnectFourMainMenu();
+	explicit ConnectFourMainMenu(QWidget* w, QWidget* parent = nullptr);
+	~ConnectFourMainMenu();
 
-    void reset();
+	void reset();
 
 private slots:
-    void on_MinMaxButton_clicked();
-    void on_TwoPlayerButton_clicked();
-    void on_NeuralNetButton_clicked();
-    void on_TrainingButton_clicked();
+	void on_MinMaxButton_clicked();
+	void on_TwoPlayerButton_clicked();
+	void on_NeuralNetButton_clicked();
+	void on_TrainingButton_clicked();
 
 
 
 private:
-    Ui::ConnectFourMain* gameMainUi;
-    ConnectFourMinMaxMenu* minMaxMenu;
-    ConnectFourNeuralNetMenu* neuralNetMenu;
-    ConnectFourTraining* trainingMenu;
+	Ui::ConnectFourMain* gameMainUi;
+	ConnectFourMinMaxMenu* minMaxMenu;
+	ConnectFourNeuralNetMenu* neuralNetMenu;
+	ConnectFourTraining* trainingMenu;
 };
 
 

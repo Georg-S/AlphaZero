@@ -14,11 +14,10 @@ struct EvalResult {
 };
 
 
-
 class Evaluation {
 public:
-    static EvalResult eval(Ai* neuralNetAi, Ai* minmaxAi, Game* game,  int numberEvalGames = 100);
-    static int runGame(Ai* ai1, Ai* ai2, Game* game);
+	static EvalResult eval(Ai* neuralNetAi, Ai* minmaxAi, Game* game, int numberEvalGames = 100);
+	static int runGame(Ai* ai1, Ai* ai2, Game* game);
 };
 
 

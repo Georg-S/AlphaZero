@@ -11,20 +11,20 @@
 #define slots Q_SLOTS
 
 class TicTacToeNeuralNetMenu : public QWidget {
-    Q_OBJECT;
+	Q_OBJECT;
 
 public:
-    TicTacToeNeuralNetMenu(QWidget* w, QWidget* parent = nullptr);
-    ~TicTacToeNeuralNetMenu();
+	TicTacToeNeuralNetMenu(QWidget* w, QWidget* parent = nullptr);
+	~TicTacToeNeuralNetMenu();
 
-    void reset();
+	void reset();
 private slots:
-    void on_PlayButton_clicked();
+	void on_PlayButton_clicked();
 
 
 private:
-    Ui::NeuralNetWidget* neuralNetUi;
-    TicTacToeHandler gameHandler;
+	Ui::NeuralNetWidget* neuralNetUi;
+	TicTacToeHandler gameHandler;
 };
 
 

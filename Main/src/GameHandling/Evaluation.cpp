@@ -3,56 +3,57 @@
 
 EvalResult Evaluation::eval(Ai* neuralNetAi, Ai* minmaxAi, Game* game, int numberEvalGames) {
 
-    int currentNetColor = 1;
-    int draws = 0;
-    int wins = 0;
-    int lose = 0;
+	int currentNetColor = 1;
+	int draws = 0;
+	int wins = 0;
+	int lose = 0;
 
-    Ai* currentPlayer1 = neuralNetAi;
-    Ai* currentPlayer2 = minmaxAi;
+	Ai* currentPlayer1 = neuralNetAi;
+	Ai* currentPlayer2 = minmaxAi;
 
-    for(int i = 0; i < numberEvalGames; i++) {
-        int winner = Evaluation::runGame(currentPlayer1, currentPlayer2, game);
+	for (int i = 0; i < numberEvalGames; i++) {
+		int winner = Evaluation::runGame(currentPlayer1, currentPlayer2, game);
 
-        if(currentPlayer1 == neuralNetAi) {
-            currentPlayer1 = minmaxAi;
-            currentPlayer2 = neuralNetAi;
-        } else{
-            currentPlayer1 = neuralNetAi;
-            currentPlayer2 = minmaxAi;
-        }
+		if (currentPlayer1 == neuralNetAi) {
+			currentPlayer1 = minmaxAi;
+			currentPlayer2 = neuralNetAi;
+		}
+		else {
+			currentPlayer1 = neuralNetAi;
+			currentPlayer2 = minmaxAi;
+		}
 
-        if(winner == 0)
-            draws++;
-        else if(winner == currentNetColor)
-            wins++;
-        else
-            lose++;
+		if (winner == 0)
+			draws++;
+		else if (winner == currentNetColor)
+			wins++;
+		else
+			lose++;
 
-        currentNetColor = (currentNetColor%2+1);
-    }
+		currentNetColor = (currentNetColor % 2 + 1);
+	}
 	EvalResult result;
 	result.wins = wins;
 	result.losses = lose;
 	result.draws = draws;
 
 	return result;
-//    std::cout << "Games Played: " << numberEvalGames << " Wins: " << wins << " Loss: " << lose << " Draws: " << draws << std::endl;
+	//    std::cout << "Games Played: " << numberEvalGames << " Wins: " << wins << " Loss: " << lose << " Draws: " << draws << std::endl;
 }
 
-int Evaluation::runGame(Ai *ai1, Ai *ai2, Game *game) {
-    std::string state = game->getInitialGameState();
-    int currentPlayer = game->getInitialPlayer();
+int Evaluation::runGame(Ai* ai1, Ai* ai2, Game* game) {
+	std::string state = game->getInitialGameState();
+	int currentPlayer = game->getInitialPlayer();
 
-    while(!game->isGameOver(state)){
-        int move = -1;
-        if(currentPlayer == 1)
-            move = ai1->getMove(state, currentPlayer);
-        else
-            move = ai2->getMove(state, currentPlayer);
+	while (!game->isGameOver(state)) {
+		int move = -1;
+		if (currentPlayer == 1)
+			move = ai1->getMove(state, currentPlayer);
+		else
+			move = ai2->getMove(state, currentPlayer);
 
-        state = game->makeMove(state, move, currentPlayer);
-        currentPlayer = game->getNextPlayer(currentPlayer);
-    }
-    return game->getPlayerWon(state);
+		state = game->makeMove(state, move, currentPlayer);
+		currentPlayer = game->getNextPlayer(currentPlayer);
+	}
+	return game->getPlayerWon(state);
 }

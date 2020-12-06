@@ -11,16 +11,16 @@
 #include "GameHandling/TicTacToeHandler.h"
 #include "UI/MainWindow.h"
 
-void initRNGS(){
-    srand(time(NULL));
-    std::mt19937 mt_rand(time(0));
+void initRNGS() {
+	srand(time(NULL));
+	std::mt19937 mt_rand(time(0));
 }
 
 std::vector<torch::Tensor> generateData(int count, torch::DeviceType device) {
 	std::vector<torch::Tensor> data;
 
 	for (int i = 0; i < count; i++)
-		data.push_back(torch::rand({1,2,3,3},device));
+		data.push_back(torch::rand({ 1,2,3,3 }, device));
 
 	return data;
 }
@@ -37,7 +37,7 @@ double calculateNetOutputSingle(int count) {
 
 	auto endTime = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed = endTime - startTime;
-	
+
 	return elapsed.count();
 }
 
@@ -53,7 +53,7 @@ double calculateNetOutputTogether(int count) {
 	auto endTime = std::chrono::high_resolution_clock::now();
 
 	std::chrono::duration<double> elapsed = endTime - startTime;
-	
+
 	return elapsed.count();
 }
 
@@ -62,7 +62,7 @@ double calculateNetOutputTogether(int count) {
 #endif
 
 int main(int argc, char* argv[]) {
-    initRNGS();
+	initRNGS();
 
 	/*
 	int count = 60;
@@ -77,9 +77,9 @@ int main(int argc, char* argv[]) {
 	std::cout << "Count: " << count << " Single Time: " << singleTime << " Together Time" << togetherTime << std::endl;
 	*/
 
-    QApplication app(argc, argv);
-    MainWindow w;
-    w.show();
+	QApplication app(argc, argv);
+	MainWindow w;
+	w.show();
 
-    return app.exec();
+	return app.exec();
 }
