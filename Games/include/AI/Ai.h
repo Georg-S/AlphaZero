@@ -1,5 +1,5 @@
-#ifndef PROTOTYPE_AI_H
-#define PROTOTYPE_AI_H
+#ifndef DEEPREINFORCEMENTLEARNING_AI_H
+#define DEEPREINFORCEMENTLEARNING_AI_H
 
 #include <string>
 
@@ -8,4 +8,4 @@ public:
     virtual int getMove(std::string state, int playerColor) = 0;
 };
 
-#endif //PROTOTYPE_AI_H
+#endif //DEEPREINFORCEMENTLEARNING_AI_H

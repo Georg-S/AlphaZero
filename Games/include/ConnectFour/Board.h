@@ -1,6 +1,6 @@
 
-#ifndef PROTOTYPE_cn4_BOARD_H
-#define PROTOTYPE_cn4_BOARD_H
+#ifndef DEEPREINFORCEMENTLEARNING_cn4_BOARD_H
+#define DEEPREINFORCEMENTLEARNING_cn4_BOARD_H
 
 #include "PlayerColor.h"
 
@@ -26,4 +26,4 @@ namespace cn4 {
     };
 }
 
-#endif //PROTOTYPE_cn4_BOARD_H
+#endif //DEEPREINFORCEMENTLEARNING_cn4_BOARD_H

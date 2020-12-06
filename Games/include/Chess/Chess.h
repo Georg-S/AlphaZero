@@ -1,5 +1,5 @@
-#ifndef PROTOTYPE_CHESS_H
-#define PROTOTYPE_CHESS_H
+#ifndef DEEPREINFORCEMENTLEARNING_CHESS_H
+#define DEEPREINFORCEMENTLEARNING_CHESS_H
 
 #include <iostream>
 #include <chrono>
@@ -60,4 +60,4 @@ private:
 };
 
 
-#endif //PROTOTYPE_CHESS_H
+#endif //DEEPREINFORCEMENTLEARNING_CHESS_H

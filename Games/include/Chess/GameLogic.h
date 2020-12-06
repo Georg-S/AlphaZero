@@ -1,5 +1,5 @@
-#ifndef PROTOTYPE_chess_GAMELOGIC_H
-#define PROTOTYPE_chess_GAMELOGIC_H
+#ifndef DEEPREINFORCEMENTLEARNING_chess_GAMELOGIC_H
+#define DEEPREINFORCEMENTLEARNING_chess_GAMELOGIC_H
 
 #include "Board.h"
 #include "Move.h"
@@ -25,4 +25,4 @@ namespace chess {
     };
 }
 
-#endif //PROTOTYPE_chess_GAMELOGIC_H
+#endif //DEEPREINFORCEMENTLEARNING_chess_GAMELOGIC_H

@@ -1,5 +1,5 @@
-#ifndef PROTOTYPE_ttt_GAMELOGIC_H
-#define PROTOTYPE_ttt_GAMELOGIC_H
+#ifndef DEEPREINFORCEMENTLEARNING_ttt_GAMELOGIC_H
+#define DEEPREINFORCEMENTLEARNING_ttt_GAMELOGIC_H
 
 #include "Board.h"
 #include "Move.h"
@@ -25,4 +25,4 @@ namespace ttt {
         static bool isThreeInARowDiagonalRightCorner(const ttt::Board &board, const int &player);
     };
 }
-#endif //PROTOTYPE_ttt_GAMELOGIC_H
+#endif //DEEPREINFORCEMENTLEARNING_ttt_GAMELOGIC_H

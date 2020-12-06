@@ -1,5 +1,5 @@
-#ifndef PROTOTYPE_ttt_MINMAXAI_H
-#define PROTOTYPE_ttt_MINMAXAI_H
+#ifndef DEEPREINFORCEMENTLEARNING_ttt_MINMAXAI_H
+#define DEEPREINFORCEMENTLEARNING_ttt_MINMAXAI_H
 
 #include <vector>
 #include <climits>
@@ -31,4 +31,4 @@ namespace ttt {
 }
 
 
-#endif //PROTOTYPE_ttt_MINMAXAI_H
+#endif //DEEPREINFORCEMENTLEARNING_ttt_MINMAXAI_H

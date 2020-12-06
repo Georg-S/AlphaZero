@@ -1,5 +1,5 @@
-#ifndef PROTOTYPE_chess_BOARD_H
-#define PROTOTYPE_chess_BOARD_H
+#ifndef DEEPREINFORCEMENTLEARNING_chess_BOARD_H
+#define DEEPREINFORCEMENTLEARNING_chess_BOARD_H
 
 #include <string>
 #include "PieceColor.h"
@@ -100,4 +100,4 @@ namespace chess {
     };
 }
 
-#endif //PROTOTYPE_chess_BOARD_H
+#endif //DEEPREINFORCEMENTLEARNING_chess_BOARD_H

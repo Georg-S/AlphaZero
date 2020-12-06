@@ -1,5 +1,5 @@
-#ifndef PROTOTYPE_REPLAYELEMENT_H
-#define PROTOTYPE_REPLAYELEMENT_H
+#ifndef DEEPREINFORCEMENTLEARNING_REPLAYELEMENT_H
+#define DEEPREINFORCEMENTLEARNING_REPLAYELEMENT_H
 
 struct ReplayElement{
     ReplayElement(std::string state, int currentPlayer, std::vector<float> probs, float result) {
@@ -16,4 +16,4 @@ struct ReplayElement{
 };
 
 
-#endif //PROTOTYPE_REPLAYELEMENT_H
+#endif //DEEPREINFORCEMENTLEARNING_REPLAYELEMENT_H

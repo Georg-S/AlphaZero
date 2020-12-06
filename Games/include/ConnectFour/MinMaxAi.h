@@ -1,5 +1,5 @@
-#ifndef PROTOTYPE_cn4_MINMAXAI_H
-#define PROTOTYPE_cn4_MINMAXAI_H
+#ifndef DEEPREINFORCEMENTLEARNING_cn4_MINMAXAI_H
+#define DEEPREINFORCEMENTLEARNING_cn4_MINMAXAI_H
 
 #include "AI/Ai.h"
 #include "GameLogic.h"
@@ -39,4 +39,4 @@ namespace cn4{
     };
 }
 
-#endif //PROTOTYPE_cn4_MINMAXAI_H
+#endif //DEEPREINFORCEMENTLEARNING_cn4_MINMAXAI_H

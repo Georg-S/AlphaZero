@@ -1,5 +1,5 @@
-#ifndef PROTOTYPE_chess_PIECE_H
-#define PROTOTYPE_chess_PIECE_H
+#ifndef DEEPREINFORCEMENTLEARNING_chess_PIECE_H
+#define DEEPREINFORCEMENTLEARNING_chess_PIECE_H
 
 #include <iostream>
 #include "Chess/Move.h"
@@ -32,4 +32,4 @@ namespace chess {
     };
 }
 
-#endif //PROTOTYPE_chess_PIECE_H
+#endif //DEEPREINFORCEMENTLEARNING_chess_PIECE_H

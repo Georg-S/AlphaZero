@@ -1,5 +1,5 @@
-#ifndef PROTOTYPE_ttt_MOVE_H
-#define PROTOTYPE_ttt_MOVE_H
+#ifndef DEEPREINFORCEMENTLEARNING_ttt_MOVE_H
+#define DEEPREINFORCEMENTLEARNING_ttt_MOVE_H
 
 namespace ttt {
     struct Move {
@@ -12,4 +12,4 @@ namespace ttt {
     };
 }
 
-#endif //PROTOTYPE_ttt_MOVE_H
+#endif //DEEPREINFORCEMENTLEARNING_ttt_MOVE_H

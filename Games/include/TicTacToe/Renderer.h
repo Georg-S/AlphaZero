@@ -1,5 +1,5 @@
-#ifndef PROTOTYPE_ttt_RENDERER_H
-#define PROTOTYPE_ttt_RENDERER_H
+#ifndef DEEPREINFORCEMENTLEARNING_ttt_RENDERER_H
+#define DEEPREINFORCEMENTLEARNING_ttt_RENDERER_H
 
 #include "Board.h"
 #include "SDL/SDLHandler.h"
@@ -25,4 +25,4 @@ namespace ttt {
     };
 }
 
-#endif //PROTOTYPE_ttt_RENDERER_H
+#endif //DEEPREINFORCEMENTLEARNING_ttt_RENDERER_H

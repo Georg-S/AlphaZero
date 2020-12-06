@@ -1,5 +1,5 @@
-#ifndef PROTOTYPE_MOUSE_H
-#define PROTOTYPE_MOUSE_H
+#ifndef DEEPREINFORCEMENTLEARNING_MOUSE_H
+#define DEEPREINFORCEMENTLEARNING_MOUSE_H
 
 #include <iostream>
 #include "MouseInformation.h"
@@ -25,4 +25,4 @@ private:
 };
 
 
-#endif //PROTOTYPE_MOUSE_H
+#endif //DEEPREINFORCEMENTLEARNING_MOUSE_H

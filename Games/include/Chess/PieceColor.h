@@ -1,5 +1,5 @@
-#ifndef PROTOTYPE_chess_PIECECOLOR_H
-#define PROTOTYPE_chess_PIECECOLOR_H
+#ifndef DEEPREINFORCEMENTLEARNING_chess_PIECECOLOR_H
+#define DEEPREINFORCEMENTLEARNING_chess_PIECECOLOR_H
 
 namespace chess{
     enum PieceColor{
@@ -7,4 +7,4 @@ namespace chess{
     };
 }
 
-#endif //PROTOTYPE_chess_PIECECOLOR_H
+#endif //DEEPREINFORCEMENTLEARNING_chess_PIECECOLOR_H

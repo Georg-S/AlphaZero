@@ -1,5 +1,5 @@
-#ifndef PROTOTYPE_NEURALNETWORK_H
-#define PROTOTYPE_NEURALNETWORK_H
+#ifndef DEEPREINFORCEMENTLEARNING_NEURALNETWORK_H
+#define DEEPREINFORCEMENTLEARNING_NEURALNETWORK_H
 #include <string>
 #include <tuple>
 #include <torch/torch.h>
@@ -14,4 +14,4 @@ public:
     virtual void copyNetFrom(NeuralNetwork* copySource) = 0;
 };
 
-#endif //PROTOTYPE_NEURALNETWORK_H
+#endif //DEEPREINFORCEMENTLEARNING_NEURALNETWORK_H

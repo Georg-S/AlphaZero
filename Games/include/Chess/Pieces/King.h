@@ -1,5 +1,5 @@
-#ifndef PROTOTYPE_KING_H
-#define PROTOTYPE_KING_H
+#ifndef DEEPREINFORCEMENTLEARNING_KING_H
+#define DEEPREINFORCEMENTLEARNING_KING_H
 
 #include <iostream>
 #include <math.h>
@@ -25,4 +25,4 @@ private:
 };
 
 
-#endif //PROTOTYPE_KING_H
+#endif //DEEPREINFORCEMENTLEARNING_KING_H

@@ -1,5 +1,5 @@
-#ifndef PROTOTYPE_GAME_H
-#define PROTOTYPE_GAME_H
+#ifndef DEEPREINFORCEMENTLEARNING_GAME_H
+#define DEEPREINFORCEMENTLEARNING_GAME_H
 #include <string>
 #include <torch/torch.h>
 #include <vector>
@@ -17,4 +17,4 @@ public:
     virtual int getNextPlayer(const int &currentPlayer) = 0;
 };
 
-#endif //PROTOTYPE_GAME_H
+#endif //DEEPREINFORCEMENTLEARNING_GAME_H

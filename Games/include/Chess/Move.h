@@ -1,5 +1,5 @@
-#ifndef PROTOTYPE_chess_MOVE_H
-#define PROTOTYPE_chess_MOVE_H
+#ifndef DEEPREINFORCEMENTLEARNING_chess_MOVE_H
+#define DEEPREINFORCEMENTLEARNING_chess_MOVE_H
 
 namespace chess{
     struct Move{
@@ -45,4 +45,4 @@ namespace chess{
     };
 }
 
-#endif //PROTOTYPE_chess_MOVE_H
+#endif //DEEPREINFORCEMENTLEARNING_chess_MOVE_H

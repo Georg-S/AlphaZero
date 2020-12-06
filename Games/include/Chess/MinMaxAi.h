@@ -1,5 +1,5 @@
-#ifndef PROTOTYPE_chess_MINMAXAI_H
-#define PROTOTYPE_chess_MINMAXAI_H
+#ifndef DEEPREINFORCEMENTLEARNING_chess_MINMAXAI_H
+#define DEEPREINFORCEMENTLEARNING_chess_MINMAXAI_H
 
 #include <vector>
 #include "Chess/ReducedChessAdapter.h"
@@ -34,4 +34,4 @@ namespace chess {
     };
 }
 
-#endif //PROTOTYPE_chess_MINMAXAI_H
+#endif //DEEPREINFORCEMENTLEARNING_chess_MINMAXAI_H

@@ -1,5 +1,5 @@
-#ifndef PROTOTYPE_PAWN_H
-#define PROTOTYPE_PAWN_H
+#ifndef DEEPREINFORCEMENTLEARNING_PAWN_H
+#define DEEPREINFORCEMENTLEARNING_PAWN_H
 
 #include <math.h>
 #include "Piece.h"
@@ -26,4 +26,4 @@ private:
 };
 
 
-#endif //PROTOTYPE_PAWN_H
+#endif //DEEPREINFORCEMENTLEARNING_PAWN_H

@@ -1,5 +1,5 @@
-#ifndef PROTOTYPE_ttt_BOARD_H
-#define PROTOTYPE_ttt_BOARD_H
+#ifndef DEEPREINFORCEMENTLEARNING_ttt_BOARD_H
+#define DEEPREINFORCEMENTLEARNING_ttt_BOARD_H
 
 namespace ttt {
     struct Board {
@@ -20,4 +20,4 @@ namespace ttt {
     };
 }
 
-#endif //PROTOTYPE_ttt_BOARD_H
+#endif //DEEPREINFORCEMENTLEARNING_ttt_BOARD_H

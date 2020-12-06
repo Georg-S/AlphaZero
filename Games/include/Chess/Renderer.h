@@ -1,5 +1,5 @@
-#ifndef PROTOTYPE_chess_RENDERER_H
-#define PROTOTYPE_chess_RENDERER_H
+#ifndef DEEPREINFORCEMENTLEARNING_chess_RENDERER_H
+#define DEEPREINFORCEMENTLEARNING_chess_RENDERER_H
 
 #include "SDL/SDLHandler.h"
 #include "Board.h"
@@ -37,4 +37,4 @@ namespace chess {
     };
 }
 
-#endif //PROTOTYPE_chess_RENDERER_H
+#endif //DEEPREINFORCEMENTLEARNING_chess_RENDERER_H

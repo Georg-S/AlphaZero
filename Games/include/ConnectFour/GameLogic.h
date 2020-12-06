@@ -1,5 +1,5 @@
-#ifndef PROTOTYPE_cn4_GAMELOGIC_H
-#define PROTOTYPE_cn4_GAMELOGIC_H
+#ifndef DEEPREINFORCEMENTLEARNING_cn4_GAMELOGIC_H
+#define DEEPREINFORCEMENTLEARNING_cn4_GAMELOGIC_H
 
 #include "PlayerColor.h"
 #include "Board.h"
@@ -26,4 +26,4 @@ namespace cn4 {
     };
 }
 
-#endif //PROTOTYPE_cn4_GAMELOGIC_H
+#endif //DEEPREINFORCEMENTLEARNING_cn4_GAMELOGIC_H
