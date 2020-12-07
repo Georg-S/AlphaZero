@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 3.15)
 project(Main)
 set(CMAKE_CXX_STANDARD 17)
 
-if	(WIN32)
-	list(APPEND CMAKE_PREFIX_PATH $ENV{QT_64_MSVC2017})
-endif(WIN32)
 
 find_package(Qt5Widgets REQUIRED)
 
