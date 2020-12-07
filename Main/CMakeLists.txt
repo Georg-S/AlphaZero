@@ -102,7 +102,7 @@ add_executable(Main
 target_include_directories(Main PUBLIC include)
 target_link_libraries(Main AlphaZero Games Qt5::Widgets)
 
-#Create Image Folder and copy Files into it
+#   create image folder and copy files into it
 add_custom_command(TARGET Main 
     POST_BUILD 
     COMMAND ${CMAKE_COMMAND} -E make_directory 
@@ -114,7 +114,7 @@ add_custom_command(TARGET Main
                     "${CMAKE_SOURCE_DIR}/Images"
                     "$<TARGET_FILE_DIR:Main>/Images")
 
-#create Folders for neural nets
+#   create folders for neural nets
 add_custom_command(TARGET Main 
     POST_BUILD 
     COMMAND ${CMAKE_COMMAND} -E make_directory 
@@ -146,7 +146,7 @@ add_custom_command(TARGET Main
     "$<TARGET_FILE_DIR:Main>/NeuralNets/PreTrained/TicTacToe")
 
 
-# copy dlls next to exe for windows (visual studio)
+#   copy dlls next to exe for windows (visual studio)
 if (MSVC)
     set_property(TARGET Main PROPERTY WIN32_EXECUTABLE true)
 
