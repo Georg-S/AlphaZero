@@ -17,8 +17,6 @@ TEST(ReducedChessAdapter, test_conversion_to_string_and_back_doesnt_change_board
     board = adap.convertStateStringToBoard(before);
     std::string after = adap.convertStateToString(board,1);
 
-    std::cout << before << std::endl;
-
     ASSERT_EQ(before, after);
 }
 

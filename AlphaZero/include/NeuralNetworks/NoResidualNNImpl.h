@@ -168,7 +168,7 @@ struct NoResidualNNImpl : public torch::nn::Module {
 	int width;
 	int height;
 };
-TORCH_MODULE_IMPL(NoResidualNN, NoResidualNNImpl);
+TORCH_MODULE(NoResidualNN);
 
 
 #endif //DEEPREINFORCEMENTLEARNING_NORESIDUALNNIMPL_H
