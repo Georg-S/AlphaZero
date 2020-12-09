@@ -9,7 +9,7 @@ struct ValueHeadImpl : public torch::nn::Module
 	{
 		int64_t valueLinearSize = width * height * valueFilters;
 
-		convValue = register_module("convValue", torch::nn::Conv2d(torch::nn::Conv2dOptions(inFilters, valueFilters, 1)));
+		convValue = register_module("convValue", torch::nn::Conv2d(torch::nn::Conv2dOptions(inFilters, valueFilters, 1).stride(1)));
 		normValue = register_module("normValue", torch::nn::BatchNorm2d(valueFilters));
 
 		linearValue1 = register_module("linearValue1", torch::nn::Linear(valueLinearSize, linearNeurons));

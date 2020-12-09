@@ -12,7 +12,6 @@ class RingBuffer {
 
 public:
 	RingBuffer() {}
-	~RingBuffer() {}
 
 	RingBuffer(int maxSize) {
 		this->maxSize = maxSize;

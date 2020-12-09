@@ -1,6 +1,5 @@
-#ifndef DEEPREINFORCEMENTLEARNING_PERFORMANCETESTNET_H
-#define DEEPREINFORCEMENTLEARNING_PERFORMANCETESTNET_H
-
+#ifndef DEEPREINFORCEMENTLEARNING_CUTDOWNALPHAGOZERONET_H
+#define DEEPREINFORCEMENTLEARNING_CUTDOWNALPHAGOZERONET_H
 
 #include <torch/nn.h>
 #include <tuple>
@@ -9,10 +8,12 @@
 #include "NeuralNetworks/Components/PolicyHead.h"
 #include "NeuralNetworks/Components/ValueHead.h"
 
-struct AlphaZeroHalfNetImpl : public torch::nn::Module {
-	AlphaZeroHalfNetImpl(int64_t numPlanes, int64_t width, int64_t height, int64_t numOutputs)
+// A cut down version of the AlphaGoZeroNet  (less residual blocks)
+struct CutDownAlphaGoZeroNetImpl : public torch::nn::Module
+{
+	CutDownAlphaGoZeroNetImpl(int64_t numPlanes, int64_t width, int64_t height, int64_t numOutputs)
 	{
-		static const int64_t  valueFilters = 1;
+		static const int64_t valueFilters = 1;
 		static const int64_t policyFilters = 2;
 
 		convBlock = register_module("convBlock", ConvolutionBlock(numPlanes, numFilters));
@@ -25,11 +26,6 @@ struct AlphaZeroHalfNetImpl : public torch::nn::Module {
 
 		valueHead = register_module("valueHead", ValueHead(numFilters, valueFilters, width, height));
 		policyHead = register_module("policyHead", PolicyHead(numFilters, policyFilters, width, height, numOutputs));
-	}
-
-	std::tuple<torch::Tensor, torch::Tensor> calculate(const torch::Tensor& input)
-	{
-		return forward(input);
 	}
 
 	std::tuple<torch::Tensor, torch::Tensor> forward(const torch::Tensor& input)
@@ -57,7 +53,6 @@ struct AlphaZeroHalfNetImpl : public torch::nn::Module {
 	ValueHead valueHead = nullptr;
 	PolicyHead policyHead = nullptr;
 };
-TORCH_MODULE(AlphaZeroHalfNet);
+TORCH_MODULE(CutDownAlphaGoZeroNet);
 
-
-#endif //DEEPREINFORCEMENTLEARNING_PERFORMANCETESTNET_H
+#endif //DEEPREINFORCEMENTLEARNING_CUTDOWNALPHAGOZERONET_H

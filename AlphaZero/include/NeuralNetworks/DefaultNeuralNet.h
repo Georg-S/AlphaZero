@@ -1,8 +1,9 @@
-#ifndef DEEPREINFORCEMENTLEARNING_DEFAULTNORESIDUAL_H
-#define DEEPREINFORCEMENTLEARNING_DEFAULTNORESIDUAL_H
+#ifndef DEEPREINFORCEMENTLEARNING_DEFAULTNEURALNET_H
+#define DEEPREINFORCEMENTLEARNING_DEFAULTNEURALNET_H
 
 #include "NeuralNetwork.h"
-#include "AlphaZeroHalfNet.h"
+#include "CutDownAlphaGoZeroNet.h"
+#include "AlphaGoZeroNet.h"
 
 class DefaultNeuralNet : public NeuralNetwork {
 public:
@@ -18,9 +19,9 @@ public:
 	void training(torch::Tensor& val, torch::Tensor& probs, torch::Tensor& probsTarget, torch::Tensor& valueTarget) override;
 
 private:
-	AlphaZeroHalfNet net = nullptr;
+	CutDownAlphaGoZeroNet net = nullptr;
 	float learningRate = 0.01;
 };
 
 
-#endif //DEEPREINFORCEMENTLEARNING_DEFAULTNORESIDUAL_H
+#endif //DEEPREINFORCEMENTLEARNING_DEFAULTNEURALNET_H

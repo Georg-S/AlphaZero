@@ -15,10 +15,11 @@ set(AlphaZeroFiles
 	)
 
 set(NeuralNetworkFiles 
-	"include/NeuralNetworks/DefaultNoResidual.h"
+	"include/NeuralNetworks/DefaultNeuralNet.h"
 	"include/NeuralNetworks/NeuralNetwork.h"
-	"src/NeuralNetworks/DefaultNoResidual.cpp"
-	"include/NeuralNetworks/AlphaZeroHalfNet.h"
+	"src/NeuralNetworks/DefaultNeuralNet.cpp"
+	"include/NeuralNetworks/CutDownAlphaGoZeroNet.h"
+	"include/NeuralNetworks/AlphaGoZeroNet.h"
 	)
 
 set(NeuralNetworkComponentsFiles

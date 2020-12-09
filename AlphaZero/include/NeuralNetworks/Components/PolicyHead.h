@@ -9,7 +9,7 @@ struct PolicyHeadImpl : public torch::nn::Module
 	{
 		int64_t policyLinearSize = width * height * policyFilters;
 
-		convPolicy = register_module("convPolicy", torch::nn::Conv2d(torch::nn::Conv2dOptions(inFilters, policyFilters, 1)));
+		convPolicy = register_module("convPolicy", torch::nn::Conv2d(torch::nn::Conv2dOptions(inFilters, policyFilters, 1).stride(1)));
 		normPolicy = register_module("normPolicy", torch::nn::BatchNorm2d(policyFilters));
 		linearPolicy = register_module("linearPolicy", torch::nn::Linear(policyLinearSize, outputs));
 	}
