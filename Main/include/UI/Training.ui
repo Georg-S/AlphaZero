@@ -7,11 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>395</width>
-    <height>635</height>
+    <height>436</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
@@ -373,8 +376,8 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="RestrictGameLengthButtonGrp"/>
-  <buttongroup name="DeviceButtonGrp"/>
   <buttongroup name="UseDrawsButtonGrp"/>
+  <buttongroup name="DeviceButtonGrp"/>
+  <buttongroup name="RestrictGameLengthButtonGrp"/>
  </buttongroups>
 </ui>
