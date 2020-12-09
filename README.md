@@ -8,7 +8,7 @@ This project is split up into several sub-projects
 
 This contains my implementation of the deep reinforcement learning algorithm "AlphaZero" invented by Silver. et. al.
 
-For an in depth explanation the sources are linked down below. 
+For an in depth explanation,  look for the sources linked down below.
 
 Libtorch (the C++ version of pytorch) was used to create the neural networks.
 
