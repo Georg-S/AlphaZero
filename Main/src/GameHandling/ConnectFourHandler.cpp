@@ -8,7 +8,7 @@ ConnectFourHandler::~ConnectFourHandler() {
 
 void ConnectFourHandler::connectFourAgainstNeuralNetAi(cn4::PlayerColor playerColor, std::string netName, int countMcts, bool probabilistic, torch::DeviceType device) {
 	ConnectFourAdapter adap = ConnectFourAdapter();
-	DefaultNoResidual neuralNet = DefaultNoResidual(2, 7, 6, 7, preTrainedPath + "/" + netName, device);
+	DefaultNeuralNet neuralNet = DefaultNeuralNet(2, 7, 6, 7, preTrainedPath + "/" + netName, device);
 	NeuralNetAi* ai = new NeuralNetAi(&neuralNet, &adap, 7, countMcts, probabilistic, device);
 	cn4::PlayerColor aiColor = (cn4::PlayerColor)(playerColor % 2 + 1);
 	ConnectFour connectFour = ConnectFour(aiColor, ai);
@@ -30,7 +30,7 @@ void ConnectFourHandler::startTwoPlayerConnectFourGame() {
 
 void ConnectFourHandler::traininingPerformanceTest(torch::DeviceType device) {
 	ConnectFourAdapter adap = ConnectFourAdapter();
-	DefaultNoResidual* neuralNet = new DefaultNoResidual(2, 7, 6, 7, device);
+	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 7, 6, 7, device);
 	AlphaZeroTraining training = AlphaZeroTraining(7, neuralNet, device);
 	loadPerformanceTestParameters(training);
 
@@ -93,7 +93,7 @@ void ConnectFourHandler::writeEvaluationResultToFile(int iteration, const EvalRe
 
 EvalResult ConnectFourHandler::evalConnectFour(std::string netName, int minMaxDepth, torch::DeviceType device) {
 	ConnectFourAdapter adap = ConnectFourAdapter();
-	DefaultNoResidual* toEval = new DefaultNoResidual(2, 7, 6, 7, netName, device);
+	DefaultNeuralNet* toEval = new DefaultNeuralNet(2, 7, 6, 7, netName, device);
 	NeuralNetAi neuralNetAi = NeuralNetAi(toEval, &adap, 7, evalMCTSCount, false, device);
 	cn4::MinMaxAi ai1 = cn4::MinMaxAi(minMaxDepth);
 
@@ -121,7 +121,7 @@ void ConnectFourHandler::setTrainingParameters(AlphaZeroTraining& training, cons
 void ConnectFourHandler::runTrainingWithDefaultParameters() {
 	ConnectFourAdapter adap = ConnectFourAdapter();
 	torch::DeviceType device = torch::kCUDA;
-	DefaultNoResidual* neuralNet = new DefaultNoResidual(2, 7, 6, 7, device);
+	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 7, 6, 7, device);
 	AlphaZeroTraining training = AlphaZeroTraining(7, neuralNet, device);
 	loadDefaultParametersForAlphaZeroTraining(training);
 
@@ -131,7 +131,7 @@ void ConnectFourHandler::runTrainingWithDefaultParameters() {
 void ConnectFourHandler::runTraining(const TrainingParameters& params) {
 	ConnectFourAdapter adap = ConnectFourAdapter();
 	torch::DeviceType device = params.device;
-	DefaultNoResidual* neuralNet = new DefaultNoResidual(2, 7, 6, 7, device);
+	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 7, 6, 7, device);
 	neuralNet->setLearningRate(params.learningRate);
 	AlphaZeroTraining training = AlphaZeroTraining(7, neuralNet, device);
 	setTrainingParameters(training, params);

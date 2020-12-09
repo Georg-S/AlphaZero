@@ -17,7 +17,7 @@ void TicTacToeHandler::ticTacToeAgainstMinMaxAi(int playerColor) {
 }
 
 void TicTacToeHandler::runTrainingWithAlphaZero(torch::DeviceType device) {
-	DefaultNoResidual* neuralNet = new DefaultNoResidual(2, 3, 3, 9, device);
+	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 3, 3, 9, device);
 	AlphaZeroTraining training = AlphaZeroTraining(9, neuralNet, device);
 	loadDefaultParametersForAlphaZeroTraining(training);
 
@@ -30,7 +30,7 @@ void TicTacToeHandler::startTwoPlayerTicTacToeGame() {
 }
 
 void TicTacToeHandler::traininingPerformanceTest(torch::DeviceType device) {
-	DefaultNoResidual* neuralNet = new DefaultNoResidual(2, 3, 3, 9, device);
+	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 3, 3, 9, device);
 	AlphaZeroTraining training = AlphaZeroTraining(9, neuralNet, device);
 
 	loadPerformanceTestParameters(training);
@@ -64,7 +64,7 @@ void TicTacToeHandler::evalTicTacToe() {
 }
 
 EvalResult TicTacToeHandler::evalTicTacToe(std::string netName, torch::DeviceType device) {
-	DefaultNoResidual* toEval = new DefaultNoResidual(2, 3, 3, 9, netName, device);
+	DefaultNeuralNet* toEval = new DefaultNeuralNet(2, 3, 3, 9, netName, device);
 	NeuralNetAi neuralNetAi = NeuralNetAi(toEval, &adap, 9, evalMCTSCount, false, device);
 	ttt::MinMaxAi minmaxAi = ttt::MinMaxAi();
 	EvalResult result = Evaluation::eval(&neuralNetAi, &minmaxAi, &adap);
@@ -102,7 +102,7 @@ void TicTacToeHandler::runTraining(const TrainingParameters& params) {
 	TicTacToeAdapter adap = TicTacToeAdapter();
 
 	torch::DeviceType device = params.device;
-	DefaultNoResidual* neuralNet = new DefaultNoResidual(2, 3, 3, 9, device);
+	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 3, 3, 9, device);
 	neuralNet->setLearningRate(params.learningRate);
 	AlphaZeroTraining training = AlphaZeroTraining(9, neuralNet, device);
 	setTrainingParameters(training, params);
@@ -130,7 +130,7 @@ void
 TicTacToeHandler::ticTacToeAgainstNeuralNetAi(int playerColor, std::string netName, int countMcts, bool probabilistic,
 	torch::DeviceType device) {
 	TicTacToeAdapter adap = TicTacToeAdapter();
-	DefaultNoResidual neuralNet = DefaultNoResidual(2, 3, 3, 9, preTrainedPath + "/" + netName, device);
+	DefaultNeuralNet neuralNet = DefaultNeuralNet(2, 3, 3, 9, preTrainedPath + "/" + netName, device);
 	NeuralNetAi ai = NeuralNetAi(&neuralNet, &adap, 9, countMcts, probabilistic, device);
 	int aiColor = ttt::GameLogic::getNextPlayer(playerColor);
 	TicTacToe ttt = TicTacToe(&ai, aiColor);

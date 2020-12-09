@@ -4,7 +4,7 @@
 #include <omp.h>
 #include <utility>
 #include <chrono>
-#include <NeuralNetworks/DefaultNoResidual.h>
+#include <NeuralNetworks/DefaultNeuralNet.h>
 #include <QApplication>
 #include "GameHandling/ChessHandler.h"
 #include "GameHandling/ConnectFourHandler.h"
@@ -27,7 +27,7 @@ std::vector<torch::Tensor> generateData(int count, torch::DeviceType device) {
 
 double calculateNetOutputSingle(int count) {
 	torch::DeviceType device = torch::kCUDA;
-	DefaultNoResidual net = DefaultNoResidual(2, 3, 3, 9, device);
+	DefaultNeuralNet net = DefaultNeuralNet(2, 3, 3, 9, device);
 	auto input = generateData(count, device);
 
 	auto startTime = std::chrono::high_resolution_clock::now();
@@ -43,7 +43,7 @@ double calculateNetOutputSingle(int count) {
 
 double calculateNetOutputTogether(int count) {
 	torch::DeviceType device = torch::kCUDA;
-	DefaultNoResidual net = DefaultNoResidual(2, 3, 3, 9, device);
+	DefaultNeuralNet net = DefaultNeuralNet(2, 3, 3, 9, device);
 
 	auto startTime = std::chrono::high_resolution_clock::now();
 

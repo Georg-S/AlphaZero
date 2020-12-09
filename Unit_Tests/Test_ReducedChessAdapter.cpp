@@ -4,7 +4,7 @@
 #include <Chess/GameLogic.h>
 #include <Chess/ReducedChessAdapter.h>
 #include <MonteCarloTreeSearch.h>
-#include <NeuralNetworks/DefaultNoResidual.h>
+#include <NeuralNetworks/DefaultNeuralNet.h>
 
 
 TEST(ReducedChessAdapter, test_conversion_to_string_and_back_doesnt_change_board_positions) {

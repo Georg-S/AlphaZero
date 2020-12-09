@@ -9,7 +9,7 @@ ChessHandler::~ChessHandler() {
 }
 
 void ChessHandler::runTrainingWithDefaultParameters(torch::DeviceType device) {
-	DefaultNoResidual* chessNet = new DefaultNoResidual(12, 8, 8, 4096, device);
+	DefaultNeuralNet* chessNet = new DefaultNeuralNet(12, 8, 8, 4096, device);
 	chessNet->setLearningRate(0.2);
 	ReducedChessAdapter adap = ReducedChessAdapter();
 	AlphaZeroTraining alphaZero = AlphaZeroTraining(4096, chessNet, device);
@@ -22,7 +22,7 @@ void ChessHandler::runTrainingWithDefaultParameters(torch::DeviceType device) {
 void
 ChessHandler::chessAgainstNeuralNetAi(chess::PieceColor playerColor, std::string netName, int mctsCount, bool randomize,
 	torch::DeviceType device) {
-	DefaultNoResidual* chessNet = new DefaultNoResidual(12, 8, 8, 4096, preTrainedPath + "/" + netName, device);
+	DefaultNeuralNet* chessNet = new DefaultNeuralNet(12, 8, 8, 4096, preTrainedPath + "/" + netName, device);
 	ReducedChessAdapter adap = ReducedChessAdapter();
 	NeuralNetAi neuralNetAi = NeuralNetAi(chessNet, &adap, 4096, mctsCount, randomize, device);
 	Chess chess = Chess(playerColor, &neuralNetAi);
@@ -36,7 +36,7 @@ void ChessHandler::startTwoPlayerChessGame() {
 }
 
 void ChessHandler::traininingPerformanceTest(torch::DeviceType device) {
-	DefaultNoResidual* chessNet = new DefaultNoResidual(12, 8, 8, 4096, device);
+	DefaultNeuralNet* chessNet = new DefaultNeuralNet(12, 8, 8, 4096, device);
 	ReducedChessAdapter adap = ReducedChessAdapter();
 	AlphaZeroTraining alphaZero = AlphaZeroTraining(4096, chessNet, device);
 	loadPerformanceTestParameters(alphaZero);
@@ -92,7 +92,7 @@ void ChessHandler::setTrainingParameters(AlphaZeroTraining& training, const Trai
 void ChessHandler::runTraining(const TrainingParameters& params) {
 	ReducedChessAdapter adap = ReducedChessAdapter();
 	torch::DeviceType device = params.device;
-	DefaultNoResidual* neuralNet = new DefaultNoResidual(12, 8, 8, 4096, device);
+	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(12, 8, 8, 4096, device);
 	neuralNet->setLearningRate(params.learningRate);
 	AlphaZeroTraining training = AlphaZeroTraining(4096, neuralNet, device);
 	setTrainingParameters(training, params);

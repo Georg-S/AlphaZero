@@ -6,7 +6,7 @@
 #include <chrono>
 #include <fstream>
 #include <AlphaZeroTraining.h>
-#include <NeuralNetworks/DefaultNoResidual.h>
+#include <NeuralNetworks/DefaultNeuralNet.h>
 #include <ConnectFour/ConnectFourAdapter.h>
 #include <ConnectFour/ConnectFour.h>
 #include <ConnectFour/MinMaxAi.h>

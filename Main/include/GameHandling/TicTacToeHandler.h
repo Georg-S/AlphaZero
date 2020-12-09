@@ -6,7 +6,7 @@
 #include <chrono>
 #include <fstream>
 #include <AlphaZeroTraining.h>
-#include <NeuralNetworks/DefaultNoResidual.h>
+#include <NeuralNetworks/DefaultNeuralNet.h>
 #include <TicTacToe/TicTacToeAdapter.h>
 #include <TicTacToe/TicTacToe.h>
 #include <TicTacToe/MinMaxAi.h>

@@ -2,13 +2,13 @@
 #define DEEPREINFORCEMENTLEARNING_DEFAULTNORESIDUAL_H
 
 #include "NeuralNetwork.h"
-#include "NoResidualNNImpl.h"
+#include "AlphaZeroHalfNet.h"
 
-class DefaultNoResidual : public NeuralNetwork {
+class DefaultNeuralNet : public NeuralNetwork {
 public:
-	DefaultNoResidual(int64_t numPlanes, int64_t width, int64_t height, int64_t numOutputs, torch::DeviceType device = torch::kCPU);
-	DefaultNoResidual(int64_t numPlanes, int64_t width, int64_t height, int64_t numOutputs, std::string fileName, torch::DeviceType device = torch::kCPU);
-	~DefaultNoResidual();
+	DefaultNeuralNet(int64_t numPlanes, int64_t width, int64_t height, int64_t numOutputs, torch::DeviceType device = torch::kCPU);
+	DefaultNeuralNet(int64_t numPlanes, int64_t width, int64_t height, int64_t numOutputs, std::string fileName, torch::DeviceType device = torch::kCPU);
+	~DefaultNeuralNet();
 
 	void load(std::string fileName) override;
 	void save(std::string fileName) override;
@@ -18,7 +18,7 @@ public:
 	void training(torch::Tensor& val, torch::Tensor& probs, torch::Tensor& probsTarget, torch::Tensor& valueTarget) override;
 
 private:
-	NoResidualNN net = nullptr;
+	AlphaZeroHalfNet net = nullptr;
 	float learningRate = 0.01;
 };
 

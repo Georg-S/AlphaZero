@@ -3,7 +3,7 @@
 
 #include <chrono>
 #include <AlphaZeroTraining.h>
-#include <NeuralNetworks/DefaultNoResidual.h>
+#include <NeuralNetworks/DefaultNeuralNet.h>
 #include <Chess/Chess.h>
 #include <Chess/ReducedChessAdapter.h>
 #include <Chess/MinMaxAi.h>
