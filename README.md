@@ -38,7 +38,7 @@ The "Play against mini max menu" for connect four:
 
 ![PlayAgainstMiniMax](/readme_files/PlayAgainstMinimax.PNG)
 
-And the game window:
+And the connect four game window:
 
 ![ConnectFour](/readme_files/ConnectFour.PNG)
 
