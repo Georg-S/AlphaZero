@@ -7,12 +7,6 @@ SDLHandler::SDLHandler(int screenWidth, int screenHeight, bool useCaching)
 	this->useCaching = useCaching;
 }
 
-
-SDLHandler::~SDLHandler()
-{
-
-}
-
 bool SDLHandler::start(const std::string& windowName)
 {
 	if (!initialize(windowName)) {
@@ -37,18 +31,6 @@ RenderingElement* SDLHandler::createAndPushBackRenderElement(std::string fileNam
 	return element;
 }
 
-void SDLHandler::deleteRenderingElement(RenderingElement* element)
-{
-	int index = getIndex(element);
-	if (index == -1)
-		return;
-
-	elements.erase(elements.begin() + index);
-
-	SDL_DestroyTexture(element->texture);
-	delete element;
-}
-
 void SDLHandler::changePositionOfRenderingElement(RenderingElement* element, int x, int y)
 {
 	element->transform.x = x - element->transform.w / 2;
@@ -58,9 +40,16 @@ void SDLHandler::changePositionOfRenderingElement(RenderingElement* element, int
 void SDLHandler::close()
 {
 	clear();
+	deleteCache();
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
+}
+
+void SDLHandler::deleteCache()
+{
+	for (auto x : cache)
+		SDL_DestroyTexture(x.second);
 }
 
 void SDLHandler::setToForeground(RenderingElement* element)
@@ -70,11 +59,24 @@ void SDLHandler::setToForeground(RenderingElement* element)
 		std::swap(elements[elements.size() - 1], elements[index]);
 }
 
+void SDLHandler::updateRendering()
+{
+	updateQuit();
+	SDL_RenderClear(renderer);
+
+	for (int i = 0; i < elements.size(); i++) {
+		if (elements[i]->render)
+			SDL_RenderCopy(renderer, elements[i]->texture, NULL, &elements[i]->transform);
+	}
+
+	SDL_RenderPresent(renderer);
+}
+
 SDL_Texture* SDLHandler::createAndReturnTexture(std::string fileName)
 {
-	if (useCaching) 
+	if (useCaching)
 	{
-		if (cache.find(fileName) != cache.end()) 
+		if (cache.find(fileName) != cache.end())
 			return cache[fileName];
 	}
 
@@ -98,17 +100,32 @@ SDL_Texture* SDLHandler::createAndReturnTexture(std::string fileName)
 	return newTexture;
 }
 
-void SDLHandler::updateRendering()
-{
-	updateQuit();
-	SDL_RenderClear(renderer);
-
-	for (int i = 0; i < elements.size(); i++) {
-		if (elements[i]->render)
-			SDL_RenderCopy(renderer, elements[i]->texture, NULL, &elements[i]->transform);
+void SDLHandler::clear() {
+	if (useCaching)
+	{
+		for (RenderingElement* element : elements)
+			delete element;
+		elements.clear();
 	}
+	else
+	{
+		for (RenderingElement* element : elements)
+		{
+			deleteRenderingElementAndTexture(element);
+		}
+	}
+}
 
-	SDL_RenderPresent(renderer);
+void SDLHandler::deleteRenderingElementAndTexture(RenderingElement* element)
+{
+	int index = getIndex(element);
+	if (index == -1)
+		return;
+
+	elements.erase(elements.begin() + index);
+
+	SDL_DestroyTexture(element->texture);
+	delete element;
 }
 
 RenderingElement* SDLHandler::createAndPushFrontRenderElement(std::string fileName, int x, int y, int width, int height)
@@ -185,19 +202,6 @@ bool SDLHandler::initializeTime()
 {
 	startTime = SDL_GetTicks();
 	return true;
-}
-
-void SDLHandler::clear() {
-	if (useCaching) {
-		for (RenderingElement* element : elements)
-			delete element;
-		elements.clear();
-		return;
-	}
-
-	for (int i = 0; i < elements.size(); i++) {
-		deleteRenderingElement(elements[i]);
-	}
 }
 
 void SDLHandler::getWindowPosition(int* x, int* y) {

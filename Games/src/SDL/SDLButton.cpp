@@ -40,8 +40,8 @@ bool SDLButton::wasClicked()
 
 void SDLButton::destroy()
 {
-	sdlHandler->deleteRenderingElement(selected);
-	sdlHandler->deleteRenderingElement(unselected);
+	sdlHandler->deleteRenderingElementAndTexture(selected);
+	sdlHandler->deleteRenderingElementAndTexture(unselected);
 }
 
 bool SDLButton::isMouseOverButton(int mousePositionX, int mousePositionY)

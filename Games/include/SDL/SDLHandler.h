@@ -22,14 +22,13 @@ class SDLHandler
 {
 public:
 	SDLHandler(int screenWidth, int screenHeight, bool useCaching = false);
-	~SDLHandler();
 
 	bool start(const std::string& windowName);
 	void updateRendering();
 	RenderingElement* createAndPushFrontRenderElement(std::string fileName, int x, int y, int width, int height);
 	RenderingElement* createAndPushBackRenderElement(std::string fileName, int x, int y, int width, int height);
 	void clear();
-	void deleteRenderingElement(RenderingElement* element);
+	void deleteRenderingElementAndTexture(RenderingElement* element);
 	static void changePositionOfRenderingElement(RenderingElement* element, int x, int y);
 	void close();
 	void setToForeground(RenderingElement* element);
@@ -40,6 +39,7 @@ public:
 	SDL_Event event;
 
 private:
+	void deleteCache();
 	SDL_Texture* createAndReturnTexture(std::string fileName);
 	bool initialize(const std::string& windowName);
 	bool initializeVideo();
