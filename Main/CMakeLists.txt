@@ -27,36 +27,36 @@ set(UIFiles
 
 set(UIConnectFourFiles
     "include/UI/ConnectFour/ConnectFourMainMenu.h"
-    "include/UI/ConnectFour/ConnectFourMinMaxMenu.h"
+    "include/UI/ConnectFour/ConnectFourMiniMaxMenu.h"
     "include/UI/ConnectFour/ConnectFourNeuralNetMenu.h"
     "include/UI/ConnectFour/ConnectFourTraining.h"
 
     "src/UI/ConnectFour/ConnectFourMainMenu.cpp"
-    "src/UI/ConnectFour/ConnectFourMinMaxMenu.cpp"
+    "src/UI/ConnectFour/ConnectFourMiniMaxMenu.cpp"
     "src/UI/ConnectFour/ConnectFourNeuralNetMenu.cpp"
     "src/UI/ConnectFour/ConnectFourTraining.cpp"
     )
 
 set(UITicTacToeFiles
     "include/UI/TicTacToe/TicTacToeMainMenu.h"
-    "include/UI/TicTacToe/TicTacToeMinMaxMenu.h"
+    "include/UI/TicTacToe/TicTacToeMiniMaxMenu.h"
     "include/UI/TicTacToe/TicTacToeNeuralNetMenu.h"
     "include/UI/TicTacToe/TicTacToeTraining.h"
 
     "src/UI/TicTacToe/TicTacToeMainMenu.cpp"
     "src/UI/TicTacToe/TicTacToeTraining.cpp"
-    "src/UI/TicTacToe/TicTacToeMinMaxMenu.cpp"
+    "src/UI/TicTacToe/TicTacToeMiniMaxMenu.cpp"
     "src/UI/TicTacToe/TicTacToeNeuralNetMenu.cpp"
     )
 
 set(UIChessFiles
     "include/UI/Chess/ChessMainMenu.h"
-    "include/UI/Chess/ChessMinMaxMenu.h"
+    "include/UI/Chess/ChessMiniMaxMenu.h"
     "include/UI/Chess/ChessNeuralNetMenu.h"
     "include/UI/Chess/ChessTrainingMenu.h"
 
     "src/UI/Chess/ChessMainMenu.cpp"
-    "src/UI/Chess/ChessMinMaxMenu.cpp"
+    "src/UI/Chess/ChessMiniMaxMenu.cpp"
     "src/UI/Chess/ChessNeuralNetMenu.cpp"
     "src/UI/Chess/ChessTrainingMenu.cpp"
     ) 
@@ -64,7 +64,7 @@ set(UIChessFiles
 set(TestFiles
     "src/UI/MainMenu.ui"
     "src/UI/MainWindow.ui"
-    "src/UI/MinMax.ui"
+    "src/UI/MiniMax.ui"
     "src/UI/NeuralNet.ui"
     "src/UI/Training.ui"
 

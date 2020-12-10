@@ -29,9 +29,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="MinMaxButton">
+    <widget class="QPushButton" name="MiniMaxButton">
      <property name="text">
-      <string>Play Against Min Max AI</string>
+      <string>Play Against Mini-Max AI</string>
      </property>
     </widget>
    </item>

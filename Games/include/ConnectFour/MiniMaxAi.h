@@ -1,5 +1,5 @@
-#ifndef DEEPREINFORCEMENTLEARNING_cn4_MINMAXAI_H
-#define DEEPREINFORCEMENTLEARNING_cn4_MINMAXAI_H
+#ifndef DEEPREINFORCEMENTLEARNING_cn4_MINIMAXAI_H
+#define DEEPREINFORCEMENTLEARNING_cn4_MINIMAXAI_H
 
 #include "AI/Ai.h"
 #include "GameLogic.h"
@@ -7,11 +7,11 @@
 #include "ConnectFourAdapter.h"
 
 namespace cn4 {
-	class MinMaxAi : public Ai {
+	class MiniMaxAi : public Ai {
 
 	public:
-		MinMaxAi(int depth = 5);
-		~MinMaxAi();
+		MiniMaxAi(int depth = 5);
+		~MiniMaxAi();
 
 		int getMove(std::string state, int playerColor) override;
 
@@ -39,4 +39,4 @@ namespace cn4 {
 	};
 }
 
-#endif //DEEPREINFORCEMENTLEARNING_cn4_MINMAXAI_H
+#endif //DEEPREINFORCEMENTLEARNING_cn4_MINIMAXAI_H

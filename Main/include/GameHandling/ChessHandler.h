@@ -6,7 +6,7 @@
 #include <NeuralNetworks/DefaultNeuralNet.h>
 #include <Chess/Chess.h>
 #include <Chess/ReducedChessAdapter.h>
-#include <Chess/MinMaxAi.h>
+#include <Chess/MiniMaxAi.h>
 #include <AI/NeuralNetAi.h>
 #include "Evaluation.h"
 #include "TrainingParameters.h"
@@ -17,7 +17,7 @@ public:
 	~ChessHandler();
 
 	void chessAgainstNeuralNetAi(chess::PieceColor playerColor, std::string netName, int mctsCount, bool randomize, torch::DeviceType device);
-	void chessAgainstMinMaxAi(int minMaxDepth, chess::PieceColor playerColor);
+	void chessAgainstMiniMaxAi(int miniMaxDepth, chess::PieceColor playerColor);
 
 	void runTrainingWithDefaultParameters(torch::DeviceType device);
 	void runTraining(const TrainingParameters& params);
@@ -34,7 +34,7 @@ private:
 	std::string trainingPath = "NeuralNets/Training/Chess";
 
 
-	int minMaxDepth = 3;
+	int miniMaxDepth = 3;
 	int mctsCount = 800;
 };
 

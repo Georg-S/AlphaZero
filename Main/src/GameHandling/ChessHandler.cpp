@@ -100,9 +100,9 @@ void ChessHandler::runTraining(const TrainingParameters& params) {
 	training.runTraining(&adap);
 }
 
-void ChessHandler::chessAgainstMinMaxAi(int minMaxDepth, chess::PieceColor playerColor) {
-	chess::MinMaxAi minMax = chess::MinMaxAi(minMaxDepth);
-	Chess chess = Chess(playerColor, &minMax);
+void ChessHandler::chessAgainstMiniMaxAi(int miniMaxDepth, chess::PieceColor playerColor) {
+	chess::MiniMaxAi miniMax = chess::MiniMaxAi(miniMaxDepth);
+	Chess chess = Chess(playerColor, &miniMax);
 
 	chess.gameLoop();
 }

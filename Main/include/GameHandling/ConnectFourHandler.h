@@ -9,7 +9,7 @@
 #include <NeuralNetworks/DefaultNeuralNet.h>
 #include <ConnectFour/ConnectFourAdapter.h>
 #include <ConnectFour/ConnectFour.h>
-#include <ConnectFour/MinMaxAi.h>
+#include <ConnectFour/MiniMaxAi.h>
 #include <AI/NeuralNetAi.h>
 #include "Evaluation.h"
 #include "TrainingParameters.h"
@@ -22,7 +22,7 @@ public:
 
 
 	void connectFourAgainstNeuralNetAi(cn4::PlayerColor playerColor, std::string netName, int countMcts, bool probabilistic, torch::DeviceType device);
-	void connectFourAgainstMinMaxAi(int depth, cn4::PlayerColor playerColor);
+	void connectFourAgainstMiniMaxAi(int depth, cn4::PlayerColor playerColor);
 
 	void runTrainingWithDefaultParameters();
 	void runTraining(const TrainingParameters& params);
@@ -32,7 +32,7 @@ public:
 	void setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params);
 
 private:
-	EvalResult evalConnectFour(std::string netName, int minMaxDepth, torch::DeviceType device = torch::kCPU);
+	EvalResult evalConnectFour(std::string netName, int miniMaxDepth, torch::DeviceType device = torch::kCPU);
 	void writeEvaluationResultToFile(int iteration, const EvalResult& result, std::ofstream& file);
 	void loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraining& connectFourZero);
 	void loadPerformanceTestParameters(AlphaZeroTraining& connectFourZero);

@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include "TicTacToeTraining.h"
-#include "TicTacToeMinMaxMenu.h"
+#include "TicTacToeMiniMaxMenu.h"
 #include "TicTacToeNeuralNetMenu.h"
 #include "ui_TicTacToeMain.h"
 
@@ -22,14 +22,14 @@ public:
 	void reset();
 
 private slots:
-	void on_MinMaxButton_clicked();
+	void on_MiniMaxButton_clicked();
 	void on_TwoPlayerButton_clicked();
 	void on_NeuralNetButton_clicked();
 	void on_TrainingButton_clicked();
 private:
 	Ui::TicTacToeMain* gameMainUi;
 	TicTacToeTraining* trainingMenu;
-	TicTacToeMinMaxMenu* minMaxMenu;
+	TicTacToeMiniMaxMenu* miniMaxMenu;
 	TicTacToeNeuralNetMenu* neuralNetMenu;
 	TicTacToeHandler handler;
 

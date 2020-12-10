@@ -16,8 +16,8 @@ void ConnectFourHandler::connectFourAgainstNeuralNetAi(cn4::PlayerColor playerCo
 	connectFour.gameLoop();
 }
 
-void ConnectFourHandler::connectFourAgainstMinMaxAi(int depth, cn4::PlayerColor color) {
-	cn4::MinMaxAi ai = cn4::MinMaxAi(depth);
+void ConnectFourHandler::connectFourAgainstMiniMaxAi(int depth, cn4::PlayerColor color) {
+	cn4::MiniMaxAi ai = cn4::MiniMaxAi(depth);
 	cn4::PlayerColor  aiColor = (cn4::PlayerColor)(color % 2 + 1);
 	ConnectFour connect = ConnectFour(aiColor, &ai);
 	connect.gameLoop();
@@ -72,15 +72,15 @@ void ConnectFourHandler::evalConnectFour() {
 	myfile << "Iteration; Wins; Draws; Losses \n";
 
 
-	int minMaxDepth = 0;
+	int miniMaxDepth = 0;
 
-	EvalResult result = evalConnectFour(preTrainedPath + "/start", minMaxDepth, torch::kCUDA);
+	EvalResult result = evalConnectFour(preTrainedPath + "/start", miniMaxDepth, torch::kCUDA);
 	writeEvaluationResultToFile(0, result, myfile);
 
 	for (int i = 0; i < 30; i++) {
 		std::string path = preTrainedPath + "/iteration" + std::to_string(i);
 		std::cout << path << std::endl;
-		EvalResult result = evalConnectFour(path, minMaxDepth, torch::kCUDA);
+		EvalResult result = evalConnectFour(path, miniMaxDepth, torch::kCUDA);
 		writeEvaluationResultToFile(i + 1, result, myfile);
 	}
 
@@ -91,11 +91,11 @@ void ConnectFourHandler::writeEvaluationResultToFile(int iteration, const EvalRe
 	file << std::to_string(iteration) << ";" << std::to_string(result.wins) << ";" << std::to_string(result.draws) << ";" << std::to_string(result.losses) << std::endl;
 }
 
-EvalResult ConnectFourHandler::evalConnectFour(std::string netName, int minMaxDepth, torch::DeviceType device) {
+EvalResult ConnectFourHandler::evalConnectFour(std::string netName, int miniMaxDepth, torch::DeviceType device) {
 	ConnectFourAdapter adap = ConnectFourAdapter();
 	DefaultNeuralNet* toEval = new DefaultNeuralNet(2, 7, 6, 7, netName, device);
 	NeuralNetAi neuralNetAi = NeuralNetAi(toEval, &adap, 7, evalMCTSCount, false, device);
-	cn4::MinMaxAi ai1 = cn4::MinMaxAi(minMaxDepth);
+	cn4::MiniMaxAi ai1 = cn4::MiniMaxAi(miniMaxDepth);
 
 	EvalResult result = Evaluation::eval(&neuralNetAi, &ai1, &adap, 50);
 	delete toEval;

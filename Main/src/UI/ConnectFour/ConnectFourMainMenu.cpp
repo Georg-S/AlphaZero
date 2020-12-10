@@ -2,7 +2,7 @@
 
 ConnectFourMainMenu::ConnectFourMainMenu(QWidget* w, QWidget* parent) : QWidget(parent), gameMainUi(new Ui::ConnectFourMain) {
 	gameMainUi->setupUi(this);
-	minMaxMenu = new ConnectFourMinMaxMenu(minMaxMenu);
+	miniMaxMenu = new ConnectFourMiniMaxMenu(miniMaxMenu);
 	neuralNetMenu = new ConnectFourNeuralNetMenu(neuralNetMenu);
 	trainingMenu = new ConnectFourTraining(trainingMenu);
 }
@@ -11,13 +11,13 @@ ConnectFourMainMenu::~ConnectFourMainMenu() {
 	delete gameMainUi;
 }
 
-void ConnectFourMainMenu::on_MinMaxButton_clicked() {
-	this->parentWidget()->layout()->replaceWidget(this, minMaxMenu);
+void ConnectFourMainMenu::on_MiniMaxButton_clicked() {
+	this->parentWidget()->layout()->replaceWidget(this, miniMaxMenu);
 	this->setParent(nullptr);
 }
 
 void ConnectFourMainMenu::reset() {
-	minMaxMenu->reset();
+	miniMaxMenu->reset();
 	neuralNetMenu->reset();
 	trainingMenu->reset();
 	this->setParent(nullptr);

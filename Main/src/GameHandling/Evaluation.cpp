@@ -1,7 +1,7 @@
-#include <ConnectFour/MinMaxAi.h>
+#include <ConnectFour/MiniMaxAi.h>
 #include "GameHandling/Evaluation.h"
 
-EvalResult Evaluation::eval(Ai* neuralNetAi, Ai* minmaxAi, Game* game, int numberEvalGames) {
+EvalResult Evaluation::eval(Ai* neuralNetAi, Ai* miniMaxAi, Game* game, int numberEvalGames) {
 
 	int currentNetColor = 1;
 	int draws = 0;
@@ -9,18 +9,18 @@ EvalResult Evaluation::eval(Ai* neuralNetAi, Ai* minmaxAi, Game* game, int numbe
 	int lose = 0;
 
 	Ai* currentPlayer1 = neuralNetAi;
-	Ai* currentPlayer2 = minmaxAi;
+	Ai* currentPlayer2 = miniMaxAi;
 
 	for (int i = 0; i < numberEvalGames; i++) {
 		int winner = Evaluation::runGame(currentPlayer1, currentPlayer2, game);
 
 		if (currentPlayer1 == neuralNetAi) {
-			currentPlayer1 = minmaxAi;
+			currentPlayer1 = miniMaxAi;
 			currentPlayer2 = neuralNetAi;
 		}
 		else {
 			currentPlayer1 = neuralNetAi;
-			currentPlayer2 = minmaxAi;
+			currentPlayer2 = miniMaxAi;
 		}
 
 		if (winner == 0)

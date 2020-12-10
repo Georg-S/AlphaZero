@@ -4,26 +4,26 @@ TicTacToeMainMenu::TicTacToeMainMenu(QWidget* w, QWidget* parent) : QWidget(pare
 	gameMainUi->setupUi(this);
 	handler = TicTacToeHandler();
 	trainingMenu = new TicTacToeTraining(trainingMenu);
-	minMaxMenu = new TicTacToeMinMaxMenu(minMaxMenu);
+	miniMaxMenu = new TicTacToeMiniMaxMenu(miniMaxMenu);
 	neuralNetMenu = new TicTacToeNeuralNetMenu(neuralNetMenu);
 }
 
 TicTacToeMainMenu::~TicTacToeMainMenu() {
 	delete gameMainUi;
 	delete trainingMenu;
-	delete minMaxMenu;
+	delete miniMaxMenu;
 	delete neuralNetMenu;
 }
 
 void TicTacToeMainMenu::reset() {
 	this->setParent(nullptr);
 	trainingMenu->reset();
-	minMaxMenu->reset();
+	miniMaxMenu->reset();
 	neuralNetMenu->reset();
 }
 
-void TicTacToeMainMenu::on_MinMaxButton_clicked() {
-	this->parentWidget()->layout()->replaceWidget(this, minMaxMenu);
+void TicTacToeMainMenu::on_MiniMaxButton_clicked() {
+	this->parentWidget()->layout()->replaceWidget(this, miniMaxMenu);
 	this->setParent(nullptr);
 }
 

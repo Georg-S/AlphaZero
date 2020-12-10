@@ -2,7 +2,7 @@
 #define DEEPREINFORCEMENTLEARNING_CONNECTFOURMAINMENU_H
 
 #include <QWidget>
-#include "ConnectFourMinMaxMenu.h"
+#include "ConnectFourMiniMaxMenu.h"
 #include "ConnectFourNeuralNetMenu.h"
 #include "ConnectFourTraining.h"
 #include "ui_ConnectFourMain.h"
@@ -22,7 +22,7 @@ public:
 	void reset();
 
 private slots:
-	void on_MinMaxButton_clicked();
+	void on_MiniMaxButton_clicked();
 	void on_TwoPlayerButton_clicked();
 	void on_NeuralNetButton_clicked();
 	void on_TrainingButton_clicked();
@@ -31,7 +31,7 @@ private slots:
 
 private:
 	Ui::ConnectFourMain* gameMainUi;
-	ConnectFourMinMaxMenu* minMaxMenu;
+	ConnectFourMiniMaxMenu* miniMaxMenu;
 	ConnectFourNeuralNetMenu* neuralNetMenu;
 	ConnectFourTraining* trainingMenu;
 };

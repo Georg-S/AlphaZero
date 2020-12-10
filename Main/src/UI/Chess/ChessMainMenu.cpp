@@ -3,26 +3,26 @@
 ChessMainMenu::ChessMainMenu(QWidget* w, QWidget* parent) : QWidget(parent), gameMainUi(new Ui::ChessMain) {
 	gameMainUi->setupUi(this);
 	trainingMenu = new ChessTrainingMenu(trainingMenu);
-	minMaxMenu = new ChessMinMaxMenu(minMaxMenu);
+	miniMaxMenu = new ChessMiniMaxMenu(miniMaxMenu);
 	neuralNetMenu = new ChessNeuralNetMenu(neuralNetMenu);
 }
 
 ChessMainMenu::~ChessMainMenu() {
 	delete gameMainUi;
 	delete trainingMenu;
-	delete minMaxMenu;
+	delete miniMaxMenu;
 	delete neuralNetMenu;
 }
 
 void ChessMainMenu::reset() {
 	this->setParent(nullptr);
 	trainingMenu->reset();
-	minMaxMenu->reset();
+	miniMaxMenu->reset();
 	neuralNetMenu->reset();
 }
 
-void ChessMainMenu::on_MinMaxButton_clicked() {
-	this->parentWidget()->layout()->replaceWidget(this, minMaxMenu);
+void ChessMainMenu::on_MiniMaxButton_clicked() {
+	this->parentWidget()->layout()->replaceWidget(this, miniMaxMenu);
 	this->setParent(nullptr);
 }
 

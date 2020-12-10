@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TwoPlayerMinMaxWidget</class>
- <widget class="QWidget" name="TwoPlayerMinMaxWidget">
+ <class>TwoPlayerMiniMaxWidget</class>
+ <widget class="QWidget" name="TwoPlayerMiniMaxWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -24,14 +24,14 @@
    <item>
     <layout class="QHBoxLayout" name="Depth">
      <item>
-      <widget class="QLabel" name="MinMaxDepthLabel">
+      <widget class="QLabel" name="MiniMaxDepthLabel">
        <property name="text">
-        <string>MinMaxDepth: </string>
+        <string>Mini-MaxDepth: </string>
        </property>
       </widget>
      </item>
      <item alignment="Qt::AlignRight">
-      <widget class="QLineEdit" name="MinMaxDepthInput">
+      <widget class="QLineEdit" name="MiniMaxDepthInput">
        <property name="text">
         <string>6</string>
        </property>

@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include "ChessTrainingMenu.h"
-#include "ChessMinMaxMenu.h"
+#include "ChessMiniMaxMenu.h"
 #include "ChessNeuralNetMenu.h"
 #include "ui_ChessMain.h"
 
@@ -21,7 +21,7 @@ public:
 	void reset();
 
 private slots:
-	void on_MinMaxButton_clicked();
+	void on_MiniMaxButton_clicked();
 	void on_TwoPlayerButton_clicked();
 	void on_NeuralNetButton_clicked();
 	void on_TrainingButton_clicked();
@@ -29,7 +29,7 @@ private slots:
 private:
 	Ui::ChessMain* gameMainUi;
 	ChessTrainingMenu* trainingMenu;
-	ChessMinMaxMenu* minMaxMenu;
+	ChessMiniMaxMenu* miniMaxMenu;
 	ChessNeuralNetMenu* neuralNetMenu;
 };
 

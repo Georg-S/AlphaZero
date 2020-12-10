@@ -1,5 +1,5 @@
-#ifndef DEEPREINFORCEMENTLEARNING_chess_MINMAXAI_H
-#define DEEPREINFORCEMENTLEARNING_chess_MINMAXAI_H
+#ifndef DEEPREINFORCEMENTLEARNING_chess_MINIMAXAI_H
+#define DEEPREINFORCEMENTLEARNING_chess_MINIMAXAI_H
 
 #include <vector>
 #include "Chess/ReducedChessAdapter.h"
@@ -7,9 +7,9 @@
 #include "Pieces/Queen.h"
 
 namespace chess {
-	class MinMaxAi : public Ai {
+	class MiniMaxAi : public Ai {
 	public:
-		MinMaxAi(int depth);
+		MiniMaxAi(int depth);
 		int getMove(std::string state, int playerColor) override;
 
 	private:
@@ -33,4 +33,4 @@ namespace chess {
 	};
 }
 
-#endif //DEEPREINFORCEMENTLEARNING_chess_MINMAXAI_H
+#endif //DEEPREINFORCEMENTLEARNING_chess_MINIMAXAI_H

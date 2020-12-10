@@ -1,16 +1,16 @@
-#include "ConnectFour/MinMaxAi.h"
+#include "ConnectFour/MiniMaxAi.h"
 
 
-cn4::MinMaxAi::MinMaxAi(int depth) {
+cn4::MiniMaxAi::MiniMaxAi(int depth) {
 	this->depth = depth;
 	ConnectFourAdapter adap = ConnectFourAdapter();
 }
 
-cn4::MinMaxAi::~MinMaxAi() {
+cn4::MiniMaxAi::~MiniMaxAi() {
 
 }
 
-int cn4::MinMaxAi::getMove(std::string state, int playerColor) {
+int cn4::MiniMaxAi::getMove(std::string state, int playerColor) {
 	aiColor = playerColor;
 
 
@@ -30,7 +30,7 @@ int cn4::MinMaxAi::getMove(std::string state, int playerColor) {
 	return getRandomMove(bestMoves);
 }
 
-void cn4::MinMaxAi::makeMove(cn4::Board& board, int move, int currenPlayer) {
+void cn4::MiniMaxAi::makeMove(cn4::Board& board, int move, int currenPlayer) {
 	for (int i = 0; i < board.height; i++) {
 		if (board.board[move][i] == 0) {
 			board.board[move][i] = currenPlayer;
@@ -39,7 +39,7 @@ void cn4::MinMaxAi::makeMove(cn4::Board& board, int move, int currenPlayer) {
 	}
 }
 
-int cn4::MinMaxAi::evaluateBoard(cn4::Board& board, int depth, int currentPlayer, bool maximizingPlayer, int alpha,
+int cn4::MiniMaxAi::evaluateBoard(cn4::Board& board, int depth, int currentPlayer, bool maximizingPlayer, int alpha,
 	int beta) {
 
 	int nextPlayer = adap.getNextPlayer(currentPlayer);
@@ -83,7 +83,7 @@ int cn4::MinMaxAi::evaluateBoard(cn4::Board& board, int depth, int currentPlayer
 	return boardValue;
 }
 
-std::vector<int> cn4::MinMaxAi::getAllPossibleMoves(const cn4::Board& board) {
+std::vector<int> cn4::MiniMaxAi::getAllPossibleMoves(const cn4::Board& board) {
 	std::vector<int> possibleMoves;
 
 	for (int i = 0; i < board.width; i++) {
@@ -95,7 +95,7 @@ std::vector<int> cn4::MinMaxAi::getAllPossibleMoves(const cn4::Board& board) {
 	return possibleMoves;
 }
 
-int cn4::MinMaxAi::staticBoardEvaluation(const cn4::Board& board) {
+int cn4::MiniMaxAi::staticBoardEvaluation(const cn4::Board& board) {
 	int boardValue = 0;
 	for (int x = 0; x < board.width; x++) {
 		for (int y = 0; y < board.height; y++) {
@@ -107,7 +107,7 @@ int cn4::MinMaxAi::staticBoardEvaluation(const cn4::Board& board) {
 }
 
 int
-cn4::MinMaxAi::evaluateBoardPosition(const cn4::Board& board, int x, int y) {
+cn4::MiniMaxAi::evaluateBoardPosition(const cn4::Board& board, int x, int y) {
 
 	int value = rightDiagonalUpValue(board, x, y) + rightDiagonalDownValue(board, x, y)
 		+ rightHorizontalValue(board, x, y) + upVerticalValue(board, x, y);
@@ -117,7 +117,7 @@ cn4::MinMaxAi::evaluateBoardPosition(const cn4::Board& board, int x, int y) {
 	return value;
 }
 
-int cn4::MinMaxAi::rightHorizontalValue(const cn4::Board& board, int x, int y) {
+int cn4::MiniMaxAi::rightHorizontalValue(const cn4::Board& board, int x, int y) {
 	if (x + 3 >= board.width)
 		return 0;
 
@@ -135,7 +135,7 @@ int cn4::MinMaxAi::rightHorizontalValue(const cn4::Board& board, int x, int y) {
 	return value;
 }
 
-int cn4::MinMaxAi::rightDiagonalDownValue(const cn4::Board& board, int x, int y) {
+int cn4::MiniMaxAi::rightDiagonalDownValue(const cn4::Board& board, int x, int y) {
 
 	if (x + 3 >= board.width)
 		return 0;
@@ -156,7 +156,7 @@ int cn4::MinMaxAi::rightDiagonalDownValue(const cn4::Board& board, int x, int y)
 	return value;
 }
 
-int cn4::MinMaxAi::rightDiagonalUpValue(const cn4::Board& board, int x, int y) {
+int cn4::MiniMaxAi::rightDiagonalUpValue(const cn4::Board& board, int x, int y) {
 	if (x + 3 >= board.width)
 		return 0;
 	if (y + 3 >= board.height)
@@ -178,7 +178,7 @@ int cn4::MinMaxAi::rightDiagonalUpValue(const cn4::Board& board, int x, int y) {
 	return value;
 }
 
-int cn4::MinMaxAi::upVerticalValue(const cn4::Board& board, int x, int y) {
+int cn4::MiniMaxAi::upVerticalValue(const cn4::Board& board, int x, int y) {
 	if (y + 3 >= board.height)
 		return 0;
 
@@ -197,7 +197,7 @@ int cn4::MinMaxAi::upVerticalValue(const cn4::Board& board, int x, int y) {
 	return value;
 }
 
-std::vector<int> cn4::MinMaxAi::getBestMoves(std::vector<int>& moves, std::vector<int>& values) {
+std::vector<int> cn4::MiniMaxAi::getBestMoves(std::vector<int>& moves, std::vector<int>& values) {
 	std::vector <int> bestMoves;
 	int highestValue = *(std::max_element(values.begin(), values.end()));
 
@@ -209,7 +209,7 @@ std::vector<int> cn4::MinMaxAi::getBestMoves(std::vector<int>& moves, std::vecto
 	return bestMoves;
 }
 
-int cn4::MinMaxAi::getRandomMove(const std::vector<int>& moves) {
+int cn4::MiniMaxAi::getRandomMove(const std::vector<int>& moves) {
 	int randIndex = rand() % moves.size();
 	return moves[randIndex];
 }

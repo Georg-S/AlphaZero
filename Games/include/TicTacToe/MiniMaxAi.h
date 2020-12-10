@@ -1,5 +1,5 @@
-#ifndef DEEPREINFORCEMENTLEARNING_ttt_MINMAXAI_H
-#define DEEPREINFORCEMENTLEARNING_ttt_MINMAXAI_H
+#ifndef DEEPREINFORCEMENTLEARNING_ttt_MINIMAXAI_H
+#define DEEPREINFORCEMENTLEARNING_ttt_MINIMAXAI_H
 
 #include <vector>
 #include <climits>
@@ -11,10 +11,10 @@
 #include "TicTacToe/Board.h"
 
 namespace ttt {
-	class MinMaxAi : public Ai {
+	class MiniMaxAi : public Ai {
 	public:
-		MinMaxAi();
-		~MinMaxAi();
+		MiniMaxAi();
+		~MiniMaxAi();
 
 		int getMove(std::string state, int color) override;
 
@@ -31,4 +31,4 @@ namespace ttt {
 }
 
 
-#endif //DEEPREINFORCEMENTLEARNING_ttt_MINMAXAI_H
+#endif //DEEPREINFORCEMENTLEARNING_ttt_MINIMAXAI_H

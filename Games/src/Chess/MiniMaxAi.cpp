@@ -1,10 +1,10 @@
-#include "Chess/MinMaxAi.h"
+#include "Chess/MiniMaxAi.h"
 
-chess::MinMaxAi::MinMaxAi(int depth) {
+chess::MiniMaxAi::MiniMaxAi(int depth) {
 	this->depth = depth;
 }
 
-int chess::MinMaxAi::getMove(std::string state, int playerColor) {
+int chess::MiniMaxAi::getMove(std::string state, int playerColor) {
 	this->aiColor = (chess::PieceColor)playerColor;
 	this->otherPlayer = chess::GameLogic::getNextPlayer(aiColor);
 
@@ -26,7 +26,7 @@ int chess::MinMaxAi::getMove(std::string state, int playerColor) {
 	return getRandomMove(bestMoves).getSingleIntRepresentation();
 }
 
-std::vector<chess::Move> chess::MinMaxAi::getAllPossibleMoves(chess::Board& board, const chess::PieceColor& color) {
+std::vector<chess::Move> chess::MiniMaxAi::getAllPossibleMoves(chess::Board& board, const chess::PieceColor& color) {
 	std::vector<chess::Move> possibleMoves;
 
 	for (int fromX = 0; fromX < 8; fromX++) {
@@ -42,7 +42,7 @@ std::vector<chess::Move> chess::MinMaxAi::getAllPossibleMoves(chess::Board& boar
 	return possibleMoves;
 }
 
-void chess::MinMaxAi::getAllPossibleMovesForPiece(chess::Board& board, int fromX, int fromY,
+void chess::MiniMaxAi::getAllPossibleMovesForPiece(chess::Board& board, int fromX, int fromY,
 	std::vector<chess::Move>& moves) {
 	for (int toX = 0; toX < 8; toX++) {
 		for (int toY = 0; toY < 8; toY++) {
@@ -54,7 +54,7 @@ void chess::MinMaxAi::getAllPossibleMovesForPiece(chess::Board& board, int fromX
 }
 
 int
-chess::MinMaxAi::evaluateBoard(chess::Board& board, int depth, chess::PieceColor currentPlayer, bool maximizingPlayer, int alpha, int beta) {
+chess::MiniMaxAi::evaluateBoard(chess::Board& board, int depth, chess::PieceColor currentPlayer, bool maximizingPlayer, int alpha, int beta) {
 	if (chess::GameLogic::isCheckMate(board, aiColor))
 		return (-checkMateValue - depth);
 	if (chess::GameLogic::isCheckMate(board, otherPlayer))
@@ -98,7 +98,7 @@ chess::MinMaxAi::evaluateBoard(chess::Board& board, int depth, chess::PieceColor
 	return boardValue;
 }
 
-int chess::MinMaxAi::staticEvaluateBoard(chess::Board& board) {
+int chess::MiniMaxAi::staticEvaluateBoard(chess::Board& board) {
 	int boardValue = 0;
 	for (int x = 0; x < 8; x++) {
 		for (int y = 0; y < 8; y++) {
@@ -111,7 +111,7 @@ int chess::MinMaxAi::staticEvaluateBoard(chess::Board& board) {
 	return boardValue;
 }
 
-void chess::MinMaxAi::makeMoveWithPromotion(chess::Board& board, const chess::Move& move) {
+void chess::MiniMaxAi::makeMoveWithPromotion(chess::Board& board, const chess::Move& move) {
 	chess::GameLogic::makeMove(board, move);
 
 	if (chess::GameLogic::pawnReachedEndOfBoard(board)) {
@@ -120,7 +120,7 @@ void chess::MinMaxAi::makeMoveWithPromotion(chess::Board& board, const chess::Mo
 	}
 }
 
-void chess::MinMaxAi::replacePawnsInRowWithQueens(chess::Board& board, int row) {
+void chess::MiniMaxAi::replacePawnsInRowWithQueens(chess::Board& board, int row) {
 	for (int x = 0; x < 8; x++) {
 		if (board.board[x][row] == nullptr)
 			continue;
@@ -135,7 +135,7 @@ void chess::MinMaxAi::replacePawnsInRowWithQueens(chess::Board& board, int row) 
 	}
 }
 
-int chess::MinMaxAi::getPieceValue(chess::Piece* piece) {
+int chess::MiniMaxAi::getPieceValue(chess::Piece* piece) {
 	int value = 0;
 
 	switch (piece->getPieceChar()) {
@@ -168,7 +168,7 @@ int chess::MinMaxAi::getPieceValue(chess::Piece* piece) {
 	return value;
 }
 
-std::vector<chess::Move> chess::MinMaxAi::getBestMoves(std::vector<chess::Move>& moves, std::vector<int>& values) {
+std::vector<chess::Move> chess::MiniMaxAi::getBestMoves(std::vector<chess::Move>& moves, std::vector<int>& values) {
 	std::vector <chess::Move> bestMoves;
 	int highestValue = *(std::max_element(values.begin(), values.end()));
 
@@ -180,7 +180,7 @@ std::vector<chess::Move> chess::MinMaxAi::getBestMoves(std::vector<chess::Move>&
 	return bestMoves;
 }
 
-chess::Move chess::MinMaxAi::getRandomMove(const std::vector<chess::Move>& moves) {
+chess::Move chess::MiniMaxAi::getRandomMove(const std::vector<chess::Move>& moves) {
 	int randIndex = rand() % moves.size();
 	return moves[randIndex];
 }

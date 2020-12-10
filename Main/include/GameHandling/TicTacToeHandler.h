@@ -9,7 +9,7 @@
 #include <NeuralNetworks/DefaultNeuralNet.h>
 #include <TicTacToe/TicTacToeAdapter.h>
 #include <TicTacToe/TicTacToe.h>
-#include <TicTacToe/MinMaxAi.h>
+#include <TicTacToe/MiniMaxAi.h>
 #include "Evaluation.h"
 #include "TrainingParameters.h"
 
@@ -19,7 +19,7 @@ public:
 	~TicTacToeHandler();
 
 	void ticTacToeAgainstNeuralNetAi(int playerColor, std::string netName, int countMcts, bool probabilistic, torch::DeviceType device);
-	void ticTacToeAgainstMinMaxAi(int playerColor);
+	void ticTacToeAgainstMiniMaxAi(int playerColor);
 
 	void runTraining(const TrainingParameters& params);
 	void setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params);

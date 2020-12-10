@@ -8,10 +8,10 @@ TicTacToeHandler::~TicTacToeHandler() {
 
 }
 
-void TicTacToeHandler::ticTacToeAgainstMinMaxAi(int playerColor) {
-	ttt::MinMaxAi ai = ttt::MinMaxAi();
+void TicTacToeHandler::ticTacToeAgainstMiniMaxAi(int playerColor) {
+	ttt::MiniMaxAi ai = ttt::MiniMaxAi();
 	int aiColor = ttt::GameLogic::getNextPlayer(playerColor);
-	ttt::MinMaxAi miMaxAi = ttt::MinMaxAi();
+	ttt::MiniMaxAi miMaxAi = ttt::MiniMaxAi();
 	TicTacToe tic = TicTacToe(&miMaxAi, aiColor);
 	tic.gameLoop();
 }
@@ -66,8 +66,8 @@ void TicTacToeHandler::evalTicTacToe() {
 EvalResult TicTacToeHandler::evalTicTacToe(std::string netName, torch::DeviceType device) {
 	DefaultNeuralNet* toEval = new DefaultNeuralNet(2, 3, 3, 9, netName, device);
 	NeuralNetAi neuralNetAi = NeuralNetAi(toEval, &adap, 9, evalMCTSCount, false, device);
-	ttt::MinMaxAi minmaxAi = ttt::MinMaxAi();
-	EvalResult result = Evaluation::eval(&neuralNetAi, &minmaxAi, &adap);
+	ttt::MiniMaxAi minimaxAi = ttt::MiniMaxAi();
+	EvalResult result = Evaluation::eval(&neuralNetAi, &minimaxAi, &adap);
 	delete toEval;
 	return result;
 }
