@@ -1,7 +1,7 @@
 #include "ConnectFour/Renderer.h"
 
 cn4::Renderer::Renderer() {
-	handler = new SDLHandler(windowWidth, windowHeight);
+	handler = new SDLHandler(windowWidth, windowHeight, true);
 	handler->start("Connect-Four");
 }
 

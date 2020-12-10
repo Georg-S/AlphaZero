@@ -8,6 +8,8 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <memory>
+#include <map>
 
 
 struct RenderingElement {
@@ -19,7 +21,7 @@ struct RenderingElement {
 class SDLHandler
 {
 public:
-	SDLHandler(int screenWidth, int screenHeight);
+	SDLHandler(int screenWidth, int screenHeight, bool useCaching = false);
 	~SDLHandler();
 
 	bool start(const std::string& windowName);
@@ -53,6 +55,8 @@ private:
 	int m_screenWidth;
 	int m_screenHeight;
 	uint32_t startTime;
+	bool useCaching = false;
+	std::map<std::string, SDL_Texture*>cache;
 };
 
 

@@ -1,9 +1,10 @@
 #include "SDL/SDLHandler.h"
 
-SDLHandler::SDLHandler(int screenWidth, int screenHeight)
+SDLHandler::SDLHandler(int screenWidth, int screenHeight, bool useCaching)
 {
 	m_screenWidth = screenWidth;
 	m_screenHeight = screenHeight;
+	this->useCaching = useCaching;
 }
 
 
@@ -71,6 +72,12 @@ void SDLHandler::setToForeground(RenderingElement* element)
 
 SDL_Texture* SDLHandler::createAndReturnTexture(std::string fileName)
 {
+	if (useCaching) 
+	{
+		if (cache.find(fileName) != cache.end()) 
+			return cache[fileName];
+	}
+
 	SDL_Texture* newTexture = NULL;
 	SDL_Surface* loadedSurface = IMG_Load(fileName.c_str());
 
@@ -84,6 +91,9 @@ SDL_Texture* SDLHandler::createAndReturnTexture(std::string fileName)
 
 		SDL_FreeSurface(loadedSurface);
 	}
+
+	if (useCaching)
+		this->cache[fileName] = newTexture;
 
 	return newTexture;
 }
@@ -178,6 +188,13 @@ bool SDLHandler::initializeTime()
 }
 
 void SDLHandler::clear() {
+	if (useCaching) {
+		for (RenderingElement* element : elements)
+			delete element;
+		elements.clear();
+		return;
+	}
+
 	for (int i = 0; i < elements.size(); i++) {
 		deleteRenderingElement(elements[i]);
 	}

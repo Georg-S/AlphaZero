@@ -1,7 +1,7 @@
 #include "Chess/Renderer.h"
 
 chess::Renderer::Renderer() {
-	this->sdlHandler = new SDLHandler(windowWidth, windowHeight);
+	this->sdlHandler = new SDLHandler(windowWidth, windowHeight, true);
 	pieceWidth = windowWidth / 8;
 	pieceHeight = windowHeight / 8;
 	this->sdlHandler->start("Chess");

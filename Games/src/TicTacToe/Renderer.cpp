@@ -1,7 +1,7 @@
 #include "TicTacToe/Renderer.h"
 
 ttt::Renderer::Renderer() {
-	sdlHandler = new SDLHandler(windowWidth, windowHeight);
+	sdlHandler = new SDLHandler(windowWidth, windowHeight, true);
 	pieceWidth = windowWidth / 3;
 	pieceHeight = windowHeight / 3;
 

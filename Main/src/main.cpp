@@ -13,7 +13,7 @@
 
 void initRNGS() {
 	srand(time(NULL));
-	std::mt19937 mt_rand(time(0));
+	std::mt19937 mt_rand(time(NULL));
 }
 
 std::vector<torch::Tensor> generateData(int count, torch::DeviceType device) {
