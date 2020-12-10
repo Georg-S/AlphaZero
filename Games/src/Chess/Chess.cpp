@@ -68,6 +68,7 @@ void Chess::updateAiMove() {
 	int intMove = ai->getMove(ReducedChessAdapter::convertStateToString(board, currentPlayer), currentPlayer);
 	chess::Move move = chess::Move(intMove);
 	chess::GameLogic::makeMove(board, move);
+	previousMove = move;
 	outputBoard();
 
 	if (chess::GameLogic::isGameOver(board))
@@ -86,6 +87,7 @@ void Chess::updateHumanMove() {
 		return;
 
 	chess::GameLogic::makeMove(board, move);
+	previousMove = move;
 	outputBoard();
 
 	if (chess::GameLogic::pawnReachedEndOfBoard(board)) {
@@ -100,7 +102,7 @@ void Chess::updateHumanMove() {
 
 void Chess::outputBoard() {
 	if (graphicalOutput)
-		renderer->renderBoard(board);
+		renderer->render(chess::RenderInformation(board, previousMove));
 	else
 		printBoardToConsole(board);
 }
@@ -156,6 +158,7 @@ chess::Move Chess::getMoveFromGraphicalInput() {
 		renderInfo.selectedPieceY = selectedPieceY;
 		renderInfo.mousePositionX = mouse.getMousePositionX();
 		renderInfo.mousePositionY = mouse.getMousePositionY();
+		renderInfo.previousMove = previousMove;
 		renderer->render(renderInfo);
 	}
 
@@ -250,7 +253,7 @@ void Chess::handlePromoSelection(chess::Board& board, int pawnX, int pawnY) {
 		board.board[pawnX][pawnY] = piece;
 		validPieceSelected = true;
 	}
-	renderer->renderBoard(board);
+	this->outputBoard();
 }
 
 chess::Piece* Chess::getPieceFromPromoSelection(int mouseX, int mouseY) {

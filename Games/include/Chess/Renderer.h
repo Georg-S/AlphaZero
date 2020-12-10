@@ -12,17 +12,18 @@ namespace chess {
 		~Renderer();
 
 		void render(const chess::RenderInformation& renderInfo);
-		void renderBoard(const chess::Board& board);
 		void renderPromotionSelection(chess::PieceColor color);
-
 		int getWindowWidth();
 		int getWindowHeight();
-
 		void updateQuit();
 		bool isQuit();
 		void quit();
+
 	private:
-		void renderBoardWithPieceOnMousePosition(const chess::RenderInformation& renderInfo);
+		void renderChessBoard();
+		void renderPieces(const chess::Board& board);
+		void renderPiecesWithSelectedOnMousePosition(const chess::RenderInformation& renderInfo);
+		void renderPreviousMove(const Move& previousMove);
 		void renderPiece(const chess::Board& board, int x, int y);
 		void renderPieceOnMousePosition(Piece* piece, int mouseX, int mouseY);
 		std::string getFileString(Piece* piece);

@@ -11,43 +11,57 @@ chess::Renderer::~Renderer() {
 	delete sdlHandler;
 }
 
-void chess::Renderer::renderBoard(const chess::Board& board) {
+void chess::Renderer::render(const chess::RenderInformation& renderInfo) {
 	sdlHandler->clear();
+	renderChessBoard();
+
+	if (renderInfo.previousMove.fromX != -1)
+		renderPreviousMove(renderInfo.previousMove);
+
+	if (renderInfo.selectedPieceY == -1 || renderInfo.selectedPieceX == -1)
+		renderPieces(renderInfo.board);
+	else
+		renderPiecesWithSelectedOnMousePosition(renderInfo);
+
+
+	sdlHandler->updateRendering();
+}
+
+void chess::Renderer::renderChessBoard()
+{
 	sdlHandler->createAndPushBackRenderElement("Images/Chess/Board.png", 0, 0, windowWidth, windowHeight);
+}
+
+void chess::Renderer::renderPieces(const chess::Board& board) {
 	for (int x = 0; x < 8; x++) {
 		for (int y = 0; y < 8; y++) {
 			if (board.board[x][y] != nullptr)
 				renderPiece(board, x, y);
 		}
 	}
-	sdlHandler->updateRendering();
 }
 
-void chess::Renderer::render(const chess::RenderInformation& renderInfo) {
-	if (renderInfo.selectedPieceY == -1 || renderInfo.selectedPieceX == -1)
-		renderBoard(renderInfo.board);
-	else
-		renderBoardWithPieceOnMousePosition(renderInfo);
-}
-
-void chess::Renderer::renderBoardWithPieceOnMousePosition(const chess::RenderInformation& renderInfo) {
-	sdlHandler->clear();
+void chess::Renderer::renderPiecesWithSelectedOnMousePosition(const chess::RenderInformation& renderInfo) {
 	Piece* foreGroundPiece = nullptr;
-	sdlHandler->createAndPushBackRenderElement("Images/Chess/Board.png", 0, 0, windowWidth, windowHeight);
-
 
 	for (int x = 0; x < 8; x++) {
 		for (int y = 0; y < 8; y++) {
-			if (x == renderInfo.selectedPieceX && y == renderInfo.selectedPieceY) {
+			if (x == renderInfo.selectedPieceX && y == renderInfo.selectedPieceY)
 				foreGroundPiece = renderInfo.board.board[x][y];
-			}
 			else if (renderInfo.board.board[x][y] != nullptr)
 				renderPiece(renderInfo.board, x, y);
 		}
 	}
-
 	renderPieceOnMousePosition(foreGroundPiece, renderInfo.mousePositionX, renderInfo.mousePositionY);
-	sdlHandler->updateRendering();
+}
+
+void chess::Renderer::renderPreviousMove(const Move& previousMove)
+{
+	sdlHandler->createAndPushBackRenderElement("Images/Chess/PreviousMove.png", pieceWidth * previousMove.fromX, pieceHeight * previousMove.fromY
+		, pieceWidth, pieceHeight);
+
+	sdlHandler->createAndPushBackRenderElement("Images/Chess/PreviousMove.png", pieceWidth * previousMove.toX, pieceHeight * previousMove.toY
+		, pieceWidth, pieceHeight);
 }
 
 void chess::Renderer::renderPiece(const chess::Board& board, int x, int y) {

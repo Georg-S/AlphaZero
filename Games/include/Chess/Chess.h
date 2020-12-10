@@ -57,6 +57,7 @@ private:
 	int selectedPieceX = -1;
 	int selectedPieceY = -1;
 	bool pieceSelected = false;
+	chess::Move previousMove = chess::Move(-1, -1, -1, -1);;
 };
 
 
