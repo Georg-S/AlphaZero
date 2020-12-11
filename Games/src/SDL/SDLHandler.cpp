@@ -22,10 +22,8 @@ RenderingElement* SDLHandler::createAndPushBackRenderElement(std::string fileNam
 	element->texture = createAndReturnTexture(fileName);
 	element->transform = SDL_Rect{ x,y,width, height };
 
-
-	if (element->texture != NULL) {
+	if (element->texture != NULL)
 		elements.push_back(element);
-	}
 	else
 		std::cout << "Problem " << std::endl;
 	return element;
@@ -110,9 +108,7 @@ void SDLHandler::clear() {
 	else
 	{
 		for (RenderingElement* element : elements)
-		{
 			deleteRenderingElementAndTexture(element);
-		}
 	}
 }
 
@@ -134,9 +130,9 @@ RenderingElement* SDLHandler::createAndPushFrontRenderElement(std::string fileNa
 	element->texture = createAndReturnTexture(fileName);
 	element->transform = SDL_Rect{ x,y,width, height };
 
-	if (element->texture != NULL) {
+	if (element->texture != NULL)
 		elements.insert(elements.begin(), element);
-	}
+
 	return element;
 }
 
