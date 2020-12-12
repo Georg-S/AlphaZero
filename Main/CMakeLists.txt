@@ -20,9 +20,11 @@ set(GameHandlingFiles
 set(UIFiles
     "include/UI/MainWindow.h"
     "include/UI/MainMenu.h"
+    "include/UI/TrainingThread.h"
 
     "src/UI/MainWindow.cpp"
     "src/UI/MainMenu.cpp"
+    "src/UI/TrainingThread.cpp"
     )
 
 set(UIConnectFourFiles

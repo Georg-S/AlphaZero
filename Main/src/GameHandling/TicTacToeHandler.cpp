@@ -108,6 +108,7 @@ void TicTacToeHandler::runTraining(const TrainingParameters& params) {
 	setTrainingParameters(training, params);
 
 	training.runTraining(&adap);
+	delete neuralNet;
 }
 
 void TicTacToeHandler::setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params) {

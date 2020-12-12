@@ -81,9 +81,27 @@ void TicTacToeTraining::on_RestrictGameLengthYesRadio_clicked() {
 }
 
 void TicTacToeTraining::on_StartTrainingButton_clicked() {
-	TrainingParameters params = getParametersFromInput();
+	if (!trainingRunning)
+	{
+		trainingRunning = true;
+		trainingUi->StartTrainingButton->setText("Training is running");
+		trainingUi->StartTrainingButton->setEnabled(false);
 
-	gameHandler.runTraining(params);
+		TrainingParameters params = getParametersFromInput();
+		auto trainingFunc = [=]() {gameHandler.runTraining(params); };
+		trainingThread = new TrainingThread(trainingFunc);
+		connect(trainingThread, &TrainingThread::trainingFinished, this, &TicTacToeTraining::handleTrainingFinished);
+
+		trainingThread->start();
+	}
+}
+
+void TicTacToeTraining::handleTrainingFinished()
+{
+	trainingRunning = false;
+	trainingUi->StartTrainingButton->setText("Start Training");
+	trainingUi->StartTrainingButton->setEnabled(true);
+	delete trainingThread;
 }
 
 void TicTacToeTraining::reset() {

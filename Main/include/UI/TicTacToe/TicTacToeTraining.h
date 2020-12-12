@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QIntValidator>
+#include "UI/TrainingThread.h"
 #include "ui_Training.h"
 
 // QT somehow has Problems with libtorch so this preProcessor instructions are needed
@@ -23,6 +24,7 @@ private slots:
 	void on_StartTrainingButton_clicked();
 
 private:
+	void handleTrainingFinished();
 	void initDefaultValues();
 	void initInputValidators();
 	TrainingParameters getParametersFromInput();
@@ -30,6 +32,8 @@ private:
 
 	Ui::TrainingWidget* trainingUi;
 	TicTacToeHandler gameHandler;
+	TrainingThread* trainingThread = nullptr;
+	bool trainingRunning = false;
 };
 
 

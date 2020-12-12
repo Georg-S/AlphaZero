@@ -27,7 +27,7 @@ private:
 	TicTacToeMainMenu* ticTacToeMainMenu;
 	ConnectFourMainMenu* connectFourMainMenu;
 	ChessMainMenu* chessMainMenu;
-	std::function<void(bool test)> setHomeButtonVisibility;
+	std::function<void(bool setVisible)> setHomeButtonVisibility;
 };
 
 
