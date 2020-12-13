@@ -61,11 +61,6 @@ void ChessTrainingMenu::initInputValidators() {
 	trainingUi->CpuThreadsInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 }
 
-void ChessTrainingMenu::runTraining() {
-	TrainingParameters params = getParametersFromInput();
-	gameHandler.runTraining(params);
-}
-
 TrainingParameters ChessTrainingMenu::getParametersFromInput() {
 	TrainingParameters params;
 
@@ -92,6 +87,31 @@ TrainingParameters ChessTrainingMenu::getParametersFromInput() {
 	params.cpuThreads = trainingUi->CpuThreadsInput->text().toInt();
 
 	return params;
+}
+
+void ChessTrainingMenu::runTraining() 
+{
+	if (!trainingRunning)
+	{
+		trainingRunning = true;
+		trainingUi->StartTrainingButton->setText("Training is running");
+		trainingUi->StartTrainingButton->setEnabled(false);
+
+		TrainingParameters params = getParametersFromInput();
+		auto trainingFunc = [=]() {gameHandler.runTraining(params); };
+		trainingThread = new TrainingThread(trainingFunc);
+		connect(trainingThread, &TrainingThread::trainingFinished, this, &ChessTrainingMenu::handleTrainingFinished);
+
+		trainingThread->start();
+	}
+}
+
+void ChessTrainingMenu::handleTrainingFinished()
+{
+	trainingRunning = false;
+	trainingUi->StartTrainingButton->setText("Start Training");
+	trainingUi->StartTrainingButton->setEnabled(true);
+	delete trainingThread;
 }
 
 void ChessTrainingMenu::reset() {

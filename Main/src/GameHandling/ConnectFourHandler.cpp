@@ -137,4 +137,5 @@ void ConnectFourHandler::runTraining(const TrainingParameters& params) {
 	setTrainingParameters(training, params);
 
 	training.runTraining(&adap);
+	delete neuralNet;
 }

@@ -98,6 +98,7 @@ void ChessHandler::runTraining(const TrainingParameters& params) {
 	setTrainingParameters(training, params);
 
 	training.runTraining(&adap);
+	delete neuralNet;
 }
 
 void ChessHandler::chessAgainstMiniMaxAi(int miniMaxDepth, chess::PieceColor playerColor) {

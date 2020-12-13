@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QIntValidator>
 #include "ui_Training.h"
+#include "Ui/TrainingThread.h"
 // QT somehow has Problems with libtorch so this preProcessor instructions are needed
 #undef slots
 #include "GameHandling/ConnectFourHandler.h"
@@ -26,6 +27,7 @@ private slots:
 	void on_StartTrainingButton_clicked();
 
 private:
+	void handleTrainingFinished();
 	void initDefaultValues();
 	void initInputValidators();
 	TrainingParameters getParametersFromInput();
@@ -34,6 +36,8 @@ private:
 
 	Ui::TrainingWidget* trainingUi;
 	ConnectFourHandler gameHandler;
+	TrainingThread* trainingThread = nullptr;
+	bool trainingRunning = false;
 };
 
 

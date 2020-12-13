@@ -33,8 +33,27 @@ void ConnectFourTraining::on_StartTrainingButton_clicked() {
 }
 
 void ConnectFourTraining::runTraining() {
-	TrainingParameters params = getParametersFromInput();
-	gameHandler.runTraining(params);
+	if (!trainingRunning)
+	{
+		trainingRunning = true;
+		trainingUi->StartTrainingButton->setText("Training is running");
+		trainingUi->StartTrainingButton->setEnabled(false);
+
+		TrainingParameters params = getParametersFromInput();
+		auto trainingFunc = [=]() {gameHandler.runTraining(params); };
+		trainingThread = new TrainingThread(trainingFunc);
+		connect(trainingThread, &TrainingThread::trainingFinished, this, &ConnectFourTraining::handleTrainingFinished);
+
+		trainingThread->start();
+	}
+}
+
+void ConnectFourTraining::handleTrainingFinished()
+{
+	trainingRunning = false;
+	trainingUi->StartTrainingButton->setText("Start Training");
+	trainingUi->StartTrainingButton->setEnabled(true);
+	delete trainingThread;
 }
 
 void ConnectFourTraining::initDefaultValues() {

@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QIntValidator>
 #include "ui_Training.h"
+#include "UI/TrainingThread.h"
 
 #undef slots
 #include "GameHandling/ChessHandler.h"
@@ -27,9 +28,12 @@ private:
 	void initInputValidators();
 	void runTraining();
 	TrainingParameters getParametersFromInput();
+	void handleTrainingFinished();
 
 	Ui::TrainingWidget* trainingUi;
 	ChessHandler gameHandler;
+	TrainingThread* trainingThread = nullptr;
+	bool trainingRunning = false;
 };
 
 
