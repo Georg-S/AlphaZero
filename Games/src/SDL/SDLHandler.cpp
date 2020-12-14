@@ -16,9 +16,10 @@ bool SDLHandler::start(const std::string& windowName)
 	return true;
 }
 
-RenderingElement* SDLHandler::createAndPushBackRenderElement(std::string fileName, int x, int y, int width, int height)
+std::shared_ptr<RenderingElement> SDLHandler::createAndPushBackRenderElement(std::string fileName, int x, int y, int width, int height)
 {
-	RenderingElement* element = new RenderingElement;
+	
+	std::shared_ptr<RenderingElement> element =  std::make_shared<RenderingElement>();
 	element->texture = createAndReturnTexture(fileName);
 	element->transform = SDL_Rect{ x,y,width, height };
 
@@ -29,7 +30,7 @@ RenderingElement* SDLHandler::createAndPushBackRenderElement(std::string fileNam
 	return element;
 }
 
-void SDLHandler::changePositionOfRenderingElement(RenderingElement* element, int x, int y)
+void SDLHandler::changePositionOfRenderingElement(std::shared_ptr<RenderingElement> element, int x, int y)
 {
 	element->transform.x = x - element->transform.w / 2;
 	element->transform.y = y - element->transform.h / 2;
@@ -46,11 +47,12 @@ void SDLHandler::close()
 
 void SDLHandler::deleteCache()
 {
-	for (auto x : cache)
+	for (auto x : cache) 
 		SDL_DestroyTexture(x.second);
+	cache.clear();
 }
 
-void SDLHandler::setToForeground(RenderingElement* element)
+void SDLHandler::setToForeground(std::shared_ptr<RenderingElement> element)
 {
 	int index = getIndex(element);
 	if (index != -1)
@@ -100,19 +102,15 @@ SDL_Texture* SDLHandler::createAndReturnTexture(std::string fileName)
 
 void SDLHandler::clear() {
 	if (useCaching)
-	{
-		for (RenderingElement* element : elements)
-			delete element;
 		elements.clear();
-	}
 	else
 	{
-		for (RenderingElement* element : elements)
+		for (std::shared_ptr<RenderingElement> element : elements)
 			deleteRenderingElementAndTexture(element);
 	}
 }
 
-void SDLHandler::deleteRenderingElementAndTexture(RenderingElement* element)
+void SDLHandler::deleteRenderingElementAndTexture(std::shared_ptr<RenderingElement> element)
 {
 	int index = getIndex(element);
 	if (index == -1)
@@ -121,12 +119,11 @@ void SDLHandler::deleteRenderingElementAndTexture(RenderingElement* element)
 	elements.erase(elements.begin() + index);
 
 	SDL_DestroyTexture(element->texture);
-	delete element;
 }
 
-RenderingElement* SDLHandler::createAndPushFrontRenderElement(std::string fileName, int x, int y, int width, int height)
+std::shared_ptr<RenderingElement> SDLHandler::createAndPushFrontRenderElement(std::string fileName, int x, int y, int width, int height)
 {
-	RenderingElement* element = new RenderingElement;
+	std::shared_ptr<RenderingElement> element = std::make_shared<RenderingElement>();
 	element->texture = createAndReturnTexture(fileName);
 	element->transform = SDL_Rect{ x,y,width, height };
 
@@ -184,7 +181,7 @@ bool SDLHandler::initializeImageFlags()
 	return true;
 }
 
-int SDLHandler::getIndex(RenderingElement* element)
+int SDLHandler::getIndex(std::shared_ptr<RenderingElement> element)
 {
 	int index = -1;
 	for (int i = 0; i < elements.size(); i++) {

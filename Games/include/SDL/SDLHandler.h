@@ -25,13 +25,13 @@ public:
 
 	bool start(const std::string& windowName);
 	void updateRendering();
-	RenderingElement* createAndPushFrontRenderElement(std::string fileName, int x, int y, int width, int height);
-	RenderingElement* createAndPushBackRenderElement(std::string fileName, int x, int y, int width, int height);
+	std::shared_ptr<RenderingElement> createAndPushFrontRenderElement(std::string fileName, int x, int y, int width, int height);
+	std::shared_ptr<RenderingElement> createAndPushBackRenderElement(std::string fileName, int x, int y, int width, int height);
 	void clear();
-	void deleteRenderingElementAndTexture(RenderingElement* element);
-	static void changePositionOfRenderingElement(RenderingElement* element, int x, int y);
+	void deleteRenderingElementAndTexture(std::shared_ptr<RenderingElement> element);
+	static void changePositionOfRenderingElement(std::shared_ptr<RenderingElement> element, int x, int y);
 	void close();
-	void setToForeground(RenderingElement* element);
+	void setToForeground(std::shared_ptr<RenderingElement> element);
 	void getWindowPosition(int* x, int* y);
 	void updateQuit();
 
@@ -47,9 +47,9 @@ private:
 	bool initializeRenderer();
 	bool initializeTime();
 	bool initializeImageFlags();
-	int getIndex(RenderingElement* element);
+	int getIndex(std::shared_ptr<RenderingElement> element);
 
-	std::vector<RenderingElement*> elements;
+	std::vector<std::shared_ptr<RenderingElement>> elements;
 	SDL_Window* window = NULL;
 	SDL_Renderer* renderer = NULL;
 	int m_screenWidth;
