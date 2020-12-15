@@ -70,11 +70,10 @@ void Chess::updateAiMove() {
 	chess::GameLogic::makeMove(board, move);
 	previousMove = move;
 	outputBoard();
+	currentPlayer = chess::GameLogic::getNextPlayer(currentPlayer);
 
-	if (chess::GameLogic::isGameOver(board))
+	if (chess::GameLogic::isGameOver(board, currentPlayer));
 		handleGameOver();
-	else
-		currentPlayer = chess::GameLogic::getNextPlayer(currentPlayer);
 }
 
 void Chess::update2PlayerGame() {
@@ -93,11 +92,10 @@ void Chess::updateHumanMove() {
 	if (chess::GameLogic::pawnReachedEndOfBoard(board)) {
 		handlePromoSelection(board, move.toX, move.toY);
 	}
+	currentPlayer = chess::GameLogic::getNextPlayer(currentPlayer);
 
-	if (chess::GameLogic::isGameOver(board))
+	if (chess::GameLogic::isGameOver(board, currentPlayer))
 		handleGameOver();
-	else
-		currentPlayer = chess::GameLogic::getNextPlayer(currentPlayer);
 }
 
 void Chess::outputBoard() {

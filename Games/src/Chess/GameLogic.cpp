@@ -10,16 +10,12 @@ void chess::GameLogic::makeMove(chess::Board& board, const chess::Move& move) {
 	board.board[move.fromX][move.fromY]->makeMove(board.board, move);
 }
 
-bool chess::GameLogic::isGameOver(chess::Board& board) {
-	if (isCheckMate(board, chess::PieceColor::BLACK))
+bool chess::GameLogic::isGameOver(chess::Board& board, chess::PieceColor currentPlayer) 
+{
+	if (isCheckMate(board, currentPlayer))
 		return true;
-	if (isCheckMate(board, chess::PieceColor::WHITE))
+	if (isStaleMate(board, currentPlayer))
 		return true;
-	if (isStaleMate(board, chess::PieceColor::BLACK))
-		return true;
-	if (isStaleMate(board, chess::PieceColor::WHITE))
-		return true;
-
 	return false;
 }
 

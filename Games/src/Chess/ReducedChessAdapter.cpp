@@ -1,10 +1,7 @@
 #include "Chess/ReducedChessAdapter.h"
 
-ReducedChessAdapter::ReducedChessAdapter() {
-}
-
-ReducedChessAdapter::~ReducedChessAdapter() {
-
+ReducedChessAdapter::ReducedChessAdapter() 
+{
 }
 
 
@@ -85,7 +82,8 @@ std::string ReducedChessAdapter::makeMove(const std::string& state, int move, in
 }
 
 torch::Tensor ReducedChessAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer,
-	torch::Device device) {
+	torch::Device device) 
+{
 	chess::Board board = convertStateStringToBoard(state);
 	chess::PieceColor otherPlayer = (chess::PieceColor)getNextPlayer(currentPlayer);
 	torch::Tensor result = torch::zeros({ 1,12,8,8 });
@@ -110,8 +108,9 @@ torch::Tensor ReducedChessAdapter::convertStateToNeuralNetInput(const std::strin
 }
 
 bool ReducedChessAdapter::isGameOver(const std::string& state) {
+	chess::PieceColor currentPlayer = getCurrentPlayerFromState(state);
 	chess::Board board = convertStateStringToBoard(state);
-	bool result = chess::GameLogic::isGameOver(board);
+	bool result = chess::GameLogic::isGameOver(board, currentPlayer);
 	board.deletePieces();
 
 	return result;
@@ -208,6 +207,11 @@ chess::Piece* ReducedChessAdapter::getPieceFromChar(const char& pieceChar, const
 	default:
 		return nullptr;
 	}
+}
+
+chess::PieceColor ReducedChessAdapter::getCurrentPlayerFromState(const std::string& state)
+{
+	return (chess::PieceColor)(state[0] - '0');
 }
 
 

@@ -9,10 +9,6 @@ MonteCarloTreeSearch::MonteCarloTreeSearch(int actionCount, float cpuct) {
 	this->cpuct = cpuct;
 }
 
-MonteCarloTreeSearch::~MonteCarloTreeSearch() {
-
-}
-
 void
 MonteCarloTreeSearch::search(int count, std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device) {
 	for (int i = 0; i < count; i++) {

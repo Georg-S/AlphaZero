@@ -13,7 +13,6 @@
 class ReducedChessAdapter : public Game {
 public:
 	ReducedChessAdapter();
-	~ReducedChessAdapter();
 
 	std::vector<int> getAllPossibleMoves(const std::string& state, int currentPlayer) override;
 	int getInitialPlayer() override;
@@ -31,11 +30,10 @@ public:
 private:
 	static std::string convertBoardToString(chess::Board& board);
 	static chess::Board convertStringToBoard(std::string state);
-
-
 	static std::string convertPiecesToString(const chess::Board& board);
 	static std::string convertColorToString(const chess::Board& board);
 	static chess::Piece* getPieceFromChar(const char& pieceChar, const chess::PieceColor& color);
+	static chess::PieceColor getCurrentPlayerFromState(const std::string& state);
 	static void convertPiecesToTensor(chess::Board& board, const chess::PieceColor& color, at::Tensor destination, const char& pieceChar);
 	void replacePawnsWithQueens(chess::Board& board);
 	void replacePawnsWithQueens(chess::Board& board, int row);

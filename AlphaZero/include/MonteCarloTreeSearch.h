@@ -14,7 +14,6 @@ class MonteCarloTreeSearch {
 public:
 	MonteCarloTreeSearch();
 	MonteCarloTreeSearch(int actionCount, float cpuct = 1.0);
-	~MonteCarloTreeSearch();
 
 	void search(int count, std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device = torch::kCPU);
 	float search(std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device = torch::kCPU);
