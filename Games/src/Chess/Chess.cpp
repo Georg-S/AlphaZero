@@ -239,6 +239,7 @@ void Chess::handlePromoSelection(chess::Board& board, int pawnX, int pawnY) {
 	bool validPieceSelected = false;
 
 	while (!validPieceSelected) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		mouse.update();
 
 		if (!mouse.isNewLeftClick())
