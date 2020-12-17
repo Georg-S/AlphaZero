@@ -11,7 +11,6 @@ namespace cn4 {
 
 	public:
 		MiniMaxAi(int depth = 5);
-		~MiniMaxAi();
 
 		int getMove(std::string state, int playerColor) override;
 
@@ -28,7 +27,8 @@ namespace cn4 {
 
 
 		void makeMove(cn4::Board& board, int move, int currenPlayer);
-		std::vector<int> getAllPossibleMoves(const cn4::Board& board);
+		void getAllPossibleMoves(std::vector<int>& destination, const cn4::Board& board) const;
+		void orderMoves(std::vector<int>& moves) const;
 		std::vector<int> getBestMoves(std::vector<int>& moves, std::vector<int>& values);
 		int getRandomMove(const std::vector<int>& moves);
 

@@ -6,16 +6,16 @@ cn4::MiniMaxAi::MiniMaxAi(int depth) {
 	ConnectFourAdapter adap = ConnectFourAdapter();
 }
 
-cn4::MiniMaxAi::~MiniMaxAi() {
-
-}
 
 int cn4::MiniMaxAi::getMove(std::string state, int playerColor) {
 	aiColor = playerColor;
 
 
 	cn4::Board board = adap.convertStringToBoard(state);
-	std::vector<int> possibleMoves = getAllPossibleMoves(board);
+	std::vector<int> possibleMoves;
+	getAllPossibleMoves(possibleMoves, board);
+	orderMoves(possibleMoves);
+
 	std::vector<int> values;
 
 	for (int i = 0; i < possibleMoves.size(); i++) {
@@ -53,7 +53,6 @@ int cn4::MiniMaxAi::evaluateBoard(cn4::Board& board, int depth, int currentPlaye
 	else if (depth == 0)
 		return staticBoardEvaluation(board);
 
-
 	int boardValue = 0;
 	if (maximizingPlayer)
 		boardValue = minValue;
@@ -61,7 +60,10 @@ int cn4::MiniMaxAi::evaluateBoard(cn4::Board& board, int depth, int currentPlaye
 		boardValue = maxValue;
 
 
-	std::vector<int> possibleMoves = getAllPossibleMoves(board);
+	std::vector<int> possibleMoves;
+	getAllPossibleMoves(possibleMoves, board);
+	orderMoves(possibleMoves);
+
 	for (int i = 0; i < possibleMoves.size(); i++) {
 		cn4::Board copyBoard = Board(board);
 		makeMove(copyBoard, possibleMoves[i], currentPlayer);
@@ -83,16 +85,17 @@ int cn4::MiniMaxAi::evaluateBoard(cn4::Board& board, int depth, int currentPlaye
 	return boardValue;
 }
 
-std::vector<int> cn4::MiniMaxAi::getAllPossibleMoves(const cn4::Board& board) {
-	std::vector<int> possibleMoves;
-
-	for (int i = 0; i < board.width; i++) {
+void cn4::MiniMaxAi::getAllPossibleMoves(std::vector<int>& destination, const cn4::Board& board) const
+{
+	for (int i = 0; i < board.width; i++)
 		if (board.board[i][board.height - 1] == cn4::PlayerColor::NONE)
-			possibleMoves.push_back(i);
-	}
+			destination.push_back(i);
+}
 
-
-	return possibleMoves;
+void cn4::MiniMaxAi::orderMoves(std::vector<int>& moves) const
+{
+	constexpr int middle = 3;
+	std::sort(moves.begin(), moves.end(), [middle](int a, int b) {return abs(middle - a) < abs(middle - b); });
 }
 
 int cn4::MiniMaxAi::staticBoardEvaluation(const cn4::Board& board) {
