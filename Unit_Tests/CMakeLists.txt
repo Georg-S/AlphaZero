@@ -13,6 +13,7 @@ set(TESTSOURCES
     "Test_ConnectFourAdapter.cpp"
     "Test_ReducedChessAdapter.cpp"
     "Test_Chesscore.cpp"
+    "Test_ConnectFourBitBoard.cpp"
     )
 
 add_executable(Unit_Tests ${TESTSOURCES})

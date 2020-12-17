@@ -2,6 +2,7 @@
 #ifndef DEEPREINFORCEMENTLEARNING_cn4_BOARD_H
 #define DEEPREINFORCEMENTLEARNING_cn4_BOARD_H
 
+#include <iostream>
 #include "PlayerColor.h"
 
 namespace cn4 {
@@ -17,6 +18,25 @@ namespace cn4 {
 				for (int y = 0; y < height; y++) {
 					this->board[x][y] = board.board[x][y];
 				}
+			}
+		}
+
+		char convertPlayerColorToChar(int color) 
+		{
+			if (color == cn4::PlayerColor::NONE)
+				return '-';
+			return color == 1 ? '0' : '1';
+		}
+
+		void print() 
+		{
+			for (int y = height-1; y >= 0; y--) 
+			{
+				for (int x = 0; x < width; x++) 
+				{
+					std::cout << convertPlayerColorToChar(board[x][y]) << " ";
+				}
+				std::cout << std::endl;
 			}
 		}
 
