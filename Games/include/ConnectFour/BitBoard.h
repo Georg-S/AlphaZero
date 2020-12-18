@@ -13,15 +13,16 @@ namespace cn4
 	public:
 		BitBoard();
 		BitBoard(const cn4::Board& inputBoard, int currentPlayer);
-		uint64_t convertBoardIntoBitBoard(const cn4::Board& inputBoard);
+		static uint64_t convertBoardIntoBitBoard(const cn4::Board& inputBoard);
+		static void writeBinaryValueToBoard(uint64_t& board, uint64_t value, int bitPos);
 		void writeBinaryValueToBoard(uint64_t value, int bitPos);
 		void writeSingleBitToPositionOnBoard(int bitPosition, unsigned int bitValue);
-		void writeSingleBitToPosition(uint64_t& inp, int bitPosition, unsigned int bitValue);
+		static void writeSingleBitToPosition(uint64_t& inp, int bitPosition, unsigned int bitValue);
 		void makeMove(int col);
 		bool movePossible(int col);
 		void print();
 		void print(uint64_t board);
-		uint64_t convertIntToBit(int value);
+		static uint64_t convertIntToBit(int value);
 		uint64_t getCurrentBitRepresentation();
 
 	private:

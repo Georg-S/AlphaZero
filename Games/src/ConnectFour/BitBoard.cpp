@@ -12,7 +12,7 @@ cn4::BitBoard::BitBoard(const cn4::Board& inputBoard, int currentPlayer)
 
 uint64_t cn4::BitBoard::convertBoardIntoBitBoard(const cn4::Board& inputBoard)
 {
-	currentPosition = 0;
+	uint64_t newBoard = 0;
 
 	for (int y = 0; y < inputBoard.height; y++)
 	{
@@ -20,7 +20,7 @@ uint64_t cn4::BitBoard::convertBoardIntoBitBoard(const cn4::Board& inputBoard)
 		{
 			uint64_t pos = x + y * width;
 			int bitVal = convertIntToBit(inputBoard.board[x][y]);
-			writeSingleBitToPositionOnBoard(pos, bitVal);
+			writeSingleBitToPosition(newBoard, pos, bitVal);
 		}
 	}
 
@@ -36,17 +36,23 @@ uint64_t cn4::BitBoard::convertBoardIntoBitBoard(const cn4::Board& inputBoard)
 			size++;
 		}
 		uint64_t columnSize = size;
-		writeBinaryValueToBoard(columnSize, bitPos);
+		writeBinaryValueToBoard(newBoard, columnSize, bitPos);
 		bitPos += 3;
 	}
+
+	return newBoard;
+}
+
+void cn4::BitBoard::writeBinaryValueToBoard(uint64_t& board, uint64_t value, int bitPos)
+{
+	value = value << bitPos;
+	board |= value;
 }
 
 void cn4::BitBoard::writeBinaryValueToBoard(uint64_t value, int bitPos)
 {
 	//Writes the value to the specified position (only works if the values are 0)
-
-	value = value << bitPos;
-	currentPosition |= value;
+	writeBinaryValueToBoard(currentPosition, value, bitPos);
 }
 
 void cn4::BitBoard::writeSingleBitToPositionOnBoard(int bitPosition, unsigned int bitValue)
