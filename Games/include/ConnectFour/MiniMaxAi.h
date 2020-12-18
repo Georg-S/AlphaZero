@@ -11,21 +11,16 @@ namespace cn4 {
 
 	public:
 		MiniMaxAi(int depth = 5);
-
 		int getMove(std::string state, int playerColor) override;
 
 	private:
-		ConnectFourAdapter adap;
-		int evaluateBoard(cn4::Board& board, int depth, int currentPlayer, bool maximizingPlayer, int alpha, int beta);
+		int evaluateBoard(const cn4::Board& board, int depth, int currentPlayer, bool maximizingPlayer, int alpha, int beta);
 		int staticBoardEvaluation(const cn4::Board& board);
 		int evaluateBoardPosition(const cn4::Board& board, int x, int y);
-
 		int rightHorizontalValue(const cn4::Board& board, int x, int y);
 		int rightDiagonalDownValue(const cn4::Board& board, int x, int y);
 		int rightDiagonalUpValue(const cn4::Board& board, int x, int y);
 		int upVerticalValue(const cn4::Board& board, int x, int y);
-
-
 		void makeMove(cn4::Board& board, int move, int currenPlayer);
 		void getAllPossibleMoves(std::vector<int>& destination, const cn4::Board& board) const;
 		void orderMoves(std::vector<int>& moves) const;
@@ -34,6 +29,7 @@ namespace cn4 {
 
 		int aiColor;
 		int depth;
+		ConnectFourAdapter adap;
 		const int maxValue = 10000;
 		const int minValue = -10000;
 	};

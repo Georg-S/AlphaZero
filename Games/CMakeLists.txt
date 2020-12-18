@@ -51,13 +51,11 @@ set(ConnectFourFiles
 	"include/ConnectFour/MiniMaxAi.h"
 	"include/ConnectFour/PlayerColor.h"
 	"include/ConnectFour/Renderer.h"
-	"include/ConnectFour/BitBoard.h"
 	"src/ConnectFour/ConnectFour.cpp"
 	"src/ConnectFour/ConnectFourAdapter.cpp"
 	"src/ConnectFour/GameLogic.cpp"
 	"src/ConnectFour/MiniMaxAi.cpp"
 	"src/ConnectFour/Renderer.cpp"
-	"src/ConnectFour/BitBoard.cpp"
 )
 
 set(SDLFiles
