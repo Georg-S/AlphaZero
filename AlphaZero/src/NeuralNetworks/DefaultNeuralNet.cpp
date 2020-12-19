@@ -1,7 +1,8 @@
 #include "NeuralNetworks/DefaultNeuralNet.h"
 
 DefaultNeuralNet::DefaultNeuralNet(int64_t numPlanes, int64_t width, int64_t height, int64_t numOutputs,
-	torch::DeviceType device) {
+	torch::DeviceType device) 
+{
 	net = CutDownAlphaGoZeroNet(numPlanes, width, height, numOutputs);
 	net->to(device);
 }

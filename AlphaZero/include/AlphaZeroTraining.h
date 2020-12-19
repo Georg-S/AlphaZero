@@ -15,8 +15,6 @@
 class AlphaZeroTraining {
 public:
 	AlphaZeroTraining(int actionCount, NeuralNetwork* currentBest, torch::DeviceType = torch::kCPU);
-	~AlphaZeroTraining();
-
 	void runTraining(Game* game);
 	void selfPlay(NeuralNetwork* net, Game* game);
 	std::vector<ReplayElement> selfPlayGame(NeuralNetwork* net, Game* game);

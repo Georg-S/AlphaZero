@@ -18,11 +18,11 @@ public:
 	}
 
 
-	T& operator[](const int& index) {
+	T& operator[](int index) {
 		return data[index];
 	}
 
-	void add(const T element) {
+	void add(const T& element) {
 		if (currentIndex == maxSize) {
 			wrappedAround = true;
 			currentIndex = 0;

@@ -7,10 +7,6 @@ AlphaZeroTraining::AlphaZeroTraining(int actionCount, NeuralNetwork* currentBest
 	this->device = device;
 }
 
-AlphaZeroTraining::~AlphaZeroTraining() {
-
-}
-
 void AlphaZeroTraining::runTraining(Game* game) {
 	neuralNet->save(neuralNetPath + "/start");
 	for (int iteration = 0; iteration < TRAINING_ITERATIONS; iteration++) {
