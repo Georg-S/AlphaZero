@@ -6,10 +6,6 @@ Knight::Knight(chess::PieceColor color) {
 	this->moved = false;
 }
 
-Knight::~Knight() {
-
-}
-
 bool Knight::isMoveValid(chess::Piece* (*board)[8], const chess::Move& move) {
 
 	int xDistance = abs(move.fromX - move.toX);

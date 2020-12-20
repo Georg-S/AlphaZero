@@ -18,8 +18,6 @@ class ConnectFour {
 public:
 	ConnectFour();
 	ConnectFour(cn4::PlayerColor aiColor, Ai* ai);
-	~ConnectFour();
-
 	void gameLoop();
 	void updateGame();
 
@@ -33,9 +31,7 @@ private:
 	int getActionFromKeyboard();
 	static bool isValidInput(const cn4::Board& board, int action);
 	static char convertPlayerColorToChar(const cn4::PlayerColor& playerColor);
-
 	void handleGameOver(const cn4::Board& board);
-
 	static void printBoardToConsole(const cn4::Board& board);
 	static cn4::PlayerColor getNextPlayer(const cn4::PlayerColor& player);
 	std::string convertBoardToString(const cn4::Board& board);

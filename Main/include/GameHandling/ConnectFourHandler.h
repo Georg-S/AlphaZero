@@ -18,12 +18,8 @@
 class ConnectFourHandler {
 public:
 	ConnectFourHandler();
-	~ConnectFourHandler();
-
-
 	void connectFourAgainstNeuralNetAi(cn4::PlayerColor playerColor, std::string netName, int countMcts, bool probabilistic, torch::DeviceType device);
 	void connectFourAgainstMiniMaxAi(int depth, cn4::PlayerColor playerColor);
-
 	void runTrainingWithDefaultParameters();
 	void runTraining(const TrainingParameters& params);
 	void startTwoPlayerConnectFourGame();
@@ -37,11 +33,9 @@ private:
 	void loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraining& connectFourZero);
 	void loadPerformanceTestParameters(AlphaZeroTraining& connectFourZero);
 
-	std::string trainingPath = "NeuralNets/Training/ConnectFour";
-	std::string preTrainedPath = "NeuralNets/PreTrained/ConnectFour";
+	inline static const std::string trainingPath = "NeuralNets/Training/ConnectFour";
+	inline static const std::string preTrainedPath = "NeuralNets/PreTrained/ConnectFour";
 	int mctsCount = 100;
-
-
 	int evalMCTSCount = 100;
 };
 

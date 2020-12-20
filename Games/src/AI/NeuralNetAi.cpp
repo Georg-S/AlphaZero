@@ -9,10 +9,6 @@ NeuralNetAi::NeuralNetAi(NeuralNetwork* net, Game* game, int actionCount, int mc
 	this->probabilistic = probabilistic;
 }
 
-NeuralNetAi::~NeuralNetAi() {
-
-}
-
 int NeuralNetAi::getMove(std::string state, int color) {
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(actionCount);
 	mcts.search(mctsCount, state, net, game, color, device);

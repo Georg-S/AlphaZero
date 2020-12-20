@@ -18,7 +18,6 @@ class TicTacToeMainMenu : public QWidget {
 public:
 	explicit TicTacToeMainMenu(QWidget* w, QWidget* parent = nullptr);
 	~TicTacToeMainMenu();
-
 	void reset();
 
 private slots:
@@ -26,13 +25,13 @@ private slots:
 	void on_TwoPlayerButton_clicked();
 	void on_NeuralNetButton_clicked();
 	void on_TrainingButton_clicked();
+
 private:
 	Ui::TicTacToeMain* gameMainUi;
 	TicTacToeTraining* trainingMenu;
 	TicTacToeMiniMaxMenu* miniMaxMenu;
 	TicTacToeNeuralNetMenu* neuralNetMenu;
 	TicTacToeHandler handler;
-
 };
 
 

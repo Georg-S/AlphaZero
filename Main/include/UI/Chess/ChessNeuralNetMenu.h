@@ -15,7 +15,6 @@ class ChessNeuralNetMenu : public QWidget {
 public:
 	explicit ChessNeuralNetMenu(QWidget* w, QWidget* parent = nullptr);
 	~ChessNeuralNetMenu();
-
 	void reset();
 
 private slots:

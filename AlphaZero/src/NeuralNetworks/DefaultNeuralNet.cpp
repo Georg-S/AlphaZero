@@ -14,9 +14,6 @@ DefaultNeuralNet::DefaultNeuralNet(int64_t numPlanes, int64_t width, int64_t hei
 	net->to(device);
 }
 
-DefaultNeuralNet::~DefaultNeuralNet() {
-}
-
 void DefaultNeuralNet::load(std::string fileName) {
 	torch::load(net, fileName);
 }

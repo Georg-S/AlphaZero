@@ -16,8 +16,8 @@ class TicTacToeTraining : public QWidget {
 public:
 	explicit TicTacToeTraining(QWidget* w, QWidget* parent = nullptr);
 	~TicTacToeTraining();
-
 	void reset();
+
 private slots:
 	void on_RestrictGameLengthNoRadio_clicked();
 	void on_RestrictGameLengthYesRadio_clicked();
@@ -28,7 +28,6 @@ private:
 	void initDefaultValues();
 	void initInputValidators();
 	TrainingParameters getParametersFromInput();
-
 
 	Ui::TrainingWidget* trainingUi;
 	TicTacToeHandler gameHandler;

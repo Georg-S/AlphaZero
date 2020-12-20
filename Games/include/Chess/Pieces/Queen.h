@@ -6,8 +6,6 @@
 class Queen : public chess::Piece {
 public:
 	Queen(chess::PieceColor color);
-	~Queen();
-
 	bool isMoveValid(Piece* (*board)[8], const chess::Move& move) override;
 	void makeMove(Piece* (*board)[8], const chess::Move& move) override;
 	Piece* getDeepCopy() override;

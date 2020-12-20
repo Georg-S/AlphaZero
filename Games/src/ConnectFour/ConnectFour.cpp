@@ -7,10 +7,6 @@ ConnectFour::ConnectFour() {
 	this->renderer = new cn4::Renderer();
 }
 
-ConnectFour::~ConnectFour() {
-
-}
-
 ConnectFour::ConnectFour(cn4::PlayerColor aiColor, Ai* ai) {
 	this->currentPlayerColor = cn4::PlayerColor::YELLOW;
 	this->playerCount = 1;

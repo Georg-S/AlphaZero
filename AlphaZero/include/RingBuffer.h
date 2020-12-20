@@ -35,11 +35,11 @@ public:
 		currentIndex++;
 	}
 
-	int size() {
+	int size() const {
 		return data.size();
 	}
 
-	int getMaxSize() {
+	int getMaxSize() const {
 		return maxSize;
 	}
 
@@ -54,11 +54,11 @@ public:
 		wrappedAround = false;
 	}
 
-	std::vector<T> convertToVec() {
+	std::vector<T> convertToVec() const {
 		return data;
 	}
 
-	void getRandomSample(int sampleSize, std::vector<T>& destination) {
+	void getRandomSample(int sampleSize, std::vector<T>& destination) const {
 		std::sample(data.begin(), data.end(), std::back_inserter(destination), sampleSize, std::mt19937{ std::random_device{}() });
 	}
 

@@ -12,7 +12,6 @@ class NeuralNetAi : public Ai {
 
 public:
 	NeuralNetAi(NeuralNetwork* net, Game* game, int actionCount, int mctsCount = 50, bool probabilistic = false, torch::DeviceType device = torch::kCPU);
-	~NeuralNetAi();
 	int getMove(std::string state, int color) override;
 
 private:

@@ -17,7 +17,6 @@ class ConnectFourNeuralNetMenu : public QWidget {
 public:
 	explicit ConnectFourNeuralNetMenu(QWidget* w, QWidget* parent = nullptr);
 	~ConnectFourNeuralNetMenu();
-
 	void reset();
 
 private slots:

@@ -6,8 +6,6 @@
 class Rook : public chess::Piece {
 public:
 	Rook(chess::PieceColor color);
-	~Rook();
-
 	bool isMoveValid(Piece* (*board)[8], const chess::Move& move) override;
 	void makeMove(Piece* (*board)[8], const chess::Move& move) override;
 	Piece* getDeepCopy() override;

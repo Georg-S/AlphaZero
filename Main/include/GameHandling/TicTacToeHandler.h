@@ -16,18 +16,15 @@
 class TicTacToeHandler {
 public:
 	TicTacToeHandler();
-	~TicTacToeHandler();
-
 	void ticTacToeAgainstNeuralNetAi(int playerColor, std::string netName, int countMcts, bool probabilistic, torch::DeviceType device);
 	void ticTacToeAgainstMiniMaxAi(int playerColor);
-
 	void runTraining(const TrainingParameters& params);
 	void setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params);
-
 	void runTrainingWithAlphaZero(torch::DeviceType device);
 	void startTwoPlayerTicTacToeGame();
 	void traininingPerformanceTest(torch::DeviceType device);
 	void evalTicTacToe();
+
 private:
 	EvalResult evalTicTacToe(std::string netName, torch::DeviceType device = torch::kCPU);
 	void writeEvaluationResultToFile(int iteration, const EvalResult& result, std::ofstream& file);
@@ -35,13 +32,9 @@ private:
 	void loadPerformanceTestParameters(AlphaZeroTraining& ticTacToeZero);
 
 	TicTacToeAdapter adap;
-	std::string trainingPath = "NeuralNets/Training/TicTacToe";
-	std::string preTrainedPath = "NeuralNets/PreTrained/TicTacToe";
+	inline static const std::string trainingPath = "NeuralNets/Training/TicTacToe";
+	inline static const std::string preTrainedPath = "NeuralNets/PreTrained/TicTacToe";
 	int mcts_count = 50;
-
-
-
-
 	int evalMCTSCount = 50;
 };
 

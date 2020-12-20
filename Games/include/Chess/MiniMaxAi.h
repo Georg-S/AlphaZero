@@ -20,7 +20,6 @@ namespace chess {
 		std::vector<chess::Move> getAllPossibleMoves(chess::Board& board, const chess::PieceColor& color);
 		void getAllPossibleMovesForPiece(chess::Board& board, int fromX, int fromY, std::vector<chess::Move>& moves);
 		int getPieceValue(Piece* piece);
-
 		std::vector<chess::Move> getBestMoves(std::vector<chess::Move>& moves, std::vector<int>& values);
 		chess::Move getRandomMove(const std::vector<chess::Move>& moves);
 

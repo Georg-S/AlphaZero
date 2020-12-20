@@ -15,7 +15,6 @@ namespace ttt {
 					this->board[x][y] = board.board[x][y];
 		}
 
-
 		int board[3][3];
 	};
 }

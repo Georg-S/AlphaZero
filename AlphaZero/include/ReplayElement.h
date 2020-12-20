@@ -11,8 +11,8 @@ struct ReplayElement {
 
 	std::string state;
 	int currentPlayer;
-	std::vector<float> mctsProbabilities;
 	float result;
+	std::vector<float> mctsProbabilities;
 };
 
 

@@ -16,8 +16,8 @@ namespace chess {
 		static bool isStaleMate(chess::Board& board, const chess::PieceColor& pieceColor);
 		static bool pawnReachedEndOfBoard(const chess::Board& board);
 		static chess::PieceColor getNextPlayer(const chess::PieceColor color);
-
 		static bool isAnyMovePossible(chess::Board& board, const chess::PieceColor& color);
+
 	private:
 		static bool isAnyMoveWithPiecePossible(chess::Board& board, int pieceX, int pieceY);
 		static bool isPawnInRow(const chess::Board& board, int row);

@@ -18,7 +18,6 @@ class ConnectFourTraining : public QWidget {
 public:
 	explicit ConnectFourTraining(QWidget* w, QWidget* parent = nullptr);
 	~ConnectFourTraining();
-
 	void reset();
 
 private slots:
@@ -32,7 +31,6 @@ private:
 	void initInputValidators();
 	TrainingParameters getParametersFromInput();
 	void runTraining();
-
 
 	Ui::TrainingWidget* trainingUi;
 	ConnectFourHandler gameHandler;

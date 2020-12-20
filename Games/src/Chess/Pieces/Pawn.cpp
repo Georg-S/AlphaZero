@@ -7,10 +7,6 @@ Pawn::Pawn(chess::PieceColor color) {
 	this->enPassantDirection = 0;
 }
 
-Pawn::~Pawn() {
-
-}
-
 bool Pawn::isMoveValid(chess::Piece* (*board)[8], const chess::Move& move) {
 
 	if (normalMovementStrategyPossible(board, move.fromX, move.fromY, move.toX, move.toY))

@@ -15,7 +15,6 @@ namespace cn4 {
 
 
 	private:
-
 		static bool fourInARowHorizontal(const cn4::Board& board, int player = -1);
 		static bool fourInARowHorizontal(const cn4::Board& board, int player, int xPos, int yPos);
 		static bool fourInARowVertical(const cn4::Board& board, int player = -1);

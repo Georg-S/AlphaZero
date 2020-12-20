@@ -16,8 +16,8 @@ class TicTacToeMiniMaxMenu : public QWidget {
 public:
 	explicit TicTacToeMiniMaxMenu(QWidget* w, QWidget* parent = nullptr);
 	~TicTacToeMiniMaxMenu();
-
 	void reset();
+
 private slots:
 	void on_PlayButton_clicked();
 

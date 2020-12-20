@@ -6,10 +6,6 @@ King::King(chess::PieceColor color) {
 	this->moved = false;
 }
 
-King::~King() {
-
-}
-
 bool King::isMoveValid(chess::Piece* board[8][8], const chess::Move& move) {
 
 	if (normalMovePossible(board, move.fromX, move.fromY, move.toX, move.toY))

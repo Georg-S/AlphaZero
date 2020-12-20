@@ -17,7 +17,6 @@ class ChessMainMenu : public QWidget {
 public:
 	explicit ChessMainMenu(QWidget* w, QWidget* parent = nullptr);
 	~ChessMainMenu();
-
 	void reset();
 
 private slots:

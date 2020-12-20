@@ -6,8 +6,6 @@
 class Bishop : public chess::Piece {
 public:
 	Bishop(chess::PieceColor color);
-	~Bishop();
-
 	bool isMoveValid(Piece* (*board)[8], const chess::Move& move) override;
 	void makeMove(Piece* (*board)[8], const chess::Move& move) override;
 	Piece* getDeepCopy() override;

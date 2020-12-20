@@ -16,8 +16,6 @@ class TicTacToe {
 public:
 	TicTacToe();
 	TicTacToe(Ai* ai, int aiColor);
-	~TicTacToe();
-
 	void updateGame();
 	void reset();
 	void gameLoop();
@@ -40,7 +38,6 @@ private:
 	void outputGameWinnerToConsole(const ttt::Board& board, const int currentPlayer);
 
 	Ai* ai;
-
 	int currentPlayer = 1;
 	int playerCount;
 	int aiColor;

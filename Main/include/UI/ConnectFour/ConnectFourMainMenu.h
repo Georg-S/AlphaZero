@@ -18,7 +18,6 @@ class ConnectFourMainMenu : public QWidget {
 public:
 	explicit ConnectFourMainMenu(QWidget* w, QWidget* parent = nullptr);
 	~ConnectFourMainMenu();
-
 	void reset();
 
 private slots:
@@ -26,8 +25,6 @@ private slots:
 	void on_TwoPlayerButton_clicked();
 	void on_NeuralNetButton_clicked();
 	void on_TrainingButton_clicked();
-
-
 
 private:
 	Ui::ConnectFourMain* gameMainUi;

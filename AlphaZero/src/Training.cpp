@@ -16,10 +16,6 @@ Training::Training(int actionCount, NeuralNetwork* currentBest, NeuralNetwork* a
 	this->device = device;
 }
 
-Training::~Training() {
-
-}
-
 void Training::runTraining(Game* game) {
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(actionCount);
 	for (int iteration = 0; iteration < TRAINING_ITERATIONS; iteration++) {

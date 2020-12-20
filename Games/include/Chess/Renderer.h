@@ -10,7 +10,6 @@ namespace chess {
 	public:
 		Renderer();
 		~Renderer();
-
 		void render(const chess::RenderInformation& renderInfo);
 		void renderPromotionSelection(chess::PieceColor color);
 		int getWindowWidth();
@@ -33,7 +32,6 @@ namespace chess {
 		const int windowHeight = 800;
 		int pieceWidth;
 		int pieceHeight;
-
 		SDLHandler* sdlHandler;
 	};
 }

@@ -30,8 +30,7 @@ bool cn4::GameLogic::fourInARowHorizontal(const cn4::Board& board, int player) {
 	return false;
 }
 
-bool
-cn4::GameLogic::fourInARowHorizontal(const cn4::Board& board, int player, int xPos, int yPos) {
+bool cn4::GameLogic::fourInARowHorizontal(const cn4::Board& board, int player, int xPos, int yPos) {
 	if (!((xPos + 3) < board.width))
 		return false;
 	if (player != -1 && player != board.board[xPos][yPos])
@@ -86,8 +85,7 @@ bool cn4::GameLogic::fourInARowDiagonal(const cn4::Board& board, int player) {
 	return false;
 }
 
-bool
-cn4::GameLogic::fourInARowDiagonalUp(const cn4::Board& board, int player, int xPos, int yPos) {
+bool cn4::GameLogic::fourInARowDiagonalUp(const cn4::Board& board, int player, int xPos, int yPos) {
 	if ((yPos + 3) >= board.height || (xPos + 3) >= board.width)
 		return false;
 	if ((player != -1) && (player != board.board[xPos][yPos]))
@@ -102,8 +100,7 @@ cn4::GameLogic::fourInARowDiagonalUp(const cn4::Board& board, int player, int xP
 	return true;
 }
 
-bool
-cn4::GameLogic::fourInARowDiagonalDown(const cn4::Board& board, int player, int xPos, int yPos) {
+bool cn4::GameLogic::fourInARowDiagonalDown(const cn4::Board& board, int player, int xPos, int yPos) {
 	if ((yPos - 3) < 0 || (xPos + 3) >= board.width)
 		return false;
 	if ((player != -1) && (player != board.board[xPos][yPos]))

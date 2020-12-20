@@ -6,10 +6,6 @@ Queen::Queen(chess::PieceColor color) {
 	this->moved = false;
 }
 
-Queen::~Queen() {
-
-}
-
 bool Queen::isMoveValid(chess::Piece* (*board)[8], const chess::Move& move) {
 
 	return diagonalPossible(board, move.fromX, move.fromY, move.toX, move.toY)

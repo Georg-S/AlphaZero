@@ -21,10 +21,6 @@ Chess::Chess(chess::PieceColor playerColor, Ai* ai) {
 	playerCount = 1;
 }
 
-Chess::~Chess() {
-
-}
-
 void Chess::gameLoop() {
 	outputBoard();
 	while (!gameOver) {

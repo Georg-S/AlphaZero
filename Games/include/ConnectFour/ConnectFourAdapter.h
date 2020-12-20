@@ -11,8 +11,6 @@ class ConnectFourAdapter : public Game {
 
 public:
 	ConnectFourAdapter();
-	~ConnectFourAdapter();
-
 	std::vector<int> getAllPossibleMoves(const std::string& state, int currentPlayer) override;
 	torch::Tensor convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Device device = torch::kCPU) override;
 	std::string getInitialGameState() override;
@@ -26,8 +24,8 @@ public:
 	cn4::Board convertStringToBoard(const std::string& state);
 	std::string convertBoardToString(const cn4::Board& board);
 private:
-	const int actionCount = 7;
-	const std::string startState = "000000000000000000000000000000000000000000";
+	static constexpr int actionCount = 7;
+	inline static const std::string startState = "000000000000000000000000000000000000000000";
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_CONNECTFOURADAPTER_H

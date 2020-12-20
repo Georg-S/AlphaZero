@@ -6,6 +6,7 @@
 
 class TrainingThread : public QThread {
 	Q_OBJECT
+
 public:
 	TrainingThread(std::function<void()> runTraining = nullptr);
 	void run() override;
@@ -13,6 +14,7 @@ public:
 
 signals:
 	void trainingFinished();
+
 private:
 	std::function<void()> runTraining;
 };

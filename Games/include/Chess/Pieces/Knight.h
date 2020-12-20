@@ -7,8 +7,6 @@
 class Knight : public chess::Piece {
 public:
 	Knight(chess::PieceColor color);
-	~Knight();
-
 	bool isMoveValid(Piece* (*board)[8], const chess::Move& move) override;
 	void makeMove(Piece* (*board)[8], const chess::Move& move) override;
 	Piece* getDeepCopy() override;

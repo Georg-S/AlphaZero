@@ -4,8 +4,6 @@
 #include <Chess/GameLogic.h>
 #include <Chess/ReducedChessAdapter.h>
 
-
-
 TEST(Move, test_move_conversion_to_int_and_back) {
     chess::Move move = chess::Move(1,1,1,3);
     int converted = move.getSingleIntRepresentation();

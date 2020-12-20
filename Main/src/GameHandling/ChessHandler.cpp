@@ -4,17 +4,12 @@ ChessHandler::ChessHandler() {
 
 }
 
-ChessHandler::~ChessHandler() {
-
-}
-
 void ChessHandler::runTrainingWithDefaultParameters(torch::DeviceType device) {
 	DefaultNeuralNet* chessNet = new DefaultNeuralNet(12, 8, 8, 4096, device);
 	chessNet->setLearningRate(0.2);
 	ReducedChessAdapter adap = ReducedChessAdapter();
 	AlphaZeroTraining alphaZero = AlphaZeroTraining(4096, chessNet, device);
 	loadDefaultParametersForAlphaZeroTraining(alphaZero);
-
 
 	alphaZero.runTraining(&adap);
 }

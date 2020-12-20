@@ -8,8 +8,6 @@
 class Mouse {
 public:
 	Mouse();
-	~Mouse();
-
 	void update();
 	bool isLeftPressed();
 	bool isRightPressed();

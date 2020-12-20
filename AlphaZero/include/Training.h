@@ -16,8 +16,6 @@ class Training {
 public:
 	Training(int actionCount, NeuralNetwork* net);
 	Training(int actionCount, NeuralNetwork* currentBest, NeuralNetwork* apprentice, torch::DeviceType = torch::kCPU);
-	~Training();
-
 	void runTraining(Game* game);
 	void selfPlay(NeuralNetwork* net, Game* game, MonteCarloTreeSearch mcts);
 	std::vector<ReplayElement> selfPlayGame(NeuralNetwork* net, Game* game, MonteCarloTreeSearch mcts);

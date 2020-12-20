@@ -20,8 +20,6 @@ class Chess {
 public:
 	Chess();
 	Chess(chess::PieceColor playerColor, Ai* ai);
-	~Chess();
-
 	void gameLoop();
 	void updateGame();
 

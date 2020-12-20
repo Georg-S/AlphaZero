@@ -4,10 +4,6 @@ Mouse::Mouse() {
 
 }
 
-Mouse::~Mouse() {
-
-}
-
 void Mouse::update() {
 	SDL_PumpEvents();
 	Uint32 mouseState = SDL_GetMouseState(&mouseInfo.xPosition, &mouseInfo.yPosition);

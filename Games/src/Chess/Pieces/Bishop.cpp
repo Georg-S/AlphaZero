@@ -6,10 +6,6 @@ Bishop::Bishop(chess::PieceColor color) {
 	this->moved = false;
 }
 
-Bishop::~Bishop() {
-
-}
-
 bool Bishop::isMoveValid(chess::Piece* (*board)[8], const chess::Move& move) {
 
 	if (move.fromX == move.toX || move.toY == move.fromY)

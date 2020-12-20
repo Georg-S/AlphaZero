@@ -16,11 +16,10 @@ class TicTacToeNeuralNetMenu : public QWidget {
 public:
 	TicTacToeNeuralNetMenu(QWidget* w, QWidget* parent = nullptr);
 	~TicTacToeNeuralNetMenu();
-
 	void reset();
+
 private slots:
 	void on_PlayButton_clicked();
-
 
 private:
 	Ui::NeuralNetWidget* neuralNetUi;

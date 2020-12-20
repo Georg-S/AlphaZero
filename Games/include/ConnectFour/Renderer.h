@@ -10,7 +10,6 @@ namespace cn4 {
 	public:
 		Renderer();
 		~Renderer();
-
 		void renderBoard(cn4::Board board);
 		int getWindowXPosition();
 		int getWindowYPosition();
@@ -18,8 +17,8 @@ namespace cn4 {
 		bool isQuit();
 		void updateQuit();
 
-		const int windowWidth = 700;
-		const int windowHeight = 600;
+		static constexpr int windowWidth = 700;
+		static constexpr int windowHeight = 600;
 	private:
 		void renderPiece(const cn4::Board& board, int x, int y);
 		int convertBoardXPositionToRenderXPosition(const cn4::Board& board, int x);

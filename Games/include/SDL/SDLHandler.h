@@ -22,7 +22,6 @@ class SDLHandler
 {
 public:
 	SDLHandler(int screenWidth, int screenHeight, bool useCaching = false);
-
 	bool start(const std::string& windowName);
 	void updateRendering();
 	std::shared_ptr<RenderingElement> createAndPushFrontRenderElement(std::string fileName, int x, int y, int width, int height);

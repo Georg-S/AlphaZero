@@ -4,10 +4,6 @@ TicTacToeHandler::TicTacToeHandler() {
 	adap = TicTacToeAdapter();
 }
 
-TicTacToeHandler::~TicTacToeHandler() {
-
-}
-
 void TicTacToeHandler::ticTacToeAgainstMiniMaxAi(int playerColor) {
 	ttt::MiniMaxAi ai = ttt::MiniMaxAi();
 	int aiColor = ttt::GameLogic::getNextPlayer(playerColor);
@@ -58,7 +54,6 @@ void TicTacToeHandler::evalTicTacToe() {
 		EvalResult result = evalTicTacToe(path, torch::kCUDA);
 		writeEvaluationResultToFile(i + 1, result, myfile);
 	}
-
 
 	myfile.close();
 }

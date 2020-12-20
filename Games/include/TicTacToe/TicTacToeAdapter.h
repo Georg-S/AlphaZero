@@ -10,8 +10,6 @@
 class TicTacToeAdapter : public Game {
 public:
 	TicTacToeAdapter();
-	~TicTacToeAdapter();
-
 	int getInitialPlayer() override;
 	int getPlayerWon(const std::string& state) override;
 	std::string getInitialGameState() override;
@@ -23,6 +21,8 @@ public:
 	std::string makeMove(const std::string& state, int move, int currentPlayer) override;
 	ttt::Board convertStringToBoard(const std::string& state);
 	std::string convertBoardToString(const ttt::Board& board);
+
+	inline static const std::string initialState = "000000000";
 };
 
 

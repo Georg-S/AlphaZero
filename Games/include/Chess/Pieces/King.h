@@ -8,8 +8,6 @@
 class King : public chess::Piece {
 public:
 	King(chess::PieceColor color);
-	~King();
-
 	bool isMoveValid(chess::Piece* board[8][8], const chess::Move& move) override;
 	void makeMove(chess::Piece* board[8][8], const chess::Move& move) override;
 	Piece* getDeepCopy() override;

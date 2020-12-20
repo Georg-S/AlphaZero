@@ -4,16 +4,12 @@ TicTacToeAdapter::TicTacToeAdapter() {
 
 }
 
-TicTacToeAdapter::~TicTacToeAdapter() {
-
-}
-
 int TicTacToeAdapter::getInitialPlayer() {
 	return 1;
 }
 
 std::string TicTacToeAdapter::getInitialGameState() {
-	return "000000000";
+	return initialState;
 }
 
 std::vector<int> TicTacToeAdapter::getAllPossibleMoves(const std::string& state, int currentPlayer) {

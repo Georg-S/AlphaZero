@@ -14,7 +14,6 @@ class ChessMiniMaxMenu : public QWidget {
 public:
 	explicit ChessMiniMaxMenu(QWidget* w, QWidget* parent = nullptr);
 	~ChessMiniMaxMenu();
-
 	void reset();
 
 private slots:

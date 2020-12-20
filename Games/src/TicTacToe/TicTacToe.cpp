@@ -12,10 +12,6 @@ TicTacToe::TicTacToe(Ai* ai, int aiColor) {
 	renderer = new ttt::Renderer();
 }
 
-TicTacToe::~TicTacToe() {
-
-}
-
 void TicTacToe::reset() {
 	board = ttt::Board();
 	currentPlayer = 1;

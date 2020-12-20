@@ -17,7 +17,6 @@ class ConnectFourMiniMaxMenu : public QWidget {
 public:
 	explicit ConnectFourMiniMaxMenu(QWidget* w, QWidget* parent = nullptr);
 	~ConnectFourMiniMaxMenu();
-
 	void reset();
 
 private slots:

@@ -5,7 +5,6 @@
 #include <ConnectFour/ConnectFourAdapter.h>
 #include <ConnectFour/ConnectFour.h>
 
-
 TEST(ConnectFourAdapter, test_get_player_won_draw) {
     std::string state = "111221122112221122111221122211221112211222";
     ConnectFourAdapter adap = ConnectFourAdapter();

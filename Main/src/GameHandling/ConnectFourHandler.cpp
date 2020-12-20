@@ -3,9 +3,6 @@
 ConnectFourHandler::ConnectFourHandler() {
 }
 
-ConnectFourHandler::~ConnectFourHandler() {
-}
-
 void ConnectFourHandler::connectFourAgainstNeuralNetAi(cn4::PlayerColor playerColor, std::string netName, int countMcts, bool probabilistic, torch::DeviceType device) {
 	ConnectFourAdapter adap = ConnectFourAdapter();
 	DefaultNeuralNet neuralNet = DefaultNeuralNet(2, 7, 6, 7, preTrainedPath + "/" + netName, device);

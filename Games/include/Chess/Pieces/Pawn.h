@@ -7,8 +7,6 @@
 class Pawn : public chess::Piece {
 public:
 	Pawn(chess::PieceColor color);
-	~Pawn();
-
 	bool isMoveValid(Piece* (*board)[8], const chess::Move& move) override;
 	void makeMove(Piece* (*board)[8], const chess::Move& move) override;
 	Piece* getDeepCopy() override;

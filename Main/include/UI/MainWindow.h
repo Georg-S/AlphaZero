@@ -22,9 +22,11 @@ public:
 
 private slots:
 	void on_HomeButton_clicked();
+
 private:
 	void setup();
 	void hardResize(const QSize& size);
+
 	Ui::MainWindow* ui;
 	MainMenu* mainMenu;
 	QSize initialSize;

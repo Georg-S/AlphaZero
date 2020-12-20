@@ -31,10 +31,6 @@ namespace chess {
 			}
 		}
 
-		~Board() {
-		}
-
-
 		void setToInitialState() {
 			zeroInitialize();
 			initialStateBlackSite();

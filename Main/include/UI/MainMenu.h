@@ -23,6 +23,7 @@ private slots:
 	void on_ConnectFourButton_clicked();
 	void on_ChessButton_clicked();
 	void on_TicTacToeButton_clicked();
+
 private:
 	TicTacToeMainMenu* ticTacToeMainMenu;
 	ConnectFourMainMenu* connectFourMainMenu;

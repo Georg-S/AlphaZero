@@ -13,7 +13,6 @@
 class ReducedChessAdapter : public Game {
 public:
 	ReducedChessAdapter();
-
 	std::vector<int> getAllPossibleMoves(const std::string& state, int currentPlayer) override;
 	int getInitialPlayer() override;
 	std::string getInitialGameState() override;
@@ -23,7 +22,6 @@ public:
 	torch::Tensor convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Device device = torch::kCPU) override;
 	bool isGameOver(const std::string& state) override;
 	int gameOverReward(const std::string& state, int currentPlayer) override;
-
 	static std::string convertStateToString(chess::Board& board, int currentPlayer);
 	static chess::Board convertStateStringToBoard(std::string state);
 
@@ -37,11 +35,10 @@ private:
 	static void convertPiecesToTensor(chess::Board& board, const chess::PieceColor& color, at::Tensor destination, const char& pieceChar);
 	void replacePawnsWithQueens(chess::Board& board);
 	void replacePawnsWithQueens(chess::Board& board, int row);
-
 	bool bothKingsStillThere(const chess::Board& board);
 
-	const std::string initialState = "1RHBQKBHRPPPPPPPP--------------------------------PPPPPPPPRHBQKBHR2222222222222222--------------------------------1111111111111111";
-	const int actionCount = 4096;
+	inline static const std::string initialState = "1RHBQKBHRPPPPPPPP--------------------------------PPPPPPPPRHBQKBHR2222222222222222--------------------------------1111111111111111";
+	static constexpr int actionCount = 4096;
 };
 
 

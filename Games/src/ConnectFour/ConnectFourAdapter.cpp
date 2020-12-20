@@ -3,10 +3,6 @@
 ConnectFourAdapter::ConnectFourAdapter() {
 }
 
-ConnectFourAdapter::~ConnectFourAdapter() {
-
-}
-
 std::string ConnectFourAdapter::makeMove(const std::string& state, int move, int currentPlayer) {
 	cn4::Board board = convertStringToBoard(state);
 	cn4::PlayerColor playerColor = (cn4::PlayerColor)currentPlayer;
@@ -101,4 +97,3 @@ torch::Tensor ConnectFourAdapter::convertStateToNeuralNetInput(const std::string
 	neuralInput = neuralInput.to(device);
 	return neuralInput;
 }
-
