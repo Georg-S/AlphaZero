@@ -58,7 +58,7 @@ void ConnectFour::update2PlayerGame() {
 }
 
 void ConnectFour::updateAiMove() {
-	int action = ai->getMove(convertBoardToString(board), currentPlayerColor);
+	int action = ai->getMove(board.toString(), currentPlayerColor);
 	cn4::GameLogic::makeMove(board, action, currentPlayerColor);
 	outputBoard(board);
 	if (cn4::GameLogic::isGameOver(board))
@@ -148,17 +148,6 @@ void ConnectFour::handleGameOver(const cn4::Board& board) {
 
 cn4::PlayerColor ConnectFour::getNextPlayer(const cn4::PlayerColor& player) {
 	return (cn4::PlayerColor)(player % 2 + 1);
-}
-
-std::string ConnectFour::convertBoardToString(const cn4::Board& board) {
-	std::string result;
-
-	for (int y = 0; y < board.height; y++) {
-		for (int x = 0; x < board.width; x++) {
-			result += std::to_string(board.board[x][y]);
-		}
-	}
-	return result;
 }
 
 void ConnectFour::outputBoard(const cn4::Board& board) {

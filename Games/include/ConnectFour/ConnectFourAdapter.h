@@ -22,7 +22,6 @@ public:
 	std::string makeMove(const std::string& state, int move, int currentPlayer) override;
 
 	cn4::Board convertStringToBoard(const std::string& state);
-	std::string convertBoardToString(const cn4::Board& board);
 private:
 	static constexpr int actionCount = 7;
 	inline static const std::string startState = "000000000000000000000000000000000000000000";

@@ -2,6 +2,7 @@
 #define DEEPREINFORCEMENTLEARNING_cn4_BOARD_H
 
 #include <iostream>
+#include <string>
 #include "PlayerColor.h"
 
 namespace cn4 {
@@ -39,6 +40,19 @@ namespace cn4 {
 				}
 				std::cout << std::endl;
 			}
+		}
+
+		std::string toString() const
+		{
+			std::string result;
+
+			for (int y = 0; y < height; y++) {
+				for (int x = 0; x < width; x++) {
+					result += std::to_string(board[x][y]);
+				}
+			}
+
+			return result;
 		}
 
 		const static int width = 7;

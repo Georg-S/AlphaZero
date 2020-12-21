@@ -34,7 +34,6 @@ private:
 	void handleGameOver(const cn4::Board& board);
 	static void printBoardToConsole(const cn4::Board& board);
 	static cn4::PlayerColor getNextPlayer(const cn4::PlayerColor& player);
-	std::string convertBoardToString(const cn4::Board& board);
 	void outputBoard(const cn4::Board& board);
 
 	Ai* ai;

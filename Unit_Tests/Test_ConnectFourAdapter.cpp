@@ -133,7 +133,7 @@ TEST(ConnectFourAdapter, test_conversion_to_string_and_back) {
     ConnectFourAdapter adap = ConnectFourAdapter();
 
     cn4::Board board = adap.convertStringToBoard(state);
-    std::string convertedState = adap.convertBoardToString(board);
+    std::string convertedState = board.toString();
 
     ASSERT_EQ(state, convertedState);
 }

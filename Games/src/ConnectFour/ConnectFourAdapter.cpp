@@ -7,18 +7,7 @@ std::string ConnectFourAdapter::makeMove(const std::string& state, int move, int
 	cn4::Board board = convertStringToBoard(state);
 	cn4::PlayerColor playerColor = (cn4::PlayerColor)currentPlayer;
 	cn4::GameLogic::makeMove(board, move, playerColor);
-	return convertBoardToString(board);
-}
-
-std::string ConnectFourAdapter::convertBoardToString(const cn4::Board& board) {
-	std::string result;
-
-	for (int y = 0; y < board.height; y++) {
-		for (int x = 0; x < board.width; x++) {
-			result += std::to_string(board.board[x][y]);
-		}
-	}
-	return result;
+	return board.toString();
 }
 
 cn4::Board ConnectFourAdapter::convertStringToBoard(const std::string& state) {

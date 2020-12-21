@@ -13,7 +13,6 @@ namespace cn4 {
 		static void makeMove(cn4::Board& board, int action, const cn4::PlayerColor& playerColor);
 		static bool isMovePossible(const cn4::Board& board, int action);
 
-
 	private:
 		static bool fourInARowHorizontal(const cn4::Board& board, int player = -1);
 		static bool fourInARowHorizontal(const cn4::Board& board, int player, int xPos, int yPos);
