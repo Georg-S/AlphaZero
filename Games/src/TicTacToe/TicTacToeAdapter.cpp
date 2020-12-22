@@ -72,7 +72,7 @@ std::string TicTacToeAdapter::makeMove(const std::string& state, int move, int c
 	}
 	board.board[x][y] = currentPlayer;
 
-	return convertBoardToString(board);
+	return board.toString();
 }
 
 ttt::Board TicTacToeAdapter::convertStringToBoard(const std::string& state) {
@@ -84,16 +84,6 @@ ttt::Board TicTacToeAdapter::convertStringToBoard(const std::string& state) {
 			board.board[x][y] = state.at(y * 3 + x) - zeroOffset;
 
 	return board;
-}
-
-std::string TicTacToeAdapter::convertBoardToString(const ttt::Board& board) {
-	std::string result = "";
-
-	for (int y = 0; y < 3; y++)
-		for (int x = 0; x < 3; x++)
-			result += std::to_string(board.board[x][y]);
-
-	return result;
 }
 
 int TicTacToeAdapter::getPlayerWon(const std::string& state) {

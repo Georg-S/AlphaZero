@@ -209,14 +209,14 @@ TEST(TicTacToeAdapter, test_convert_board_to_string) {
     board.board[2][0] = 2;
     board.board[2][2] = 1;
 
-    ASSERT_EQ(adap.convertBoardToString(board), "012000001");
+    ASSERT_EQ(board.toString(), "012000001");
 }
 
 TEST(TicTacToeAdapter, test_convert_string_to_board_and_back) {
     TicTacToeAdapter adap = TicTacToeAdapter();
     std::string state = "121212121";
     ttt::Board board = adap.convertStringToBoard(state);
-    std::string converted = adap.convertBoardToString(board);
+    std::string converted = board.toString();
 
     ASSERT_EQ(state, converted);
 }

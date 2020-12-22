@@ -20,7 +20,6 @@ public:
 	bool isGameOver(const std::string& state) override;
 	std::string makeMove(const std::string& state, int move, int currentPlayer) override;
 	ttt::Board convertStringToBoard(const std::string& state);
-	std::string convertBoardToString(const ttt::Board& board);
 
 	inline static const std::string initialState = "000000000";
 };
