@@ -37,7 +37,6 @@ private:
 	void replacePawnsWithQueens(chess::Board& board, int row);
 	bool bothKingsStillThere(const chess::Board& board);
 
-	inline static const std::string initialState = "1RHBQKBHRPPPPPPPP--------------------------------PPPPPPPPRHBQKBHR2222222222222222--------------------------------1111111111111111";
 	static constexpr int actionCount = 4096;
 };
 

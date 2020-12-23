@@ -24,6 +24,7 @@ cn4::Board ConnectFourAdapter::convertStringToBoard(const std::string& state) {
 }
 
 std::string ConnectFourAdapter::getInitialGameState() {
+	static const std::string startState = "000000000000000000000000000000000000000000";
 	return startState;
 }
 

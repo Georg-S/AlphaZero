@@ -24,7 +24,6 @@ public:
 	cn4::Board convertStringToBoard(const std::string& state);
 private:
 	static constexpr int actionCount = 7;
-	inline static const std::string startState = "000000000000000000000000000000000000000000";
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_CONNECTFOURADAPTER_H

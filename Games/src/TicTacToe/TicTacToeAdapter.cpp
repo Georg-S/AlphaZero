@@ -9,6 +9,7 @@ int TicTacToeAdapter::getInitialPlayer() {
 }
 
 std::string TicTacToeAdapter::getInitialGameState() {
+	static const std::string initialState = "000000000";
 	return initialState;
 }
 

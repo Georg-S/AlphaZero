@@ -34,7 +34,9 @@ int ReducedChessAdapter::getInitialPlayer() {
 	return (int)chess::PieceColor::WHITE;
 }
 
-std::string ReducedChessAdapter::getInitialGameState() {
+std::string ReducedChessAdapter::getInitialGameState() 
+{
+	static const std::string initialState = "1RHBQKBHRPPPPPPPP--------------------------------PPPPPPPPRHBQKBHR2222222222222222--------------------------------1111111111111111";
 	return initialState;
 }
 
