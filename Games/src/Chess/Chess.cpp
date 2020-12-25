@@ -61,7 +61,7 @@ void Chess::update1PlayerGame() {
 }
 
 void Chess::updateAiMove() {
-	int intMove = ai->getMove(ReducedChessAdapter::convertStateToString(board, currentPlayer), currentPlayer);
+	int intMove = ai->getMove(ReducedChessAdapter::convertStateToString(board, (int)currentPlayer), (int)currentPlayer);
 	chess::Move move = chess::Move(intMove);
 	chess::GameLogic::makeMove(board, move);
 	previousMove = move;
