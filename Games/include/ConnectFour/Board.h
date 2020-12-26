@@ -11,7 +11,7 @@ namespace cn4 {
 		{
 			for (int x = 0; x < width; x++)
 				for (int y = 0; y < height; y++)
-					board[x][y] = cn4::PlayerColor::NONE;
+					board[x][y] = (int)cn4::PlayerColor::NONE;
 		}
 
 		Board(const cn4::Board& board) 
@@ -25,7 +25,7 @@ namespace cn4 {
 
 		char convertPlayerColorToChar(int color) const
 		{
-			if (color == cn4::PlayerColor::NONE)
+			if (color == (int)cn4::PlayerColor::NONE)
 				return '-';
 			return color == 1 ? '0' : '1';
 		}

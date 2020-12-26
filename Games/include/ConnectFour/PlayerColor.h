@@ -2,7 +2,7 @@
 #define DEEPREINFORCEMENTLEARNING_cn4_PLAYERCOLOR_H
 
 namespace cn4 {
-	enum PlayerColor {
+	enum class PlayerColor {
 		NONE, YELLOW, RED
 	};
 }

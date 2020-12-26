@@ -19,9 +19,9 @@ void ConnectFourNeuralNetMenu::reset() {
 void ConnectFourNeuralNetMenu::on_PlayButton_clicked() {
 	cn4::PlayerColor playerColor;
 	if (neuralNetUi->PlayerColor1Radio->isChecked())
-		playerColor = cn4::YELLOW;
+		playerColor = cn4::PlayerColor::YELLOW;
 	else
-		playerColor = cn4::RED;
+		playerColor = cn4::PlayerColor::RED;
 
 	torch::DeviceType device;
 	if (neuralNetUi->CPURadio->isChecked())

@@ -16,7 +16,7 @@ void cn4::Renderer::renderBoard(cn4::Board board) {
 
 	for (int x = 0; x < board.width; x++) {
 		for (int y = 0; y < board.height; y++) {
-			if (board.board[x][y] != cn4::PlayerColor::NONE)
+			if (board.board[x][y] != (int)cn4::PlayerColor::NONE)
 				renderPiece(board, x, y);
 		}
 	}
@@ -28,7 +28,7 @@ void cn4::Renderer::renderPiece(const cn4::Board& board, int x, int y) {
 	int yRend = convertBoardYPositionToRenderYPosition(board, y);
 	int pieceWidth = windowWidth / board.width;
 
-	if (board.board[x][y] == cn4::PlayerColor::YELLOW) {
+	if (board.board[x][y] == (int)cn4::PlayerColor::YELLOW) {
 		handler->createAndPushFrontRenderElement("Images/ConnectFour/YellowPiece.png", xRend, yRend, pieceWidth, pieceWidth);
 	}
 	else {

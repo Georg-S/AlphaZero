@@ -20,9 +20,9 @@ void ConnectFourMiniMaxMenu::on_PlayButton_clicked() {
 	int miniMaxDepth = connectFourMiniMax->MiniMaxDepthInput->text().toInt();
 	cn4::PlayerColor playerColor;
 	if (connectFourMiniMax->PlayerColor1Radio->isChecked())
-		playerColor = cn4::YELLOW;
+		playerColor = cn4::PlayerColor::YELLOW;
 	else
-		playerColor = cn4::RED;
+		playerColor = cn4::PlayerColor::RED;
 
 	gameHandler.connectFourAgainstMiniMaxAi(miniMaxDepth, playerColor);
 }

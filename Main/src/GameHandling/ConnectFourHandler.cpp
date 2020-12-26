@@ -7,7 +7,7 @@ void ConnectFourHandler::connectFourAgainstNeuralNetAi(cn4::PlayerColor playerCo
 	ConnectFourAdapter adap = ConnectFourAdapter();
 	DefaultNeuralNet neuralNet = DefaultNeuralNet(2, 7, 6, 7, preTrainedPath + "/" + netName, device);
 	NeuralNetAi* ai = new NeuralNetAi(&neuralNet, &adap, 7, countMcts, probabilistic, device);
-	cn4::PlayerColor aiColor = (cn4::PlayerColor)(playerColor % 2 + 1);
+	cn4::PlayerColor aiColor = (cn4::PlayerColor)((int)playerColor % 2 + 1);
 	ConnectFour connectFour = ConnectFour(aiColor, ai);
 
 	connectFour.gameLoop();
@@ -15,7 +15,7 @@ void ConnectFourHandler::connectFourAgainstNeuralNetAi(cn4::PlayerColor playerCo
 
 void ConnectFourHandler::connectFourAgainstMiniMaxAi(int depth, cn4::PlayerColor color) {
 	cn4::MiniMaxAi ai = cn4::MiniMaxAi(depth);
-	cn4::PlayerColor  aiColor = (cn4::PlayerColor)(color % 2 + 1);
+	cn4::PlayerColor  aiColor = (cn4::PlayerColor)((int)color % 2 + 1);
 	ConnectFour connect = ConnectFour(aiColor, &ai);
 	connect.gameLoop();
 }

@@ -10,18 +10,22 @@ bool cn4::GameLogic::isGameOver(const cn4::Board& board) {
 }
 
 cn4::PlayerColor cn4::GameLogic::getPlayerWon(const cn4::Board& board) {
-	if (fourInARowHorizontal(board, YELLOW) || fourInARowVertical(board, YELLOW) || fourInARowDiagonal(board, YELLOW))
-		return YELLOW;
-	if (fourInARowHorizontal(board, RED) || fourInARowVertical(board, RED) || fourInARowDiagonal(board, RED))
-		return RED;
+	if (fourInARowHorizontal(board, (int)cn4::PlayerColor::YELLOW) 
+		|| fourInARowVertical(board, (int)cn4::PlayerColor::YELLOW) 
+		|| fourInARowDiagonal(board, (int)cn4::PlayerColor::YELLOW))
+		return cn4::PlayerColor::YELLOW;
+	if (fourInARowHorizontal(board, (int) cn4::PlayerColor::RED) 
+		|| fourInARowVertical(board, (int)cn4::PlayerColor::RED) 
+		|| fourInARowDiagonal(board, (int)cn4::PlayerColor::RED))
+		return cn4::PlayerColor::RED;
 
-	return NONE;
+	return cn4::PlayerColor::NONE;
 }
 
 bool cn4::GameLogic::fourInARowHorizontal(const cn4::Board& board, int player) {
 	for (int x = 0; x < board.width; x++) {
 		for (int y = 0; y < board.height; y++) {
-			if (board.board[x][y] == NONE)
+			if (board.board[x][y] == (int)cn4::PlayerColor::NONE)
 				break;
 			if (fourInARowHorizontal(board, player, x, y))
 				return true;
@@ -35,7 +39,7 @@ bool cn4::GameLogic::fourInARowHorizontal(const cn4::Board& board, int player, i
 		return false;
 	if (player != -1 && player != board.board[xPos][yPos])
 		return false;
-	if (board.board[xPos][yPos] == NONE)
+	if (board.board[xPos][yPos] == (int)cn4::PlayerColor::NONE)
 		return false;
 
 	for (int x = xPos; x < xPos + 3; x++) {
@@ -49,7 +53,7 @@ bool cn4::GameLogic::fourInARowHorizontal(const cn4::Board& board, int player, i
 bool cn4::GameLogic::fourInARowVertical(const cn4::Board& board, int player) {
 	for (int x = 0; x < board.width; x++) {
 		for (int y = 0; y < board.height; y++) {
-			if (board.board[x][y] == NONE)
+			if (board.board[x][y] == (int)cn4::PlayerColor::NONE)
 				break;
 			if (fourInARowVertical(board, player, x, y))
 				return true;
@@ -63,7 +67,7 @@ bool cn4::GameLogic::fourInARowVertical(const cn4::Board& board, int player, int
 		return false;
 	if ((player != -1) && (player != board.board[xPos][yPos]))
 		return false;
-	if (board.board[xPos][yPos] == NONE)
+	if (board.board[xPos][yPos] == (int)cn4::PlayerColor::NONE)
 		return false;
 
 	for (int y = yPos; y < yPos + 3; y++) {
@@ -90,7 +94,7 @@ bool cn4::GameLogic::fourInARowDiagonalUp(const cn4::Board& board, int player, i
 		return false;
 	if ((player != -1) && (player != board.board[xPos][yPos]))
 		return false;
-	if (board.board[xPos][yPos] == NONE)
+	if (board.board[xPos][yPos] == (int)cn4::PlayerColor::NONE)
 		return false;
 
 	for (int x = xPos, y = yPos; x < xPos + 3; x++, y++) {
@@ -105,7 +109,7 @@ bool cn4::GameLogic::fourInARowDiagonalDown(const cn4::Board& board, int player,
 		return false;
 	if ((player != -1) && (player != board.board[xPos][yPos]))
 		return false;
-	if (board.board[xPos][yPos] == NONE)
+	if (board.board[xPos][yPos] == (int)cn4::PlayerColor::NONE)
 		return false;
 
 	for (int x = xPos, y = yPos; x < xPos + 3; x++, y--) {
@@ -118,7 +122,7 @@ bool cn4::GameLogic::fourInARowDiagonalDown(const cn4::Board& board, int player,
 bool cn4::GameLogic::isDraw(const cn4::Board& board) {
 	for (int y = 0; y < board.height; y++) {
 		for (int x = 0; x < board.width; x++) {
-			if (board.board[x][y] == cn4::PlayerColor::NONE)
+			if (board.board[x][y] == (int)cn4::PlayerColor::NONE)
 				return false;
 		}
 	}
@@ -128,14 +132,14 @@ bool cn4::GameLogic::isDraw(const cn4::Board& board) {
 void cn4::GameLogic::makeMove(cn4::Board& board, int action, const cn4::PlayerColor& playerColor) {
 	for (int i = 0; i < board.height; i++) {
 		if (board.board[action][i] == 0) {
-			board.board[action][i] = playerColor;
+			board.board[action][i] = (int)playerColor;
 			return;
 		}
 	}
 }
 
 bool cn4::GameLogic::isMovePossible(const cn4::Board& board, int action) {
-	if (board.board[action][board.height - 1] == cn4::PlayerColor::NONE)
+	if (board.board[action][board.height - 1] == (int)cn4::PlayerColor::NONE)
 		return true;
 	return false;
 }
