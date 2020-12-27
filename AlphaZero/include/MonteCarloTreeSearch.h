@@ -10,7 +10,8 @@
 #include "Game.h"
 #include "NeuralNetworks/NeuralNetwork.h"
 
-class MonteCarloTreeSearch {
+class MonteCarloTreeSearch 
+{
 public:
 	MonteCarloTreeSearch();
 	MonteCarloTreeSearch(int actionCount, float cpuct = 1.0);
@@ -34,6 +35,5 @@ private:
 	std::map<std::string, std::vector<float>> qValues;
 	std::map<std::string, torch::Tensor> probabilities;
 };
-
 
 #endif //DEEPREINFORCEMENTLEARNING_MONTECARLOTREESEARCH_H

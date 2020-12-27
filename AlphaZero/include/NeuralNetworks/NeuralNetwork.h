@@ -4,7 +4,8 @@
 #include <tuple>
 #include <torch/torch.h>
 
-class NeuralNetwork {
+class NeuralNetwork 
+{
 public:
 	virtual std::tuple<torch::Tensor, torch::Tensor> calculate(const torch::Tensor& input) = 0;
 	virtual void save(std::string) = 0;

@@ -4,7 +4,8 @@
 #include <torch/torch.h>
 #include <vector>
 
-class Game {
+class Game 
+{
 public:
 	virtual int getInitialPlayer() = 0;
 	virtual std::string getInitialGameState() = 0;

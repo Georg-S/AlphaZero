@@ -1,13 +1,15 @@
 #include "AlphaZeroTraining.h"
 
-AlphaZeroTraining::AlphaZeroTraining(int actionCount, NeuralNetwork* currentBest, torch::DeviceType device) {
+AlphaZeroTraining::AlphaZeroTraining(int actionCount, NeuralNetwork* currentBest, torch::DeviceType device) 
+{
 	this->neuralNet = currentBest;
 	this->actionCount = actionCount;
 	replayMemory = RingBuffer<ReplayElement>(MAX_REPLAY_MEMORY_SIZE);
 	this->device = device;
 }
 
-void AlphaZeroTraining::runTraining(Game* game) {
+void AlphaZeroTraining::runTraining(Game* game) 
+{
 	neuralNet->save(neuralNetPath + "/start");
 	for (int iteration = 0; iteration < TRAINING_ITERATIONS; iteration++) {
 		std::cout << "Current Iteration " << iteration << std::endl;
@@ -17,7 +19,8 @@ void AlphaZeroTraining::runTraining(Game* game) {
 	}
 }
 
-void AlphaZeroTraining::selfPlay(NeuralNetwork* net, Game* game) {
+void AlphaZeroTraining::selfPlay(NeuralNetwork* net, Game* game) 
+{
 	omp_lock_t writelock;
 	omp_init_lock(&writelock);
 	omp_set_num_threads(NUMBER_CPU_THREADS);
@@ -31,7 +34,8 @@ void AlphaZeroTraining::selfPlay(NeuralNetwork* net, Game* game) {
 	}
 }
 
-std::vector<ReplayElement> AlphaZeroTraining::selfPlayGame(NeuralNetwork* net, Game* game) {
+std::vector<ReplayElement> AlphaZeroTraining::selfPlayGame(NeuralNetwork* net, Game* game) 
+{
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(actionCount);
 
 	std::vector<ReplayElement> trainingData;
@@ -75,7 +79,8 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlayGame(NeuralNetwork* net, G
 	return trainingData;
 }
 
-int AlphaZeroTraining::getRandomAction(const std::vector<float>& probabilities) {
+int AlphaZeroTraining::getRandomAction(const std::vector<float>& probabilities) 
+{
 	float r = ((float)rand() / (RAND_MAX));
 	if (r == 0)
 		r += FLT_MIN;
@@ -93,7 +98,8 @@ int AlphaZeroTraining::getRandomAction(const std::vector<float>& probabilities) 
 	return x;
 }
 
-void AlphaZeroTraining::addResult(std::vector<ReplayElement>& elements, int winner) {
+void AlphaZeroTraining::addResult(std::vector<ReplayElement>& elements, int winner) 
+{
 	for (int i = 0; i < elements.size(); i++) {
 		int player = elements[i].currentPlayer;
 		if (player == winner)
@@ -105,7 +111,8 @@ void AlphaZeroTraining::addResult(std::vector<ReplayElement>& elements, int winn
 	}
 }
 
-void AlphaZeroTraining::trainNet(NeuralNetwork* net, Game* game) {
+void AlphaZeroTraining::trainNet(NeuralNetwork* net, Game* game) 
+{
 	std::cout << "Current Replay Memory Size " << replayMemory.size() << std::endl;
 	if (replayMemory.size() < MIN_REPLAY_MEMORY_SIZE)
 		return;
@@ -128,7 +135,8 @@ void AlphaZeroTraining::trainNet(NeuralNetwork* net, Game* game) {
 	}
 }
 
-torch::Tensor AlphaZeroTraining::convertSampleToNeuralInput(const std::vector<ReplayElement>& sample, Game* game) {
+torch::Tensor AlphaZeroTraining::convertSampleToNeuralInput(const std::vector<ReplayElement>& sample, Game* game) 
+{
 	int sampleSize = sample.size();
 	torch::Tensor neuralInput;
 
@@ -149,7 +157,8 @@ torch::Tensor AlphaZeroTraining::convertSampleToNeuralInput(const std::vector<Re
 	return neuralInput;
 }
 
-torch::Tensor AlphaZeroTraining::convertToValueTarget(const std::vector<ReplayElement>& sample) {
+torch::Tensor AlphaZeroTraining::convertToValueTarget(const std::vector<ReplayElement>& sample) 
+{
 	int sampleSize = sample.size();
 	torch::Tensor valueTarget = torch::zeros({ sampleSize, 1 });
 
@@ -161,7 +170,8 @@ torch::Tensor AlphaZeroTraining::convertToValueTarget(const std::vector<ReplayEl
 	return valueTarget;
 }
 
-torch::Tensor AlphaZeroTraining::convertToProbsTarget(const std::vector<ReplayElement>& sample) {
+torch::Tensor AlphaZeroTraining::convertToProbsTarget(const std::vector<ReplayElement>& sample) 
+{
 	int sampleSize = sample.size();
 	torch::Tensor probsTarget = torch::zeros({ sampleSize, actionCount });
 
@@ -175,16 +185,19 @@ torch::Tensor AlphaZeroTraining::convertToProbsTarget(const std::vector<ReplayEl
 	return probsTarget;
 }
 
-int AlphaZeroTraining::getArgMaxIndex(const std::vector<float>& vec) {
+int AlphaZeroTraining::getArgMaxIndex(const std::vector<float>& vec) 
+{
 	return std::max_element(vec.begin(), vec.end()) - vec.begin();
 }
 
-void AlphaZeroTraining::save(int iteration) {
+void AlphaZeroTraining::save(int iteration) 
+{
 	if ((iteration % SAVE_ITERATION_COUNT) == 0)
 		neuralNet->save(neuralNetPath + "/iteration" + std::to_string(iteration));
 }
 
-void AlphaZeroTraining::setMaxReplayMemorySize(int size) {
+void AlphaZeroTraining::setMaxReplayMemorySize(int size) 
+{
 	this->MAX_REPLAY_MEMORY_SIZE = size;
 
 	replayMemory.clear();

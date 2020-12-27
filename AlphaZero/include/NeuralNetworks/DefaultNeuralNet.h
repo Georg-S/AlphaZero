@@ -5,7 +5,8 @@
 #include "CutDownAlphaGoZeroNet.h"
 #include "AlphaGoZeroNet.h"
 
-class DefaultNeuralNet : public NeuralNetwork {
+class DefaultNeuralNet : public NeuralNetwork 
+{
 public:
 	DefaultNeuralNet(int64_t numPlanes, int64_t width, int64_t height, int64_t numOutputs, torch::DeviceType device = torch::kCPU);
 	DefaultNeuralNet(int64_t numPlanes, int64_t width, int64_t height, int64_t numOutputs, std::string fileName, torch::DeviceType device = torch::kCPU);

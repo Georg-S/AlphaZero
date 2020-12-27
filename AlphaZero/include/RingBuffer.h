@@ -11,18 +11,24 @@ template <class T>
 class RingBuffer {
 
 public:
-	RingBuffer() {}
+	RingBuffer() 
+	{
+	
+	}
 
-	RingBuffer(int maxSize) {
+	RingBuffer(int maxSize) 
+	{
 		this->maxSize = maxSize;
 	}
 
 
-	T& operator[](int index) {
+	T& operator[](int index) 
+	{
 		return data[index];
 	}
 
-	void add(const T& element) {
+	void add(const T& element) 
+	{
 		if (currentIndex == maxSize) {
 			wrappedAround = true;
 			currentIndex = 0;
@@ -35,30 +41,36 @@ public:
 		currentIndex++;
 	}
 
-	int size() const {
+	int size() const 
+	{
 		return data.size();
 	}
 
-	int getMaxSize() const {
+	int getMaxSize() const 
+	{
 		return maxSize;
 	}
 
-	void add(const std::vector<T>& elements) {
+	void add(const std::vector<T>& elements) 
+	{
 		for (int x = 0; x < elements.size(); x++)
 			add(elements[x]);
 	}
 
-	void clear() {
+	void clear() 
+	{
 		data.clear();
 		currentIndex = 0;
 		wrappedAround = false;
 	}
 
-	std::vector<T> convertToVec() const {
+	std::vector<T> convertToVec() const 
+	{
 		return data;
 	}
 
-	void getRandomSample(int sampleSize, std::vector<T>& destination) const {
+	void getRandomSample(int sampleSize, std::vector<T>& destination) const 
+	{
 		std::sample(data.begin(), data.end(), std::back_inserter(destination), sampleSize, std::mt19937{ std::random_device{}() });
 	}
 

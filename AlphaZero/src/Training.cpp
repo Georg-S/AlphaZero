@@ -1,6 +1,7 @@
 #include "Training.h"
 
-Training::Training(int actionCount, NeuralNetwork* net) {
+Training::Training(int actionCount, NeuralNetwork* net)
+{
 	this->currentBest = net;
 	net->save("NeuralNets/initial");
 	this->apprentice = net;
@@ -8,7 +9,8 @@ Training::Training(int actionCount, NeuralNetwork* net) {
 	replayMemory = RingBuffer<ReplayElement>(MAX_REPLAY_MEMORY_SIZE);
 }
 
-Training::Training(int actionCount, NeuralNetwork* currentBest, NeuralNetwork* apprentice, torch::DeviceType device) {
+Training::Training(int actionCount, NeuralNetwork* currentBest, NeuralNetwork* apprentice, torch::DeviceType device)
+{
 	this->currentBest = currentBest;
 	this->apprentice = apprentice;
 	this->actionCount = actionCount;
@@ -16,7 +18,8 @@ Training::Training(int actionCount, NeuralNetwork* currentBest, NeuralNetwork* a
 	this->device = device;
 }
 
-void Training::runTraining(Game* game) {
+void Training::runTraining(Game* game)
+{
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(actionCount);
 	for (int iteration = 0; iteration < TRAINING_ITERATIONS; iteration++) {
 		std::cout << "Current Iteration " << iteration << std::endl;
@@ -27,7 +30,8 @@ void Training::runTraining(Game* game) {
 	}
 }
 
-void Training::selfPlay(NeuralNetwork* net, Game* game, MonteCarloTreeSearch mcts) {
+void Training::selfPlay(NeuralNetwork* net, Game* game, MonteCarloTreeSearch mcts)
+{
 	for (int x = 0; x < NUM_SELF_PLAY_GAMES; x++) {
 		mcts.clearAll();
 		std::vector<ReplayElement> trainData = selfPlayGame(net, game, mcts);
@@ -35,7 +39,8 @@ void Training::selfPlay(NeuralNetwork* net, Game* game, MonteCarloTreeSearch mct
 	}
 }
 
-std::vector<ReplayElement> Training::selfPlayGame(NeuralNetwork* net, Game* game, MonteCarloTreeSearch mcts) {
+std::vector<ReplayElement> Training::selfPlayGame(NeuralNetwork* net, Game* game, MonteCarloTreeSearch mcts)
+{
 	std::vector<ReplayElement> trainingData;
 	std::string currentState = game->getInitialGameState();
 	int currentPlayer = game->getInitialPlayer();
@@ -66,7 +71,8 @@ std::vector<ReplayElement> Training::selfPlayGame(NeuralNetwork* net, Game* game
 	return trainingData;
 }
 
-int Training::getRandomAction(const std::vector<float>& probabilities) {
+int Training::getRandomAction(const std::vector<float>& probabilities)
+{
 	float r = ((float)rand() / (RAND_MAX));
 	if (r == 0)
 		r += FLT_MIN;
@@ -84,7 +90,8 @@ int Training::getRandomAction(const std::vector<float>& probabilities) {
 	return x;
 }
 
-void Training::addResult(std::vector<ReplayElement>& elements, int winner) {
+void Training::addResult(std::vector<ReplayElement>& elements, int winner)
+{
 	for (int i = 0; i < elements.size(); i++) {
 		int player = elements[i].currentPlayer;
 		if (player == winner)
@@ -96,7 +103,8 @@ void Training::addResult(std::vector<ReplayElement>& elements, int winner) {
 	}
 }
 
-void Training::trainNet(NeuralNetwork* net, Game* game) {
+void Training::trainNet(NeuralNetwork* net, Game* game)
+{
 	std::cout << "Current Replay Memory Size " << replayMemory.size() << std::endl;
 	if (replayMemory.size() < MIN_REPLAY_MEMORY_SIZE)
 		return;
@@ -121,7 +129,8 @@ void Training::trainNet(NeuralNetwork* net, Game* game) {
 	}
 }
 
-torch::Tensor Training::convertSampleToNeuralInput(const std::vector<ReplayElement>& sample, Game* game) {
+torch::Tensor Training::convertSampleToNeuralInput(const std::vector<ReplayElement>& sample, Game* game)
+{
 	int sampleSize = sample.size();
 	torch::Tensor neuralInput;
 
@@ -142,7 +151,8 @@ torch::Tensor Training::convertSampleToNeuralInput(const std::vector<ReplayEleme
 	return neuralInput;
 }
 
-torch::Tensor Training::convertToValueTarget(const std::vector<ReplayElement>& sample) {
+torch::Tensor Training::convertToValueTarget(const std::vector<ReplayElement>& sample)
+{
 	int sampleSize = sample.size();
 	torch::Tensor valueTarget = torch::zeros({ sampleSize, 1 });
 
@@ -154,7 +164,8 @@ torch::Tensor Training::convertToValueTarget(const std::vector<ReplayElement>& s
 	return valueTarget;
 }
 
-torch::Tensor Training::convertToProbsTarget(const std::vector<ReplayElement>& sample) {
+torch::Tensor Training::convertToProbsTarget(const std::vector<ReplayElement>& sample)
+{
 	int sampleSize = sample.size();
 	torch::Tensor probsTarget = torch::zeros({ sampleSize, actionCount });
 
@@ -168,7 +179,8 @@ torch::Tensor Training::convertToProbsTarget(const std::vector<ReplayElement>& s
 	return probsTarget;
 }
 
-void Training::evaluation(Game* game, int iteration) {
+void Training::evaluation(Game* game, int iteration)
+{
 	if (iteration % EVALUATION_STEP != 0)
 		return;
 
@@ -187,7 +199,8 @@ void Training::evaluation(Game* game, int iteration) {
 	}
 }
 
-float Training::evaluateApprentice(Game* game) {
+float Training::evaluateApprentice(Game* game)
+{
 	float apprenticeScore = 0.f;
 	int apprenticePlayer = game->getInitialPlayer();
 
@@ -219,7 +232,8 @@ float Training::evaluateApprentice(Game* game) {
 	return apprenticeScore;
 }
 
-int Training::determinsticSelfPlayGame(NeuralNetwork* first, NeuralNetwork* second, Game* game, MonteCarloTreeSearch& mctsFirst, MonteCarloTreeSearch& mctsSecond) {
+int Training::determinsticSelfPlayGame(NeuralNetwork* first, NeuralNetwork* second, Game* game, MonteCarloTreeSearch& mctsFirst, MonteCarloTreeSearch& mctsSecond)
+{
 	std::string state = game->getInitialGameState();
 	int currentPlayer = game->getInitialPlayer();
 	MonteCarloTreeSearch* currentMcts = &mctsFirst;
@@ -247,10 +261,12 @@ int Training::determinsticSelfPlayGame(NeuralNetwork* first, NeuralNetwork* seco
 	return game->getPlayerWon(state);
 }
 
-int Training::getArgMaxIndex(const std::vector<float>& vec) {
+int Training::getArgMaxIndex(const std::vector<float>& vec)
+{
 	return std::max_element(vec.begin(), vec.end()) - vec.begin();
 }
 
-void Training::save(const int& iteration) {
+void Training::save(const int& iteration)
+{
 	currentBest->save("NeuralNets/improved" + std::to_string(iteration));
 }

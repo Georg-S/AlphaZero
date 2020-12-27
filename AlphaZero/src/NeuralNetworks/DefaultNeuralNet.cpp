@@ -8,36 +8,42 @@ DefaultNeuralNet::DefaultNeuralNet(int64_t numPlanes, int64_t width, int64_t hei
 }
 
 DefaultNeuralNet::DefaultNeuralNet(int64_t numPlanes, int64_t width, int64_t height, int64_t numOutputs,
-	std::string fileName, torch::DeviceType device) {
+	std::string fileName, torch::DeviceType device) 
+{
 	net = CutDownAlphaGoZeroNet(numPlanes, width, height, numOutputs);
 	this->load(fileName);
 	net->to(device);
 }
 
-void DefaultNeuralNet::load(std::string fileName) {
+void DefaultNeuralNet::load(std::string fileName) 
+{
 	torch::load(net, fileName);
 }
 
-void DefaultNeuralNet::save(std::string fileName) {
+void DefaultNeuralNet::save(std::string fileName) 
+{
 	torch::save(net, fileName);
 }
 
-std::tuple<torch::Tensor, torch::Tensor> DefaultNeuralNet::calculate(const torch::Tensor& input) {
+std::tuple<torch::Tensor, torch::Tensor> DefaultNeuralNet::calculate(const torch::Tensor& input) 
+{
 	return net->forward(input);
 }
 
-void DefaultNeuralNet::copyNetFrom(NeuralNetwork* copySource) {
+void DefaultNeuralNet::copyNetFrom(NeuralNetwork* copySource) 
+{
 	copySource->save("NeuralNets/buf");
 	this->load("NeuralNets/buf");
 }
 
-void DefaultNeuralNet::setLearningRate(float learningRate) {
+void DefaultNeuralNet::setLearningRate(float learningRate) 
+{
 	this->learningRate = learningRate;
 }
 
 void DefaultNeuralNet::training(torch::Tensor& val, torch::Tensor& probs, torch::Tensor& probsTarget,
-	torch::Tensor& valueTarget) {
-
+	torch::Tensor& valueTarget) 
+{
 	torch::optim::SGD optimizer(net->parameters(), learningRate);
 	optimizer.zero_grad();
 
