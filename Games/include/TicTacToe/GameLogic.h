@@ -4,8 +4,10 @@
 #include "Board.h"
 #include "Move.h"
 
-namespace ttt {
-	class GameLogic {
+namespace ttt 
+{
+	class GameLogic 
+	{
 	public:
 		static bool isGameOver(const ttt::Board& board);
 		static bool isBoardFull(const ttt::Board& board);

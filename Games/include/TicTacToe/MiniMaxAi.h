@@ -10,8 +10,10 @@
 #include "TicTacToe/Move.h"
 #include "TicTacToe/Board.h"
 
-namespace ttt {
-	class MiniMaxAi : public Ai {
+namespace ttt 
+{
+	class MiniMaxAi : public Ai 
+	{
 	public:
 		MiniMaxAi();
 		int getMove(std::string state, int color) override;

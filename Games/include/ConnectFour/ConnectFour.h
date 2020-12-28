@@ -13,8 +13,8 @@
 #include "PlayerColor.h"
 
 
-class ConnectFour {
-
+class ConnectFour 
+{
 public:
 	ConnectFour();
 	ConnectFour(cn4::PlayerColor aiColor, Ai* ai);

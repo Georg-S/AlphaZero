@@ -1,8 +1,10 @@
 #ifndef DEEPREINFORCEMENTLEARNING_chess_PIECECOLOR_H
 #define DEEPREINFORCEMENTLEARNING_chess_PIECECOLOR_H
 
-namespace chess {
-	enum class PieceColor {
+namespace chess 
+{
+	enum class PieceColor 
+	{
 		NONE, WHITE, BLACK
 	};
 }

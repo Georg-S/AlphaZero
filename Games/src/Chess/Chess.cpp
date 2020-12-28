@@ -1,6 +1,7 @@
 #include "Chess/Chess.h"
 
-Chess::Chess() {
+Chess::Chess() 
+{
 	board.setToInitialState();
 	renderer = new chess::Renderer();
 	mouse = Mouse();
@@ -9,7 +10,8 @@ Chess::Chess() {
 	playerCount = 2;
 }
 
-Chess::Chess(chess::PieceColor playerColor, Ai* ai) {
+Chess::Chess(chess::PieceColor playerColor, Ai* ai) 
+{
 	board.setToInitialState();
 	renderer = new chess::Renderer();
 	mouse = Mouse();
@@ -21,7 +23,8 @@ Chess::Chess(chess::PieceColor playerColor, Ai* ai) {
 	playerCount = 1;
 }
 
-void Chess::gameLoop() {
+void Chess::gameLoop() 
+{
 	outputBoard();
 	while (!gameOver) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -40,7 +43,8 @@ void Chess::gameLoop() {
 	}
 }
 
-void Chess::updateGame() {
+void Chess::updateGame() 
+{
 	renderer->updateQuit();
 	if (renderer->isQuit()) {
 		gameOver = true;
@@ -53,14 +57,16 @@ void Chess::updateGame() {
 		update2PlayerGame();
 }
 
-void Chess::update1PlayerGame() {
+void Chess::update1PlayerGame() 
+{
 	if (currentPlayer == aiColor)
 		updateAiMove();
 	else
 		updateHumanMove();
 }
 
-void Chess::updateAiMove() {
+void Chess::updateAiMove() 
+{
 	int intMove = ai->getMove(ReducedChessAdapter::convertStateToString(board, (int)currentPlayer), (int)currentPlayer);
 	chess::Move move = chess::Move(intMove);
 	chess::GameLogic::makeMove(board, move);
@@ -72,11 +78,13 @@ void Chess::updateAiMove() {
 		handleGameOver();
 }
 
-void Chess::update2PlayerGame() {
+void Chess::update2PlayerGame() 
+{
 	updateHumanMove();
 }
 
-void Chess::updateHumanMove() {
+void Chess::updateHumanMove() 
+{
 	chess::Move move = getMove();
 	if (!isValidMove(move))
 		return;
@@ -94,14 +102,16 @@ void Chess::updateHumanMove() {
 		handleGameOver();
 }
 
-void Chess::outputBoard() {
+void Chess::outputBoard() 
+{
 	if (graphicalOutput)
 		renderer->render(chess::RenderInformation(board, previousMove));
 	else
 		printBoardToConsole(board);
 }
 
-void Chess::printBoardToConsole(const chess::Board& board) {
+void Chess::printBoardToConsole(const chess::Board& board) 
+{
 
 	for (int y = 0; y < 8; y++) {
 		for (int x = 0; x < 8; x++) {
@@ -121,7 +131,8 @@ chess::Move Chess::getMove() {
 		return getMoveFromKeyboardInput();
 }
 
-chess::Move Chess::getMoveFromKeyboardInput() {
+chess::Move Chess::getMoveFromKeyboardInput() 
+{
 	bool validMoveChosen = false;
 	chess::Move move;
 
@@ -141,7 +152,8 @@ chess::Move Chess::getMoveFromKeyboardInput() {
 	return move;
 }
 
-chess::Move Chess::getMoveFromGraphicalInput() {
+chess::Move Chess::getMoveFromGraphicalInput() 
+{
 	mouse.update();
 	chess::Move move = chess::Move(-1, -1, -1, -1);
 	chess::RenderInformation renderInfo = chess::RenderInformation();
@@ -195,7 +207,8 @@ chess::Move Chess::getMoveFromGraphicalInput() {
 	return move;
 }
 
-bool Chess::isValidMove(const chess::Move& move) {
+bool Chess::isValidMove(const chess::Move& move) 
+{
 	if (move.fromX < 0 || move.fromY < 0 || move.toX < 0 || move.toY < 0)
 		return false;
 	if (move.fromX > 7 || move.fromY > 7 || move.toX > 7 || move.toY > 7)
@@ -206,7 +219,8 @@ bool Chess::isValidMove(const chess::Move& move) {
 	return chess::GameLogic::isMoveValid(board, move);
 }
 
-void Chess::handleGameOver() {
+void Chess::handleGameOver() 
+{
 	outputBoard();
 	gameOver = true;
 }
@@ -217,7 +231,8 @@ int Chess::convertMousePositionXToBoardPosition(int mouseX) {
 
 
 
-int Chess::convertMousePositionYToBoardPosition(int mouseY) {
+int Chess::convertMousePositionYToBoardPosition(int mouseY) 
+{
 	return mouseY / (windowHeight / 8);
 }
 
@@ -227,7 +242,8 @@ bool Chess::isOutOfRange(int boardPosition) {
 	return false;
 }
 
-void Chess::handlePromoSelection(chess::Board& board, int pawnX, int pawnY) {
+void Chess::handlePromoSelection(chess::Board& board, int pawnX, int pawnY) 
+{
 	renderer->renderPromotionSelection(currentPlayer);
 
 	bool validPieceSelected = false;
@@ -251,7 +267,8 @@ void Chess::handlePromoSelection(chess::Board& board, int pawnX, int pawnY) {
 	this->outputBoard();
 }
 
-chess::Piece* Chess::getPieceFromPromoSelection(int mouseX, int mouseY) {
+chess::Piece* Chess::getPieceFromPromoSelection(int mouseX, int mouseY)
+{
 	int x = mouseX / (windowWidth / 2);
 	int y = mouseY / (windowHeight / 2);
 

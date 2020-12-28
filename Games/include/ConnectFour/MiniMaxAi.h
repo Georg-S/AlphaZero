@@ -6,8 +6,10 @@
 #include "Board.h"
 #include "ConnectFourAdapter.h"
 
-namespace cn4 {
-	class MiniMaxAi : public Ai {
+namespace cn4 
+{
+	class MiniMaxAi : public Ai 
+	{
 	public:
 		MiniMaxAi(int depth = 5);
 		int getMove(std::string state, int playerColor) override;

@@ -1,10 +1,12 @@
 #include "SDL/Mouse.h"
 
-Mouse::Mouse() {
+Mouse::Mouse() 
+{
 
 }
 
-void Mouse::update() {
+void Mouse::update() 
+{
 	SDL_PumpEvents();
 	Uint32 mouseState = SDL_GetMouseState(&mouseInfo.xPosition, &mouseInfo.yPosition);
 	if (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) {
@@ -26,27 +28,33 @@ void Mouse::update() {
 	mouseInfo.rightButtonPressed = mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT);
 }
 
-bool Mouse::isNewLeftClick() {
+bool Mouse::isNewLeftClick() 
+{
 	return newLeftClick;
 }
 
-bool Mouse::isLeftPressed() {
+bool Mouse::isLeftPressed() 
+{
 	return mouseInfo.leftButtonPressed;
 }
 
-void Mouse::getMousePosition(int& x, int& y) {
+void Mouse::getMousePosition(int& x, int& y) 
+{
 	x = mouseInfo.xPosition;
 	y = mouseInfo.yPosition;
 }
 
-int Mouse::getMousePositionX() {
+int Mouse::getMousePositionX() 
+{
 	return mouseInfo.xPosition;
 }
 
-int Mouse::getMousePositionY() {
+int Mouse::getMousePositionY() 
+{
 	return mouseInfo.yPosition;
 }
 
-bool Mouse::isRightPressed() {
+bool Mouse::isRightPressed() 
+{
 	return mouseInfo.rightButtonPressed;
 }

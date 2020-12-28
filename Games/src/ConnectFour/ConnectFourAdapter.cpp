@@ -1,16 +1,20 @@
 #include "ConnectFour/ConnectFourAdapter.h"
 
-ConnectFourAdapter::ConnectFourAdapter() {
+ConnectFourAdapter::ConnectFourAdapter()
+{
+
 }
 
-std::string ConnectFourAdapter::makeMove(const std::string& state, int move, int currentPlayer) {
+std::string ConnectFourAdapter::makeMove(const std::string& state, int move, int currentPlayer)
+{
 	cn4::Board board = convertStringToBoard(state);
 	cn4::PlayerColor playerColor = (cn4::PlayerColor)currentPlayer;
 	cn4::GameLogic::makeMove(board, move, playerColor);
 	return board.toString();
 }
 
-cn4::Board ConnectFourAdapter::convertStringToBoard(const std::string& state) {
+cn4::Board ConnectFourAdapter::convertStringToBoard(const std::string& state)
+{
 	cn4::Board result = cn4::Board();
 
 	for (int index = 0; index < state.size(); index++) {
@@ -23,17 +27,20 @@ cn4::Board ConnectFourAdapter::convertStringToBoard(const std::string& state) {
 	return result;
 }
 
-std::string ConnectFourAdapter::getInitialGameState() {
+std::string ConnectFourAdapter::getInitialGameState()
+{
 	static const std::string startState = "000000000000000000000000000000000000000000";
 	return startState;
 }
 
-bool ConnectFourAdapter::isGameOver(const std::string& state) {
+bool ConnectFourAdapter::isGameOver(const std::string& state)
+{
 	cn4::Board board = convertStringToBoard(state);
 	return cn4::GameLogic::isGameOver(board);
 }
 
-int ConnectFourAdapter::gameOverReward(const std::string& state, int currentPlayer) {
+int ConnectFourAdapter::gameOverReward(const std::string& state, int currentPlayer)
+{
 	int playerWon = getPlayerWon(state);
 
 	if (playerWon == currentPlayer)
@@ -43,22 +50,26 @@ int ConnectFourAdapter::gameOverReward(const std::string& state, int currentPlay
 	return 0;
 }
 
-int ConnectFourAdapter::getPlayerWon(const std::string& state) {
+int ConnectFourAdapter::getPlayerWon(const std::string& state)
+{
 	cn4::Board board = convertStringToBoard(state);
 	int  winner = (int)cn4::GameLogic::getPlayerWon(board);
 
 	return winner;
 }
 
-int ConnectFourAdapter::getNextPlayer(int currentPlayer) {
+int ConnectFourAdapter::getNextPlayer(int currentPlayer)
+{
 	return currentPlayer % 2 + 1;
 }
 
-int ConnectFourAdapter::getInitialPlayer() {
+int ConnectFourAdapter::getInitialPlayer()
+{
 	return 1;
 }
 
-std::vector<int> ConnectFourAdapter::getAllPossibleMoves(const std::string& state, int currentPlayer) {
+std::vector<int> ConnectFourAdapter::getAllPossibleMoves(const std::string& state, int currentPlayer)
+{
 	std::vector<int> possibleMoves;
 	cn4::Board board = convertStringToBoard(state);
 
@@ -71,7 +82,8 @@ std::vector<int> ConnectFourAdapter::getAllPossibleMoves(const std::string& stat
 }
 
 torch::Tensor ConnectFourAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer,
-	torch::Device device) {
+	torch::Device device)
+{
 	cn4::Board board = convertStringToBoard(state);
 	int otherPlayer = currentPlayer % 2 + 1;
 	torch::Tensor neuralInput = torch::zeros({ 1,2,board.width, board.height });

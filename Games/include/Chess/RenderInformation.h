@@ -3,9 +3,14 @@
 
 #include "Board.h"
 
-namespace chess {
-	struct RenderInformation {
-		RenderInformation() {}
+namespace chess 
+{
+	struct RenderInformation 
+	{
+		RenderInformation() 
+		{
+		
+		}
 
 		RenderInformation(chess::Board& board, int selectedX = -1, int selectedY = -1, int mouseX = 0, int mouseY = 0, 
 			chess::Move previousMove = Move( -1, -1, -1 , -1))

@@ -7,7 +7,8 @@
 #include "GameLogic.h"
 #include "Board.h"
 
-class TicTacToeAdapter : public Game {
+class TicTacToeAdapter : public Game
+{
 public:
 	TicTacToeAdapter();
 	int getInitialPlayer() override;

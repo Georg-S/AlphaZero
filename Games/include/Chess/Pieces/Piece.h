@@ -5,8 +5,10 @@
 #include "Chess/Move.h"
 #include "Chess/PieceColor.h"
 
-namespace chess {
-	class Piece {
+namespace chess 
+{
+	class Piece 
+	{
 	public:
 		PieceColor getPieceColor();
 		char getPieceChar();

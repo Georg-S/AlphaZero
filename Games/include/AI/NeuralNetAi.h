@@ -8,8 +8,8 @@
 #include "Ai.h"
 
 
-class NeuralNetAi : public Ai {
-
+class NeuralNetAi : public Ai 
+{
 public:
 	NeuralNetAi(NeuralNetwork* net, Game* game, int actionCount, int mctsCount = 50, bool probabilistic = false, torch::DeviceType device = torch::kCPU);
 	int getMove(std::string state, int color) override;
@@ -25,6 +25,5 @@ private:
 	torch::DeviceType device;
 	bool probabilistic = false;
 };
-
 
 #endif //DEEPREINFORCEMENTLEARNING_NEURALNETAI_H

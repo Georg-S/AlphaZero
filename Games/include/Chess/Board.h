@@ -11,16 +11,20 @@
 #include "Pieces/Queen.h"
 #include "Pieces/Rook.h"
 
-namespace chess {
-	struct Board {
+namespace chess 
+{
+	struct Board 
+	{
 	public:
 		Piece* board[8][8];
 
-		Board() {
+		Board() 
+		{
 			zeroInitialize();
 		}
 
-		Board(const Board& board) {
+		Board(const Board& board) 
+		{
 			zeroInitialize();
 
 			for (int x = 0; x < 8; x++) {
@@ -31,13 +35,15 @@ namespace chess {
 			}
 		}
 
-		void setToInitialState() {
+		void setToInitialState() 
+		{
 			zeroInitialize();
 			initialStateBlackSite();
 			initialStateWhiteSite();
 		}
 
-		void deletePieces() {
+		void deletePieces() 
+		{
 			for (int x = 0; x < 8; x++) {
 				for (int y = 0; y < 8; y++) {
 					if (board[x][y] != nullptr) {
@@ -49,7 +55,8 @@ namespace chess {
 		}
 
 	private:
-		void initialStateBlackSite() {
+		void initialStateBlackSite() 
+		{
 			board[0][0] = new Rook(chess::PieceColor::BLACK);
 			board[7][0] = new Rook(chess::PieceColor::BLACK);
 
@@ -67,7 +74,8 @@ namespace chess {
 			}
 		}
 
-		void initialStateWhiteSite() {
+		void initialStateWhiteSite() 
+		{
 			board[0][7] = new Rook(chess::PieceColor::WHITE);
 			board[7][7] = new Rook(chess::PieceColor::WHITE);
 
@@ -85,14 +93,14 @@ namespace chess {
 			}
 		}
 
-		void zeroInitialize() {
+		void zeroInitialize() 
+		{
 			for (int x = 0; x < 8; x++) {
 				for (int y = 0; y < 8; y++) {
 					board[x][y] = nullptr;
 				}
 			}
 		}
-
 	};
 }
 

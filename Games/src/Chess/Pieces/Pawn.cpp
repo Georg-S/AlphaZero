@@ -1,13 +1,15 @@
 #include "Chess/Pieces/Pawn.h"
 
-Pawn::Pawn(chess::PieceColor color) {
+Pawn::Pawn(chess::PieceColor color) 
+{
 	this->color = color;
 	this->pieceChar = 'P';
 	this->moved = false;
 	this->enPassantDirection = 0;
 }
 
-bool Pawn::isMoveValid(chess::Piece* (*board)[8], const chess::Move& move) {
+bool Pawn::isMoveValid(chess::Piece* (*board)[8], const chess::Move& move) 
+{
 
 	if (normalMovementStrategyPossible(board, move.fromX, move.fromY, move.toX, move.toY))
 		return true;
@@ -17,7 +19,8 @@ bool Pawn::isMoveValid(chess::Piece* (*board)[8], const chess::Move& move) {
 		return enPassantPossible(board, move.fromX, move.fromY, move.toX, move.toY, -1);
 }
 
-void Pawn::makeMove(chess::Piece* (*board)[8], const chess::Move& move) {
+void Pawn::makeMove(chess::Piece* (*board)[8], const chess::Move& move) 
+{
 	if (isEnPassantMove(board, move.fromX, move.fromY, move.toX, move.toY)) {
 		board[move.fromX][move.fromY]->moved = true;
 		board[move.toX][move.toY] = board[move.fromX][move.fromY];
@@ -35,7 +38,8 @@ void Pawn::makeMove(chess::Piece* (*board)[8], const chess::Move& move) {
 	}
 }
 
-bool Pawn::normalMovementStrategyPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY) {
+bool Pawn::normalMovementStrategyPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY) 
+{
 	if (board[fromX][fromY]->getPieceColor() == chess::PieceColor::BLACK)
 		return normalMovementStrategyForBlackPossible(board, fromX, fromY, toX, toY);
 	else
@@ -43,7 +47,8 @@ bool Pawn::normalMovementStrategyPossible(chess::Piece* (*board)[8], int fromX, 
 }
 
 bool
-Pawn::normalMovementStrategyForBlackPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY) {
+Pawn::normalMovementStrategyForBlackPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY) 
+{
 	if (fromX == toX && fromY + 1 == toY && board[toX][toY] == nullptr)
 		return true;
 
@@ -60,7 +65,8 @@ Pawn::normalMovementStrategyForBlackPossible(chess::Piece* (*board)[8], int from
 	return false;
 }
 
-bool Pawn::normalMovementStrategyForWhitePossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY) {
+bool Pawn::normalMovementStrategyForWhitePossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY) 
+{
 	if (fromX == toX && fromY - 1 == toY && board[toX][toY] == nullptr)
 		return true;
 
@@ -78,7 +84,8 @@ bool Pawn::normalMovementStrategyForWhitePossible(chess::Piece* (*board)[8], int
 }
 
 bool
-Pawn::enPassantPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY, int direction) {
+Pawn::enPassantPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY, int direction) 
+{
 	if (enPassantDirection == 0)
 		return false;
 
@@ -89,14 +96,16 @@ Pawn::enPassantPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX
 }
 
 bool
-Pawn::isEnPassantMove(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY) {
+Pawn::isEnPassantMove(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY) 
+{
 	if (abs(fromX - toX) == 1 && abs(fromY - toY) == 1 && isFieldEmpty(board, toX, toY))
 		return true;
 
 	return false;
 }
 
-void Pawn::updateEnPassantDirection(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY) {
+void Pawn::updateEnPassantDirection(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY) 
+{
 	if (abs(fromY - toY) != 2)
 		return;
 
@@ -110,7 +119,8 @@ void Pawn::updateEnPassantDirection(chess::Piece* (*board)[8], int fromX, int fr
 		updateEnPassant(board, fromX, fromY, right, toY);
 }
 
-void Pawn::updateEnPassant(chess::Piece* (*board)[8], int fromX, int fromY, int updatePawnX, int updatePawnY) {
+void Pawn::updateEnPassant(chess::Piece* (*board)[8], int fromX, int fromY, int updatePawnX, int updatePawnY) 
+{
 	if (isFieldEmpty(board, updatePawnX, updatePawnY))
 		return;
 
@@ -125,7 +135,8 @@ void Pawn::updateEnPassant(chess::Piece* (*board)[8], int fromX, int fromY, int 
 	pawn->enPassantDirection = fromX - updatePawnX;
 }
 
-chess::Piece* Pawn::getDeepCopy() {
+chess::Piece* Pawn::getDeepCopy() 
+{
 	Pawn* pawn = new Pawn(this->color);
 	pawn->moved = this->moved;
 	pawn->enPassantDirection = this->enPassantDirection;

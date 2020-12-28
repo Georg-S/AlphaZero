@@ -1,12 +1,14 @@
 #include "Chess/Pieces/Bishop.h"
 
-Bishop::Bishop(chess::PieceColor color) {
+Bishop::Bishop(chess::PieceColor color)
+{
 	this->color = color;
 	this->pieceChar = 'B';
 	this->moved = false;
 }
 
-bool Bishop::isMoveValid(chess::Piece* (*board)[8], const chess::Move& move) {
+bool Bishop::isMoveValid(chess::Piece* (*board)[8], const chess::Move& move)
+{
 
 	if (move.fromX == move.toX || move.toY == move.fromY)
 		return false;
@@ -17,13 +19,15 @@ bool Bishop::isMoveValid(chess::Piece* (*board)[8], const chess::Move& move) {
 		rightDownPossible(board, move.fromX, move.fromY, move.toX, move.toY);
 }
 
-void Bishop::makeMove(chess::Piece* (*board)[8], const chess::Move& move) {
+void Bishop::makeMove(chess::Piece* (*board)[8], const chess::Move& move)
+{
 	setEnPassantDirectionsOfOneColorToZero(board, this->getPieceColor());
 	movePieceToPosition(board, move);
 }
 
 bool
-Bishop::leftUpPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY) {
+Bishop::leftUpPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY)
+{
 	for (int x = fromX - 1, y = fromY - 1; x >= 0 && y >= 0; x--, y--) {
 		if (x == toX && y == toY) {
 			if (isFieldEmpty(board, toX, toY))
@@ -40,7 +44,8 @@ Bishop::leftUpPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX,
 	return false;
 }
 
-bool Bishop::leftDownPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY) {
+bool Bishop::leftDownPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY)
+{
 	for (int x = fromX - 1, y = fromY + 1; x >= 0 && y < 8; x--, y++) {
 		if (x == toX && y == toY) {
 			if (isFieldEmpty(board, toX, toY))
@@ -57,7 +62,8 @@ bool Bishop::leftDownPossible(chess::Piece* (*board)[8], int fromX, int fromY, i
 	return false;
 }
 
-bool Bishop::rightDownPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY) {
+bool Bishop::rightDownPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY)
+{
 	for (int x = fromX + 1, y = fromY + 1; x < 8 && y < 8; x++, y++) {
 		if (x == toX && y == toY) {
 			if (isFieldEmpty(board, toX, toY))
@@ -75,7 +81,8 @@ bool Bishop::rightDownPossible(chess::Piece* (*board)[8], int fromX, int fromY, 
 }
 
 bool
-Bishop::rightUpPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY) {
+Bishop::rightUpPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY)
+{
 	for (int x = fromX + 1, y = fromY - 1; x < 8 && y >= 0; x++, y--) {
 		if (x == toX && y == toY) {
 			if (isFieldEmpty(board, toX, toY))
@@ -92,7 +99,8 @@ Bishop::rightUpPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX
 	return false;
 }
 
-chess::Piece* Bishop::getDeepCopy() {
+chess::Piece* Bishop::getDeepCopy()
+{
 	Bishop* bishop = new Bishop(this->color);
 	bishop->moved = this->moved;
 

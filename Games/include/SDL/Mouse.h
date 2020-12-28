@@ -5,7 +5,8 @@
 #include "MouseInformation.h"
 #include <SDL.h>
 
-class Mouse {
+class Mouse 
+{
 public:
 	Mouse();
 	void update();
@@ -21,6 +22,5 @@ private:
 	bool newLeftClick = false;
 	MouseInformation mouseInfo{};
 };
-
 
 #endif //DEEPREINFORCEMENTLEARNING_MOUSE_H

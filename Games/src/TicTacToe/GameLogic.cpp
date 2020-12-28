@@ -1,7 +1,8 @@
 #include "TicTacToe/GameLogic.h"
 
 
-bool ttt::GameLogic::isBoardFull(const ttt::Board& board) {
+bool ttt::GameLogic::isBoardFull(const ttt::Board& board) 
+{
 	for (int x = 0; x < 3; x++) {
 		for (int y = 0; y < 3; y++) {
 			if (board.board[x][y] == 0)
@@ -11,12 +12,14 @@ bool ttt::GameLogic::isBoardFull(const ttt::Board& board) {
 	return true;
 }
 
-bool ttt::GameLogic::isGameOver(const ttt::Board& board) {
+bool ttt::GameLogic::isGameOver(const ttt::Board& board) 
+{
 	return (isThreeInARowHorizontal(board) || isThreeInARowVertical(board) || isThreeInARowDiagonal(board) ||
 		ttt::GameLogic::isBoardFull(board));
 }
 
-int ttt::GameLogic::getPlayerWon(const ttt::Board& board) {
+int ttt::GameLogic::getPlayerWon(const ttt::Board& board) 
+{
 	if (playerWon(board, 1))
 		return 1;
 	if (playerWon(board, 2))
@@ -24,11 +27,15 @@ int ttt::GameLogic::getPlayerWon(const ttt::Board& board) {
 	return 0;
 }
 
-bool ttt::GameLogic::isThreeInARowHorizontal(const ttt::Board& board, int player) {
-	return isThreeInARowHorizontal(board, 0, player) | isThreeInARowHorizontal(board, 1, player) | isThreeInARowHorizontal(board, 2, player);
+bool ttt::GameLogic::isThreeInARowHorizontal(const ttt::Board& board, int player) 
+{
+	return isThreeInARowHorizontal(board, 0, player) 
+		|| isThreeInARowHorizontal(board, 1, player) 
+		|| isThreeInARowHorizontal(board, 2, player);
 }
 
-bool ttt::GameLogic::isThreeInARowHorizontal(const ttt::Board& board, int y, int player) {
+bool ttt::GameLogic::isThreeInARowHorizontal(const ttt::Board& board, int y, int player) 
+{
 	if (player != -1 && board.board[0][y] != player)
 		return false;
 	if (board.board[0][y] == 0)
@@ -40,11 +47,15 @@ bool ttt::GameLogic::isThreeInARowHorizontal(const ttt::Board& board, int y, int
 	return true;
 }
 
-bool ttt::GameLogic::isThreeInARowVertical(const ttt::Board& board, int player) {
-	return isThreeInARowVertical(board, 0, player) | isThreeInARowVertical(board, 1, player) | isThreeInARowVertical(board, 2, player);
+bool ttt::GameLogic::isThreeInARowVertical(const ttt::Board& board, int player) 
+{
+	return isThreeInARowVertical(board, 0, player) 
+		|| isThreeInARowVertical(board, 1, player) 
+		|| isThreeInARowVertical(board, 2, player);
 }
 
-bool ttt::GameLogic::isThreeInARowVertical(const ttt::Board& board, int x, int player) {
+bool ttt::GameLogic::isThreeInARowVertical(const ttt::Board& board, int x, int player) 
+{
 	if (player != -1 && board.board[x][0] != player)
 		return false;
 	if (board.board[x][0] == 0)
@@ -56,13 +67,15 @@ bool ttt::GameLogic::isThreeInARowVertical(const ttt::Board& board, int x, int p
 	return true;
 }
 
-bool ttt::GameLogic::isThreeInARowDiagonal(const ttt::Board& board, int player) {
+bool ttt::GameLogic::isThreeInARowDiagonal(const ttt::Board& board, int player) 
+{
 	if (isThreeInARowDiagonalLeftCorner(board, player) || isThreeInARowDiagonalRightCorner(board, player))
 		return true;
 	return false;
 }
 
-bool ttt::GameLogic::isThreeInARowDiagonalLeftCorner(const ttt::Board& board, int player) {
+bool ttt::GameLogic::isThreeInARowDiagonalLeftCorner(const ttt::Board& board, int player) 
+{
 	if (player != -1 && board.board[0][0] != player)
 		return false;
 	if (board.board[0][0] != 0) {
@@ -72,7 +85,8 @@ bool ttt::GameLogic::isThreeInARowDiagonalLeftCorner(const ttt::Board& board, in
 	return false;
 }
 
-bool ttt::GameLogic::isThreeInARowDiagonalRightCorner(const ttt::Board& board, int player) {
+bool ttt::GameLogic::isThreeInARowDiagonalRightCorner(const ttt::Board& board, int player) 
+{
 	if (player != -1 && board.board[2][0] != player)
 		return false;
 	if (board.board[2][0] != 0) {
@@ -82,21 +96,27 @@ bool ttt::GameLogic::isThreeInARowDiagonalRightCorner(const ttt::Board& board, i
 	return false;
 }
 
-bool ttt::GameLogic::playerWon(const ttt::Board& board, int player) {
-	return isThreeInARowHorizontal(board, player) | isThreeInARowVertical(board, player) | isThreeInARowDiagonal(board, player);
+bool ttt::GameLogic::playerWon(const ttt::Board& board, int player) 
+{
+	return isThreeInARowHorizontal(board, player) 
+		|| isThreeInARowVertical(board, player) 
+		|| isThreeInARowDiagonal(board, player);
 }
 
-int ttt::GameLogic::getNextPlayer(int currentPlayer) {
+int ttt::GameLogic::getNextPlayer(int currentPlayer) 
+{
 	return currentPlayer % 2 + 1;
 }
 
-bool ttt::GameLogic::isMovePossible(const ttt::Board& board, const ttt::Move& move) {
+bool ttt::GameLogic::isMovePossible(const ttt::Board& board, const ttt::Move& move) 
+{
 	if (board.board[move.x][move.y] != 0)
 		return false;
 
 	return true;
 }
 
-void ttt::GameLogic::makeMove(ttt::Board& board, int currentPlayer, const ttt::Move& move) {
+void ttt::GameLogic::makeMove(ttt::Board& board, int currentPlayer, const ttt::Move& move) 
+{
 	board.board[move.x][move.y] = currentPlayer;
 }

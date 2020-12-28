@@ -12,7 +12,8 @@
 #include <map>
 
 
-struct RenderingElement {
+struct RenderingElement 
+{
 	SDL_Rect transform;
 	SDL_Texture* texture;
 	bool render = true;

@@ -1,19 +1,23 @@
 #include "TicTacToe/TicTacToeAdapter.h"
 
-TicTacToeAdapter::TicTacToeAdapter() {
+TicTacToeAdapter::TicTacToeAdapter()
+{
 
 }
 
-int TicTacToeAdapter::getInitialPlayer() {
+int TicTacToeAdapter::getInitialPlayer() 
+{
 	return 1;
 }
 
-std::string TicTacToeAdapter::getInitialGameState() {
+std::string TicTacToeAdapter::getInitialGameState() 
+{
 	static const std::string initialState = "000000000";
 	return initialState;
 }
 
-std::vector<int> TicTacToeAdapter::getAllPossibleMoves(const std::string& state, int currentPlayer) {
+std::vector<int> TicTacToeAdapter::getAllPossibleMoves(const std::string& state, int currentPlayer)
+{
 	ttt::Board board = convertStringToBoard(state);
 
 	std::vector<int> possibleMoves;
@@ -26,7 +30,8 @@ std::vector<int> TicTacToeAdapter::getAllPossibleMoves(const std::string& state,
 	return possibleMoves;
 }
 
-torch::Tensor TicTacToeAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Device device) {
+torch::Tensor TicTacToeAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Device device)
+{
 	ttt::Board board = convertStringToBoard(state);
 	int otherPlayer = getNextPlayer(currentPlayer);
 	torch::Tensor neuralInput = torch::zeros({ 1,2,3,3 });
@@ -43,11 +48,13 @@ torch::Tensor TicTacToeAdapter::convertStateToNeuralNetInput(const std::string& 
 	return neuralInput;
 }
 
-int TicTacToeAdapter::getNextPlayer(int currentPlayer) {
+int TicTacToeAdapter::getNextPlayer(int currentPlayer)
+{
 	return currentPlayer % 2 + 1;
 }
 
-int TicTacToeAdapter::gameOverReward(const std::string& state, int currentPlayer) {
+int TicTacToeAdapter::gameOverReward(const std::string& state, int currentPlayer)
+{
 	int playerWon = getPlayerWon(state);
 
 	if (playerWon == currentPlayer)
@@ -57,12 +64,14 @@ int TicTacToeAdapter::gameOverReward(const std::string& state, int currentPlayer
 	return 0;
 }
 
-bool TicTacToeAdapter::isGameOver(const std::string& state) {
+bool TicTacToeAdapter::isGameOver(const std::string& state)
+{
 	ttt::Board board = convertStringToBoard(state);
 	return ttt::GameLogic::isGameOver(board);
 }
 
-std::string TicTacToeAdapter::makeMove(const std::string& state, int move, int currentPlayer) {
+std::string TicTacToeAdapter::makeMove(const std::string& state, int move, int currentPlayer)
+{
 	ttt::Board board = convertStringToBoard(state);
 
 	int x = move % 3;
@@ -76,7 +85,8 @@ std::string TicTacToeAdapter::makeMove(const std::string& state, int move, int c
 	return board.toString();
 }
 
-ttt::Board TicTacToeAdapter::convertStringToBoard(const std::string& state) {
+ttt::Board TicTacToeAdapter::convertStringToBoard(const std::string& state)
+{
 	ttt::Board board = ttt::Board();
 	char zeroOffset = '0';
 
@@ -87,7 +97,8 @@ ttt::Board TicTacToeAdapter::convertStringToBoard(const std::string& state) {
 	return board;
 }
 
-int TicTacToeAdapter::getPlayerWon(const std::string& state) {
+int TicTacToeAdapter::getPlayerWon(const std::string& state)
+{
 	ttt::Board board = convertStringToBoard(state);
 	return ttt::GameLogic::getPlayerWon(board);
 }

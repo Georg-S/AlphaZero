@@ -6,8 +6,10 @@
 #include "AI/Ai.h"
 #include "Pieces/Queen.h"
 
-namespace chess {
-	class MiniMaxAi : public Ai {
+namespace chess 
+{
+	class MiniMaxAi : public Ai 
+	{
 	public:
 		MiniMaxAi(int depth);
 		int getMove(std::string state, int playerColor) override;

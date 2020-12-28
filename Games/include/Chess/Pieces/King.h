@@ -5,7 +5,8 @@
 #include <math.h>
 #include "Piece.h"
 
-class King : public chess::Piece {
+class King : public chess::Piece
+{
 public:
 	King(chess::PieceColor color);
 	bool isMoveValid(chess::Piece* board[8][8], const chess::Move& move) override;
@@ -20,6 +21,5 @@ private:
 	bool isCastlingMove(int fromX, int toX);
 	void makeCastlingMove(chess::Piece* board[8][8], int fromX, int fromY, int toX, int toY);
 };
-
 
 #endif //DEEPREINFORCEMENTLEARNING_KING_H

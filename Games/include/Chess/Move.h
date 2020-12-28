@@ -1,23 +1,28 @@
 #ifndef DEEPREINFORCEMENTLEARNING_chess_MOVE_H
 #define DEEPREINFORCEMENTLEARNING_chess_MOVE_H
 
-namespace chess {
-	struct Move {
-		Move() {
+namespace chess 
+{
+	struct Move 
+	{
+		Move() 
+		{
 			this->fromX = 0;
 			this->fromY = 0;
 			this->toX = 0;
 			this->toY = 0;
 		}
 
-		Move(int fromX, int fromY, int toX, int toY) {
+		Move(int fromX, int fromY, int toX, int toY) 
+		{
 			this->fromX = fromX;
 			this->fromY = fromY;
 			this->toX = toX;
 			this->toY = toY;
 		}
 
-		Move(int intRepresentation) {
+		Move(int intRepresentation) 
+		{
 			int from = intRepresentation % 64;
 			int to = intRepresentation / 64;
 
@@ -27,7 +32,8 @@ namespace chess {
 			this->toY = to / 8;
 		}
 
-		int getSingleIntRepresentation() {
+		int getSingleIntRepresentation() 
+		{
 			int from = this->fromX + this->fromY * 8;
 			int to = this->toX + this->toY * 8;
 

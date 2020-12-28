@@ -18,7 +18,6 @@ bool SDLHandler::start(const std::string& windowName)
 
 std::shared_ptr<RenderingElement> SDLHandler::createAndPushBackRenderElement(std::string fileName, int x, int y, int width, int height)
 {
-	
 	std::shared_ptr<RenderingElement> element =  std::make_shared<RenderingElement>();
 	element->texture = createAndReturnTexture(fileName);
 	element->transform = SDL_Rect{ x,y,width, height };
@@ -100,7 +99,8 @@ SDL_Texture* SDLHandler::createAndReturnTexture(std::string fileName)
 	return newTexture;
 }
 
-void SDLHandler::clear() {
+void SDLHandler::clear() 
+{
 	if (useCaching)
 		elements.clear();
 	else
@@ -197,11 +197,13 @@ bool SDLHandler::initializeTime()
 	return true;
 }
 
-void SDLHandler::getWindowPosition(int* x, int* y) {
+void SDLHandler::getWindowPosition(int* x, int* y) 
+{
 	SDL_GetWindowPosition(window, x, y);
 }
 
-void SDLHandler::updateQuit() {
+void SDLHandler::updateQuit() 
+{
 	while (SDL_PollEvent(&event) != 0) {
 		if ((event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) || event.type == SDL_QUIT)
 			exit = true;

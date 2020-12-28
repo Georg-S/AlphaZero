@@ -4,7 +4,8 @@
 #include <math.h>
 #include "Piece.h"
 
-class Knight : public chess::Piece {
+class Knight : public chess::Piece 
+{
 public:
 	Knight(chess::PieceColor color);
 	bool isMoveValid(Piece* (*board)[8], const chess::Move& move) override;

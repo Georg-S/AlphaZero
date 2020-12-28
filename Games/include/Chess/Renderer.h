@@ -5,8 +5,10 @@
 #include "Board.h"
 #include "RenderInformation.h"
 
-namespace chess {
-	class Renderer {
+namespace chess 
+{
+	class Renderer 
+	{
 	public:
 		Renderer();
 		~Renderer();

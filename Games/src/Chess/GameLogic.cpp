@@ -1,12 +1,14 @@
 #include "Chess/GameLogic.h"
 
-bool chess::GameLogic::isFieldEmpty(const chess::Board& board, int x, int y) {
+bool chess::GameLogic::isFieldEmpty(const chess::Board& board, int x, int y) 
+{
 	if (board.board[x][y] == nullptr)
 		return true;
 	return false;
 }
 
-void chess::GameLogic::makeMove(chess::Board& board, const chess::Move& move) {
+void chess::GameLogic::makeMove(chess::Board& board, const chess::Move& move) 
+{
 	board.board[move.fromX][move.fromY]->makeMove(board.board, move);
 }
 
@@ -19,7 +21,8 @@ bool chess::GameLogic::isGameOver(chess::Board& board, chess::PieceColor current
 	return false;
 }
 
-chess::PieceColor chess::GameLogic::getNextPlayer(const chess::PieceColor color) {
+chess::PieceColor chess::GameLogic::getNextPlayer(const chess::PieceColor color) 
+{
 	if (color == chess::PieceColor::WHITE)
 		return chess::PieceColor::BLACK;
 	else if (color == chess::PieceColor::BLACK)
@@ -27,7 +30,8 @@ chess::PieceColor chess::GameLogic::getNextPlayer(const chess::PieceColor color)
 	return chess::PieceColor::NONE;
 }
 
-bool chess::GameLogic::isMoveValid(chess::Board& board, const chess::Move& move) {
+bool chess::GameLogic::isMoveValid(chess::Board& board, const chess::Move& move) 
+{
 	if (!board.board[move.fromX][move.fromY]->isMoveValid(board.board, move))
 		return false;
 
@@ -44,11 +48,13 @@ bool chess::GameLogic::isMoveValid(chess::Board& board, const chess::Move& move)
 	return true;
 }
 
-bool chess::GameLogic::isCheck(chess::Board& board, const chess::PieceColor& pieceColor) {
+bool chess::GameLogic::isCheck(chess::Board& board, const chess::PieceColor& pieceColor) 
+{
 	return chess::Piece::isCheck(board.board, pieceColor);
 }
 
-bool chess::GameLogic::isCheckMate(chess::Board& board, const chess::PieceColor& pieceColor) {
+bool chess::GameLogic::isCheckMate(chess::Board& board, const chess::PieceColor& pieceColor) 
+{
 	if (!isCheck(board, pieceColor))
 		return false;
 
@@ -58,7 +64,8 @@ bool chess::GameLogic::isCheckMate(chess::Board& board, const chess::PieceColor&
 	return true;
 }
 
-bool chess::GameLogic::isStaleMate(chess::Board& board, const chess::PieceColor& pieceColor) {
+bool chess::GameLogic::isStaleMate(chess::Board& board, const chess::PieceColor& pieceColor) 
+{
 	if (isCheck(board, pieceColor))
 		return false;
 
@@ -68,11 +75,13 @@ bool chess::GameLogic::isStaleMate(chess::Board& board, const chess::PieceColor&
 	return true;
 }
 
-bool chess::GameLogic::pawnReachedEndOfBoard(const chess::Board& board) {
+bool chess::GameLogic::pawnReachedEndOfBoard(const chess::Board& board) 
+{
 	return isPawnInRow(board, 0) || isPawnInRow(board, 7);
 }
 
-bool chess::GameLogic::isPawnInRow(const chess::Board& board, int row) {
+bool chess::GameLogic::isPawnInRow(const chess::Board& board, int row) 
+{
 	for (int x = 0; x < 8; x++) {
 		if (isFieldEmpty(board, x, row))
 			continue;
@@ -82,7 +91,8 @@ bool chess::GameLogic::isPawnInRow(const chess::Board& board, int row) {
 	return false;
 }
 
-bool chess::GameLogic::isAnyMovePossible(chess::Board& board, const chess::PieceColor& color) {
+bool chess::GameLogic::isAnyMovePossible(chess::Board& board, const chess::PieceColor& color) 
+{
 	for (int pieceX = 0; pieceX < 8; pieceX++) {
 		for (int pieceY = 0; pieceY < 8; pieceY++) {
 			if (board.board[pieceX][pieceY] == nullptr)
@@ -97,13 +107,13 @@ bool chess::GameLogic::isAnyMovePossible(chess::Board& board, const chess::Piece
 	return false;
 }
 
-bool chess::GameLogic::isAnyMoveWithPiecePossible(chess::Board& board, int pieceX, int pieceY) {
+bool chess::GameLogic::isAnyMoveWithPiecePossible(chess::Board& board, int pieceX, int pieceY) 
+{
 	for (int x = 0; x < 8; x++) {
 		for (int y = 0; y < 8; y++) {
 			if (isMoveValid(board, Move(pieceX, pieceY, x, y)))
 				return true;
 		}
 	}
-
 	return false;
 }

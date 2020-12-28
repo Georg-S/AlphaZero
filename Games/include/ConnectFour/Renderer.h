@@ -5,8 +5,10 @@
 #include "SDL/SDLHandler.h"
 #include "Board.h"
 
-namespace cn4 {
-	class Renderer {
+namespace cn4 
+{
+	class Renderer 
+	{
 	public:
 		Renderer();
 		~Renderer();

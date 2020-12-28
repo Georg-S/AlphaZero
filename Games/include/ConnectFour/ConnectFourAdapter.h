@@ -7,8 +7,8 @@
 #include "GameLogic.h"
 #include "Board.h"
 
-class ConnectFourAdapter : public Game {
-
+class ConnectFourAdapter : public Game 
+{
 public:
 	ConnectFourAdapter();
 	std::vector<int> getAllPossibleMoves(const std::string& state, int currentPlayer) override;

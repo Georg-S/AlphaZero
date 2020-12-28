@@ -3,7 +3,8 @@
 
 #include "Piece.h"
 
-class Bishop : public chess::Piece {
+class Bishop : public chess::Piece 
+{
 public:
 	Bishop(chess::PieceColor color);
 	bool isMoveValid(Piece* (*board)[8], const chess::Move& move) override;

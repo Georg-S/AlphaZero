@@ -4,8 +4,10 @@
 #include "PlayerColor.h"
 #include "Board.h"
 
-namespace cn4 {
-	class GameLogic {
+namespace cn4 
+{
+	class GameLogic 
+	{
 	public:
 		static cn4::PlayerColor getPlayerWon(const cn4::Board& board);
 		static bool isGameOver(const cn4::Board& board);

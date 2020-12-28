@@ -16,7 +16,8 @@
 #include "ReducedChessAdapter.h"
 
 
-class Chess {
+class Chess 
+{
 public:
 	Chess();
 	Chess(chess::PieceColor playerColor, Ai* ai);

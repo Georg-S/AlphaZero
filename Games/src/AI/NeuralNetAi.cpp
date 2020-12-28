@@ -1,6 +1,7 @@
 #include "AI/NeuralNetAi.h"
 
-NeuralNetAi::NeuralNetAi(NeuralNetwork* net, Game* game, int actionCount, int mctsCount, bool probabilistic, torch::DeviceType device) {
+NeuralNetAi::NeuralNetAi(NeuralNetwork* net, Game* game, int actionCount, int mctsCount, bool probabilistic, torch::DeviceType device)
+{
 	this->net = net;
 	this->game = game;
 	this->actionCount = actionCount;
@@ -9,7 +10,8 @@ NeuralNetAi::NeuralNetAi(NeuralNetwork* net, Game* game, int actionCount, int mc
 	this->probabilistic = probabilistic;
 }
 
-int NeuralNetAi::getMove(std::string state, int color) {
+int NeuralNetAi::getMove(std::string state, int color)
+{
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(actionCount);
 	mcts.search(mctsCount, state, net, game, color, device);
 	std::vector<float> probs = mcts.getProbabilities(state);
@@ -20,11 +22,13 @@ int NeuralNetAi::getMove(std::string state, int color) {
 		return getArgMaxIndex(probs);
 }
 
-int NeuralNetAi::getArgMaxIndex(const std::vector<float>& vec) {
+int NeuralNetAi::getArgMaxIndex(const std::vector<float>& vec)
+{
 	return std::max_element(vec.begin(), vec.end()) - vec.begin();
 }
 
-int NeuralNetAi::getProbabilisticAction(const std::vector<float>& vec) {
+int NeuralNetAi::getProbabilisticAction(const std::vector<float>& vec)
+{
 	float r = ((float)rand() / (RAND_MAX));
 	if (r == 0)
 		r += FLT_MIN;

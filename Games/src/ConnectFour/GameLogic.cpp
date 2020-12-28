@@ -1,6 +1,7 @@
 #include "ConnectFour/GameLogic.h"
 
-bool cn4::GameLogic::isGameOver(const cn4::Board& board) {
+bool cn4::GameLogic::isGameOver(const cn4::Board& board) 
+{
 	if (isDraw(board))
 		return true;
 	if (fourInARowHorizontal(board) || fourInARowVertical(board) || fourInARowDiagonal(board))
@@ -9,7 +10,8 @@ bool cn4::GameLogic::isGameOver(const cn4::Board& board) {
 	return false;
 }
 
-cn4::PlayerColor cn4::GameLogic::getPlayerWon(const cn4::Board& board) {
+cn4::PlayerColor cn4::GameLogic::getPlayerWon(const cn4::Board& board) 
+{
 	if (fourInARowHorizontal(board, (int)cn4::PlayerColor::YELLOW) 
 		|| fourInARowVertical(board, (int)cn4::PlayerColor::YELLOW) 
 		|| fourInARowDiagonal(board, (int)cn4::PlayerColor::YELLOW))
@@ -22,7 +24,8 @@ cn4::PlayerColor cn4::GameLogic::getPlayerWon(const cn4::Board& board) {
 	return cn4::PlayerColor::NONE;
 }
 
-bool cn4::GameLogic::fourInARowHorizontal(const cn4::Board& board, int player) {
+bool cn4::GameLogic::fourInARowHorizontal(const cn4::Board& board, int player) 
+{
 	for (int x = 0; x < board.width; x++) {
 		for (int y = 0; y < board.height; y++) {
 			if (board.board[x][y] == (int)cn4::PlayerColor::NONE)
@@ -34,7 +37,8 @@ bool cn4::GameLogic::fourInARowHorizontal(const cn4::Board& board, int player) {
 	return false;
 }
 
-bool cn4::GameLogic::fourInARowHorizontal(const cn4::Board& board, int player, int xPos, int yPos) {
+bool cn4::GameLogic::fourInARowHorizontal(const cn4::Board& board, int player, int xPos, int yPos) 
+{
 	if (!((xPos + 3) < board.width))
 		return false;
 	if (player != -1 && player != board.board[xPos][yPos])
@@ -50,7 +54,8 @@ bool cn4::GameLogic::fourInARowHorizontal(const cn4::Board& board, int player, i
 	return true;
 }
 
-bool cn4::GameLogic::fourInARowVertical(const cn4::Board& board, int player) {
+bool cn4::GameLogic::fourInARowVertical(const cn4::Board& board, int player) 
+{
 	for (int x = 0; x < board.width; x++) {
 		for (int y = 0; y < board.height; y++) {
 			if (board.board[x][y] == (int)cn4::PlayerColor::NONE)
@@ -62,7 +67,8 @@ bool cn4::GameLogic::fourInARowVertical(const cn4::Board& board, int player) {
 	return false;
 }
 
-bool cn4::GameLogic::fourInARowVertical(const cn4::Board& board, int player, int xPos, int yPos) {
+bool cn4::GameLogic::fourInARowVertical(const cn4::Board& board, int player, int xPos, int yPos) 
+{
 	if ((yPos + 3) >= board.height)
 		return false;
 	if ((player != -1) && (player != board.board[xPos][yPos]))
@@ -77,7 +83,8 @@ bool cn4::GameLogic::fourInARowVertical(const cn4::Board& board, int player, int
 	return true;
 }
 
-bool cn4::GameLogic::fourInARowDiagonal(const cn4::Board& board, int player) {
+bool cn4::GameLogic::fourInARowDiagonal(const cn4::Board& board, int player) 
+{
 	for (int x = 0; x < board.width; x++) {
 		for (int y = 0; y < board.height; y++) {
 			if (fourInARowDiagonalUp(board, player, x, y))
@@ -89,7 +96,8 @@ bool cn4::GameLogic::fourInARowDiagonal(const cn4::Board& board, int player) {
 	return false;
 }
 
-bool cn4::GameLogic::fourInARowDiagonalUp(const cn4::Board& board, int player, int xPos, int yPos) {
+bool cn4::GameLogic::fourInARowDiagonalUp(const cn4::Board& board, int player, int xPos, int yPos) 
+{
 	if ((yPos + 3) >= board.height || (xPos + 3) >= board.width)
 		return false;
 	if ((player != -1) && (player != board.board[xPos][yPos]))
@@ -104,7 +112,8 @@ bool cn4::GameLogic::fourInARowDiagonalUp(const cn4::Board& board, int player, i
 	return true;
 }
 
-bool cn4::GameLogic::fourInARowDiagonalDown(const cn4::Board& board, int player, int xPos, int yPos) {
+bool cn4::GameLogic::fourInARowDiagonalDown(const cn4::Board& board, int player, int xPos, int yPos) 
+{
 	if ((yPos - 3) < 0 || (xPos + 3) >= board.width)
 		return false;
 	if ((player != -1) && (player != board.board[xPos][yPos]))
@@ -119,7 +128,8 @@ bool cn4::GameLogic::fourInARowDiagonalDown(const cn4::Board& board, int player,
 	return true;
 }
 
-bool cn4::GameLogic::isDraw(const cn4::Board& board) {
+bool cn4::GameLogic::isDraw(const cn4::Board& board) 
+{
 	for (int y = 0; y < board.height; y++) {
 		for (int x = 0; x < board.width; x++) {
 			if (board.board[x][y] == (int)cn4::PlayerColor::NONE)
@@ -129,7 +139,8 @@ bool cn4::GameLogic::isDraw(const cn4::Board& board) {
 	return true;
 }
 
-void cn4::GameLogic::makeMove(cn4::Board& board, int action, const cn4::PlayerColor& playerColor) {
+void cn4::GameLogic::makeMove(cn4::Board& board, int action, const cn4::PlayerColor& playerColor) 
+{
 	for (int i = 0; i < board.height; i++) {
 		if (board.board[action][i] == 0) {
 			board.board[action][i] = (int)playerColor;
@@ -138,7 +149,8 @@ void cn4::GameLogic::makeMove(cn4::Board& board, int action, const cn4::PlayerCo
 	}
 }
 
-bool cn4::GameLogic::isMovePossible(const cn4::Board& board, int action) {
+bool cn4::GameLogic::isMovePossible(const cn4::Board& board, int action) 
+{
 	if (board.board[action][board.height - 1] == (int)cn4::PlayerColor::NONE)
 		return true;
 	return false;

@@ -5,8 +5,10 @@
 #include <string>
 #include "PlayerColor.h"
 
-namespace cn4 {
-	struct Board {
+namespace cn4 
+{
+	struct Board 
+	{
 		Board() 
 		{
 			for (int x = 0; x < width; x++)
@@ -16,11 +18,9 @@ namespace cn4 {
 
 		Board(const cn4::Board& board) 
 		{
-			for (int x = 0; x < width; x++) {
-				for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++)
+				for (int y = 0; y < height; y++) 
 					this->board[x][y] = board.board[x][y];
-				}
-			}
 		}
 
 		char convertPlayerColorToChar(int color) const

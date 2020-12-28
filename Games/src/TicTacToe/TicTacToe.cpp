@@ -1,23 +1,27 @@
 #include "TicTacToe/TicTacToe.h"
 
-TicTacToe::TicTacToe() {
+TicTacToe::TicTacToe() 
+{
 	this->playerCount = 2;
 	renderer = new ttt::Renderer();
 }
 
-TicTacToe::TicTacToe(Ai* ai, int aiColor) {
+TicTacToe::TicTacToe(Ai* ai, int aiColor) 
+{
 	this->playerCount = 1;
 	this->ai = ai;
 	this->aiColor = aiColor;
 	renderer = new ttt::Renderer();
 }
 
-void TicTacToe::reset() {
+void TicTacToe::reset() 
+{
 	board = ttt::Board();
 	currentPlayer = 1;
 }
 
-void TicTacToe::gameLoop() {
+void TicTacToe::gameLoop() 
+{
 	outputBoard(board);
 	while (!quit) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -36,7 +40,8 @@ void TicTacToe::gameLoop() {
 	}
 }
 
-void TicTacToe::updateGame() {
+void TicTacToe::updateGame() 
+{
 	renderer->updateQuit();
 	if (renderer->isQuit()) {
 		quit = true;
@@ -49,18 +54,21 @@ void TicTacToe::updateGame() {
 		updateTwoPlayerGame();
 }
 
-void TicTacToe::updateOnePlayerGame() {
+void TicTacToe::updateOnePlayerGame() 
+{
 	if (currentPlayer == aiColor)
 		updateAiMove(currentPlayer, board);
 	else
 		updateHumanPlayerMove(currentPlayer, board);
 }
 
-void TicTacToe::updateTwoPlayerGame() {
+void TicTacToe::updateTwoPlayerGame() 
+{
 	updateHumanPlayerMove(currentPlayer, board);
 }
 
-void TicTacToe::updateAiMove(int& currentPlayer, ttt::Board& board) {
+void TicTacToe::updateAiMove(int& currentPlayer, ttt::Board& board) 
+{
 	int act = ai->getMove(convertBoardToString(board), aiColor);
 	ttt::Move move = ttt::Move(act % 3, act / 3);
 	ttt::GameLogic::makeMove(board, currentPlayer, move);
@@ -71,7 +79,8 @@ void TicTacToe::updateAiMove(int& currentPlayer, ttt::Board& board) {
 		currentPlayer = ttt::GameLogic::getNextPlayer(currentPlayer);
 }
 
-void TicTacToe::updateHumanPlayerMove(int& currentPlayer, ttt::Board& board) {
+void TicTacToe::updateHumanPlayerMove(int& currentPlayer, ttt::Board& board) 
+{
 	ttt::Move move = getInput();
 	if (!isValidMove(move, board))
 		return;
@@ -85,7 +94,8 @@ void TicTacToe::updateHumanPlayerMove(int& currentPlayer, ttt::Board& board) {
 	}
 }
 
-ttt::Move TicTacToe::getMoveFromConsole() {
+ttt::Move TicTacToe::getMoveFromConsole()
+{
 	bool validMove = false;
 	int x, y = -1;
 
@@ -102,7 +112,8 @@ ttt::Move TicTacToe::getMoveFromConsole() {
 	return ttt::Move(x, y);
 }
 
-ttt::Move TicTacToe::getMoveFromMouseInput() {
+ttt::Move TicTacToe::getMoveFromMouseInput() 
+{
 	ttt::Move move = ttt::Move(-1, -1);
 	mouse.update();
 
@@ -119,12 +130,14 @@ ttt::Move TicTacToe::getMoveFromMouseInput() {
 	return move;
 }
 
-void TicTacToe::handleGameOver() {
+void TicTacToe::handleGameOver() 
+{
 	outputBoard(board);
 	quit = true;
 }
 
-bool TicTacToe::isValid(int x, int y) {
+bool TicTacToe::isValid(int x, int y) 
+{
 	if (x < 0 || x > 2)
 		return false;
 	if (y < 0 || y > 2)
@@ -135,7 +148,8 @@ bool TicTacToe::isValid(int x, int y) {
 
 
 
-void TicTacToe::printBoardToConsole(const ttt::Board& board) {
+void TicTacToe::printBoardToConsole(const ttt::Board& board) 
+{
 	for (int y = 0; y < 3; y++) {
 		for (int x = 0; x < 3; x++) {
 			std::cout << convertPlayerNumberToChar(board.board[x][y]) << " ";
@@ -145,7 +159,8 @@ void TicTacToe::printBoardToConsole(const ttt::Board& board) {
 	std::cout << std::endl << std::endl;
 }
 
-char TicTacToe::convertPlayerNumberToChar(int number) {
+char TicTacToe::convertPlayerNumberToChar(int number) 
+{
 	if (number == 0)
 		return '-';
 	else if (number == 1)
@@ -155,7 +170,8 @@ char TicTacToe::convertPlayerNumberToChar(int number) {
 	return 'F';
 }
 
-std::string TicTacToe::convertBoardToString(const ttt::Board& board) {
+std::string TicTacToe::convertBoardToString(const ttt::Board& board) 
+{
 	std::string result = "";
 
 	for (int y = 0; y < 3; y++)
@@ -165,28 +181,32 @@ std::string TicTacToe::convertBoardToString(const ttt::Board& board) {
 	return result;
 }
 
-void TicTacToe::outputBoard(const ttt::Board& board) {
+void TicTacToe::outputBoard(const ttt::Board& board)
+{
 	if (graphicalOutput)
 		renderer->renderBoard(board);
 	else
 		printBoardToConsole(board);
 }
 
-ttt::Move TicTacToe::getInput() {
+ttt::Move TicTacToe::getInput() 
+{
 	if (graphicalOutput)
 		return getMoveFromMouseInput();
 	else
 		return getMoveFromConsole();
 }
 
-void TicTacToe::outputGameWinnerToConsole(const ttt::Board& board, const int currentPlayer) {
+void TicTacToe::outputGameWinnerToConsole(const ttt::Board& board, const int currentPlayer)
+{
 	if (ttt::GameLogic::playerWon(board, currentPlayer))
 		std::cout << " Game Over Player " << currentPlayer << " Won" << std::endl;
 	else
 		std::cout << "Game Over DRAW " << std::endl;
 }
 
-bool TicTacToe::isValidMove(const ttt::Move& move, const ttt::Board& board) {
+bool TicTacToe::isValidMove(const ttt::Move& move, const ttt::Board& board) 
+{
 	if (!isValid(move.x, move.y))
 		return false;
 	if (!ttt::GameLogic::isMovePossible(board, move))

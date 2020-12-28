@@ -1,13 +1,15 @@
 #include "ConnectFour/ConnectFour.h"
 
 
-ConnectFour::ConnectFour() {
+ConnectFour::ConnectFour() 
+{
 	this->currentPlayerColor = cn4::PlayerColor::YELLOW;
 	this->playerCount = 2;
 	this->renderer = new cn4::Renderer();
 }
 
-ConnectFour::ConnectFour(cn4::PlayerColor aiColor, Ai* ai) {
+ConnectFour::ConnectFour(cn4::PlayerColor aiColor, Ai* ai) 
+{
 	this->currentPlayerColor = cn4::PlayerColor::YELLOW;
 	this->playerCount = 1;
 	this->aiColor = aiColor;
@@ -15,7 +17,8 @@ ConnectFour::ConnectFour(cn4::PlayerColor aiColor, Ai* ai) {
 	this->renderer = new cn4::Renderer();
 }
 
-void ConnectFour::gameLoop() {
+void ConnectFour::gameLoop() 
+{
 	outputBoard(board);
 	while (!gameOver) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -33,7 +36,8 @@ void ConnectFour::gameLoop() {
 	}
 }
 
-void ConnectFour::updateGame() {
+void ConnectFour::updateGame() 
+{
 	renderer->updateQuit();
 	if (renderer->isQuit()) {
 		gameOver = true;
@@ -46,18 +50,21 @@ void ConnectFour::updateGame() {
 		update2PlayerGame();
 }
 
-void ConnectFour::update1PlayerGame() {
+void ConnectFour::update1PlayerGame() 
+{
 	if (currentPlayerColor == aiColor)
 		updateAiMove();
 	else
 		updateHumanMove();
 }
 
-void ConnectFour::update2PlayerGame() {
+void ConnectFour::update2PlayerGame() 
+{
 	updateHumanMove();
 }
 
-void ConnectFour::updateAiMove() {
+void ConnectFour::updateAiMove() 
+{
 	int action = ai->getMove(board.toString(), (int)currentPlayerColor);
 	cn4::GameLogic::makeMove(board, action, currentPlayerColor);
 	outputBoard(board);
@@ -67,7 +74,8 @@ void ConnectFour::updateAiMove() {
 		currentPlayerColor = getNextPlayer(currentPlayerColor);
 }
 
-void ConnectFour::updateHumanMove() {
+void ConnectFour::updateHumanMove() 
+{
 	int action = getAction();
 	if (!isValidInput(board, action))
 		return;
@@ -80,14 +88,16 @@ void ConnectFour::updateHumanMove() {
 		currentPlayerColor = getNextPlayer(currentPlayerColor);
 }
 
-int ConnectFour::getAction() {
+int ConnectFour::getAction() 
+{
 	if (useGraphicalRender)
 		return getActionFromMouseInput();
 	else
 		return getActionFromKeyboard();
 }
 
-int ConnectFour::getActionFromMouseInput() {
+int ConnectFour::getActionFromMouseInput() 
+{
 	int action = -1;
 	mouse.update();
 
@@ -100,7 +110,8 @@ int ConnectFour::getActionFromMouseInput() {
 	return action;
 }
 
-int ConnectFour::getActionFromKeyboard() {
+int ConnectFour::getActionFromKeyboard() 
+{
 	int action = -1;
 	std::cout << "Select Row (0-6) for your Move " << std::endl;
 	while (action == -1) {
@@ -112,7 +123,8 @@ int ConnectFour::getActionFromKeyboard() {
 	return action;
 }
 
-bool ConnectFour::isValidInput(const cn4::Board& board, int action) {
+bool ConnectFour::isValidInput(const cn4::Board& board, int action) 
+{
 	if (action < 0 || action >= board.width)
 		return false;
 	if (!cn4::GameLogic::isMovePossible(board, action))
@@ -123,7 +135,8 @@ bool ConnectFour::isValidInput(const cn4::Board& board, int action) {
 
 
 
-void ConnectFour::printBoardToConsole(const cn4::Board& board) {
+void ConnectFour::printBoardToConsole(const cn4::Board& board) 
+{
 	std::cout << std::endl << std::endl;
 	for (int y = board.height - 1; y >= 0; y--) {
 		for (int x = 0; x < board.width; x++) {
@@ -133,7 +146,8 @@ void ConnectFour::printBoardToConsole(const cn4::Board& board) {
 	}
 }
 
-char ConnectFour::convertPlayerColorToChar(const cn4::PlayerColor& playerColor) {
+char ConnectFour::convertPlayerColorToChar(const cn4::PlayerColor& playerColor) 
+{
 	if (playerColor == cn4::PlayerColor::RED)
 		return 'X';
 	if (playerColor == cn4::PlayerColor::YELLOW)
@@ -141,16 +155,19 @@ char ConnectFour::convertPlayerColorToChar(const cn4::PlayerColor& playerColor) 
 	return '-';
 }
 
-void ConnectFour::handleGameOver(const cn4::Board& board) {
+void ConnectFour::handleGameOver(const cn4::Board& board) 
+{
 	std::cout << "Game Over " << std::endl;
 	gameOver = true;
 }
 
-cn4::PlayerColor ConnectFour::getNextPlayer(const cn4::PlayerColor& player) {
+cn4::PlayerColor ConnectFour::getNextPlayer(const cn4::PlayerColor& player) 
+{
 	return (cn4::PlayerColor)((int)player % 2 + 1);
 }
 
-void ConnectFour::outputBoard(const cn4::Board& board) {
+void ConnectFour::outputBoard(const cn4::Board& board) 
+{
 	if (useGraphicalRender)
 		renderer->renderBoard(board);
 	else

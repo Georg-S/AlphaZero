@@ -1,12 +1,14 @@
 #include "Chess/Pieces/King.h"
 
-King::King(chess::PieceColor color) {
+King::King(chess::PieceColor color)
+{
 	this->color = color;
 	this->pieceChar = 'K';
 	this->moved = false;
 }
 
-bool King::isMoveValid(chess::Piece* board[8][8], const chess::Move& move) {
+bool King::isMoveValid(chess::Piece* board[8][8], const chess::Move& move)
+{
 
 	if (normalMovePossible(board, move.fromX, move.fromY, move.toX, move.toY))
 		return true;
@@ -15,7 +17,8 @@ bool King::isMoveValid(chess::Piece* board[8][8], const chess::Move& move) {
 	return false;
 }
 
-void King::makeMove(chess::Piece* board[8][8], const chess::Move& move) {
+void King::makeMove(chess::Piece* board[8][8], const chess::Move& move)
+{
 	setEnPassantDirectionsOfOneColorToZero(board, board[move.fromX][move.fromY]->getPieceColor());
 
 	if (isCastlingMove(move.fromX, move.toX))
@@ -25,7 +28,8 @@ void King::makeMove(chess::Piece* board[8][8], const chess::Move& move) {
 }
 
 bool King::normalMovePossible(chess::Piece* board[8][8], int fromX, int fromY, int toX,
-	int toY) {
+	int toY)
+{
 
 	if (fromX == toX && fromY == toY)
 		return false;
@@ -43,7 +47,8 @@ bool King::normalMovePossible(chess::Piece* board[8][8], int fromX, int fromY, i
 }
 
 bool
-King::castlingPossible(chess::Piece* board[8][8], int fromX, int fromY, int toX, int toY) {
+King::castlingPossible(chess::Piece* board[8][8], int fromX, int fromY, int toX, int toY)
+{
 	if (moved || fromY != toY)
 		return false;
 	if (abs(fromX - toX) != 2)
@@ -84,7 +89,8 @@ King::castlingPossible(chess::Piece* board[8][8], int fromX, int fromY, int toX,
 	return true;
 }
 
-bool King::isValidRookForCastlingField(chess::Piece* board[8][8], int rookX, int rookY) {
+bool King::isValidRookForCastlingField(chess::Piece* board[8][8], int rookX, int rookY)
+{
 	if (isFieldEmpty(board, rookX, rookY))
 		return false;
 
@@ -97,9 +103,9 @@ bool King::isValidRookForCastlingField(chess::Piece* board[8][8], int rookX, int
 	return true;
 }
 
-bool
-King::testCheckOnPositionAndResetBoard(chess::Piece* board[8][8], int fromX, int fromY, int toX,
-	int toY) {
+bool King::testCheckOnPositionAndResetBoard(chess::Piece* board[8][8], int fromX, int fromY, int toX,
+	int toY) 
+{
 	if (board[toX][toY] != nullptr) {
 		debugPrintBoardToConsole(board);
 		std::cout << "We have a Problem " << std::endl;
@@ -116,12 +122,13 @@ King::testCheckOnPositionAndResetBoard(chess::Piece* board[8][8], int fromX, int
 	return check;
 }
 
-bool King::isCastlingMove(int fromX, int toX) {
+bool King::isCastlingMove(int fromX, int toX)
+{
 	return (abs(fromX - toX) == 2);
 }
 
-void
-King::makeCastlingMove(chess::Piece* board[8][8], int fromX, int fromY, int toX, int toY) {
+void King::makeCastlingMove(chess::Piece* board[8][8], int fromX, int fromY, int toX, int toY)
+{
 	board[fromX][fromY]->moved = true;
 	int direction = (toX - fromX) / abs(toX - fromX);
 	int rookX;
@@ -142,7 +149,8 @@ King::makeCastlingMove(chess::Piece* board[8][8], int fromX, int fromY, int toX,
 	board[rookX][fromY] = nullptr;
 }
 
-chess::Piece* King::getDeepCopy() {
+chess::Piece* King::getDeepCopy()
+{
 	King* king = new King(this->color);
 	king->moved = this->moved;
 
