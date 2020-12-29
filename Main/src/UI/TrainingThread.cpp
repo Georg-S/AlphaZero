@@ -6,7 +6,7 @@ TrainingThread::TrainingThread(std::function<void()> runTraining)
 	this->setTerminationEnabled(true);
 }
 
-void TrainingThread::run() 
+void TrainingThread::run()
 {
 	this->runTraining();
 	emit trainingFinished();

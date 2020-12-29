@@ -9,7 +9,8 @@
 #include "GameHandling/ChessHandler.h"
 #define slots Q_SLOTS
 
-class ChessMiniMaxMenu : public QWidget {
+class ChessMiniMaxMenu : public QWidget
+{
 	Q_OBJECT;
 public:
 	explicit ChessMiniMaxMenu(QWidget* w, QWidget* parent = nullptr);

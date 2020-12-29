@@ -1,10 +1,12 @@
 #include "GameHandling/TicTacToeHandler.h"
 
-TicTacToeHandler::TicTacToeHandler() {
+TicTacToeHandler::TicTacToeHandler() 
+{
 	adap = TicTacToeAdapter();
 }
 
-void TicTacToeHandler::ticTacToeAgainstMiniMaxAi(int playerColor) {
+void TicTacToeHandler::ticTacToeAgainstMiniMaxAi(int playerColor)
+{
 	ttt::MiniMaxAi ai = ttt::MiniMaxAi();
 	int aiColor = ttt::GameLogic::getNextPlayer(playerColor);
 	ttt::MiniMaxAi miMaxAi = ttt::MiniMaxAi();
@@ -12,7 +14,8 @@ void TicTacToeHandler::ticTacToeAgainstMiniMaxAi(int playerColor) {
 	tic.gameLoop();
 }
 
-void TicTacToeHandler::runTrainingWithAlphaZero(torch::DeviceType device) {
+void TicTacToeHandler::runTrainingWithAlphaZero(torch::DeviceType device)
+{
 	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 3, 3, 9, device);
 	AlphaZeroTraining training = AlphaZeroTraining(9, neuralNet, device);
 	loadDefaultParametersForAlphaZeroTraining(training);
@@ -20,12 +23,14 @@ void TicTacToeHandler::runTrainingWithAlphaZero(torch::DeviceType device) {
 	training.runTraining(&adap);
 }
 
-void TicTacToeHandler::startTwoPlayerTicTacToeGame() {
+void TicTacToeHandler::startTwoPlayerTicTacToeGame()
+{
 	TicTacToe ttt = TicTacToe();
 	ttt.gameLoop();
 }
 
-void TicTacToeHandler::traininingPerformanceTest(torch::DeviceType device) {
+void TicTacToeHandler::traininingPerformanceTest(torch::DeviceType device) 
+{
 	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 3, 3, 9, device);
 	AlphaZeroTraining training = AlphaZeroTraining(9, neuralNet, device);
 
@@ -39,8 +44,8 @@ void TicTacToeHandler::traininingPerformanceTest(torch::DeviceType device) {
 	std::cout << "Time passed: " << difference << std::endl;
 }
 
-void TicTacToeHandler::evalTicTacToe() {
-
+void TicTacToeHandler::evalTicTacToe()
+{
 	std::ofstream myfile;
 	myfile.open(std::to_string(evalMCTSCount) + "_50_100k_001.csv");
 	myfile << "Iteration; Wins; Draws; Losses \n";
@@ -58,7 +63,8 @@ void TicTacToeHandler::evalTicTacToe() {
 	myfile.close();
 }
 
-EvalResult TicTacToeHandler::evalTicTacToe(std::string netName, torch::DeviceType device) {
+EvalResult TicTacToeHandler::evalTicTacToe(std::string netName, torch::DeviceType device)
+{
 	DefaultNeuralNet* toEval = new DefaultNeuralNet(2, 3, 3, 9, netName, device);
 	NeuralNetAi neuralNetAi = NeuralNetAi(toEval, &adap, 9, evalMCTSCount, false, device);
 	ttt::MiniMaxAi minimaxAi = ttt::MiniMaxAi();
@@ -67,11 +73,13 @@ EvalResult TicTacToeHandler::evalTicTacToe(std::string netName, torch::DeviceTyp
 	return result;
 }
 
-void TicTacToeHandler::writeEvaluationResultToFile(int iteration, const EvalResult& result, std::ofstream& file) {
+void TicTacToeHandler::writeEvaluationResultToFile(int iteration, const EvalResult& result, std::ofstream& file)
+{
 	file << std::to_string(iteration) << ";" << std::to_string(result.wins) << ";" << std::to_string(result.draws) << ";" << std::to_string(result.losses) << std::endl;
 }
 
-void TicTacToeHandler::loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraining& ticTacToeZero) {
+void TicTacToeHandler::loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraining& ticTacToeZero)
+{
 	ticTacToeZero.neuralNetPath = trainingPath;
 	ticTacToeZero.TRAINING_DONT_USE_DRAWS = false;
 	ticTacToeZero.RESTRICT_GAME_LENGTH = false;
@@ -87,13 +95,15 @@ void TicTacToeHandler::loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraini
 	ticTacToeZero.RANDOM_MOVE_COUNT = 3;
 }
 
-void TicTacToeHandler::loadPerformanceTestParameters(AlphaZeroTraining& ticTacToeZero) {
+void TicTacToeHandler::loadPerformanceTestParameters(AlphaZeroTraining& ticTacToeZero)
+{
 	loadDefaultParametersForAlphaZeroTraining(ticTacToeZero);
 	ticTacToeZero.NUM_SELF_PLAY_GAMES = 20;
 	ticTacToeZero.TRAINING_ITERATIONS = 1;
 }
 
-void TicTacToeHandler::runTraining(const TrainingParameters& params) {
+void TicTacToeHandler::runTraining(const TrainingParameters& params)
+{
 	TicTacToeAdapter adap = TicTacToeAdapter();
 
 	torch::DeviceType device = params.device;
@@ -106,7 +116,8 @@ void TicTacToeHandler::runTraining(const TrainingParameters& params) {
 	delete neuralNet;
 }
 
-void TicTacToeHandler::setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params) {
+void TicTacToeHandler::setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params)
+{
 	training.setMaxReplayMemorySize(params.replayMemorySize);
 	training.neuralNetPath = trainingPath;
 	training.TRAINING_DONT_USE_DRAWS = !params.useDraws;
@@ -122,9 +133,9 @@ void TicTacToeHandler::setTrainingParameters(AlphaZeroTraining& training, const 
 	training.RANDOM_MOVE_COUNT = params.randomizedMoveCount;
 }
 
-void
-TicTacToeHandler::ticTacToeAgainstNeuralNetAi(int playerColor, std::string netName, int countMcts, bool probabilistic,
-	torch::DeviceType device) {
+void TicTacToeHandler::ticTacToeAgainstNeuralNetAi(int playerColor, std::string netName, int countMcts, bool probabilistic,
+	torch::DeviceType device)
+{
 	TicTacToeAdapter adap = TicTacToeAdapter();
 	DefaultNeuralNet neuralNet = DefaultNeuralNet(2, 3, 3, 9, preTrainedPath + "/" + netName, device);
 	NeuralNetAi ai = NeuralNetAi(&neuralNet, &adap, 9, countMcts, probabilistic, device);

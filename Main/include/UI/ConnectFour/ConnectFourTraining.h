@@ -12,7 +12,8 @@
 #define slots Q_SLOTS
 
 
-class ConnectFourTraining : public QWidget {
+class ConnectFourTraining : public QWidget
+{
 	Q_OBJECT;
 
 public:

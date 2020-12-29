@@ -11,7 +11,8 @@ MainMenu::MainMenu(std::function<void(bool test)> setHomeButtonVisibility, QWidg
 	this->setHomeButtonVisibility = setHomeButtonVisibility;
 }
 
-MainMenu::~MainMenu() {
+MainMenu::~MainMenu()
+{
 	delete mainMenuForm;
 	delete connectFourMainMenu;
 	delete ticTacToeMainMenu;

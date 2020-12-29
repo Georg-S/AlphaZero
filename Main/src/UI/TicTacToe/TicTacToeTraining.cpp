@@ -1,17 +1,20 @@
 #include "UI/TicTacToe/TicTacToeTraining.h"
 
-TicTacToeTraining::TicTacToeTraining(QWidget* w, QWidget* parent) : QWidget(parent), trainingUi(new Ui::TrainingWidget) {
+TicTacToeTraining::TicTacToeTraining(QWidget* w, QWidget* parent) : QWidget(parent), trainingUi(new Ui::TrainingWidget)
+{
 	trainingUi->setupUi(this);
 	gameHandler = TicTacToeHandler();
 	initDefaultValues();
 	initInputValidators();
 }
 
-TicTacToeTraining::~TicTacToeTraining() {
+TicTacToeTraining::~TicTacToeTraining()
+{
 	delete trainingUi;
 }
 
-void TicTacToeTraining::initDefaultValues() {
+void TicTacToeTraining::initDefaultValues()
+{
 	trainingUi->ReplayMemorySizeInput->setText("100000");
 	trainingUi->UseDrawsYesRadio->setChecked(true);
 	trainingUi->RestrictGameLengthNoRadio->setChecked(false);
@@ -28,7 +31,8 @@ void TicTacToeTraining::initDefaultValues() {
 	trainingUi->CpuThreadsInput->setText("1");
 }
 
-void TicTacToeTraining::initInputValidators() {
+void TicTacToeTraining::initInputValidators()
+{
 	trainingUi->MaxGameLengthInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->ReplayMemorySizeInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->FilterCountInput->setValidator(new QIntValidator(0, INT32_MAX, this));
@@ -42,7 +46,8 @@ void TicTacToeTraining::initInputValidators() {
 	trainingUi->CpuThreadsInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 }
 
-TrainingParameters TicTacToeTraining::getParametersFromInput() {
+TrainingParameters TicTacToeTraining::getParametersFromInput()
+{
 	TrainingParameters params;
 
 	torch::DeviceType device = torch::kCPU;
@@ -70,17 +75,20 @@ TrainingParameters TicTacToeTraining::getParametersFromInput() {
 	return params;
 }
 
-void TicTacToeTraining::on_RestrictGameLengthNoRadio_clicked() {
+void TicTacToeTraining::on_RestrictGameLengthNoRadio_clicked()
+{
 	trainingUi->MaxGameLengthLabel->setEnabled(false);
 	trainingUi->MaxGameLengthInput->setEnabled(false);
 }
 
-void TicTacToeTraining::on_RestrictGameLengthYesRadio_clicked() {
+void TicTacToeTraining::on_RestrictGameLengthYesRadio_clicked()
+{
 	trainingUi->MaxGameLengthInput->setEnabled(true);
 	trainingUi->MaxGameLengthLabel->setEnabled(true);
 }
 
-void TicTacToeTraining::on_StartTrainingButton_clicked() {
+void TicTacToeTraining::on_StartTrainingButton_clicked()
+{
 	if (!trainingRunning)
 	{
 		trainingRunning = true;
@@ -104,6 +112,7 @@ void TicTacToeTraining::handleTrainingFinished()
 	delete trainingThread;
 }
 
-void TicTacToeTraining::reset() {
+void TicTacToeTraining::reset()
+{
 	this->setParent(nullptr);
 }

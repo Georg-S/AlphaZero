@@ -15,7 +15,8 @@
 #include "TrainingParameters.h"
 
 
-class ConnectFourHandler {
+class ConnectFourHandler 
+{
 public:
 	ConnectFourHandler();
 	void connectFourAgainstNeuralNetAi(cn4::PlayerColor playerColor, std::string netName, int countMcts, bool probabilistic, torch::DeviceType device);

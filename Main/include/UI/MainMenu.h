@@ -9,7 +9,8 @@
 #include "UI/Chess/ChessMainMenu.h"
 #include "UI//TicTacToe/TicTacToeMainMenu.h"
 
-class MainMenu : public QWidget {
+class MainMenu : public QWidget
+{
 	Q_OBJECT;
 
 public:

@@ -1,34 +1,40 @@
 #include "UI/Chess/ChessTrainingMenu.h"
 
-ChessTrainingMenu::ChessTrainingMenu(QWidget* w, QWidget* parent) : QWidget(parent), trainingUi(new Ui::TrainingWidget) {
+ChessTrainingMenu::ChessTrainingMenu(QWidget* w, QWidget* parent) : QWidget(parent), trainingUi(new Ui::TrainingWidget)
+{
 	trainingUi->setupUi(this);
 	gameHandler = ChessHandler();
 	initDefaultValues();
 	initInputValidators();
 }
 
-ChessTrainingMenu::~ChessTrainingMenu() {
+ChessTrainingMenu::~ChessTrainingMenu()
+{
 	delete trainingUi;
 }
 
-void ChessTrainingMenu::on_RestrictGameLengthNoRadio_clicked() {
+void ChessTrainingMenu::on_RestrictGameLengthNoRadio_clicked()
+{
 	trainingUi->MaxGameLengthLabel->setEnabled(false);
 	trainingUi->MaxGameLengthInput->setEnabled(false);
 }
 
-void ChessTrainingMenu::on_RestrictGameLengthYesRadio_clicked() {
+void ChessTrainingMenu::on_RestrictGameLengthYesRadio_clicked()
+{
 	trainingUi->MaxGameLengthInput->setEnabled(true);
 	trainingUi->MaxGameLengthLabel->setEnabled(true);
 }
 
-void ChessTrainingMenu::on_StartTrainingButton_clicked() {
+void ChessTrainingMenu::on_StartTrainingButton_clicked()
+{
 	trainingUi->StartTrainingButton->setEnabled(false);
 	trainingUi->StartTrainingButton->setText("Training is running");
 
 	runTraining();
 }
 
-void ChessTrainingMenu::initDefaultValues() {
+void ChessTrainingMenu::initDefaultValues()
+{
 	trainingUi->ReplayMemorySizeInput->setText("200000");
 	trainingUi->UseDrawsYesRadio->setChecked(true);
 	trainingUi->RestrictGameLengthYesRadio->setChecked(true);
@@ -47,7 +53,8 @@ void ChessTrainingMenu::initDefaultValues() {
 	trainingUi->CpuThreadsInput->setText("1");
 }
 
-void ChessTrainingMenu::initInputValidators() {
+void ChessTrainingMenu::initInputValidators()
+{
 	trainingUi->MaxGameLengthInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->ReplayMemorySizeInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->FilterCountInput->setValidator(new QIntValidator(0, INT32_MAX, this));
@@ -61,7 +68,8 @@ void ChessTrainingMenu::initInputValidators() {
 	trainingUi->CpuThreadsInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 }
 
-TrainingParameters ChessTrainingMenu::getParametersFromInput() {
+TrainingParameters ChessTrainingMenu::getParametersFromInput()
+{
 	TrainingParameters params;
 
 	torch::DeviceType device = torch::kCPU;
@@ -89,7 +97,7 @@ TrainingParameters ChessTrainingMenu::getParametersFromInput() {
 	return params;
 }
 
-void ChessTrainingMenu::runTraining() 
+void ChessTrainingMenu::runTraining()
 {
 	if (!trainingRunning)
 	{

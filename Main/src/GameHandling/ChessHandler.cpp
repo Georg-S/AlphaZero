@@ -1,10 +1,12 @@
 #include "GameHandling/ChessHandler.h"
 
-ChessHandler::ChessHandler() {
+ChessHandler::ChessHandler()
+{
 
 }
 
-void ChessHandler::runTrainingWithDefaultParameters(torch::DeviceType device) {
+void ChessHandler::runTrainingWithDefaultParameters(torch::DeviceType device)
+{
 	DefaultNeuralNet* chessNet = new DefaultNeuralNet(12, 8, 8, 4096, device);
 	chessNet->setLearningRate(0.2);
 	ReducedChessAdapter adap = ReducedChessAdapter();
@@ -14,9 +16,9 @@ void ChessHandler::runTrainingWithDefaultParameters(torch::DeviceType device) {
 	alphaZero.runTraining(&adap);
 }
 
-void
-ChessHandler::chessAgainstNeuralNetAi(chess::PieceColor playerColor, std::string netName, int mctsCount, bool randomize,
-	torch::DeviceType device) {
+void ChessHandler::chessAgainstNeuralNetAi(chess::PieceColor playerColor, std::string netName, int mctsCount, bool randomize,
+	torch::DeviceType device)
+{
 	DefaultNeuralNet* chessNet = new DefaultNeuralNet(12, 8, 8, 4096, preTrainedPath + "/" + netName, device);
 	ReducedChessAdapter adap = ReducedChessAdapter();
 	NeuralNetAi neuralNetAi = NeuralNetAi(chessNet, &adap, 4096, mctsCount, randomize, device);
@@ -25,12 +27,14 @@ ChessHandler::chessAgainstNeuralNetAi(chess::PieceColor playerColor, std::string
 	chess.gameLoop();
 }
 
-void ChessHandler::startTwoPlayerChessGame() {
+void ChessHandler::startTwoPlayerChessGame() 
+{
 	Chess chess = Chess();
 	chess.gameLoop();
 }
 
-void ChessHandler::traininingPerformanceTest(torch::DeviceType device) {
+void ChessHandler::traininingPerformanceTest(torch::DeviceType device) 
+{
 	DefaultNeuralNet* chessNet = new DefaultNeuralNet(12, 8, 8, 4096, device);
 	ReducedChessAdapter adap = ReducedChessAdapter();
 	AlphaZeroTraining alphaZero = AlphaZeroTraining(4096, chessNet, device);
@@ -43,7 +47,8 @@ void ChessHandler::traininingPerformanceTest(torch::DeviceType device) {
 	std::cout << (after - before) / 1000.f << std::endl;
 }
 
-void ChessHandler::loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraining& chessZero) {
+void ChessHandler::loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraining& chessZero) 
+{
 	chessZero.setMaxReplayMemorySize(300000);
 	chessZero.neuralNetPath = trainingPath;
 	chessZero.TRAINING_DONT_USE_DRAWS = false;
@@ -59,7 +64,8 @@ void ChessHandler::loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraining& 
 	chessZero.RANDOM_MOVE_COUNT = 20;
 }
 
-void ChessHandler::loadPerformanceTestParameters(AlphaZeroTraining& chessZero) {
+void ChessHandler::loadPerformanceTestParameters(AlphaZeroTraining& chessZero) 
+{
 	loadDefaultParametersForAlphaZeroTraining(chessZero);
 
 	chessZero.TRAINING_ITERATIONS = 1;
@@ -67,7 +73,8 @@ void ChessHandler::loadPerformanceTestParameters(AlphaZeroTraining& chessZero) {
 	chessZero.SELF_PLAY_MCTS_COUNT = 800;
 }
 
-void ChessHandler::setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params) {
+void ChessHandler::setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params) 
+{
 	training.setMaxReplayMemorySize(params.replayMemorySize);
 	training.neuralNetPath = trainingPath;
 	training.TRAINING_DONT_USE_DRAWS = !params.useDraws;
@@ -84,7 +91,8 @@ void ChessHandler::setTrainingParameters(AlphaZeroTraining& training, const Trai
 	training.NUMBER_CPU_THREADS = params.cpuThreads;
 }
 
-void ChessHandler::runTraining(const TrainingParameters& params) {
+void ChessHandler::runTraining(const TrainingParameters& params) 
+{
 	ReducedChessAdapter adap = ReducedChessAdapter();
 	torch::DeviceType device = params.device;
 	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(12, 8, 8, 4096, device);
@@ -96,7 +104,8 @@ void ChessHandler::runTraining(const TrainingParameters& params) {
 	delete neuralNet;
 }
 
-void ChessHandler::chessAgainstMiniMaxAi(int miniMaxDepth, chess::PieceColor playerColor) {
+void ChessHandler::chessAgainstMiniMaxAi(int miniMaxDepth, chess::PieceColor playerColor) 
+{
 	chess::MiniMaxAi miniMax = chess::MiniMaxAi(miniMaxDepth);
 	Chess chess = Chess(playerColor, &miniMax);
 

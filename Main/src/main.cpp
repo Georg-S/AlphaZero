@@ -11,12 +11,14 @@
 #include "GameHandling/TicTacToeHandler.h"
 #include "UI/MainWindow.h"
 
-void initRNGS() {
+void initRNGS()
+{
 	srand(time(NULL));
 	std::mt19937 mt_rand(time(NULL));
 }
 
-std::vector<torch::Tensor> generateData(int count, torch::DeviceType device) {
+std::vector<torch::Tensor> generateData(int count, torch::DeviceType device)
+{
 	std::vector<torch::Tensor> data;
 
 	for (int i = 0; i < count; i++)
@@ -25,7 +27,8 @@ std::vector<torch::Tensor> generateData(int count, torch::DeviceType device) {
 	return data;
 }
 
-double calculateNetOutputSingle(int count) {
+double calculateNetOutputSingle(int count)
+{
 	torch::DeviceType device = torch::kCUDA;
 	DefaultNeuralNet net = DefaultNeuralNet(2, 3, 3, 9, device);
 	auto input = generateData(count, device);
@@ -41,7 +44,8 @@ double calculateNetOutputSingle(int count) {
 	return elapsed.count();
 }
 
-double calculateNetOutputTogether(int count) {
+double calculateNetOutputTogether(int count)
+{
 	torch::DeviceType device = torch::kCUDA;
 	DefaultNeuralNet net = DefaultNeuralNet(2, 3, 3, 9, device);
 
@@ -61,7 +65,8 @@ double calculateNetOutputTogether(int count) {
 #undef main
 #endif
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
 	initRNGS();
 
 	/*

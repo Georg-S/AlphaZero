@@ -13,7 +13,8 @@
 #include "Evaluation.h"
 #include "TrainingParameters.h"
 
-class TicTacToeHandler {
+class TicTacToeHandler
+{
 public:
 	TicTacToeHandler();
 	void ticTacToeAgainstNeuralNetAi(int playerColor, std::string netName, int countMcts, bool probabilistic, torch::DeviceType device);

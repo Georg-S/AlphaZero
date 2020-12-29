@@ -1,9 +1,13 @@
 #include "GameHandling/ConnectFourHandler.h"
 
-ConnectFourHandler::ConnectFourHandler() {
+ConnectFourHandler::ConnectFourHandler()
+{
+
 }
 
-void ConnectFourHandler::connectFourAgainstNeuralNetAi(cn4::PlayerColor playerColor, std::string netName, int countMcts, bool probabilistic, torch::DeviceType device) {
+void ConnectFourHandler::connectFourAgainstNeuralNetAi(cn4::PlayerColor playerColor, std::string netName,
+	int countMcts, bool probabilistic, torch::DeviceType device)
+{
 	ConnectFourAdapter adap = ConnectFourAdapter();
 	DefaultNeuralNet neuralNet = DefaultNeuralNet(2, 7, 6, 7, preTrainedPath + "/" + netName, device);
 	NeuralNetAi* ai = new NeuralNetAi(&neuralNet, &adap, 7, countMcts, probabilistic, device);
@@ -13,19 +17,22 @@ void ConnectFourHandler::connectFourAgainstNeuralNetAi(cn4::PlayerColor playerCo
 	connectFour.gameLoop();
 }
 
-void ConnectFourHandler::connectFourAgainstMiniMaxAi(int depth, cn4::PlayerColor color) {
+void ConnectFourHandler::connectFourAgainstMiniMaxAi(int depth, cn4::PlayerColor color)
+{
 	cn4::MiniMaxAi ai = cn4::MiniMaxAi(depth);
 	cn4::PlayerColor  aiColor = (cn4::PlayerColor)((int)color % 2 + 1);
 	ConnectFour connect = ConnectFour(aiColor, &ai);
 	connect.gameLoop();
 }
 
-void ConnectFourHandler::startTwoPlayerConnectFourGame() {
+void ConnectFourHandler::startTwoPlayerConnectFourGame()
+{
 	ConnectFour connect = ConnectFour();
 	connect.gameLoop();
 }
 
-void ConnectFourHandler::traininingPerformanceTest(torch::DeviceType device) {
+void ConnectFourHandler::traininingPerformanceTest(torch::DeviceType device)
+{
 	ConnectFourAdapter adap = ConnectFourAdapter();
 	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 7, 6, 7, device);
 	AlphaZeroTraining training = AlphaZeroTraining(7, neuralNet, device);
@@ -39,7 +46,8 @@ void ConnectFourHandler::traininingPerformanceTest(torch::DeviceType device) {
 	std::cout << (after - before) / 1000.f << std::endl;
 }
 
-void ConnectFourHandler::loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraining& connectFourZero) {
+void ConnectFourHandler::loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraining& connectFourZero)
+{
 	connectFourZero.setMaxReplayMemorySize(100000);
 	connectFourZero.neuralNetPath = trainingPath;
 	connectFourZero.TRAINING_DONT_USE_DRAWS = false;
@@ -56,13 +64,15 @@ void ConnectFourHandler::loadDefaultParametersForAlphaZeroTraining(AlphaZeroTrai
 	connectFourZero.RANDOM_MOVE_COUNT = 10;
 }
 
-void ConnectFourHandler::loadPerformanceTestParameters(AlphaZeroTraining& connectFourZero) {
+void ConnectFourHandler::loadPerformanceTestParameters(AlphaZeroTraining& connectFourZero)
+{
 	loadDefaultParametersForAlphaZeroTraining(connectFourZero);
 	connectFourZero.TRAINING_ITERATIONS = 1;
 	connectFourZero.NUM_SELF_PLAY_GAMES = 1;
 }
 
-void ConnectFourHandler::evalConnectFour() {
+void ConnectFourHandler::evalConnectFour()
+{
 	std::ofstream myfile;
 	myfile.open(std::to_string(evalMCTSCount) + "_100_200k_001.csv");
 
@@ -84,11 +94,13 @@ void ConnectFourHandler::evalConnectFour() {
 	myfile.close();
 }
 
-void ConnectFourHandler::writeEvaluationResultToFile(int iteration, const EvalResult& result, std::ofstream& file) {
+void ConnectFourHandler::writeEvaluationResultToFile(int iteration, const EvalResult& result, std::ofstream& file)
+{
 	file << std::to_string(iteration) << ";" << std::to_string(result.wins) << ";" << std::to_string(result.draws) << ";" << std::to_string(result.losses) << std::endl;
 }
 
-EvalResult ConnectFourHandler::evalConnectFour(std::string netName, int miniMaxDepth, torch::DeviceType device) {
+EvalResult ConnectFourHandler::evalConnectFour(std::string netName, int miniMaxDepth, torch::DeviceType device)
+{
 	ConnectFourAdapter adap = ConnectFourAdapter();
 	DefaultNeuralNet* toEval = new DefaultNeuralNet(2, 7, 6, 7, netName, device);
 	NeuralNetAi neuralNetAi = NeuralNetAi(toEval, &adap, 7, evalMCTSCount, false, device);
@@ -99,7 +111,8 @@ EvalResult ConnectFourHandler::evalConnectFour(std::string netName, int miniMaxD
 	return result;
 }
 
-void ConnectFourHandler::setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params) {
+void ConnectFourHandler::setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params)
+{
 	training.setMaxReplayMemorySize(params.replayMemorySize);
 	training.neuralNetPath = trainingPath;
 	training.TRAINING_DONT_USE_DRAWS = !params.useDraws;
@@ -115,7 +128,8 @@ void ConnectFourHandler::setTrainingParameters(AlphaZeroTraining& training, cons
 	training.RANDOM_MOVE_COUNT = params.randomizedMoveCount;
 }
 
-void ConnectFourHandler::runTrainingWithDefaultParameters() {
+void ConnectFourHandler::runTrainingWithDefaultParameters()
+{
 	ConnectFourAdapter adap = ConnectFourAdapter();
 	torch::DeviceType device = torch::kCUDA;
 	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 7, 6, 7, device);
@@ -125,7 +139,8 @@ void ConnectFourHandler::runTrainingWithDefaultParameters() {
 	training.runTraining(&adap);
 }
 
-void ConnectFourHandler::runTraining(const TrainingParameters& params) {
+void ConnectFourHandler::runTraining(const TrainingParameters& params)
+{
 	ConnectFourAdapter adap = ConnectFourAdapter();
 	torch::DeviceType device = params.device;
 	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 7, 6, 7, device);

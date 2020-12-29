@@ -1,38 +1,45 @@
 #include "UI/ConnectFour/ConnectFourTraining.h"
 
-ConnectFourTraining::ConnectFourTraining(QWidget* w, QWidget* parent) : QWidget(parent), trainingUi(new Ui::TrainingWidget) {
+ConnectFourTraining::ConnectFourTraining(QWidget* w, QWidget* parent) : QWidget(parent), trainingUi(new Ui::TrainingWidget)
+{
 	trainingUi->setupUi(this);
 	initInputValidators();
 	initDefaultValues();
 	gameHandler = ConnectFourHandler();
 }
 
-ConnectFourTraining::~ConnectFourTraining() {
+ConnectFourTraining::~ConnectFourTraining()
+{
 	delete trainingUi;
 }
 
-void ConnectFourTraining::reset() {
+void ConnectFourTraining::reset()
+{
 	this->setParent(nullptr);
 }
 
-void ConnectFourTraining::on_RestrictGameLengthNoRadio_clicked() {
+void ConnectFourTraining::on_RestrictGameLengthNoRadio_clicked()
+{
 	trainingUi->MaxGameLengthLabel->setEnabled(false);
 	trainingUi->MaxGameLengthInput->setEnabled(false);
 }
 
-void ConnectFourTraining::on_RestrictGameLengthYesRadio_clicked() {
+void ConnectFourTraining::on_RestrictGameLengthYesRadio_clicked()
+{
 	trainingUi->MaxGameLengthInput->setEnabled(true);
 	trainingUi->MaxGameLengthLabel->setEnabled(true);
 }
 
-void ConnectFourTraining::on_StartTrainingButton_clicked() {
+void ConnectFourTraining::on_StartTrainingButton_clicked()
+{
 	trainingUi->StartTrainingButton->setEnabled(false);
 	trainingUi->StartTrainingButton->setText("Training is running");
 
 	runTraining();
 }
 
-void ConnectFourTraining::runTraining() {
+void ConnectFourTraining::runTraining()
+{
 	if (!trainingRunning)
 	{
 		trainingRunning = true;
@@ -56,7 +63,8 @@ void ConnectFourTraining::handleTrainingFinished()
 	delete trainingThread;
 }
 
-void ConnectFourTraining::initDefaultValues() {
+void ConnectFourTraining::initDefaultValues()
+{
 	trainingUi->ReplayMemorySizeInput->setText("200000");
 	trainingUi->UseDrawsYesRadio->setChecked(true);
 	trainingUi->RestrictGameLengthNoRadio->setChecked(true);
@@ -73,7 +81,8 @@ void ConnectFourTraining::initDefaultValues() {
 	trainingUi->CpuThreadsInput->setText("1");
 }
 
-void ConnectFourTraining::initInputValidators() {
+void ConnectFourTraining::initInputValidators()
+{
 	trainingUi->MaxGameLengthInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->ReplayMemorySizeInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->FilterCountInput->setValidator(new QIntValidator(0, INT32_MAX, this));
@@ -87,7 +96,8 @@ void ConnectFourTraining::initInputValidators() {
 	trainingUi->CpuThreadsInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 }
 
-TrainingParameters ConnectFourTraining::getParametersFromInput() {
+TrainingParameters ConnectFourTraining::getParametersFromInput()
+{
 	TrainingParameters params;
 
 	torch::DeviceType device = torch::kCPU;

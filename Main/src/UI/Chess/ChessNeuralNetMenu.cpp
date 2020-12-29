@@ -1,6 +1,7 @@
 #include "UI/Chess/ChessNeuralNetMenu.h"
 
-ChessNeuralNetMenu::ChessNeuralNetMenu(QWidget* w, QWidget* parent) : QWidget(parent), neuralNetUi(new Ui::NeuralNetWidget) {
+ChessNeuralNetMenu::ChessNeuralNetMenu(QWidget* w, QWidget* parent) : QWidget(parent), neuralNetUi(new Ui::NeuralNetWidget)
+{
 	neuralNetUi->setupUi(this);
 	gameHandler = ChessHandler();
 	neuralNetUi->MCTSCountInput->setValidator(new QIntValidator(0, INT32_MAX, this));
@@ -8,15 +9,18 @@ ChessNeuralNetMenu::ChessNeuralNetMenu(QWidget* w, QWidget* parent) : QWidget(pa
 	neuralNetUi->PlayerColor2Radio->setText("Black");
 }
 
-ChessNeuralNetMenu::~ChessNeuralNetMenu() {
+ChessNeuralNetMenu::~ChessNeuralNetMenu()
+{
 	delete neuralNetUi;
 }
 
-void ChessNeuralNetMenu::reset() {
+void ChessNeuralNetMenu::reset()
+{
 	this->setParent(nullptr);
 }
 
-void ChessNeuralNetMenu::on_PlayButton_clicked() {
+void ChessNeuralNetMenu::on_PlayButton_clicked()
+{
 	chess::PieceColor playerColor;
 	if (neuralNetUi->PlayerColor1Radio->isChecked())
 		playerColor = chess::PieceColor::WHITE;

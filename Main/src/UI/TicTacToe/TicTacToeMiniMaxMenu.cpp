@@ -1,6 +1,8 @@
 #include "UI/TicTacToe/TicTacToeMiniMaxMenu.h"
 
-TicTacToeMiniMaxMenu::TicTacToeMiniMaxMenu(QWidget* w, QWidget* parent) : QWidget(parent), ticTacToeMiniMax(new Ui::TwoPlayerMiniMaxWidget) {
+TicTacToeMiniMaxMenu::TicTacToeMiniMaxMenu(QWidget* w, QWidget* parent)
+	: QWidget(parent), ticTacToeMiniMax(new Ui::TwoPlayerMiniMaxWidget)
+{
 	ticTacToeMiniMax->setupUi(this);
 	ticTacToeMiniMax->MiniMaxDepthLabel->setVisible(false);
 	ticTacToeMiniMax->MiniMaxDepthInput->setVisible(false);
@@ -9,11 +11,13 @@ TicTacToeMiniMaxMenu::TicTacToeMiniMaxMenu(QWidget* w, QWidget* parent) : QWidge
 	gameHandler = TicTacToeHandler();
 }
 
-TicTacToeMiniMaxMenu::~TicTacToeMiniMaxMenu() {
+TicTacToeMiniMaxMenu::~TicTacToeMiniMaxMenu()
+{
 	delete ticTacToeMiniMax;
 }
 
-void TicTacToeMiniMaxMenu::on_PlayButton_clicked() {
+void TicTacToeMiniMaxMenu::on_PlayButton_clicked()
+{
 	int playerColor = 2;
 	if (ticTacToeMiniMax->PlayerColor1Radio->isChecked())
 		playerColor = 1;
@@ -21,7 +25,8 @@ void TicTacToeMiniMaxMenu::on_PlayButton_clicked() {
 	gameHandler.ticTacToeAgainstMiniMaxAi(playerColor);
 }
 
-void TicTacToeMiniMaxMenu::reset() {
+void TicTacToeMiniMaxMenu::reset()
+{
 	this->setParent(nullptr);
 }
 

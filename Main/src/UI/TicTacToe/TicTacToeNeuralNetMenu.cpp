@@ -1,6 +1,7 @@
 #include "UI/TicTacToe/TicTacToeNeuralNetMenu.h"
 
-TicTacToeNeuralNetMenu::TicTacToeNeuralNetMenu(QWidget* w, QWidget* parent) : QWidget(parent), neuralNetUi(new Ui::NeuralNetWidget) {
+TicTacToeNeuralNetMenu::TicTacToeNeuralNetMenu(QWidget* w, QWidget* parent) : QWidget(parent), neuralNetUi(new Ui::NeuralNetWidget)
+{
 	neuralNetUi->setupUi(this);
 	gameHandler = TicTacToeHandler();
 	neuralNetUi->MCTSCountInput->setValidator(new QIntValidator(0, INT32_MAX, this));
@@ -9,15 +10,18 @@ TicTacToeNeuralNetMenu::TicTacToeNeuralNetMenu(QWidget* w, QWidget* parent) : QW
 	neuralNetUi->PlayerColor2Radio->setText("Dot");
 }
 
-TicTacToeNeuralNetMenu::~TicTacToeNeuralNetMenu() {
+TicTacToeNeuralNetMenu::~TicTacToeNeuralNetMenu()
+{
 	delete neuralNetUi;
 }
 
-void TicTacToeNeuralNetMenu::reset() {
+void TicTacToeNeuralNetMenu::reset()
+{
 	this->setParent(nullptr);
 }
 
-void TicTacToeNeuralNetMenu::on_PlayButton_clicked() {
+void TicTacToeNeuralNetMenu::on_PlayButton_clicked()
+{
 	int playerColor = 2;
 	if (neuralNetUi->PlayerColor1Radio->isChecked())
 		playerColor = 1;

@@ -1,8 +1,8 @@
 #include <ConnectFour/MiniMaxAi.h>
 #include "GameHandling/Evaluation.h"
 
-EvalResult Evaluation::eval(Ai* neuralNetAi, Ai* miniMaxAi, Game* game, int numberEvalGames) {
-
+EvalResult Evaluation::eval(Ai* neuralNetAi, Ai* miniMaxAi, Game* game, int numberEvalGames)
+{
 	int currentNetColor = 1;
 	int draws = 0;
 	int wins = 0;
@@ -41,7 +41,8 @@ EvalResult Evaluation::eval(Ai* neuralNetAi, Ai* miniMaxAi, Game* game, int numb
 	//    std::cout << "Games Played: " << numberEvalGames << " Wins: " << wins << " Loss: " << lose << " Draws: " << draws << std::endl;
 }
 
-int Evaluation::runGame(Ai* ai1, Ai* ai2, Game* game) {
+int Evaluation::runGame(Ai* ai1, Ai* ai2, Game* game)
+{
 	std::string state = game->getInitialGameState();
 	int currentPlayer = game->getInitialPlayer();
 

@@ -11,7 +11,8 @@
 #include "GameHandling/TicTacToeHandler.h"
 #define slots Q_SLOTS
 
-class TicTacToeTraining : public QWidget {
+class TicTacToeTraining : public QWidget
+{
 	Q_OBJECT;
 public:
 	explicit TicTacToeTraining(QWidget* w, QWidget* parent = nullptr);

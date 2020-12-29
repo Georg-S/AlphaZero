@@ -11,7 +11,8 @@
 #include "Evaluation.h"
 #include "TrainingParameters.h"
 
-class ChessHandler {
+class ChessHandler 
+{
 public:
 	ChessHandler();
 	void chessAgainstNeuralNetAi(chess::PieceColor playerColor, std::string netName, int mctsCount, bool randomize, torch::DeviceType device);

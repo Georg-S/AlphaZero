@@ -4,7 +4,8 @@
 #include <qthread.h>
 #include <functional>
 
-class TrainingThread : public QThread {
+class TrainingThread : public QThread
+{
 	Q_OBJECT
 
 public:

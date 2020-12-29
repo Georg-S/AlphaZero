@@ -12,7 +12,8 @@
 #include "GameHandling/TicTacToeHandler.h"
 #define slots Q_SLOTS
 
-class TicTacToeMainMenu : public QWidget {
+class TicTacToeMainMenu : public QWidget 
+{
 	Q_OBJECT;
 
 public:

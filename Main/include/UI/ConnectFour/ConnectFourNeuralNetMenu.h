@@ -10,9 +10,9 @@
 #include "GameHandling/ConnectFourHandler.h"
 #define slots Q_SLOTS
 
-class ConnectFourNeuralNetMenu : public QWidget {
+class ConnectFourNeuralNetMenu : public QWidget
+{
 	Q_OBJECT;
-
 
 public:
 	explicit ConnectFourNeuralNetMenu(QWidget* w, QWidget* parent = nullptr);

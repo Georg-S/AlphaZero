@@ -10,7 +10,8 @@
 #include "GameHandling/TicTacToeHandler.h"
 #define slots Q_SLOTS
 
-class TicTacToeNeuralNetMenu : public QWidget {
+class TicTacToeNeuralNetMenu : public QWidget
+{
 	Q_OBJECT;
 
 public:

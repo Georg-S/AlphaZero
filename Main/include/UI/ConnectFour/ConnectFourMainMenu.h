@@ -12,7 +12,8 @@
 #include "GameHandling/ConnectFourHandler.h"
 #define slots Q_SLOTS
 
-class ConnectFourMainMenu : public QWidget {
+class ConnectFourMainMenu : public QWidget
+{
 	Q_OBJECT;
 
 public:

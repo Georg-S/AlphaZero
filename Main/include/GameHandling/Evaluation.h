@@ -7,14 +7,16 @@
 #include <AI/Ai.h>
 #include <AI/NeuralNetAi.h>
 
-struct EvalResult {
+struct EvalResult 
+{
 	int wins;
 	int losses;
 	int draws;
 };
 
 
-class Evaluation {
+class Evaluation 
+{
 public:
 	static EvalResult eval(Ai* neuralNetAi, Ai* miniMaxAi, Game* game, int numberEvalGames = 100);
 	static int runGame(Ai* ai1, Ai* ai2, Game* game);

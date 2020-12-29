@@ -3,7 +3,8 @@
 
 #include <torch/torch.h>
 
-struct TrainingParameters {
+struct TrainingParameters 
+{
 	bool useDraws;
 	bool restrictGameLength;
 	float learningRate;

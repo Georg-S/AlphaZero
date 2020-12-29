@@ -11,7 +11,8 @@
 #define slots Q_SLOTS
 
 
-class ConnectFourMiniMaxMenu : public QWidget {
+class ConnectFourMiniMaxMenu : public QWidget
+{
 	Q_OBJECT;
 
 public:
