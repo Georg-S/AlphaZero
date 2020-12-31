@@ -10,12 +10,19 @@
 #include "Game.h"
 #include "NeuralNetworks/NeuralNetwork.h"
 
-class MonteCarloTreeSearch 
+class MonteCarloTreeSearch
 {
 public:
 	MonteCarloTreeSearch();
 	MonteCarloTreeSearch(int actionCount, float cpuct = 1.0);
-	void search(int count, std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device = torch::kCPU);
+	void search(int countBatches, int coutPerBatch, std::string startState,
+		NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device = torch::kCPU);
+	void searchBatch(int countPerBatch, int currentCount, std::string strState,
+		NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device = torch::kCPU);
+	void calculateNetOutput();
+	void updateTree();
+	void search(int count, std::string strState, NeuralNetwork* net, Game* game,
+		int currentPlayer, torch::DeviceType device = torch::kCPU);
 	float search(std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device = torch::kCPU);
 	std::vector<float> getProbabilities(const std::string& state, float temperature = 1.0);
 	static int sum(const std::vector<int>& vector);

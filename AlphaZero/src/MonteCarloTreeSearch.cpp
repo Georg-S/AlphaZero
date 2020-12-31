@@ -1,18 +1,43 @@
 #include "MonteCarloTreeSearch.h"
 
-MonteCarloTreeSearch::MonteCarloTreeSearch() 
+MonteCarloTreeSearch::MonteCarloTreeSearch()
 {
 
 }
 
-MonteCarloTreeSearch::MonteCarloTreeSearch(int actionCount, float cpuct) 
+MonteCarloTreeSearch::MonteCarloTreeSearch(int actionCount, float cpuct)
 {
 	this->actionCount = actionCount;
 	this->cpuct = cpuct;
 }
 
-void
-MonteCarloTreeSearch::search(int count, std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device) 
+void MonteCarloTreeSearch::search(int countBatches, int coutPerBatch, std::string startState,
+	NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device)
+{
+	for (int i = 0; i < countBatches; i++) 
+	{
+		searchBatch(coutPerBatch, 0, startState, net, game, currentPlayer, device);
+		calculateNetOutput();
+		updateTree();
+	}
+}
+
+void MonteCarloTreeSearch::searchBatch(int countPerBatch, int currentCount, std::string strState,
+	NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device)
+{
+
+
+}
+
+void MonteCarloTreeSearch::calculateNetOutput()
+{
+}
+
+void MonteCarloTreeSearch::updateTree()
+{
+}
+
+void MonteCarloTreeSearch::search(int count, std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device)
 {
 	for (int i = 0; i < count; i++) {
 		search(strState, net, game, currentPlayer, device);
@@ -45,13 +70,13 @@ float MonteCarloTreeSearch::search(std::string strState, NeuralNetwork* net, Gam
 	return -value;
 }
 
-void MonteCarloTreeSearch::fillQValuesAndVisitCount(const std::string& state) 
+void MonteCarloTreeSearch::fillQValuesAndVisitCount(const std::string& state)
 {
 	qValues[state] = std::vector<float>(actionCount, 0.f);
 	visitCount[state] = std::vector<int>(actionCount, 0.f);
 }
 
-void MonteCarloTreeSearch::clearAll() 
+void MonteCarloTreeSearch::clearAll()
 {
 	visitCount.clear();
 	visited.clear();
@@ -59,7 +84,7 @@ void MonteCarloTreeSearch::clearAll()
 	probabilities.clear();
 }
 
-std::vector<float> MonteCarloTreeSearch::getProbabilities(const std::string& state, float temperature) 
+std::vector<float> MonteCarloTreeSearch::getProbabilities(const std::string& state, float temperature)
 {
 	std::vector<float> probs;
 	int countSum = sum(visitCount[state]);
@@ -71,16 +96,16 @@ std::vector<float> MonteCarloTreeSearch::getProbabilities(const std::string& sta
 	return probs;
 }
 
-int MonteCarloTreeSearch::sum(const std::vector<int>& vector) 
+int MonteCarloTreeSearch::sum(const std::vector<int>& vector)
 {
 	int sum_of_elems = 0;
-	for (auto& n : vector)
+	for (int n : vector)
 		sum_of_elems += n;
 
 	return sum_of_elems;
 }
 
-float MonteCarloTreeSearch::expandNewEncounteredState(const std::string& strState, int currentPlayer, Game* game, NeuralNetwork* net, torch::DeviceType device) 
+float MonteCarloTreeSearch::expandNewEncounteredState(const std::string& strState, int currentPlayer, Game* game, NeuralNetwork* net, torch::DeviceType device)
 {
 	visited[strState] = true;
 	auto input = game->convertStateToNeuralNetInput(strState, currentPlayer, device);
@@ -95,7 +120,7 @@ float MonteCarloTreeSearch::expandNewEncounteredState(const std::string& strStat
 	return value;
 }
 
-int MonteCarloTreeSearch::getActionWithHighestUpperConfidenceBound(const std::string& strState, int currentPlayer, Game* game) 
+int MonteCarloTreeSearch::getActionWithHighestUpperConfidenceBound(const std::string& strState, int currentPlayer, Game* game)
 {
 	float maxUtility = -std::numeric_limits<float>::max();
 	int bestAction = -1;
@@ -114,7 +139,7 @@ int MonteCarloTreeSearch::getActionWithHighestUpperConfidenceBound(const std::st
 	return bestAction;
 }
 
-float MonteCarloTreeSearch::calculateUpperConfidenceBound(const std::string& strState, int action) 
+float MonteCarloTreeSearch::calculateUpperConfidenceBound(const std::string& strState, int action)
 {
 	float probability = *(probabilities[strState][action].data_ptr<float>());
 	float buf = sqrt(sum(visitCount[strState])) / (1 + visitCount[strState][action]);
