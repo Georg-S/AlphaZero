@@ -11,21 +11,27 @@ MonteCarloTreeSearch::MonteCarloTreeSearch(int actionCount, float cpuct)
 	this->cpuct = cpuct;
 }
 
-void MonteCarloTreeSearch::search(int countBatches, int coutPerBatch, std::string startState,
+void MonteCarloTreeSearch::search(int countBatches, int countPerBatch, std::string startState,
 	NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device)
 {
-	for (int i = 0; i < countBatches; i++) 
+	for (int i = 0; i < countBatches; i++)
 	{
-		searchBatch(coutPerBatch, 0, startState, net, game, currentPlayer, device);
+		int initialValue = 0;
+		loopDetection.clear();
+		searchBatch(countPerBatch, initialValue, startState, net, game, currentPlayer, device);
 		calculateNetOutput();
 		updateTree();
 	}
 }
 
-void MonteCarloTreeSearch::searchBatch(int countPerBatch, int currentCount, std::string strState,
+void MonteCarloTreeSearch::searchBatch(int countPerBatch, int& currentCount, std::string strState,
 	NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device)
 {
+	if (currentCount >= countPerBatch)
+		return;
 
+	if (loopDetection.find(strState) != loopDetection.end())
+		return;
 
 }
 

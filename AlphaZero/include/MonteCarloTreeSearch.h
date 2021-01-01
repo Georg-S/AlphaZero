@@ -15,9 +15,9 @@ class MonteCarloTreeSearch
 public:
 	MonteCarloTreeSearch();
 	MonteCarloTreeSearch(int actionCount, float cpuct = 1.0);
-	void search(int countBatches, int coutPerBatch, std::string startState,
+	void search(int countBatches, int countPerBatch, std::string startState,
 		NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device = torch::kCPU);
-	void searchBatch(int countPerBatch, int currentCount, std::string strState,
+	void searchBatch(int countPerBatch, int& currentCount, std::string strState,
 		NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device = torch::kCPU);
 	void calculateNetOutput();
 	void updateTree();
@@ -41,6 +41,8 @@ private:
 	std::map<std::string, std::vector<int>> visitCount;
 	std::map<std::string, std::vector<float>> qValues;
 	std::map<std::string, torch::Tensor> probabilities;
+
+	std::vector<std::vector<std::string>> updatePath;
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_MONTECARLOTREESEARCH_H
