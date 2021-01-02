@@ -41,8 +41,6 @@ private:
 	std::map<std::string, std::vector<int>> visitCount;
 	std::map<std::string, std::vector<float>> qValues;
 	std::map<std::string, torch::Tensor> probabilities;
-
-	std::vector<std::vector<std::string>> updatePath;
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_MONTECARLOTREESEARCH_H

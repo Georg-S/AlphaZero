@@ -16,9 +16,10 @@ void MonteCarloTreeSearch::search(int countBatches, int countPerBatch, std::stri
 {
 	for (int i = 0; i < countBatches; i++)
 	{
-		int initialValue = 0;
+		int initialCount = 0;
 		loopDetection.clear();
-		searchBatch(countPerBatch, initialValue, startState, net, game, currentPlayer, device);
+
+		searchBatch(countPerBatch, initialCount, startState, net, game, currentPlayer, device);
 		calculateNetOutput();
 		updateTree();
 	}
@@ -31,8 +32,15 @@ void MonteCarloTreeSearch::searchBatch(int countPerBatch, int& currentCount, std
 		return;
 
 	if (loopDetection.find(strState) != loopDetection.end())
-		return;
+		; // TODO: Add the Value 0 for Draw to update tree
 
+	if (game->isGameOver(strState))
+		;// TODO: Add GameOverValue to update tree
+
+	if (visited.find(strState) == visited.end())
+		;// TODO: Add the state to the batch for neural net calculation
+
+	// TODO: recursively call searchBatch with all possible actions (sorted by the UpperConfidenceBound)
 }
 
 void MonteCarloTreeSearch::calculateNetOutput()
