@@ -32,15 +32,42 @@ void MonteCarloTreeSearch::searchBatch(int countPerBatch, int& currentCount, std
 		return;
 
 	if (loopDetection.find(strState) != loopDetection.end())
-		; // TODO: Add the Value 0 for Draw to update tree
+	{
+		//TODO. Add state to history
+		currentCount++;
+		return;
+	}
 
 	if (game->isGameOver(strState))
-		;// TODO: Add GameOverValue to update tree
+	{
+		// TODO: Add GameOverValue to update tree
+		// game->gameOverReward(strState, currentPlayer);
+		currentCount++;
+		return;
+	}
 
 	if (visited.find(strState) == visited.end())
-		;// TODO: Add the state to the batch for neural net calculation
+	{
+		// TODO: Add the state to the batch for neural net calculation
+//		game->convertStateToNeuralNetInput(strState, currentPlayer, device);
+		currentCount++;
+		return;
+	}
 
-	// TODO: recursively call searchBatch with all possible actions (sorted by the UpperConfidenceBound)
+	std::vector<int> possibleMoves = game->getAllPossibleMoves(strState, currentPlayer);
+	std::vector<std::tuple<float, int>> actionValuePair;
+	for (int action : possibleMoves)
+		actionValuePair.push_back(std::make_tuple(calculateUpperConfidenceBound(strState, currentPlayer), action));
+
+	std::sort(actionValuePair.begin(), actionValuePair.end(), std::greater<>());
+
+	for (int i = 0; i < actionValuePair.size(); i++)
+	{
+		int action = std::get<1>(actionValuePair[i]);
+		int nextPlayer = game->getNextPlayer(currentPlayer);
+		std::string nextState = game->makeMove(strState, action, currentPlayer);
+		searchBatch(countPerBatch, currentCount, nextState, net, game, nextPlayer, device);
+	}
 }
 
 void MonteCarloTreeSearch::calculateNetOutput()
