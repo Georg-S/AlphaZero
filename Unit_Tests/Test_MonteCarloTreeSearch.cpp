@@ -96,3 +96,15 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_get
 
 	ASSERT_GT(probs[7], probs[6]);
 }
+
+TEST(MonteCarloTreeSearch, test_ttt_batch_mcts_get_probabilities_two_moves_possible_one_wins)
+{
+	std::string state = "212121100";
+	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9);
+	DefaultNeuralNet net(2, 3, 3, 9);
+	TicTacToeAdapter adap = TicTacToeAdapter();
+	mcts.search(1, 2, state, &net, &adap, 2);
+	std::vector<float> probs = mcts.getProbabilities(state);
+
+	ASSERT_GT(probs[8], probs[7]);
+}
