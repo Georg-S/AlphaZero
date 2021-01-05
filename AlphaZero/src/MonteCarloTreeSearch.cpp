@@ -18,60 +18,76 @@ void MonteCarloTreeSearch::search(int countBatches, int countPerBatch, std::stri
 	{
 		int initialCount = 0;
 		loopDetection.clear();
+		undiscoveredStates = torch::Tensor();
 
-		searchBatch(countPerBatch, initialCount, startState, net, game, currentPlayer, device);
-		calculateNetOutput();
+		searchBatch(countPerBatch, initialCount, startState, game, currentPlayer, std::vector<StateActionValue>(), device);
+		calculateNetOutput(net);
 		updateTree();
 	}
 }
 
 void MonteCarloTreeSearch::searchBatch(int countPerBatch, int& currentCount, std::string strState,
-	NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device)
+	Game* game, int currentPlayer, std::vector<StateActionValue> currentPath, torch::DeviceType device)
 {
 	if (currentCount >= countPerBatch)
 		return;
 
 	if (loopDetection.find(strState) != loopDetection.end())
 	{
-		//TODO. Add state to history
+		currentPath.push_back(StateActionValue{ strState, -1, 0.f });
+		toUpdateValues.push_back(currentPath);
 		currentCount++;
 		return;
 	}
 
 	if (game->isGameOver(strState))
 	{
-		// TODO: Add GameOverValue to update tree
-		// game->gameOverReward(strState, currentPlayer);
+		float value = game->gameOverReward(strState, currentPlayer);
+		currentPath.push_back(StateActionValue{ strState, -1, value });
+		toUpdateValues.push_back(currentPath);
 		currentCount++;
 		return;
 	}
 
 	if (visited.find(strState) == visited.end())
 	{
-		// TODO: Add the state to the batch for neural net calculation
-//		game->convertStateToNeuralNetInput(strState, currentPlayer, device);
+		currentPath.push_back(StateActionValue{ strState, -1, INT_MIN });
+		toUpdateValues.push_back(currentPath);
+
+		auto toExpand = game->convertStateToNeuralNetInput(strState, currentPlayer, device);
+		if (undiscoveredStates.numel() == 0)
+			undiscoveredStates = toExpand;
+		else
+			undiscoveredStates = torch::cat({ undiscoveredStates, toExpand }, 0);
+
 		currentCount++;
 		return;
 	}
 
 	std::vector<int> possibleMoves = game->getAllPossibleMoves(strState, currentPlayer);
 	std::vector<std::tuple<float, int>> actionValuePair;
-	for (int action : possibleMoves) 
+	for (int action : possibleMoves)
 		actionValuePair.push_back(std::make_tuple(calculateUpperConfidenceBound(strState, action), action));
 
 	std::sort(actionValuePair.begin(), actionValuePair.end(), std::greater<>());
 
 	for (int i = 0; i < actionValuePair.size(); i++)
 	{
+		std::vector<StateActionValue> currentPathCopy = currentPath;
 		int action = std::get<1>(actionValuePair[i]);
 		int nextPlayer = game->getNextPlayer(currentPlayer);
 		std::string nextState = game->makeMove(strState, action, currentPlayer);
-		searchBatch(countPerBatch, currentCount, nextState, net, game, nextPlayer, device);
+		currentPathCopy.push_back(StateActionValue{ strState, action, INT_MIN });
+
+		searchBatch(countPerBatch, currentCount, nextState, game, nextPlayer, currentPathCopy, device);
 	}
 }
 
-void MonteCarloTreeSearch::calculateNetOutput()
+void MonteCarloTreeSearch::calculateNetOutput(NeuralNetwork* net)
 {
+	std::cout << undiscoveredStates << std::endl;
+
+	auto buf = net->calculate(undiscoveredStates);
 }
 
 void MonteCarloTreeSearch::updateTree()

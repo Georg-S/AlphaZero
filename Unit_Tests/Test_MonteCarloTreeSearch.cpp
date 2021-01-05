@@ -97,6 +97,8 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_get
 	ASSERT_GT(probs[7], probs[6]);
 }
 
+/*
+*/
 TEST(MonteCarloTreeSearch, test_ttt_batch_mcts_get_probabilities_two_moves_possible_one_wins)
 {
 	std::string state = "212121100";

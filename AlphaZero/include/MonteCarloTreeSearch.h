@@ -10,6 +10,13 @@
 #include "Game.h"
 #include "NeuralNetworks/NeuralNetwork.h"
 
+struct StateActionValue
+{
+	std::string state;
+	int action;
+	float value;
+};
+
 class MonteCarloTreeSearch
 {
 public:
@@ -18,8 +25,9 @@ public:
 	void search(int countBatches, int countPerBatch, std::string startState,
 		NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device = torch::kCPU);
 	void searchBatch(int countPerBatch, int& currentCount, std::string strState,
-		NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device = torch::kCPU);
-	void calculateNetOutput();
+		Game* game, int currentPlayer, std::vector<StateActionValue> currentPath,
+		torch::DeviceType device = torch::kCPU);
+	void calculateNetOutput(NeuralNetwork* net);
 	void updateTree();
 	void search(int count, std::string strState, NeuralNetwork* net, Game* game,
 		int currentPlayer, torch::DeviceType device = torch::kCPU);
@@ -41,6 +49,10 @@ private:
 	std::map<std::string, std::vector<int>> visitCount;
 	std::map<std::string, std::vector<float>> qValues;
 	std::map<std::string, torch::Tensor> probabilities;
+
+	std::vector<std::vector<StateActionValue>> toUpdateValues;
+	torch::Tensor undiscoveredStates;
+	std::tuple<torch::Tensor, torch::Tensor> resultOfExpansion;
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_MONTECARLOTREESEARCH_H
