@@ -56,8 +56,8 @@ void MonteCarloTreeSearch::searchBatch(int countPerBatch, int& currentCount, std
 
 	std::vector<int> possibleMoves = game->getAllPossibleMoves(strState, currentPlayer);
 	std::vector<std::tuple<float, int>> actionValuePair;
-	for (int action : possibleMoves)
-		actionValuePair.push_back(std::make_tuple(calculateUpperConfidenceBound(strState, currentPlayer), action));
+	for (int action : possibleMoves) 
+		actionValuePair.push_back(std::make_tuple(calculateUpperConfidenceBound(strState, action), action));
 
 	std::sort(actionValuePair.begin(), actionValuePair.end(), std::greater<>());
 
