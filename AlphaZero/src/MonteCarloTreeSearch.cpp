@@ -85,9 +85,7 @@ void MonteCarloTreeSearch::searchBatch(int countPerBatch, int& currentCount, std
 
 void MonteCarloTreeSearch::calculateNetOutput(NeuralNetwork* net)
 {
-	std::cout << undiscoveredStates << std::endl;
-
-	auto buf = net->calculate(undiscoveredStates);
+	resultOfExpansion = net->calculate(undiscoveredStates);
 }
 
 void MonteCarloTreeSearch::updateTree()
