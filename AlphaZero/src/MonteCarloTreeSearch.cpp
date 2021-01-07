@@ -19,6 +19,7 @@ void MonteCarloTreeSearch::search(int countBatches, int countPerBatch, std::stri
 		int initialCount = 0;
 		loopDetection.clear();
 		undiscoveredStates = torch::Tensor();
+		toUpdateValues.clear();
 
 		searchBatch(countPerBatch, initialCount, startState, game, currentPlayer, std::vector<StateActionValue>(), device);
 		calculateNetOutput(net);
@@ -60,6 +61,7 @@ void MonteCarloTreeSearch::searchBatch(int countPerBatch, int& currentCount, std
 		else
 			undiscoveredStates = torch::cat({ undiscoveredStates, toExpand }, 0);
 
+		visited[strState] = true;
 		currentCount++;
 		return;
 	}
@@ -85,11 +87,40 @@ void MonteCarloTreeSearch::searchBatch(int countPerBatch, int& currentCount, std
 
 void MonteCarloTreeSearch::calculateNetOutput(NeuralNetwork* net)
 {
-	resultOfExpansion = net->calculate(undiscoveredStates);
+	if (undiscoveredStates.numel() != 0)
+		resultOfExpansion = net->calculate(undiscoveredStates);
 }
 
 void MonteCarloTreeSearch::updateTree()
 {
+	int tensorIndex = 0;
+	for (auto treePath : toUpdateValues)
+	{
+		StateActionValue treeEnd = treePath[treePath.size() - 1];
+
+		if (treeEnd.value == INT_MIN && treeEnd.action == -1)
+		{
+			torch::Tensor rawProbs = std::get<1>(resultOfExpansion)[tensorIndex].detach().to(torch::kCPU);
+			probabilities[treeEnd.state] = rawProbs;
+			fillQValuesAndVisitCount(treeEnd.state);
+
+			torch::Tensor valueTens = std::get<0>(resultOfExpansion)[tensorIndex][0].to(torch::kCPU);
+			treeEnd.value = *(valueTens.data_ptr<float>());
+			tensorIndex++;
+		}
+
+		float value = treeEnd.value;
+
+		for (int i = treePath.size() - 2; i >= 0; i--)
+		{
+			value = -value;
+			const std::string& state = treePath[i].state;
+			const int action = treePath[i].action;
+
+			qValues[state][action] = (visitCount[state][action] * qValues[state][action] + value) / (visitCount[state][action] + 1);
+			visitCount[state][action] += 1;
+		}
+	}
 }
 
 void MonteCarloTreeSearch::search(int count, std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device)
@@ -144,9 +175,8 @@ std::vector<float> MonteCarloTreeSearch::getProbabilities(const std::string& sta
 	std::vector<float> probs;
 	int countSum = sum(visitCount[state]);
 
-	for (int i = 0; i < actionCount; i++) {
+	for (int i = 0; i < actionCount; i++) 
 		probs.push_back(((float)pow(visitCount[state][i], 1.f / temperature)) / countSum);
-	}
 
 	return probs;
 }
@@ -197,7 +227,7 @@ int MonteCarloTreeSearch::getActionWithHighestUpperConfidenceBound(const std::st
 float MonteCarloTreeSearch::calculateUpperConfidenceBound(const std::string& strState, int action)
 {
 	float probability = *(probabilities[strState][action].data_ptr<float>());
-	float buf = sqrt(sum(visitCount[strState])) / (1 + visitCount[strState][action]);
+	float buf = sqrt(sum(visitCount[strState])) / (1.f + visitCount[strState][action]);
 
 	return qValues[strState][action] + cpuct * probability * buf;
 }
