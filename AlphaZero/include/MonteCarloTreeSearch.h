@@ -53,6 +53,7 @@ private:
 	std::vector<std::vector<StateActionValue>> toUpdateValues;
 	torch::Tensor undiscoveredStates;
 	std::tuple<torch::Tensor, torch::Tensor> resultOfExpansion;
+	std::set<std::string> alreadyInExpansion;
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_MONTECARLOTREESEARCH_H

@@ -14,17 +14,24 @@ MonteCarloTreeSearch::MonteCarloTreeSearch(int actionCount, float cpuct)
 void MonteCarloTreeSearch::search(int countBatches, int countPerBatch, std::string startState,
 	NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device)
 {
-	for (int i = 0; i < countBatches; i++)
+	bool allStatesExpanded = false;
+
+	for (int i = 0; (i < countBatches) && (!allStatesExpanded); i++)
 	{
 		int initialCount = 0;
 		loopDetection.clear();
-		undiscoveredStates = torch::Tensor();
 		toUpdateValues.clear();
+		undiscoveredStates = torch::Tensor();
 
 		searchBatch(countPerBatch, initialCount, startState, game, currentPlayer, std::vector<StateActionValue>(), device);
+		if (undiscoveredStates.numel() == 0)
+			allStatesExpanded = true;
 		calculateNetOutput(net);
 		updateTree();
 	}
+
+	if (allStatesExpanded)
+		search(countBatches * countPerBatch, startState, net, game, currentPlayer, device);
 }
 
 void MonteCarloTreeSearch::searchBatch(int countPerBatch, int& currentCount, std::string strState,
@@ -52,6 +59,9 @@ void MonteCarloTreeSearch::searchBatch(int countPerBatch, int& currentCount, std
 
 	if (visited.find(strState) == visited.end())
 	{
+		if (alreadyInExpansion.find(strState) != alreadyInExpansion.end())
+			return;
+
 		currentPath.push_back(StateActionValue{ strState, -1, INT_MIN });
 		toUpdateValues.push_back(currentPath);
 
@@ -61,7 +71,7 @@ void MonteCarloTreeSearch::searchBatch(int countPerBatch, int& currentCount, std
 		else
 			undiscoveredStates = torch::cat({ undiscoveredStates, toExpand }, 0);
 
-		visited[strState] = true;
+		alreadyInExpansion.insert(strState);
 		currentCount++;
 		return;
 	}
@@ -107,6 +117,7 @@ void MonteCarloTreeSearch::updateTree()
 			torch::Tensor valueTens = std::get<0>(resultOfExpansion)[tensorIndex][0].to(torch::kCPU);
 			treeEnd.value = *(valueTens.data_ptr<float>());
 			tensorIndex++;
+			visited[treeEnd.state] = true;
 		}
 
 		float value = treeEnd.value;
@@ -175,7 +186,7 @@ std::vector<float> MonteCarloTreeSearch::getProbabilities(const std::string& sta
 	std::vector<float> probs;
 	int countSum = sum(visitCount[state]);
 
-	for (int i = 0; i < actionCount; i++) 
+	for (int i = 0; i < actionCount; i++)
 		probs.push_back(((float)pow(visitCount[state][i], 1.f / temperature)) / countSum);
 
 	return probs;
@@ -227,7 +238,7 @@ int MonteCarloTreeSearch::getActionWithHighestUpperConfidenceBound(const std::st
 float MonteCarloTreeSearch::calculateUpperConfidenceBound(const std::string& strState, int action)
 {
 	float probability = *(probabilities[strState][action].data_ptr<float>());
-	float buf = sqrt(sum(visitCount[strState])) / (1.f + visitCount[strState][action]);
+	float buf = sqrt(sum(visitCount[strState])) / (1 + visitCount[strState][action]);
 
 	return qValues[strState][action] + cpuct * probability * buf;
 }
