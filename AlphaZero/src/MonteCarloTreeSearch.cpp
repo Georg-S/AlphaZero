@@ -24,12 +24,12 @@ void MonteCarloTreeSearch::search(int countBatches, int countPerBatch, std::stri
 		undiscoveredStates = torch::Tensor();
 
 		searchBatch(countPerBatch, initialCount, startState, game, currentPlayer, std::vector<StateActionValue>(), device);
-		if (undiscoveredStates.numel() == 0)
-			allStatesExpanded = true;
 		calculateNetOutput(net);
 		updateTree();
-	}
 
+		if (undiscoveredStates.numel() == 0)
+			allStatesExpanded = true;
+	}
 	if (allStatesExpanded)
 		search(countBatches * countPerBatch, startState, net, game, currentPlayer, device);
 }
@@ -179,6 +179,11 @@ void MonteCarloTreeSearch::clearAll()
 	visited.clear();
 	qValues.clear();
 	probabilities.clear();
+
+	toUpdateValues.clear();
+	undiscoveredStates = torch::Tensor();
+	alreadyInExpansion.clear();
+	loopDetection.clear();
 }
 
 std::vector<float> MonteCarloTreeSearch::getProbabilities(const std::string& state, float temperature)

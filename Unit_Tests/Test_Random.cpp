@@ -8,6 +8,9 @@
 #include <ratio>
 #include <omp.h>
 #include <vector>
+#include <MonteCarloTreeSearch.h>
+#include <NeuralNetworks/DefaultNeuralNet.h>
+#include <TicTacToe/TicTacToeAdapter.h>
 
 /*
 TEST(RandomTest, parallel) {
@@ -17,13 +20,38 @@ TEST(RandomTest, parallel) {
 	}
 }
 
-TEST(RandomTest, torchConcate)
+
+TEST(RandomTest, test_performance_mcts)
 {
-	auto tens1 = torch::tensor({});
-	auto tens2 = torch::unsqueeze(torch::zeros({ 3, 3, 9 }), 0);
+	torch::DeviceType device = torch::kCUDA;
+	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9);
+	DefaultNeuralNet net(2, 3, 3, 9, device);
+	TicTacToeAdapter adap = TicTacToeAdapter();
+	std::string state = adap.getInitialGameState();
 
-	auto resultTens = torch::cat({ tens1, tens2 });
+	std::chrono::steady_clock::time_point startTime, endTime;
+	mcts.search(2, state, &net, &adap, 2, device);
+	mcts.clearAll();
 
-	std::cout << resultTens << std::endl;
+	//Single
+	startTime = std::chrono::high_resolution_clock::now();
+	mcts.search(1000, state, &net, &adap, 2, device);
+	endTime = std::chrono::high_resolution_clock::now();
+	double singleTime = ((std::chrono::duration<double>)(endTime - startTime)).count();
+
+	mcts.clearAll();
+
+	//Batch
+	startTime = std::chrono::high_resolution_clock::now();
+	mcts.search(500, 2, state, &net, &adap, 2, device);
+	endTime = std::chrono::high_resolution_clock::now();
+	double batchTime = ((std::chrono::duration<double>)(endTime - startTime)).count();
+
+	mcts.clearAll();
+
+
+	std::cout << "Single Time: " << singleTime << " Batch Time: " << batchTime << std::endl;
+
+	ASSERT_GT(singleTime, batchTime);
 }
 */

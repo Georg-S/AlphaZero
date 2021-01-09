@@ -3,7 +3,6 @@
 #include <chrono>
 #include <omp.h>
 #include <utility>
-#include <chrono>
 #include <NeuralNetworks/DefaultNeuralNet.h>
 #include <QApplication>
 #include "GameHandling/ChessHandler.h"
