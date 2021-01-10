@@ -20,7 +20,6 @@ TEST(RandomTest, parallel) {
 	}
 }
 
-
 TEST(RandomTest, test_performance_mcts)
 {
 	torch::DeviceType device = torch::kCUDA;
@@ -43,7 +42,7 @@ TEST(RandomTest, test_performance_mcts)
 
 	//Batch
 	startTime = std::chrono::high_resolution_clock::now();
-	mcts.search(500, 2, state, &net, &adap, 2, device);
+	mcts.search(250, 4, state, &net, &adap, 2, device);
 	endTime = std::chrono::high_resolution_clock::now();
 	double batchTime = ((std::chrono::duration<double>)(endTime - startTime)).count();
 
