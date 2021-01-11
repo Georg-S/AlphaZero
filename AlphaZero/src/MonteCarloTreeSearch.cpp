@@ -61,7 +61,7 @@ void MonteCarloTreeSearch::searchBatch(int countPerBatch, int& currentCount, std
 		currentPath.push_back(StateActionValue{ strState, -1, INT_MIN });
 		toUpdateValues.push_back(currentPath);
 
-		auto toExpand = game->convertStateToNeuralNetInput(strState, currentPlayer, device);
+		torch::Tensor toExpand = game->convertStateToNeuralNetInput(strState, currentPlayer, device);
 		if (undiscoveredStates.numel() == 0)
 			undiscoveredStates = toExpand;
 		else

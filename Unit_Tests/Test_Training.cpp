@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include <Training.h>
 #include <iostream>
 #include <TicTacToe/TicTacToeAdapter.h>
+#include <AlphaZeroTraining.h>
 
 
 TEST(Training, test_random_action)
@@ -12,7 +12,7 @@ TEST(Training, test_random_action)
 	std::vector<int> results = std::vector<int>(9, 0);
 
 	for (int i = 0; i < amount; i++) {
-		int buf = Training::getRandomAction(test);
+		int buf = AlphaZeroTraining::getRandomAction(test);
 		results[buf] += 1;
 	}
 
