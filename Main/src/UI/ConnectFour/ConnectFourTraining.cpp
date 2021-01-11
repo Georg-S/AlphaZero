@@ -69,7 +69,7 @@ void ConnectFourTraining::initDefaultValues()
 	trainingUi->UseDrawsYesRadio->setChecked(true);
 	trainingUi->RestrictGameLengthNoRadio->setChecked(true);
 	trainingUi->MaxGameLengthInput->setText("0");
-	trainingUi->TrainingIterationsInput->setText("9999");
+	trainingUi->TrainingIterationsInput->setText("40");
 	trainingUi->SelfPlayMCTSCountInput->setText("100");
 	trainingUi->SelfPlayGamesCountInput->setText("1000");
 	trainingUi->TrainingBatchSizeInput->setText("100");

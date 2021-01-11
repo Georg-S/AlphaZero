@@ -19,7 +19,7 @@ void TicTacToeTraining::initDefaultValues()
 	trainingUi->UseDrawsYesRadio->setChecked(true);
 	trainingUi->RestrictGameLengthNoRadio->setChecked(false);
 	trainingUi->MaxGameLengthInput->setText("0");
-	trainingUi->TrainingIterationsInput->setText("99999");
+	trainingUi->TrainingIterationsInput->setText("40");
 	trainingUi->SelfPlayMCTSCountInput->setText("50");
 	trainingUi->SelfPlayGamesCountInput->setText("1000");
 	trainingUi->TrainingBatchSizeInput->setText("100");

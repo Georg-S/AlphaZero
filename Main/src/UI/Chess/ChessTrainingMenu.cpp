@@ -39,7 +39,7 @@ void ChessTrainingMenu::initDefaultValues()
 	trainingUi->UseDrawsYesRadio->setChecked(true);
 	trainingUi->RestrictGameLengthYesRadio->setChecked(true);
 	trainingUi->MaxGameLengthInput->setText("80");
-	trainingUi->TrainingIterationsInput->setText("9999");
+	trainingUi->TrainingIterationsInput->setText("40");
 	trainingUi->SelfPlayMCTSCountInput->setText("200");
 	trainingUi->SelfPlayGamesCountInput->setText("250");
 	trainingUi->TrainingBatchSizeInput->setText("100");

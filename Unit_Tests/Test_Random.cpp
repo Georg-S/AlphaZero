@@ -19,13 +19,13 @@ TEST(RandomTest, parallel) {
 		std::cout << i << std::endl;
 	}
 }
-
+*/
 TEST(RandomTest, test_performance_mcts)
 {
 	torch::DeviceType device = torch::kCUDA;
-	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9);
 	DefaultNeuralNet net(2, 3, 3, 9, device);
 	TicTacToeAdapter adap = TicTacToeAdapter();
+	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9);
 	std::string state = adap.getInitialGameState();
 
 	std::chrono::steady_clock::time_point startTime, endTime;
@@ -34,7 +34,7 @@ TEST(RandomTest, test_performance_mcts)
 
 	//Single
 	startTime = std::chrono::high_resolution_clock::now();
-	mcts.search(1000, state, &net, &adap, 2, device);
+	mcts.search(90, state, &net, &adap, 2, device);
 	endTime = std::chrono::high_resolution_clock::now();
 	double singleTime = ((std::chrono::duration<double>)(endTime - startTime)).count();
 
@@ -42,7 +42,7 @@ TEST(RandomTest, test_performance_mcts)
 
 	//Batch
 	startTime = std::chrono::high_resolution_clock::now();
-	mcts.search(250, 4, state, &net, &adap, 2, device);
+	mcts.search(10, 9, state, &net, &adap, 2, device);
 	endTime = std::chrono::high_resolution_clock::now();
 	double batchTime = ((std::chrono::duration<double>)(endTime - startTime)).count();
 
@@ -53,4 +53,3 @@ TEST(RandomTest, test_performance_mcts)
 
 	ASSERT_GT(singleTime, batchTime);
 }
-*/

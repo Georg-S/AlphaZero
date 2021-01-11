@@ -5,12 +5,12 @@ TicTacToeAdapter::TicTacToeAdapter()
 
 }
 
-int TicTacToeAdapter::getInitialPlayer() 
+int TicTacToeAdapter::getInitialPlayer()
 {
 	return 1;
 }
 
-std::string TicTacToeAdapter::getInitialGameState() 
+std::string TicTacToeAdapter::getInitialGameState()
 {
 	static const std::string initialState = "000000000";
 	return initialState;
@@ -77,7 +77,7 @@ std::string TicTacToeAdapter::makeMove(const std::string& state, int move, int c
 	int x = move % 3;
 	int y = move / 3;
 	if (board.board[x][y] != 0 || (x < 0) || (x >= 3) || (y < 0) || (y >= 3)) {
-		std::cout << "invalid move" << std::endl;
+		std::cout << "invalid move in state: " << state << std::endl;
 		return state;
 	}
 	board.board[x][y] = currentPlayer;
