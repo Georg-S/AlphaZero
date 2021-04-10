@@ -68,7 +68,7 @@ set(SDLFiles
 
 set(TicTacToeFiles
 	"include/TicTacToe/Board.h"
-	"include/TicTacToe/Gamelogic.h"
+	"include/TicTacToe/GameLogic.h"
 	"include/TicTacToe/MiniMaxAi.h"
 	"include/TicTacToe/Move.h"
 	"include/TicTacToe/Renderer.h"

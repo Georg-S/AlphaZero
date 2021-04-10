@@ -29,7 +29,7 @@ struct ValueHeadImpl : public torch::nn::Module
 	}
 
 private:
-	static const int64_t linearNeurons = 256;
+	int64_t linearNeurons = 256;
 
 	torch::nn::Conv2d convValue = nullptr;
 	torch::nn::BatchNorm2d normValue = nullptr;

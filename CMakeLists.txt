@@ -4,7 +4,7 @@ project(DeepReinforcementLearning)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 if (UNIX)
-	list(APPEND CMAKE_PREFIX_PATH "/home/georg/Documents/Code/Libraries/libtorch")
+	list(APPEND CMAKE_PREFIX_PATH $ENV{LIBTORCH})
 endif(UNIX)
 if	(WIN32)
     list(APPEND CMAKE_PREFIX_PATH $ENV{QT_64_MSVC2017})

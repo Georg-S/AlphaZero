@@ -5,7 +5,7 @@
 #include <QWidget>
 #include <QIntValidator>
 #include "ui_Training.h"
-#include "Ui/TrainingThread.h"
+#include "UI/TrainingThread.h"
 // QT somehow has Problems with libtorch so this preProcessor instructions are needed
 #undef slots
 #include "GameHandling/ConnectFourHandler.h"

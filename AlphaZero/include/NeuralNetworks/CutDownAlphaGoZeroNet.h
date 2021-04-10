@@ -41,7 +41,7 @@ struct CutDownAlphaGoZeroNetImpl : public torch::nn::Module
 		return std::make_tuple(value, policy);
 	}
 
-	static const int64_t numFilters = 256;
+	int64_t numFilters = 256;
 
 	ConvolutionBlock convBlock = nullptr;
 	ResidualBlock resBlock1 = nullptr;

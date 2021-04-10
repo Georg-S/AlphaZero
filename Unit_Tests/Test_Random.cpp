@@ -20,6 +20,7 @@ TEST(RandomTest, parallel) {
 	}
 }
 */
+/*
 TEST(RandomTest, test_performance_mcts)
 {
 	torch::DeviceType device = torch::kCUDA;
@@ -53,3 +54,4 @@ TEST(RandomTest, test_performance_mcts)
 
 	ASSERT_GT(singleTime, batchTime);
 }
+*/
