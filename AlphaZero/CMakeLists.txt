@@ -38,4 +38,4 @@ add_library(AlphaZero STATIC
 	${NeuralNetworkComponentsFiles}
 	)
 target_include_directories(AlphaZero PUBLIC "include")
-target_link_libraries(AlphaZero ${TORCH_LIBRARIES})
+target_link_libraries(AlphaZero "${TORCH_LIBRARIES}")
