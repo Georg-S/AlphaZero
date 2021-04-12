@@ -1,7 +1,6 @@
 /[Ll]ibrary/
 /[Bb]uild/
 
-/cmake_build.bat
 /cmake_refresh_VS2019.bat
 /out/
 /ZEUX/
