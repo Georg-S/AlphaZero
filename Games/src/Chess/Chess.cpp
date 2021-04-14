@@ -74,7 +74,7 @@ void Chess::updateAiMove()
 	outputBoard();
 	currentPlayer = chess::GameLogic::getNextPlayer(currentPlayer);
 
-	if (chess::GameLogic::isGameOver(board, currentPlayer));
+	if (chess::GameLogic::isGameOver(board, currentPlayer))
 		handleGameOver();
 }
 
