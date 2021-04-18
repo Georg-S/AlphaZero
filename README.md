@@ -108,6 +108,7 @@ Tested with the following:
 - cmake 3.18.4
 -	Cuda Toolkit 10.1
 -	libtorch cuda 10.2
+-	QT 5.9.7
 
 Install the following:
 
