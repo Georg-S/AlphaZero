@@ -51,7 +51,7 @@ Tested with the following:
 -	Cuda Toolkit 11.1
 -	cuDNN v8.1.1
 -	Visual Studio 2019 (Community)
--	QT 5.14.2
+-	Qt 5.14.2
 
 Install the following:
 
@@ -62,7 +62,7 @@ Install the following:
 -	SDL2
 -	SDL2_image
 -	Visual Studio 2019 (you need the MSVC)
--	QT
+-	Qt
 
 
 Set the following Enviroment Variables:
@@ -108,7 +108,7 @@ Tested with the following:
 - cmake 3.18.4
 -	Cuda Toolkit 10.1
 -	libtorch cuda 10.2
--	QT 5.9.7
+-	Qt 5.9.7
 
 Install the following:
 
@@ -118,7 +118,7 @@ Install the following:
 -	cuDNN		with the aprpriate version to the Cuda Toolkit
 -	SDL2
 -	SDL2_image
--	QT
+-	Qt
 
 Set the following Enviroment Variable:
 -	LIBTORCH      pointing to your downloaded/installed libtorch folder
