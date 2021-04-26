@@ -1,4 +1,4 @@
-This is the implementation of my master's thesis project. Currently this project gets refactored to some extend. 
+This is the implementation of my master's thesis project.
 
 # AlphaZero
 
