@@ -22,13 +22,6 @@ class MonteCarloTreeSearch
 public:
 	MonteCarloTreeSearch();
 	MonteCarloTreeSearch(int actionCount, float cpuct = 1.0);
-	void search(int countBatches, int countPerBatch, std::string startState,
-		NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device = torch::kCPU);
-	void searchBatch(int countPerBatch, int& currentCount, std::string strState,
-		Game* game, int currentPlayer, std::vector<StateActionValue> currentPath,
-		torch::DeviceType device = torch::kCPU);
-	void calculateNetOutput(NeuralNetwork* net);
-	void updateTree();
 	void search(int count, std::string strState, NeuralNetwork* net, Game* game,
 		int currentPlayer, torch::DeviceType device = torch::kCPU);
 	float search(std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device = torch::kCPU);
