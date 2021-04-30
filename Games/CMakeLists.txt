@@ -105,6 +105,10 @@ if (UNIX)
 	PKG_SEARCH_MODULE(SDL2IMAGE REQUIRED SDL2_image>=2.0.0)
 endif(UNIX)
 
+if (MSVC)
+    target_compile_options(Games PRIVATE "/MP")
+endif (MSVC)
+
 if	(WIN32)
 	set(SDL2_INCLUDE_DIRS $ENV{SDL2_INCLUDE})
 	set(SDL2_LIBRARIES "$ENV{SDL2_BIN}/SDL2.lib")

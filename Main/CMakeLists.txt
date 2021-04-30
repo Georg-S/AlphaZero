@@ -147,6 +147,8 @@ add_custom_command(TARGET Main
 #   copy dlls next to exe for windows (visual studio)
 if (MSVC)
 #    set_property(TARGET Main PROPERTY WIN32_EXECUTABLE true)
+    target_compile_options(Main PRIVATE "/MP")
+
 
     file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
     add_custom_command(TARGET Main

@@ -25,6 +25,10 @@ public:
 	void search(int count, std::string strState, NeuralNetwork* net, Game* game,
 		int currentPlayer, torch::DeviceType device = torch::kCPU);
 	float search(std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device = torch::kCPU);
+	void multiThreadSearch(int count, std::string strState, NeuralNetwork* net, Game* game,
+		int currentPlayer, torch::DeviceType device = torch::kCPU);
+//	float multiThreadSearch(std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, 
+//		torch::DeviceType device = torch::kCPU);
 	std::vector<float> getProbabilities(const std::string& state, float temperature = 1.0);
 	static int sum(const std::vector<int>& vector);
 	void clearAll();

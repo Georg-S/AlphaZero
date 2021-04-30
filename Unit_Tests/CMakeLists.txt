@@ -20,6 +20,8 @@ target_link_libraries(Unit_Tests gtest gtest_main AlphaZero Games)
 add_test(NAME Unit_Tests COMMAND Unit_Tests)
 
 if (MSVC)
+  target_compile_options(Unit_Tests PRIVATE "/MP")
+
   file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
   add_custom_command(TARGET Unit_Tests
                      POST_BUILD

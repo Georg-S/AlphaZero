@@ -3,6 +3,8 @@
 #include <NeuralNetworks/DefaultNeuralNet.h>
 #include <TicTacToe/TicTacToeAdapter.h>
 #include <tuple>
+#include <thread>
+#include <vector>
 
 
 TEST(MonteCarloTreeSearch, test_sum_vector)
@@ -96,3 +98,16 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_get
 
 	ASSERT_GT(probs[7], probs[6]);
 }
+
+/*
+TEST(MonteCarloTreeSearch, test_ttt_multi_threading_mcts) 
+{
+	std::vector<std::thread> threadPool;
+	TicTacToeAdapter adap = TicTacToeAdapter();
+	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9);
+	DefaultNeuralNet net(2, 3, 3, 9);
+	std::string state = adap.getInitialGameState();
+
+
+}
+*/

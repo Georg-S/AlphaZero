@@ -13,6 +13,7 @@ struct AlphaGoZeroNetImpl : public torch::nn::Module
 {
 	AlphaGoZeroNetImpl(int64_t numPlanes, int64_t width, int64_t height, int64_t numOutputs)
 	{
+		static const int64_t numFilters = 256;
 		static const int64_t valueFilters = 1;
 		static const int64_t policyFilters = 2;
 
@@ -63,8 +64,6 @@ struct AlphaGoZeroNetImpl : public torch::nn::Module
 
 		return std::make_tuple(value, policy);
 	}
-
-	static const int64_t numFilters = 256;
 
 	ConvolutionBlock convBlock = nullptr;
 	ResidualBlock resBlock1 = nullptr;
