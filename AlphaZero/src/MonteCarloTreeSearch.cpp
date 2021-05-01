@@ -73,7 +73,7 @@ float MonteCarloTreeSearch::multiThreadedSearch(std::string strState, NeuralNetw
 		return 0;
 
 	int nextPlayer = game->getNextPlayer(currentPlayer);
-	float value = search(nextStateString, net, game, nextPlayer, device);
+	float value = multiThreadedSearch(nextStateString, net, game, nextPlayer, threadingManager, device);
 
 	qValues[strState][bestAction] = (visitCount[strState][bestAction] * qValues[strState][bestAction] + value) / (visitCount[strState][bestAction] + 1);
 	visitCount[strState][bestAction] += 1;
@@ -141,16 +141,8 @@ float MonteCarloTreeSearch::multiThreadedExpandNewState(const std::string& strSt
 	visited[strState] = true;
 	auto input = game->convertStateToNeuralNetInput(strState, currentPlayer, device);
 	const int resultIndex = threadingManager->addInputThreadSafe(input);
-	if (resultIndex + 1  < threadingManager->getThreadCount()) 
-	{
-		threadingManager->waitUntilResultIsReady();
-	}
-	else 
-	{
-		threadingManager->calculateOutputThreadSafe();
-		threadingManager->clearInput();
-		threadingManager->wakeUpAllThreads();
-	}
+
+	threadingManager->handleWaitingAndWakeup();
 
 	auto netPredict = threadingManager->getOutput(resultIndex);
 	torch::Tensor rawProbs = std::get<1>(netPredict).detach().to(torch::kCPU);

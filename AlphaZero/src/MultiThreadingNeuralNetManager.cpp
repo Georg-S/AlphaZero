@@ -1,6 +1,7 @@
 #include "MultiThreadingNeuralNetManager.h"
 
-MultiThreadingNeuralNetManager::MultiThreadingNeuralNetManager(int threadCount, NeuralNetwork* net) : threadCount(threadCount), net(net)
+MultiThreadingNeuralNetManager::MultiThreadingNeuralNetManager(int threadCount, int activeThreads, NeuralNetwork* net)
+	: threadCount(threadCount), activeThreads(activeThreads), net(net)
 {
 	elementsAdded = 0;
 }
@@ -19,22 +20,6 @@ int MultiThreadingNeuralNetManager::addInputThreadSafe(torch::Tensor input)
 	return resultIndex;
 }
 
-void MultiThreadingNeuralNetManager::calculateOutputThreadSafe()
-{
-	std::unique_lock<std::mutex> lock(this->threadingMutex);
-
-	this->output = net->calculate(this->inputBuffer);
-}
-
-void MultiThreadingNeuralNetManager::clearInput()
-{
-	std::unique_lock<std::mutex> lock(this->threadingMutex);
-
-	this->inputBuffer = torch::Tensor();
-	this->elementsAdded = 0;
-}
-
-
 std::tuple<torch::Tensor, torch::Tensor> MultiThreadingNeuralNetManager::getOutput(int index)
 {
 	torch::Tensor valueTens = std::get<0>(this->output)[index];
@@ -43,20 +28,52 @@ std::tuple<torch::Tensor, torch::Tensor> MultiThreadingNeuralNetManager::getOutp
 	return std::make_tuple(valueTens, probTens);
 }
 
-int MultiThreadingNeuralNetManager::getThreadCount() const
+void MultiThreadingNeuralNetManager::safeDecrementActiveThreads()
 {
-	return this->threadCount;
+	std::unique_lock<std::mutex> lck(threadingMutex);
+
+	this->activeThreads--;
+	if (this->waitingThreads >= this->activeThreads)
+		calculateAndWakeup();
+}
+
+void MultiThreadingNeuralNetManager::handleWaitingAndWakeup()
+{
+	std::unique_lock<std::mutex> lck(threadingMutex);
+	if (this->waitingThreads != this->activeThreads)
+		waitUntilResultIsReady();
+	else
+		calculateAndWakeup();
+}
+
+void MultiThreadingNeuralNetManager::calculateAndWakeup()
+{
+	calculateOutput();
+	clearInput();
+	wakeUpAllThreads();
+}
+
+void MultiThreadingNeuralNetManager::calculateOutput()
+{
+	this->output = net->calculate(this->inputBuffer);
+}
+
+void MultiThreadingNeuralNetManager::clearInput()
+{
+	this->inputBuffer = torch::Tensor();
+	this->elementsAdded = 0;
 }
 
 void MultiThreadingNeuralNetManager::waitUntilResultIsReady()
 {
 	std::unique_lock<std::mutex> lck(threadingMutex);
+	this->waitingThreads++;
 	cond.wait(lck);
 }
 
 void MultiThreadingNeuralNetManager::wakeUpAllThreads()
 {
 	std::unique_lock<std::mutex> lck(threadingMutex);
+	this->waitingThreads = 0;
 	cond.notify_all();
 }
-

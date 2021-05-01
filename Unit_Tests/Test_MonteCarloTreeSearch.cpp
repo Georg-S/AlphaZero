@@ -100,22 +100,77 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_get
 	ASSERT_GT(probs[7], probs[6]);
 }
 
+int getRandomAction(const std::vector<float>& probabilities)
+{
+	float r = ((float)rand() / (RAND_MAX));
+	if (r == 0)
+		r += FLT_MIN;
+	else if (r == 1)
+		r -= FLT_MIN;
+	float acc = 0.f;
+	int x = 0;
+	for (; x < probabilities.size(); x++) {
+		acc += probabilities[x];
+
+		if (acc >= r)
+			return x;
+	}
+
+	return x;
+}
+
+/*
 void test_mcts(MultiThreadingNeuralNetManager& manager, NeuralNetwork* net)
 {
+	torch::DeviceType device = torch::kCPU;
 	constexpr int actionCount = 9;
-	TicTacToeAdapter adap = TicTacToeAdapter();
+	TicTacToeAdapter game = TicTacToeAdapter();
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(actionCount);
-	std::string state = adap.getInitialGameState();
-	mcts.multiThreadedSearch(state, net, &adap, 1, &manager);
+	std::string currentState = game.getInitialGameState();
+
+	int currentPlayer = game.getInitialPlayer();
+	int currentStep = 0;
+	bool gameTooLong = false;
+
+	while (!game.isGameOver(currentState)) {
+
+		mcts.multiThreadedSearch(10, currentState, net, &game, currentPlayer, &manager, device);
+		std::vector<float> probs = mcts.getProbabilities(currentState);
+
+
+		int action = getRandomAction(probs);
+
+		currentState = game.makeMove(currentState, action, currentPlayer);
+		currentPlayer = game.getNextPlayer(currentPlayer);
+		currentStep++;
+	}
+}
+*/
+
+void test_mcts(MultiThreadingNeuralNetManager& manager, NeuralNetwork* net)
+{
+	torch::DeviceType device = torch::kCPU;
+	constexpr int actionCount = 9;
+	TicTacToeAdapter game = TicTacToeAdapter();
+	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(actionCount);
+	std::string currentState = "102210102";
+
+	mcts.multiThreadedSearch(100, currentState, net, &game, 1, &manager, device);
+	std::vector<float> probs = mcts.getProbabilities(currentState);
+
+	manager.safeDecrementActiveThreads();
+
+	if ((probs[1] > probs[5]) || (probs[5] < probs[7]))
+		std::cout << "Sollte nicht sein" << std::endl;
 }
 
 TEST(MonteCarloTreeSearch, test_ttt_multi_threading_mcts) 
 {
-	constexpr int threadCount = 10;
+	constexpr int threadCount = 2;
 	constexpr int actionCount = 9;
 	std::vector<std::thread> threadPool;
 	DefaultNeuralNet net(2, 3, 3, actionCount);
-	MultiThreadingNeuralNetManager manager(threadCount, &net);
+	MultiThreadingNeuralNetManager manager(threadCount, threadCount, &net);
 
 	for (int i = 0; i < threadCount; i++) 
 		threadPool.push_back(std::thread(test_mcts, std::ref(manager), &net));

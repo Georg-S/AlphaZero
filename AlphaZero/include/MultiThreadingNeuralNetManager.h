@@ -9,16 +9,19 @@
 class MultiThreadingNeuralNetManager 
 {
 public:
-	MultiThreadingNeuralNetManager(int threadCount, NeuralNetwork* net);
+	MultiThreadingNeuralNetManager(int threadCount, int activeThreads, NeuralNetwork* net);
 	int addInputThreadSafe(torch::Tensor input);
-	void calculateOutputThreadSafe();
-	void clearInput();
 	std::tuple<torch::Tensor, torch::Tensor> getOutput(int index);
-	int getThreadCount() const;
+	void safeDecrementActiveThreads();
+	void handleWaitingAndWakeup();
+	void calculateAndWakeup();
+
+private:
+	void calculateOutput();
+	void clearInput();
 	void waitUntilResultIsReady();
 	void wakeUpAllThreads();
 
-private:
 	NeuralNetwork* net;
 	torch::Tensor inputBuffer;
 	std::tuple<torch::Tensor, torch::Tensor> output;
@@ -26,6 +29,8 @@ private:
 	std::mutex threadingMutex;
 	int elementsAdded = 0;
 	const int threadCount;
+	int activeThreads = 0;
+	int waitingThreads = 0;
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_MULTITHREADINGNEURALNETMANAGER_H
