@@ -3,21 +3,29 @@
 
 #include <torch/torch.h>
 #include <mutex>
+#include <tuple>
+#include "NeuralNetworks/NeuralNetwork.h"
 
 class MultiThreadingNeuralNetManager 
 {
 public:
-	MultiThreadingNeuralNetManager();
-	void addInputThreadSafe(torch::Tensor input);
+	MultiThreadingNeuralNetManager(int threadCount, NeuralNetwork* net);
+	int addInputThreadSafe(torch::Tensor input);
 	void calculateOutputThreadSafe();
 	void clearInput();
-	torch::Tensor getOutput();
+	std::tuple<torch::Tensor, torch::Tensor> getOutput(int index);
+	int getThreadCount() const;
+	void waitUntilResultIsReady();
+	void wakeUpAllThreads();
 
 private:
+	NeuralNetwork* net;
 	torch::Tensor inputBuffer;
-	torch::Tensor output;
+	std::tuple<torch::Tensor, torch::Tensor> output;
+	std::condition_variable cond;
 	std::mutex threadingMutex;
 	int elementsAdded = 0;
+	const int threadCount;
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_MULTITHREADINGNEURALNETMANAGER_H

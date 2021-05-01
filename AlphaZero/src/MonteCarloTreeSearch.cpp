@@ -45,6 +45,42 @@ float MonteCarloTreeSearch::search(std::string strState, NeuralNetwork* net, Gam
 	return -value;
 }
 
+void MonteCarloTreeSearch::multiThreadedSearch(int count, std::string strState, NeuralNetwork* net, Game* game,
+	int currentPlayer, MultiThreadingNeuralNetManager* threadingManager, torch::DeviceType device)
+{
+	for (int i = 0; i < count; i++)
+	{
+		multiThreadedSearch(strState, net, game, currentPlayer, threadingManager, device);
+		loopDetection.clear();
+	}
+}
+
+float MonteCarloTreeSearch::multiThreadedSearch(std::string strState, NeuralNetwork* net, Game* game,
+	int currentPlayer, MultiThreadingNeuralNetManager* threadingManager, torch::DeviceType device)
+{
+	loopDetection[strState] = true;
+
+	if (game->isGameOver(strState))
+		return -game->gameOverReward(strState, currentPlayer);
+
+	if (visited.find(strState) == visited.end())
+		return -multiThreadedExpandNewState(strState, currentPlayer, game, net, threadingManager, device);
+
+	int bestAction = getActionWithHighestUpperConfidenceBound(strState, currentPlayer, game);
+	std::string nextStateString = game->makeMove(strState, bestAction, currentPlayer);
+
+	if (!(loopDetection.find(nextStateString) == loopDetection.end()))
+		return 0;
+
+	int nextPlayer = game->getNextPlayer(currentPlayer);
+	float value = search(nextStateString, net, game, nextPlayer, device);
+
+	qValues[strState][bestAction] = (visitCount[strState][bestAction] * qValues[strState][bestAction] + value) / (visitCount[strState][bestAction] + 1);
+	visitCount[strState][bestAction] += 1;
+
+	return -value;
+}
+
 void MonteCarloTreeSearch::fillQValuesAndVisitCount(const std::string& state)
 {
 	qValues[state] = std::vector<float>(actionCount, 0.f);
@@ -94,6 +130,34 @@ float MonteCarloTreeSearch::expandNewEncounteredState(const std::string& strStat
 	fillQValuesAndVisitCount(strState);
 
 	torch::Tensor valueTens = std::get<0>(netPredict)[0][0].to(torch::kCPU);
+	float value = *(valueTens.data_ptr<float>());
+
+	return value;
+}
+
+float MonteCarloTreeSearch::multiThreadedExpandNewState(const std::string& strState, int currentPlayer, Game* game,
+	NeuralNetwork* net, MultiThreadingNeuralNetManager* threadingManager, torch::DeviceType device)
+{
+	visited[strState] = true;
+	auto input = game->convertStateToNeuralNetInput(strState, currentPlayer, device);
+	const int resultIndex = threadingManager->addInputThreadSafe(input);
+	if (resultIndex + 1  < threadingManager->getThreadCount()) 
+	{
+		threadingManager->waitUntilResultIsReady();
+	}
+	else 
+	{
+		threadingManager->calculateOutputThreadSafe();
+		threadingManager->clearInput();
+		threadingManager->wakeUpAllThreads();
+	}
+
+	auto netPredict = threadingManager->getOutput(resultIndex);
+	torch::Tensor rawProbs = std::get<1>(netPredict).detach().to(torch::kCPU);
+	probabilities[strState] = rawProbs;
+	fillQValuesAndVisitCount(strState);
+
+	torch::Tensor valueTens = std::get<0>(netPredict)[0].to(torch::kCPU);
 	float value = *(valueTens.data_ptr<float>());
 
 	return value;

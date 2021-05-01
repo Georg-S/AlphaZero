@@ -5,6 +5,7 @@
 #include <tuple>
 #include <thread>
 #include <vector>
+#include <MultiThreadingNeuralNetManager.h>
 
 
 TEST(MonteCarloTreeSearch, test_sum_vector)
@@ -99,15 +100,52 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_get
 	ASSERT_GT(probs[7], probs[6]);
 }
 
-/*
+void test_mcts(MultiThreadingNeuralNetManager& manager, NeuralNetwork* net)
+{
+	constexpr int actionCount = 9;
+	TicTacToeAdapter adap = TicTacToeAdapter();
+	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(actionCount);
+	std::string state = adap.getInitialGameState();
+	mcts.multiThreadedSearch(state, net, &adap, 1, &manager);
+}
+
 TEST(MonteCarloTreeSearch, test_ttt_multi_threading_mcts) 
 {
+	constexpr int threadCount = 10;
+	constexpr int actionCount = 9;
+	std::vector<std::thread> threadPool;
+	DefaultNeuralNet net(2, 3, 3, actionCount);
+	MultiThreadingNeuralNetManager manager(threadCount, &net);
+
+	for (int i = 0; i < threadCount; i++) 
+		threadPool.push_back(std::thread(test_mcts, std::ref(manager), &net));
+
+	for (auto& thread : threadPool)
+		thread.join();
+}
+
+/*
+TEST(MonteCarloTreeSearch, test_MultiThreadinNeuralNetManager)
+{
+	constexpr int threads = 2;
+	constexpr int actionCount = 9;
 	std::vector<std::thread> threadPool;
 	TicTacToeAdapter adap = TicTacToeAdapter();
-	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9);
-	DefaultNeuralNet net(2, 3, 3, 9);
+	DefaultNeuralNet net(2, 3, 3, actionCount);
+	MultiThreadingNeuralNetManager manager(threads, &net);
 	std::string state = adap.getInitialGameState();
 
+	auto inp1 = adap.convertStateToNeuralNetInput(state, 1);
+	auto inp2 = adap.convertStateToNeuralNetInput(state, 1);
 
+
+	manager.addInputThreadSafe(inp1);
+	manager.addInputThreadSafe(inp2);
+
+	manager.calculateOutputThreadSafe();
+
+	auto result = manager.getOutput(1);
+	auto convert = std::get<0>(result).detach().to(torch::kCPU);
+	std::cout << convert << std::endl;
 }
 */
