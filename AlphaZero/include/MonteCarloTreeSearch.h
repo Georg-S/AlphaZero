@@ -12,13 +12,6 @@
 #include "Game.h"
 #include "NeuralNetworks/NeuralNetwork.h"
 
-struct StateActionValue
-{
-	std::string state;
-	int action;
-	float value;
-};
-
 class MonteCarloTreeSearch
 {
 public:
@@ -51,11 +44,6 @@ private:
 	std::map<std::string, std::vector<int>> visitCount;
 	std::map<std::string, std::vector<float>> qValues;
 	std::map<std::string, torch::Tensor> probabilities;
-
-	std::vector<std::vector<StateActionValue>> toUpdateValues;
-	torch::Tensor undiscoveredStates;
-	std::tuple<torch::Tensor, torch::Tensor> resultOfExpansion;
-	std::set<std::string> alreadyInExpansion;
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_MONTECARLOTREESEARCH_H

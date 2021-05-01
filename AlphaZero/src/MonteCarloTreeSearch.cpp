@@ -93,10 +93,6 @@ void MonteCarloTreeSearch::clearAll()
 	visited.clear();
 	qValues.clear();
 	probabilities.clear();
-
-	toUpdateValues.clear();
-	undiscoveredStates = torch::Tensor();
-	alreadyInExpansion.clear();
 	loopDetection.clear();
 }
 
@@ -181,4 +177,3 @@ float MonteCarloTreeSearch::calculateUpperConfidenceBound(const std::string& str
 
 	return qValues[strState][action] + cpuct * probability * buf;
 }
-
