@@ -62,16 +62,16 @@ set(UIChessFiles
     "src/UI/Chess/ChessTrainingMenu.cpp"
     ) 
 
-set(TestFiles
-    "src/UI/MainMenu.ui"
-    "src/UI/MainWindow.ui"
-    "src/UI/MiniMax.ui"
-    "src/UI/NeuralNet.ui"
-    "src/UI/Training.ui"
+set(QtUIFiles
+    "include/UI/MainMenu.ui"
+    "include/UI/MainWindow.ui"
+    "include/UI/MiniMax.ui"
+    "include/UI/NeuralNet.ui"
+    "include/UI/Training.ui"
 
-    "src/UI/Chess/ChessMain.ui"
-    "src/UI/ConnectFour/ConnectFourMain.ui"
-    "src/UI/TicTacToeMain/TicTacToeMain.ui"
+    "include/UI/Chess/ChessMain.ui"
+    "include/UI/ConnectFour/ConnectFourMain.ui"
+    "include/UI/TicTacToe/TicTacToeMain.ui"
 )
 
 set(MainFile "src/main")
@@ -82,6 +82,7 @@ source_group("\\UI" FILES ${UIFiles})
 source_group("\\UI\\ConnectFour" FILES ${UIConnectFourFiles})
 source_group("\\UI\\TicTacToe" FILES ${UITicTacToeFiles})
 source_group("\\UI\\Chess" FILES ${UIChessFiles})
+source_group("\\UI\\Qt" FILES ${QtUIFiles})
 
 set(CMAKE_AUTOUIC_SEARCH_PATHS "include/UI")
 set(CMAKE_AUTOMOC ON)
@@ -95,6 +96,7 @@ add_executable(Main
     ${UITicTacToeFiles}
     ${UIChessFiles}
     ${MainFile}
+    ${QtUIFiles}
     )
 
 target_include_directories(Main PUBLIC include)

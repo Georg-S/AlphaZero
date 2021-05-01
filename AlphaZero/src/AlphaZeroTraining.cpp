@@ -29,17 +29,8 @@ void AlphaZeroTraining::selfPlay(NeuralNetwork* net, Game* game)
 
 void AlphaZeroTraining::selfPlaySingleThread(NeuralNetwork* net, Game* game)
 {
-	omp_lock_t writelock;
-	omp_init_lock(&writelock);
-	omp_set_num_threads(NUMBER_CPU_THREADS);
-#pragma omp parallel for
-	for (int x = 0; x < NUM_SELF_PLAY_GAMES; x++) {
-		std::vector<ReplayElement> trainData = selfPlayGame(net, game, false);
-
-		omp_set_lock(&writelock);
-		replayMemory.add(trainData);
-		omp_unset_lock(&writelock);
-	}
+	for (int x = 0; x < NUM_SELF_PLAY_GAMES; x++)
+		replayMemory.add(selfPlayGame(net, game, false));
 }
 
 void AlphaZeroTraining::selfPlayMultiThread(NeuralNetwork* net, Game* game)

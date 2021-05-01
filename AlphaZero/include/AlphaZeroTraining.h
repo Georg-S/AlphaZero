@@ -5,7 +5,6 @@
 #include <vector>
 #include <time.h>
 #include <cfloat>
-#include <omp.h>
 #include <thread>
 #include <mutex>
 #include "MultiThreadingNeuralNetManager.h"
