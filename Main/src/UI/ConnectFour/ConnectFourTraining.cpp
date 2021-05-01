@@ -75,7 +75,7 @@ void ConnectFourTraining::initDefaultValues()
 	trainingUi->TrainingBatchSizeInput->setText("100");
 	trainingUi->SaveIterationCountInput->setText("1");
 	trainingUi->RandomizedMoveCountInput->setText("10");
-	trainingUi->LearningRateInput->setText("0.001");
+	trainingUi->LearningRateInput->setText("0.01");
 	trainingUi->FilterCountInput->setText("512");
 	trainingUi->GPURadio->setChecked(true);
 	trainingUi->CpuThreadsInput->setText("1");
