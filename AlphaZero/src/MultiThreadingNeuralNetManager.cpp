@@ -33,17 +33,22 @@ void MultiThreadingNeuralNetManager::safeDecrementActiveThreads()
 	std::unique_lock<std::mutex> lck(threadingMutex);
 
 	this->activeThreads--;
-	if (this->waitingThreads >= this->activeThreads)
+	if ((this->activeThreads != 0) && this->waitingThreads >= this->activeThreads)
 		calculateAndWakeup();
 }
 
 void MultiThreadingNeuralNetManager::handleWaitingAndWakeup()
 {
 	std::unique_lock<std::mutex> lck(threadingMutex);
-	if (this->waitingThreads != this->activeThreads)
-		waitUntilResultIsReady();
-	else
+	if ((this->waitingThreads+1) != this->activeThreads) 
+	{
+		this->waitingThreads++;
+		cond.wait(lck);
+	}
+	else 
+	{
 		calculateAndWakeup();
+	}
 }
 
 void MultiThreadingNeuralNetManager::calculateAndWakeup()
@@ -73,7 +78,6 @@ void MultiThreadingNeuralNetManager::waitUntilResultIsReady()
 
 void MultiThreadingNeuralNetManager::wakeUpAllThreads()
 {
-	std::unique_lock<std::mutex> lck(threadingMutex);
 	this->waitingThreads = 0;
 	cond.notify_all();
 }

@@ -160,8 +160,10 @@ void test_mcts(MultiThreadingNeuralNetManager& manager, NeuralNetwork* net)
 
 	manager.safeDecrementActiveThreads();
 
-	if ((probs[1] > probs[5]) || (probs[5] < probs[7]))
-		std::cout << "Sollte nicht sein" << std::endl;
+
+	std::cout << probs[5] << std::endl;
+	if (!((probs[1] > probs[5]) || (probs[5] < probs[7])))
+		std::cout << "Worked correctly"<< probs[5] << std::endl;
 }
 
 TEST(MonteCarloTreeSearch, test_ttt_multi_threading_mcts) 
