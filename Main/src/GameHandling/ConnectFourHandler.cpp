@@ -126,6 +126,7 @@ void ConnectFourHandler::setTrainingParameters(AlphaZeroTraining& training, cons
 	training.TRAINING_BATCH_SIZE = params.trainingBatchSize;
 	training.SAVE_ITERATION_COUNT = params.saveIterationCount;
 	training.RANDOM_MOVE_COUNT = params.randomizedMoveCount;
+	training.NUMBER_CPU_THREADS = params.cpuThreads;
 }
 
 void ConnectFourHandler::runTrainingWithDefaultParameters()

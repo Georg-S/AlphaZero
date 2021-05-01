@@ -131,6 +131,7 @@ void TicTacToeHandler::setTrainingParameters(AlphaZeroTraining& training, const 
 	training.TRAINING_BATCH_SIZE = params.trainingBatchSize;
 	training.SAVE_ITERATION_COUNT = params.saveIterationCount;
 	training.RANDOM_MOVE_COUNT = params.randomizedMoveCount;
+	training.NUMBER_CPU_THREADS = params.cpuThreads;
 }
 
 void TicTacToeHandler::ticTacToeAgainstNeuralNetAi(int playerColor, std::string netName, int countMcts, bool probabilistic,
