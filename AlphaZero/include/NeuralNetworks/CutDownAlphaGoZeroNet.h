@@ -13,6 +13,7 @@ struct CutDownAlphaGoZeroNetImpl : public torch::nn::Module
 {
 	CutDownAlphaGoZeroNetImpl(int64_t numPlanes, int64_t width, int64_t height, int64_t numOutputs)
 	{
+		static const int64_t numFilters = 256;
 		static const int64_t valueFilters = 1;
 		static const int64_t policyFilters = 2;
 
@@ -40,8 +41,6 @@ struct CutDownAlphaGoZeroNetImpl : public torch::nn::Module
 
 		return std::make_tuple(value, policy);
 	}
-
-	int64_t numFilters = 256;
 
 	ConvolutionBlock convBlock = nullptr;
 	ResidualBlock resBlock1 = nullptr;

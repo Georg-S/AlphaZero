@@ -1,11 +1,13 @@
-#ifndef DEEPREINFORCEMENTLEARNING_TRAININGZERO_H
-#define DEEPREINFORCEMENTLEARNING_TRAININGZERO_H
+#ifndef DEEPREINFORCEMENTLEARNING_ALPHAZEROTRAINING_H
+#define DEEPREINFORCEMENTLEARNING_ALPHAZEROTRAINING_H
 
 #include <string>
 #include <vector>
 #include <time.h>
 #include <cfloat>
-#include <omp.h>
+#include <thread>
+#include <mutex>
+#include "MultiThreadingNeuralNetManager.h"
 #include "NeuralNetworks/NeuralNetwork.h"
 #include "Game.h"
 #include "RingBuffer.h"
@@ -18,7 +20,10 @@ public:
 	AlphaZeroTraining(int actionCount, NeuralNetwork* currentBest, torch::DeviceType = torch::kCPU);
 	void runTraining(Game* game);
 	void selfPlay(NeuralNetwork* net, Game* game);
-	std::vector<ReplayElement> selfPlayGame(NeuralNetwork* net, Game* game);
+	void selfPlaySingleThread(NeuralNetwork* net, Game* game);
+	void selfPlayMultiThread(NeuralNetwork* net, Game* game);
+	void selfPlayMultiThreadGames(NeuralNetwork* net, Game* game, int& gamesToPlay, MultiThreadingNeuralNetManager* threadManager, int seed);
+	std::vector<ReplayElement> selfPlayGame(NeuralNetwork* net, Game* game, bool multiThreading);
 	static int getRandomAction(const std::vector<float>& probabilities);
 	void addResult(std::vector<ReplayElement>& elements, int winner);
 	void trainNet(NeuralNetwork* net, Game* game);
@@ -31,9 +36,11 @@ public:
 
 private:
 	RingBuffer<ReplayElement> replayMemory;
+	std::unique_ptr<MultiThreadingNeuralNetManager> threadManager;
 	int actionCount = -1;
 	torch::DeviceType device;
 	NeuralNetwork* neuralNet;
+	std::mutex mut;
 
 
 	int MAX_REPLAY_MEMORY_SIZE = 40000;
@@ -59,4 +66,4 @@ public:
 };
 
 
-#endif //DEEPREINFORCEMENTLEARNING_TRAININGZERO_H
+#endif //DEEPREINFORCEMENTLEARNING_ALPHAZEROTRAINING_H

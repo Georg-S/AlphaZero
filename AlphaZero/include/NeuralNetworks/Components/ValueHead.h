@@ -7,6 +7,7 @@ struct ValueHeadImpl : public torch::nn::Module
 {
 	ValueHeadImpl(int64_t inFilters, int64_t valueFilters, int64_t width, int64_t height)
 	{
+		static const int64_t linearNeurons = 256;
 		int64_t valueLinearSize = width * height * valueFilters;
 
 		convValue = register_module("convValue", torch::nn::Conv2d(torch::nn::Conv2dOptions(inFilters, valueFilters, 1).stride(1)));
@@ -29,8 +30,6 @@ struct ValueHeadImpl : public torch::nn::Module
 	}
 
 private:
-	int64_t linearNeurons = 256;
-
 	torch::nn::Conv2d convValue = nullptr;
 	torch::nn::BatchNorm2d normValue = nullptr;
 	torch::nn::Linear linearValue1 = nullptr;

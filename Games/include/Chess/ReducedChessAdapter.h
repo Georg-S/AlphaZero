@@ -25,6 +25,7 @@ public:
 	int gameOverReward(const std::string& state, int currentPlayer) override;
 	static std::string convertStateToString(chess::Board& board, int currentPlayer);
 	static chess::Board convertStateStringToBoard(std::string state);
+	int getActionCount() const override;
 
 private:
 	static std::string convertBoardToString(chess::Board& board);

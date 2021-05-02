@@ -22,11 +22,8 @@ void initRNGS()
 
 int main(int argc, char* argv[])
 {
-	initRNGS();
-
 	QApplication app(argc, argv);
 	MainWindow w;
 	w.show();
-
 	return app.exec();
 }

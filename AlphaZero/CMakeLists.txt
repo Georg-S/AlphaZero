@@ -8,6 +8,8 @@ set(AlphaZeroFiles
 	"include/MonteCarloTreeSearch.h"
 	"include/ReplayElement.h"
 	"include/RingBuffer.h"
+	"include/MultiThreadingNeuralNetManager.h"
+	"src/MultiThreadingNeuralNetManager.cpp"
 	"src/AlphaZeroTraining.cpp"
 	"src/MonteCarloTreeSearch.cpp"
 	)
@@ -39,3 +41,7 @@ add_library(AlphaZero STATIC
 	)
 target_include_directories(AlphaZero PUBLIC "include")
 target_link_libraries(AlphaZero "${TORCH_LIBRARIES}")
+
+if (MSVC)
+    target_compile_options(AlphaZero PRIVATE "/MP")
+endif (MSVC)

@@ -10,6 +10,7 @@
 #include <TicTacToe/TicTacToeAdapter.h>
 #include <TicTacToe/TicTacToe.h>
 #include <TicTacToe/MiniMaxAi.h>
+#include <MultiThreadingNeuralNetManager.h>
 #include "Evaluation.h"
 #include "TrainingParameters.h"
 
@@ -24,9 +25,10 @@ public:
 	void runTrainingWithAlphaZero(torch::DeviceType device);
 	void startTwoPlayerTicTacToeGame();
 	void traininingPerformanceTest(torch::DeviceType device);
-	void evalTicTacToe();
+	void evalTicTacToe(bool multiThreaded = true);
 
 private:
+	EvalResult evalTicTacToeMultiThreaded(std::string netName, torch::DeviceType device);
 	EvalResult evalTicTacToe(std::string netName, torch::DeviceType device = torch::kCPU);
 	void writeEvaluationResultToFile(int iteration, const EvalResult& result, std::ofstream& file);
 	void loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraining& ticTacToeZero);

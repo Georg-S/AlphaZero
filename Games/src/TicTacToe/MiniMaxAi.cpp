@@ -2,7 +2,6 @@
 
 ttt::MiniMaxAi::MiniMaxAi() 
 {
-
 }
 
 int ttt::MiniMaxAi::getMove(std::string state, int color) 

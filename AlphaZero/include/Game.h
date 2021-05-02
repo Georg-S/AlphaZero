@@ -16,6 +16,7 @@ public:
 	virtual std::vector<int> getAllPossibleMoves(const std::string& state, int currentPlayer) = 0;
 	virtual std::string makeMove(const std::string& state, int move, int currentPlayer) = 0;
 	virtual int getNextPlayer(int currentPlayer) = 0;
+	virtual int getActionCount() const = 0;
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_GAME_H

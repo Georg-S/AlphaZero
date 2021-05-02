@@ -97,6 +97,11 @@ ttt::Board TicTacToeAdapter::convertStringToBoard(const std::string& state)
 	return board;
 }
 
+int TicTacToeAdapter::getActionCount() const
+{
+	return this->actionCount;
+}
+
 int TicTacToeAdapter::getPlayerWon(const std::string& state)
 {
 	ttt::Board board = convertStringToBoard(state);
