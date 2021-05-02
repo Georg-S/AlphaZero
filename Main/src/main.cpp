@@ -22,15 +22,8 @@ void initRNGS()
 
 int main(int argc, char* argv[])
 {
-	initRNGS();
-	TicTacToeHandler handler = TicTacToeHandler();
-	handler.evalTicTacToe(true);
-
-
-	/*
 	QApplication app(argc, argv);
 	MainWindow w;
 	w.show();
 	return app.exec();
-	*/
 }
