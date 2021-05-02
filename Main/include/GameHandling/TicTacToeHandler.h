@@ -26,9 +26,9 @@ public:
 	void startTwoPlayerTicTacToeGame();
 	void traininingPerformanceTest(torch::DeviceType device);
 	void evalTicTacToe(bool multiThreaded = true);
-	EvalResult evalTicTacToeMultiThreaded(std::string netName, torch::DeviceType device);
 
 private:
+	EvalResult evalTicTacToeMultiThreaded(std::string netName, torch::DeviceType device);
 	EvalResult evalTicTacToe(std::string netName, torch::DeviceType device = torch::kCPU);
 	void writeEvaluationResultToFile(int iteration, const EvalResult& result, std::ofstream& file);
 	void loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraining& ticTacToeZero);

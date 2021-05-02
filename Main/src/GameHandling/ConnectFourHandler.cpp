@@ -71,8 +71,9 @@ void ConnectFourHandler::loadPerformanceTestParameters(AlphaZeroTraining& connec
 	connectFourZero.NUM_SELF_PLAY_GAMES = 1;
 }
 
-void ConnectFourHandler::evalConnectFour()
+void ConnectFourHandler::evalConnectFour(bool multiThreaded = true)
 {
+	EvalResult result;
 	std::ofstream myfile;
 	myfile.open(std::to_string(evalMCTSCount) + "_100_200k_001.csv");
 
@@ -81,13 +82,21 @@ void ConnectFourHandler::evalConnectFour()
 
 	int miniMaxDepth = 0;
 
-	EvalResult result = evalConnectFour(preTrainedPath + "/start", miniMaxDepth, torch::kCUDA);
+	if (multiThreaded)
+		result = evalConnectFourMultiThreaded(preTrainedPath + "/start", miniMaxDepth, torch::kCUDA);
+	else
+		result = evalConnectFour(preTrainedPath + "/start", miniMaxDepth, torch::kCUDA);
 	writeEvaluationResultToFile(0, result, myfile);
 
 	for (int i = 0; i < 30; i++) {
 		std::string path = preTrainedPath + "/iteration" + std::to_string(i);
 		std::cout << path << std::endl;
-		EvalResult result = evalConnectFour(path, miniMaxDepth, torch::kCUDA);
+
+		if (multiThreaded)
+			result = evalConnectFourMultiThreaded(path, miniMaxDepth, torch::kCUDA);
+		else
+			EvalResult result = evalConnectFour(path, miniMaxDepth, torch::kCUDA);
+
 		writeEvaluationResultToFile(i + 1, result, myfile);
 	}
 
@@ -107,6 +116,21 @@ EvalResult ConnectFourHandler::evalConnectFour(std::string netName, int miniMaxD
 	cn4::MiniMaxAi ai1 = cn4::MiniMaxAi(miniMaxDepth);
 
 	EvalResult result = Evaluation::eval(&neuralNetAi, &ai1, &adap, 50);
+	delete toEval;
+	return result;
+}
+
+EvalResult ConnectFourHandler::evalConnectFourMultiThreaded(std::string netName, int miniMaxDepth, torch::DeviceType device)
+{
+	constexpr int threadCount = 10;
+
+	Evaluation evaluation = Evaluation(torch::kCUDA, evalMCTSCount);
+
+	DefaultNeuralNet* toEval = new DefaultNeuralNet(2, 7, 6, 7, netName, device);
+	MultiThreadingNeuralNetManager threadManager = MultiThreadingNeuralNetManager(threadCount, threadCount, toEval);
+	cn4::MiniMaxAi miniMaxAi = cn4::MiniMaxAi(miniMaxDepth);
+	ConnectFourAdapter adap = ConnectFourAdapter();
+	EvalResult result = evaluation.evalMultiThreaded(&threadManager, &miniMaxAi, &adap);
 	delete toEval;
 	return result;
 }
