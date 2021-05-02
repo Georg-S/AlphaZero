@@ -3,14 +3,14 @@
 DefaultNeuralNet::DefaultNeuralNet(int64_t numPlanes, int64_t width, int64_t height, int64_t numOutputs,
 	torch::DeviceType device) 
 {
-	net = CutDownAlphaGoZeroNet(numPlanes, width, height, numOutputs);
+	net = AlphaGoZeroNet(numPlanes, width, height, numOutputs);
 	net->to(device);
 }
 
 DefaultNeuralNet::DefaultNeuralNet(int64_t numPlanes, int64_t width, int64_t height, int64_t numOutputs,
 	std::string fileName, torch::DeviceType device) 
 {
-	net = CutDownAlphaGoZeroNet(numPlanes, width, height, numOutputs);
+	net = AlphaGoZeroNet(numPlanes, width, height, numOutputs);
 	this->load(fileName);
 	net->to(device);
 }

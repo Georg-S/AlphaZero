@@ -44,19 +44,26 @@ void TicTacToeHandler::traininingPerformanceTest(torch::DeviceType device)
 	std::cout << "Time passed: " << difference << std::endl;
 }
 
-void TicTacToeHandler::evalTicTacToe()
+void TicTacToeHandler::evalTicTacToe(bool multiThreaded)
 {
 	std::ofstream myfile;
 	myfile.open(std::to_string(evalMCTSCount) + "_50_100k_001.csv");
 	myfile << "Iteration; Wins; Draws; Losses \n";
+	EvalResult result;
 
-	EvalResult result = evalTicTacToe(preTrainedPath + "/start", torch::kCUDA);
+	if (multiThreaded)
+		result = evalTicTacToeMultiThreaded(preTrainedPath + "/start", torch::kCUDA);
+	else 
+		result = evalTicTacToe(preTrainedPath + "/start", torch::kCUDA);
 	writeEvaluationResultToFile(0, result, myfile);
 
-	for (int i = 0; i < 40; i++) {
+	for (int i = 0; i < 10; i++) {
 		std::string path = preTrainedPath + "/iteration" + std::to_string(i);
 		std::cout << path << std::endl;
-		EvalResult result = evalTicTacToe(path, torch::kCUDA);
+		if (multiThreaded)
+			result = evalTicTacToeMultiThreaded(path, torch::kCUDA);
+		else 
+			result = evalTicTacToe(path, torch::kCUDA);
 		writeEvaluationResultToFile(i + 1, result, myfile);
 	}
 
@@ -69,6 +76,20 @@ EvalResult TicTacToeHandler::evalTicTacToe(std::string netName, torch::DeviceTyp
 	NeuralNetAi neuralNetAi = NeuralNetAi(toEval, &adap, 9, evalMCTSCount, false, device);
 	ttt::MiniMaxAi minimaxAi = ttt::MiniMaxAi();
 	EvalResult result = Evaluation::eval(&neuralNetAi, &minimaxAi, &adap);
+	delete toEval;
+	return result;
+}
+
+EvalResult TicTacToeHandler::evalTicTacToeMultiThreaded(std::string netName, torch::DeviceType device)
+{
+	constexpr int threadCount = 10;
+
+	Evaluation evaluation = Evaluation(torch::kCUDA, evalMCTSCount);
+
+	DefaultNeuralNet* toEval = new DefaultNeuralNet(2, 3, 3, 9, netName, device);
+	MultiThreadingNeuralNetManager threadManager = MultiThreadingNeuralNetManager(threadCount, threadCount, toEval);
+	ttt::MiniMaxAi minimaxAi = ttt::MiniMaxAi();
+	EvalResult result = evaluation.evalMultiThreaded(&threadManager, &minimaxAi, &adap);
 	delete toEval;
 	return result;
 }
