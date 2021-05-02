@@ -6,7 +6,7 @@ EvalResult Evaluation::eval(Ai* neuralNetAi, Ai* miniMaxAi, Game* game, int numb
 	int currentNetColor = 1;
 	int draws = 0;
 	int wins = 0;
-	int lose = 0;
+	int losses = 0;
 
 	Ai* currentPlayer1 = neuralNetAi;
 	Ai* currentPlayer2 = miniMaxAi;
@@ -14,27 +14,20 @@ EvalResult Evaluation::eval(Ai* neuralNetAi, Ai* miniMaxAi, Game* game, int numb
 	for (int i = 0; i < numberEvalGames; i++) {
 		int winner = Evaluation::runGame(currentPlayer1, currentPlayer2, game);
 
-		if (currentPlayer1 == neuralNetAi) {
-			currentPlayer1 = miniMaxAi;
-			currentPlayer2 = neuralNetAi;
-		}
-		else {
-			currentPlayer1 = neuralNetAi;
-			currentPlayer2 = miniMaxAi;
-		}
+		std::swap(currentPlayer1, currentPlayer2);
 
 		if (winner == 0)
 			draws++;
 		else if (winner == currentNetColor)
 			wins++;
 		else
-			lose++;
+			losses++;
 
 		currentNetColor = (currentNetColor % 2 + 1);
 	}
 	EvalResult result;
 	result.wins = wins;
-	result.losses = lose;
+	result.losses = losses;
 	result.draws = draws;
 
 	return result;
