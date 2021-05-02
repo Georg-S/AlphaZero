@@ -82,7 +82,7 @@ EvalResult TicTacToeHandler::evalTicTacToe(std::string netName, torch::DeviceTyp
 
 EvalResult TicTacToeHandler::evalTicTacToeMultiThreaded(std::string netName, torch::DeviceType device)
 {
-	constexpr int threadCount = 10;
+	constexpr int threadCount = 5;
 
 	Evaluation evaluation = Evaluation(torch::kCUDA, evalMCTSCount);
 

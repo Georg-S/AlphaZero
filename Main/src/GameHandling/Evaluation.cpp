@@ -63,7 +63,8 @@ EvalResult Evaluation::evalMultiThreaded(MultiThreadingNeuralNetManager* threadM
 	int gamesToPlay = numberEvalGames;
 	for (int i = 0; i < threadManager->getThreadCount(); i++) 
 	{
-		threadPool.push_back(std::thread(&Evaluation::selfPlayMultiThreadGames, this, threadManager, miniMaxAi, game, std::ref(result), std::ref(gamesToPlay), std::ref(currentNetColor)));
+		threadPool.push_back(std::thread(&Evaluation::selfPlayMultiThreadGames, this, threadManager, miniMaxAi, game, 
+			std::ref(result), std::ref(gamesToPlay), std::ref(currentNetColor), rand()));
 		currentNetColor = game->getNextPlayer(currentNetColor);
 	}
 
@@ -74,8 +75,10 @@ EvalResult Evaluation::evalMultiThreaded(MultiThreadingNeuralNetManager* threadM
 }
 
 void Evaluation::selfPlayMultiThreadGames(MultiThreadingNeuralNetManager* threadManager, Ai* miniMaxAi, Game* game,
-	EvalResult& result, int& gamesToPlay, int& color)
+	EvalResult& result, int& gamesToPlay, int& color, int seed)
 {
+	srand(seed);
+
 	int myColor = 0;
 	while (true)
 	{

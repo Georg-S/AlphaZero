@@ -71,7 +71,7 @@ void ConnectFourHandler::loadPerformanceTestParameters(AlphaZeroTraining& connec
 	connectFourZero.NUM_SELF_PLAY_GAMES = 1;
 }
 
-void ConnectFourHandler::evalConnectFour(bool multiThreaded = true)
+void ConnectFourHandler::evalConnectFour(bool multiThreaded)
 {
 	EvalResult result;
 	std::ofstream myfile;
@@ -95,7 +95,7 @@ void ConnectFourHandler::evalConnectFour(bool multiThreaded = true)
 		if (multiThreaded)
 			result = evalConnectFourMultiThreaded(path, miniMaxDepth, torch::kCUDA);
 		else
-			EvalResult result = evalConnectFour(path, miniMaxDepth, torch::kCUDA);
+			result = evalConnectFour(path, miniMaxDepth, torch::kCUDA);
 
 		writeEvaluationResultToFile(i + 1, result, myfile);
 	}

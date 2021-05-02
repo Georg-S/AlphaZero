@@ -18,7 +18,7 @@ public:
 	void training(torch::Tensor& val, torch::Tensor& probs, torch::Tensor& probsTarget, torch::Tensor& valueTarget) override;
 
 private:
-	AlphaGoZeroNet net = nullptr;
+	CutDownAlphaGoZeroNet net = nullptr;
 	float learningRate = 0.01;
 };
 

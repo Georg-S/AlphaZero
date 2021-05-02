@@ -39,14 +39,16 @@ void AlphaZeroTraining::selfPlayMultiThread(NeuralNetwork* net, Game* game)
 	std::vector<std::thread> threadPool;
 	int gamesToPlay = NUM_SELF_PLAY_GAMES;
 	for (int i = 0; i < NUMBER_CPU_THREADS; i++)
-		threadPool.push_back(std::thread(&AlphaZeroTraining::selfPlayMultiThreadGames, this, net, game, std::ref(gamesToPlay), threadManager.get()));
+		threadPool.push_back(std::thread(&AlphaZeroTraining::selfPlayMultiThreadGames, this, net, game, std::ref(gamesToPlay), threadManager.get(), rand()));
 
 	for (auto& thread : threadPool)
 		thread.join();
 }
 
-void AlphaZeroTraining::selfPlayMultiThreadGames(NeuralNetwork* net, Game* game, int& gamesToPlay, MultiThreadingNeuralNetManager* threadManager)
+void AlphaZeroTraining::selfPlayMultiThreadGames(NeuralNetwork* net, Game* game, int& gamesToPlay, MultiThreadingNeuralNetManager* threadManager, int seed)
 {
+	srand(seed);
+
 	while (true)
 	{
 		mut.lock();

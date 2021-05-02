@@ -22,7 +22,7 @@ public:
 	void selfPlay(NeuralNetwork* net, Game* game);
 	void selfPlaySingleThread(NeuralNetwork* net, Game* game);
 	void selfPlayMultiThread(NeuralNetwork* net, Game* game);
-	void selfPlayMultiThreadGames(NeuralNetwork* net, Game* game, int& gamesToPlay, MultiThreadingNeuralNetManager* threadManager);
+	void selfPlayMultiThreadGames(NeuralNetwork* net, Game* game, int& gamesToPlay, MultiThreadingNeuralNetManager* threadManager, int seed);
 	std::vector<ReplayElement> selfPlayGame(NeuralNetwork* net, Game* game, bool multiThreading);
 	static int getRandomAction(const std::vector<float>& probabilities);
 	void addResult(std::vector<ReplayElement>& elements, int winner);
