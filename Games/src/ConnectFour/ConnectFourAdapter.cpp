@@ -13,6 +13,11 @@ std::string ConnectFourAdapter::makeMove(const std::string& state, int move, int
 	return board.toString();
 }
 
+int ConnectFourAdapter::getActionCount() const
+{
+	return this->actionCount;
+}
+
 cn4::Board ConnectFourAdapter::convertStringToBoard(const std::string& state)
 {
 	cn4::Board result = cn4::Board();

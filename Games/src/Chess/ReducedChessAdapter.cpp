@@ -292,3 +292,8 @@ chess::Board ReducedChessAdapter::convertStateStringToBoard(std::string state)
 	state = state.substr(1);
 	return convertStringToBoard(state);
 }
+
+int ReducedChessAdapter::getActionCount() const
+{
+	return this->actionCount;
+}

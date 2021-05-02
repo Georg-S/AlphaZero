@@ -20,6 +20,7 @@ public:
 	int gameOverReward(const std::string& state, int currentPlayer) override;
 	bool isGameOver(const std::string& state) override;
 	std::string makeMove(const std::string& state, int move, int currentPlayer) override;
+	int getActionCount() const override;
 
 	cn4::Board convertStringToBoard(const std::string& state);
 private:
