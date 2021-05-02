@@ -88,7 +88,7 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlayGame(NeuralNetwork* net, G
 			}
 		}
 		if (multiThreading)
-			mcts.multiThreadedSearch(SELF_PLAY_MCTS_COUNT, currentState, net, game, currentPlayer, this->threadManager.get(), device);
+			mcts.multiThreadedSearch(SELF_PLAY_MCTS_COUNT, currentState, game, currentPlayer, this->threadManager.get(), device);
 		else
 			mcts.search(SELF_PLAY_MCTS_COUNT, currentState, net, game, currentPlayer, device);
 		std::vector<float> probs = mcts.getProbabilities(currentState);

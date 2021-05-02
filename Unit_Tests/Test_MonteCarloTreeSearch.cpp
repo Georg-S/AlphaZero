@@ -126,7 +126,7 @@ void test_mcts(MultiThreadingNeuralNetManager& manager, NeuralNetwork* net)
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(actionCount);
 	std::string currentState = "102210102";
 
-	mcts.multiThreadedSearch(100, currentState, net, &game, 1, &manager);
+	mcts.multiThreadedSearch(100, currentState, &game, 1, &manager);
 	std::vector<float> probs = mcts.getProbabilities(currentState);
 	manager.safeDecrementActiveThreads();
 

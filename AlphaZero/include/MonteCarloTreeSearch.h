@@ -20,9 +20,9 @@ public:
 	void search(int count, std::string strState, NeuralNetwork* net, Game* game,
 		int currentPlayer, torch::DeviceType device = torch::kCPU);
 	float search(std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device = torch::kCPU);
-	void multiThreadedSearch(int count, std::string strState, NeuralNetwork* net, Game* game, int currentPlayer,
+	void multiThreadedSearch(int count, std::string strState, Game* game, int currentPlayer,
 		MultiThreadingNeuralNetManager* threadingManager, torch::DeviceType device = torch::kCPU);
-	float multiThreadedSearch(std::string strState, NeuralNetwork* net, Game* game, int currentPlayer,
+	float multiThreadedSearch(std::string strState, Game* game, int currentPlayer,
 		MultiThreadingNeuralNetManager* threadingManager,
 		torch::DeviceType device = torch::kCPU);
 	std::vector<float> getProbabilities(const std::string& state, float temperature = 1.0);
@@ -32,7 +32,7 @@ public:
 
 private:
 	float expandNewEncounteredState(const std::string& strState, int currentPlayer, Game* game, NeuralNetwork* net, torch::DeviceType device);
-	float multiThreadedExpandNewState(const std::string& strState, int currentPlayer, Game* game, NeuralNetwork* net, 
+	float multiThreadedExpandNewState(const std::string& strState, int currentPlayer, Game* game,
 		MultiThreadingNeuralNetManager* threadingManager, torch::DeviceType device);
 	int getActionWithHighestUpperConfidenceBound(const std::string& strState, int currentPlayer, Game* game);
 	float calculateUpperConfidenceBound(const std::string& strState, int action);
