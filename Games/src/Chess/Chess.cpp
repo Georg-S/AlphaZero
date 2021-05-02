@@ -1,6 +1,6 @@
 #include "Chess/Chess.h"
 
-Chess::Chess() 
+Chess::Chess()
 {
 	board.setToInitialState();
 	renderer = new chess::Renderer();
@@ -10,7 +10,7 @@ Chess::Chess()
 	playerCount = 2;
 }
 
-Chess::Chess(chess::PieceColor playerColor, Ai* ai) 
+Chess::Chess(chess::PieceColor playerColor, Ai* ai)
 {
 	board.setToInitialState();
 	renderer = new chess::Renderer();
@@ -23,19 +23,22 @@ Chess::Chess(chess::PieceColor playerColor, Ai* ai)
 	playerCount = 1;
 }
 
-void Chess::gameLoop() 
+void Chess::gameLoop()
 {
 	outputBoard();
-	while (!gameOver) {
+	while (!gameOver)
+	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		updateGame();
 	}
 
 	bool renderingClosed = false;
-	while (!renderingClosed) {
+	while (!renderingClosed)
+	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		renderer->updateQuit();
-		if (renderer->isQuit()) {
+		if (renderer->isQuit())
+		{
 			renderer->quit();
 			renderingClosed = true;
 			delete renderer;
@@ -43,10 +46,11 @@ void Chess::gameLoop()
 	}
 }
 
-void Chess::updateGame() 
+void Chess::updateGame()
 {
 	renderer->updateQuit();
-	if (renderer->isQuit()) {
+	if (renderer->isQuit())
+	{
 		gameOver = true;
 		return;
 	}
@@ -57,7 +61,7 @@ void Chess::updateGame()
 		update2PlayerGame();
 }
 
-void Chess::update1PlayerGame() 
+void Chess::update1PlayerGame()
 {
 	if (currentPlayer == aiColor)
 		updateAiMove();
@@ -65,7 +69,7 @@ void Chess::update1PlayerGame()
 		updateHumanMove();
 }
 
-void Chess::updateAiMove() 
+void Chess::updateAiMove()
 {
 	int intMove = ai->getMove(ReducedChessAdapter::convertStateToString(board, (int)currentPlayer), (int)currentPlayer);
 	chess::Move move = chess::Move(intMove);
@@ -78,12 +82,12 @@ void Chess::updateAiMove()
 		handleGameOver();
 }
 
-void Chess::update2PlayerGame() 
+void Chess::update2PlayerGame()
 {
 	updateHumanMove();
 }
 
-void Chess::updateHumanMove() 
+void Chess::updateHumanMove()
 {
 	chess::Move move = getMove();
 	if (!isValidMove(move))
@@ -93,7 +97,8 @@ void Chess::updateHumanMove()
 	previousMove = move;
 	outputBoard();
 
-	if (chess::GameLogic::pawnReachedEndOfBoard(board)) {
+	if (chess::GameLogic::pawnReachedEndOfBoard(board))
+	{
 		handlePromoSelection(board, move.toX, move.toY);
 	}
 	currentPlayer = chess::GameLogic::getNextPlayer(currentPlayer);
@@ -102,7 +107,7 @@ void Chess::updateHumanMove()
 		handleGameOver();
 }
 
-void Chess::outputBoard() 
+void Chess::outputBoard()
 {
 	if (graphicalOutput)
 		renderer->render(chess::RenderInformation(board, previousMove));
@@ -110,11 +115,13 @@ void Chess::outputBoard()
 		printBoardToConsole(board);
 }
 
-void Chess::printBoardToConsole(const chess::Board& board) 
+void Chess::printBoardToConsole(const chess::Board& board)
 {
 
-	for (int y = 0; y < 8; y++) {
-		for (int x = 0; x < 8; x++) {
+	for (int y = 0; y < 8; y++)
+	{
+		for (int x = 0; x < 8; x++)
+		{
 			if (chess::GameLogic::isFieldEmpty(board, x, y))
 				std::cout << "-" << "  ";
 			else
@@ -124,19 +131,21 @@ void Chess::printBoardToConsole(const chess::Board& board)
 	}
 }
 
-chess::Move Chess::getMove() {
+chess::Move Chess::getMove()
+{
 	if (graphicalOutput)
 		return getMoveFromGraphicalInput();
 	else
 		return getMoveFromKeyboardInput();
 }
 
-chess::Move Chess::getMoveFromKeyboardInput() 
+chess::Move Chess::getMoveFromKeyboardInput()
 {
 	bool validMoveChosen = false;
 	chess::Move move;
 
-	while (!validMoveChosen) {
+	while (!validMoveChosen)
+	{
 		std::cout << "Choose fromX (0-7)" << std::endl;
 		std::cin >> move.fromX;
 		std::cout << "Choose fromY (0-7)" << std::endl;
@@ -152,14 +161,15 @@ chess::Move Chess::getMoveFromKeyboardInput()
 	return move;
 }
 
-chess::Move Chess::getMoveFromGraphicalInput() 
+chess::Move Chess::getMoveFromGraphicalInput()
 {
 	mouse.update();
 	chess::Move move = chess::Move(-1, -1, -1, -1);
 	chess::RenderInformation renderInfo = chess::RenderInformation();
 	renderInfo.board = board;
 
-	if (pieceSelected) {
+	if (pieceSelected)
+	{
 		renderInfo.selectedPieceX = selectedPieceX;
 		renderInfo.selectedPieceY = selectedPieceY;
 		renderInfo.mousePositionX = mouse.getMousePositionX();
@@ -168,7 +178,8 @@ chess::Move Chess::getMoveFromGraphicalInput()
 		renderer->render(renderInfo);
 	}
 
-	if (mouse.isRightPressed()) {
+	if (mouse.isRightPressed())
+	{
 		pieceSelected = false;
 		selectedPieceX = -1;
 		selectedPieceY = -1;
@@ -185,14 +196,17 @@ chess::Move Chess::getMoveFromGraphicalInput()
 	if (isOutOfRange(boardX) || isOutOfRange(boardY))
 		return move;
 
-	if (!pieceSelected) {
-		if ((board.board[boardX][boardY] != nullptr) && (board.board[boardX][boardY]->getPieceColor() == currentPlayer)) {
+	if (!pieceSelected)
+	{
+		if ((board.board[boardX][boardY] != nullptr) && (board.board[boardX][boardY]->getPieceColor() == currentPlayer))
+		{
 			pieceSelected = true;
 			selectedPieceX = boardX;
 			selectedPieceY = boardY;
 		}
 	}
-	else {
+	else
+	{
 		int toX = boardX;
 		int toY = boardY;
 
@@ -207,7 +221,7 @@ chess::Move Chess::getMoveFromGraphicalInput()
 	return move;
 }
 
-bool Chess::isValidMove(const chess::Move& move) 
+bool Chess::isValidMove(const chess::Move& move)
 {
 	if (move.fromX < 0 || move.fromY < 0 || move.toX < 0 || move.toY < 0)
 		return false;
@@ -219,36 +233,39 @@ bool Chess::isValidMove(const chess::Move& move)
 	return chess::GameLogic::isMoveValid(board, move);
 }
 
-void Chess::handleGameOver() 
+void Chess::handleGameOver()
 {
 	outputBoard();
 	gameOver = true;
 }
 
-int Chess::convertMousePositionXToBoardPosition(int mouseX) {
+int Chess::convertMousePositionXToBoardPosition(int mouseX)
+{
 	return mouseX / (windowWidth / 8);
 }
 
 
 
-int Chess::convertMousePositionYToBoardPosition(int mouseY) 
+int Chess::convertMousePositionYToBoardPosition(int mouseY)
 {
 	return mouseY / (windowHeight / 8);
 }
 
-bool Chess::isOutOfRange(int boardPosition) {
+bool Chess::isOutOfRange(int boardPosition)
+{
 	if (boardPosition >= 8 || boardPosition < 0)
 		return true;
 	return false;
 }
 
-void Chess::handlePromoSelection(chess::Board& board, int pawnX, int pawnY) 
+void Chess::handlePromoSelection(chess::Board& board, int pawnX, int pawnY)
 {
 	renderer->renderPromotionSelection(currentPlayer);
 
 	bool validPieceSelected = false;
 
-	while (!validPieceSelected) {
+	while (!validPieceSelected)
+	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		mouse.update();
 

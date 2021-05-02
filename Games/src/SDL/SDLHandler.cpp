@@ -9,7 +9,8 @@ SDLHandler::SDLHandler(int screenWidth, int screenHeight, bool useCaching)
 
 bool SDLHandler::start(const std::string& windowName)
 {
-	if (!initialize(windowName)) {
+	if (!initialize(windowName))
+	{
 		printf("Could not initialize\n");
 		return false;
 	}
@@ -18,7 +19,7 @@ bool SDLHandler::start(const std::string& windowName)
 
 std::shared_ptr<RenderingElement> SDLHandler::createAndPushBackRenderElement(std::string fileName, int x, int y, int width, int height)
 {
-	std::shared_ptr<RenderingElement> element =  std::make_shared<RenderingElement>();
+	std::shared_ptr<RenderingElement> element = std::make_shared<RenderingElement>();
 	element->texture = createAndReturnTexture(fileName);
 	element->transform = SDL_Rect{ x,y,width, height };
 
@@ -46,7 +47,7 @@ void SDLHandler::close()
 
 void SDLHandler::deleteCache()
 {
-	for (auto x : cache) 
+	for (auto x : cache)
 		SDL_DestroyTexture(x.second);
 	cache.clear();
 }
@@ -63,7 +64,8 @@ void SDLHandler::updateRendering()
 	updateQuit();
 	SDL_RenderClear(renderer);
 
-	for (int i = 0; i < elements.size(); i++) {
+	for (int i = 0; i < elements.size(); i++)
+	{
 		if (elements[i]->render)
 			SDL_RenderCopy(renderer, elements[i]->texture, NULL, &elements[i]->transform);
 	}
@@ -84,7 +86,8 @@ SDL_Texture* SDLHandler::createAndReturnTexture(std::string fileName)
 
 	if (loadedSurface == NULL)
 		printf("Unable to load the image %s! SDL_image Error: %s\n", fileName.c_str(), IMG_GetError());
-	else {
+	else
+	{
 		newTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
 
 		if (newTexture == NULL)
@@ -99,7 +102,7 @@ SDL_Texture* SDLHandler::createAndReturnTexture(std::string fileName)
 	return newTexture;
 }
 
-void SDLHandler::clear() 
+void SDLHandler::clear()
 {
 	if (useCaching)
 		elements.clear();
@@ -140,7 +143,8 @@ bool SDLHandler::initialize(const std::string& windowName)
 
 bool SDLHandler::initializeVideo()
 {
-	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	{
 		printf("SDL could not be initialized! SDL_Error: %s\n", SDL_GetError());
 		return false;
 	}
@@ -150,7 +154,8 @@ bool SDLHandler::initializeVideo()
 bool SDLHandler::initializeWindow(const std::string& windowName)
 {
 	window = SDL_CreateWindow(windowName.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, m_screenWidth, m_screenHeight, SDL_WINDOW_OPENGL);
-	if (window == NULL) {
+	if (window == NULL)
+	{
 		printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
 		return false;
 	}
@@ -161,7 +166,8 @@ bool SDLHandler::initializeWindow(const std::string& windowName)
 bool SDLHandler::initializeRenderer()
 {
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-	if (renderer == NULL) {
+	if (renderer == NULL)
+	{
 		printf("We were not able to create the renderer! SDL Error: %s\n", SDL_GetError());
 		return false;
 	}
@@ -174,7 +180,8 @@ bool SDLHandler::initializeImageFlags()
 {
 	int imgFlags = IMG_INIT_PNG;
 
-	if (!(IMG_Init(imgFlags) & imgFlags)) {
+	if (!(IMG_Init(imgFlags) & imgFlags))
+	{
 		printf("SDL_image could not be initialized! SDL_image Error: %s\n", IMG_GetError());
 		return false;
 	}
@@ -184,7 +191,8 @@ bool SDLHandler::initializeImageFlags()
 int SDLHandler::getIndex(std::shared_ptr<RenderingElement> element)
 {
 	int index = -1;
-	for (int i = 0; i < elements.size(); i++) {
+	for (int i = 0; i < elements.size(); i++)
+	{
 		if (elements[i] == element)
 			index = i;
 	}
@@ -197,14 +205,15 @@ bool SDLHandler::initializeTime()
 	return true;
 }
 
-void SDLHandler::getWindowPosition(int* x, int* y) 
+void SDLHandler::getWindowPosition(int* x, int* y)
 {
 	SDL_GetWindowPosition(window, x, y);
 }
 
-void SDLHandler::updateQuit() 
+void SDLHandler::updateQuit()
 {
-	while (SDL_PollEvent(&event) != 0) {
+	while (SDL_PollEvent(&event) != 0)
+	{
 		if ((event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) || event.type == SDL_QUIT)
 			exit = true;
 	}

@@ -13,7 +13,8 @@ TEST(Training, test_random_action)
 	std::vector<float> test{ 0.f, 0.2f, 0.1f, 0.5, 0.1, 0.1, 0.0, 0.0, 0.0 };
 	std::vector<int> results = std::vector<int>(9, 0);
 
-	for (int i = 0; i < amount; i++) {
+	for (int i = 0; i < amount; i++)
+	{
 		int buf = AlphaZeroTraining::getRandomAction(test);
 		results[buf] += 1;
 	}
@@ -29,7 +30,7 @@ TEST(Training, test_mult_thread_training)
 
 	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 3, 3, 9, device);
 	AlphaZeroTraining training = AlphaZeroTraining(9, neuralNet, device);
-	
+
 	training.TRAINING_DONT_USE_DRAWS = false;
 	training.RESTRICT_GAME_LENGTH = false;
 	training.DRAW_AFTER_COUNT_OF_STEPS = 50;

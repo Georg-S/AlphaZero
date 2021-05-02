@@ -3,17 +3,17 @@
 
 #include "Board.h"
 
-namespace chess 
+namespace chess
 {
-	struct RenderInformation 
+	struct RenderInformation
 	{
-		RenderInformation() 
+		RenderInformation()
 		{
-		
+
 		}
 
-		RenderInformation(chess::Board& board, int selectedX = -1, int selectedY = -1, int mouseX = 0, int mouseY = 0, 
-			chess::Move previousMove = Move( -1, -1, -1 , -1))
+		RenderInformation(chess::Board& board, int selectedX = -1, int selectedY = -1, int mouseX = 0, int mouseY = 0,
+			chess::Move previousMove = Move(-1, -1, -1, -1))
 		{
 			this->board = board;
 			this->selectedPieceX = selectedX;

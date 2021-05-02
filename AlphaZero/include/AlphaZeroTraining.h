@@ -14,7 +14,7 @@
 #include "MonteCarloTreeSearch.h"
 #include "ReplayElement.h"
 
-class AlphaZeroTraining 
+class AlphaZeroTraining
 {
 public:
 	AlphaZeroTraining(int actionCount, NeuralNetwork* currentBest, torch::DeviceType = torch::kCPU);

@@ -15,7 +15,8 @@ int chess::MiniMaxAi::getMove(std::string state, int playerColor)
 	std::vector<chess::Move> possibleMoves = getAllPossibleMoves(board, (PieceColor)playerColor);
 	std::vector<int> values(possibleMoves.size(), -1);
 
-	for (int i = 0; i < possibleMoves.size(); i++) {
+	for (int i = 0; i < possibleMoves.size(); i++)
+	{
 		Board copyBoard = Board(board);
 		makeMoveWithPromotion(copyBoard, possibleMoves[i]);
 		values[i] = evaluateBoard(copyBoard, this->depth, otherPlayer, false, INT_MIN, INT_MAX);
@@ -32,8 +33,10 @@ std::vector<chess::Move> chess::MiniMaxAi::getAllPossibleMoves(chess::Board& boa
 {
 	std::vector<chess::Move> possibleMoves;
 
-	for (int fromX = 0; fromX < 8; fromX++) {
-		for (int fromY = 0; fromY < 8; fromY++) {
+	for (int fromX = 0; fromX < 8; fromX++)
+	{
+		for (int fromY = 0; fromY < 8; fromY++)
+		{
 			if (board.board[fromX][fromY] == nullptr)
 				continue;
 			if (board.board[fromX][fromY]->getPieceColor() != color)
@@ -48,8 +51,10 @@ std::vector<chess::Move> chess::MiniMaxAi::getAllPossibleMoves(chess::Board& boa
 void chess::MiniMaxAi::getAllPossibleMovesForPiece(chess::Board& board, int fromX, int fromY,
 	std::vector<chess::Move>& moves)
 {
-	for (int toX = 0; toX < 8; toX++) {
-		for (int toY = 0; toY < 8; toY++) {
+	for (int toX = 0; toX < 8; toX++)
+	{
+		for (int toY = 0; toY < 8; toY++)
+		{
 			chess::Move move = chess::Move(fromX, fromY, toX, toY);
 			if (chess::GameLogic::isMoveValid(board, Move(fromX, fromY, toX, toY)))
 				moves.push_back(move);
@@ -79,20 +84,23 @@ int chess::MiniMaxAi::evaluateBoard(chess::Board& board, int depth, chess::Piece
 		boardValue = maxValue;
 
 	std::vector<chess::Move> possibleMoves = getAllPossibleMoves(board, currentPlayer);
-	for (int i = 0; i < possibleMoves.size(); i++) {
+	for (int i = 0; i < possibleMoves.size(); i++)
+	{
 		chess::Board copyBoard = Board(board);
 		makeMoveWithPromotion(copyBoard, possibleMoves[i]);
 
 		int moveValue = evaluateBoard(copyBoard, depth - 1, chess::GameLogic::getNextPlayer(currentPlayer), !maximizingPlayer, alpha, beta);
 		copyBoard.deletePieces();
 
-		if (maximizingPlayer) {
+		if (maximizingPlayer)
+		{
 			boardValue = std::max(moveValue, boardValue);
 			alpha = std::max(boardValue, alpha);
 			if (beta <= alpha)
 				break;
 		}
-		else {
+		else
+		{
 			boardValue = std::min(moveValue, boardValue);
 			beta = std::min(boardValue, beta);
 			if (beta <= alpha)
@@ -106,8 +114,10 @@ int chess::MiniMaxAi::evaluateBoard(chess::Board& board, int depth, chess::Piece
 int chess::MiniMaxAi::staticEvaluateBoard(chess::Board& board)
 {
 	int boardValue = 0;
-	for (int x = 0; x < 8; x++) {
-		for (int y = 0; y < 8; y++) {
+	for (int x = 0; x < 8; x++)
+	{
+		for (int y = 0; y < 8; y++)
+		{
 			if (board.board[x][y] == nullptr)
 				continue;
 			boardValue += getPieceValue(board.board[x][y]);
@@ -121,7 +131,8 @@ void chess::MiniMaxAi::makeMoveWithPromotion(chess::Board& board, const chess::M
 {
 	chess::GameLogic::makeMove(board, move);
 
-	if (chess::GameLogic::pawnReachedEndOfBoard(board)) {
+	if (chess::GameLogic::pawnReachedEndOfBoard(board))
+	{
 		replacePawnsInRowWithQueens(board, 0);
 		replacePawnsInRowWithQueens(board, 7);
 	}
@@ -129,7 +140,8 @@ void chess::MiniMaxAi::makeMoveWithPromotion(chess::Board& board, const chess::M
 
 void chess::MiniMaxAi::replacePawnsInRowWithQueens(chess::Board& board, int row)
 {
-	for (int x = 0; x < 8; x++) {
+	for (int x = 0; x < 8; x++)
+	{
 		if (board.board[x][row] == nullptr)
 			continue;
 		if (board.board[x][row]->getPieceChar() != 'P')
@@ -147,7 +159,8 @@ int chess::MiniMaxAi::getPieceValue(chess::Piece* piece)
 {
 	int value = 0;
 
-	switch (piece->getPieceChar()) {
+	switch (piece->getPieceChar())
+	{
 	case 'P':
 		value = 1;
 		break;
@@ -182,7 +195,8 @@ std::vector<chess::Move> chess::MiniMaxAi::getBestMoves(std::vector<chess::Move>
 	std::vector <chess::Move> bestMoves;
 	int highestValue = *(std::max_element(values.begin(), values.end()));
 
-	for (int i = 0; i < moves.size(); i++) {
+	for (int i = 0; i < moves.size(); i++)
+	{
 		if (values[i] == highestValue)
 			bestMoves.push_back(moves[i]);
 	}

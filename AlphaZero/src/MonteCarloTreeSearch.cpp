@@ -14,7 +14,8 @@ MonteCarloTreeSearch::MonteCarloTreeSearch(int actionCount, float cpuct)
 
 void MonteCarloTreeSearch::search(int count, std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device)
 {
-	for (int i = 0; i < count; i++) {
+	for (int i = 0; i < count; i++)
+	{
 		search(strState, net, game, currentPlayer, device);
 		loopDetection.clear();
 	}
@@ -156,11 +157,13 @@ int MonteCarloTreeSearch::getActionWithHighestUpperConfidenceBound(const std::st
 	int bestAction = -1;
 	std::vector<int> possibleMoves = game->getAllPossibleMoves(strState, currentPlayer);
 
-	for (int i = 0; i < possibleMoves.size(); i++) {
+	for (int i = 0; i < possibleMoves.size(); i++)
+	{
 		int action = possibleMoves[i];
 		float utility = calculateUpperConfidenceBound(strState, action);
 
-		if (utility > maxUtility) {
+		if (utility > maxUtility)
+		{
 			maxUtility = utility;
 			bestAction = action;
 		}

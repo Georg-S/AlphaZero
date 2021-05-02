@@ -3,7 +3,7 @@
 
 #include "Piece.h"
 
-class Rook : public chess::Piece 
+class Rook : public chess::Piece
 {
 public:
 	Rook(chess::PieceColor color);

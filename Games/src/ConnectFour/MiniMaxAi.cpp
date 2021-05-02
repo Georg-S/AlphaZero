@@ -19,7 +19,8 @@ int cn4::MiniMaxAi::getMove(std::string state, int playerColor)
 
 	std::vector<int> values;
 
-	for (int i = 0; i < possibleMoves.size(); i++) {
+	for (int i = 0; i < possibleMoves.size(); i++)
+	{
 		cn4::Board copyBoard = cn4::Board(board);
 		makeMove(copyBoard, possibleMoves[i], playerColor);
 
@@ -33,8 +34,10 @@ int cn4::MiniMaxAi::getMove(std::string state, int playerColor)
 
 void cn4::MiniMaxAi::makeMove(cn4::Board& board, int move, int currenPlayer)
 {
-	for (int i = 0; i < board.height; i++) {
-		if (board.board[move][i] == 0) {
+	for (int i = 0; i < board.height; i++)
+	{
+		if (board.board[move][i] == 0)
+		{
 			board.board[move][i] = currenPlayer;
 			return;
 		}
@@ -67,18 +70,21 @@ int cn4::MiniMaxAi::evaluateBoard(const cn4::Board& board, int depth, int curren
 	getAllPossibleMoves(possibleMoves, board);
 	orderMoves(possibleMoves);
 
-	for (int i = 0; i < possibleMoves.size(); i++) {
+	for (int i = 0; i < possibleMoves.size(); i++)
+	{
 		cn4::Board copyBoard = Board(board);
 		makeMove(copyBoard, possibleMoves[i], currentPlayer);
 		int moveValue = evaluateBoard(copyBoard, depth - 1, nextPlayer, !maximizingPlayer, alpha, beta);
 
-		if (maximizingPlayer) {
+		if (maximizingPlayer)
+		{
 			boardValue = std::max(moveValue, boardValue);
 			alpha = std::max(boardValue, alpha);
 			if (beta <= alpha)
 				break;
 		}
-		else {
+		else
+		{
 			boardValue = std::min(moveValue, boardValue);
 			beta = std::min(boardValue, beta);
 			if (beta <= alpha)
@@ -104,8 +110,10 @@ void cn4::MiniMaxAi::orderMoves(std::vector<int>& moves) const
 int cn4::MiniMaxAi::staticBoardEvaluation(const cn4::Board& board)
 {
 	int boardValue = 0;
-	for (int x = 0; x < board.width; x++) {
-		for (int y = 0; y < board.height; y++) {
+	for (int x = 0; x < board.width; x++)
+	{
+		for (int y = 0; y < board.height; y++)
+		{
 			boardValue += evaluateBoardPosition(board, x, y);
 		}
 	}
@@ -130,7 +138,8 @@ int cn4::MiniMaxAi::rightHorizontalValue(const cn4::Board& board, int x, int y)
 
 	int value = 0;
 	int color = board.board[x][y];
-	for (int i = 1; i < 4; i++) {
+	for (int i = 1; i < 4; i++)
+	{
 		if (board.board[x + i][y] == (int)cn4::PlayerColor::NONE)
 			continue;
 		if (board.board[x + i][y] != color)
@@ -152,7 +161,8 @@ int cn4::MiniMaxAi::rightDiagonalDownValue(const cn4::Board& board, int x, int y
 	int value = 0;
 	int color = board.board[x][y];
 
-	for (int i = 1; i < 4; i++) {
+	for (int i = 1; i < 4; i++)
+	{
 		if (board.board[x + i][y - i] == (int)cn4::PlayerColor::NONE)
 			continue;
 		if (board.board[x + i][y - i] != color)
@@ -173,7 +183,8 @@ int cn4::MiniMaxAi::rightDiagonalUpValue(const cn4::Board& board, int x, int y)
 	int value = 0;
 	int color = board.board[x][y];
 
-	for (int i = 1; i < 4; i++) {
+	for (int i = 1; i < 4; i++)
+	{
 		if (board.board[x + i][y + i] == (int)cn4::PlayerColor::NONE)
 			continue;
 
@@ -194,7 +205,8 @@ int cn4::MiniMaxAi::upVerticalValue(const cn4::Board& board, int x, int y)
 	int value = 0;
 	int color = board.board[x][y];
 
-	for (int i = 1; i < 4; i++) {
+	for (int i = 1; i < 4; i++)
+	{
 		if (board.board[x][y + i] == (int)cn4::PlayerColor::NONE)
 			return value;
 
@@ -211,7 +223,8 @@ std::vector<int> cn4::MiniMaxAi::getBestMoves(std::vector<int>& moves, std::vect
 	std::vector <int> bestMoves;
 	int highestValue = *(std::max_element(values.begin(), values.end()));
 
-	for (int i = 0; i < moves.size(); i++) {
+	for (int i = 0; i < moves.size(); i++)
+	{
 		if (values[i] == highestValue)
 			bestMoves.push_back(moves[i]);
 	}

@@ -14,7 +14,7 @@ int MultiThreadingNeuralNetManager::addInputThreadSafe(torch::Tensor input)
 	if (this->inputBuffer.numel() == 0)
 		this->inputBuffer = input;
 	else
-		this->inputBuffer = torch::cat({ this->inputBuffer, input}, 0);
+		this->inputBuffer = torch::cat({ this->inputBuffer, input }, 0);
 	this->elementsAdded++;
 
 	return resultIndex;
@@ -40,12 +40,12 @@ void MultiThreadingNeuralNetManager::safeDecrementActiveThreads()
 void MultiThreadingNeuralNetManager::handleWaitingAndWakeup()
 {
 	std::unique_lock<std::mutex> lck(threadingMutex);
-	if ((this->waitingThreads+1) != this->activeThreads) 
+	if ((this->waitingThreads + 1) != this->activeThreads)
 	{
 		this->waitingThreads++;
 		cond.wait(lck);
 	}
-	else 
+	else
 	{
 		calculateAndWakeup();
 	}
@@ -58,7 +58,7 @@ void MultiThreadingNeuralNetManager::calculateAndWakeup()
 	wakeUpAllThreads();
 }
 
-int MultiThreadingNeuralNetManager::getThreadCount() const 
+int MultiThreadingNeuralNetManager::getThreadCount() const
 {
 	return this->threadCount;
 }

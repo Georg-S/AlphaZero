@@ -16,7 +16,7 @@
 #include "ReducedChessAdapter.h"
 
 
-class Chess 
+class Chess
 {
 public:
 	Chess();

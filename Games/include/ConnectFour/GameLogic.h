@@ -4,9 +4,9 @@
 #include "PlayerColor.h"
 #include "Board.h"
 
-namespace cn4 
+namespace cn4
 {
-	class GameLogic 
+	class GameLogic
 	{
 	public:
 		static cn4::PlayerColor getPlayerWon(const cn4::Board& board);

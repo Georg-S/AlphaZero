@@ -21,8 +21,10 @@ std::vector<int> TicTacToeAdapter::getAllPossibleMoves(const std::string& state,
 	ttt::Board board = convertStringToBoard(state);
 
 	std::vector<int> possibleMoves;
-	for (int y = 0; y < 3; y++) {
-		for (int x = 0; x < 3; x++) {
+	for (int y = 0; y < 3; y++)
+	{
+		for (int x = 0; x < 3; x++)
+		{
 			if (board.board[x][y] == 0)
 				possibleMoves.push_back(x + y * 3);
 		}
@@ -36,8 +38,10 @@ torch::Tensor TicTacToeAdapter::convertStateToNeuralNetInput(const std::string& 
 	int otherPlayer = getNextPlayer(currentPlayer);
 	torch::Tensor neuralInput = torch::zeros({ 1,2,3,3 });
 
-	for (int x = 0; x < 3; x++) {
-		for (int y = 0; y < 3; y++) {
+	for (int x = 0; x < 3; x++)
+	{
+		for (int y = 0; y < 3; y++)
+		{
 			if (currentPlayer == board.board[x][y])
 				neuralInput[0][0][x][y] = 1;
 			else if (otherPlayer == board.board[x][y])
@@ -76,7 +80,8 @@ std::string TicTacToeAdapter::makeMove(const std::string& state, int move, int c
 
 	int x = move % 3;
 	int y = move / 3;
-	if (board.board[x][y] != 0 || (x < 0) || (x >= 3) || (y < 0) || (y >= 3)) {
+	if (board.board[x][y] != 0 || (x < 0) || (x >= 3) || (y < 0) || (y >= 3))
+	{
 		std::cout << "invalid move in state: " << state << std::endl;
 		return state;
 	}

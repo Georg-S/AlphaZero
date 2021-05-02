@@ -36,7 +36,8 @@ int NeuralNetAi::getProbabilisticAction(const std::vector<float>& vec)
 		r -= FLT_MIN;
 	float acc = 0.f;
 	int x = 0;
-	for (; x < vec.size(); x++) {
+	for (; x < vec.size(); x++)
+	{
 		acc += vec[x];
 
 		if (acc >= r)

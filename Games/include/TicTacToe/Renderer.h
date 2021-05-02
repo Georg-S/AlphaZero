@@ -4,9 +4,9 @@
 #include "Board.h"
 #include "SDL/SDLHandler.h"
 
-namespace ttt 
+namespace ttt
 {
-	class Renderer 
+	class Renderer
 	{
 	public:
 		Renderer();

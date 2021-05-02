@@ -1,9 +1,9 @@
 #ifndef DEEPREINFORCEMENTLEARNING_MOUSEINFORMATION_H
 #define DEEPREINFORCEMENTLEARNING_MOUSEINFORMATION_H
 
-struct MouseInformation 
+struct MouseInformation
 {
-	MouseInformation() 
+	MouseInformation()
 	{
 		this->xPosition = 0;
 		this->yPosition = 0;
@@ -11,7 +11,7 @@ struct MouseInformation
 		this->rightButtonPressed = false;
 	}
 
-	MouseInformation(int xPosition, int yPosition, bool leftClicked) 
+	MouseInformation(int xPosition, int yPosition, bool leftClicked)
 	{
 		this->xPosition = xPosition;
 		this->yPosition = yPosition;

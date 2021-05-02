@@ -4,9 +4,9 @@
 #include "Board.h"
 #include "Move.h"
 
-namespace chess 
+namespace chess
 {
-	class GameLogic 
+	class GameLogic
 	{
 	public:
 		static bool isFieldEmpty(const chess::Board& board, int x, int y);

@@ -5,21 +5,21 @@
 #include <string>
 #include "PlayerColor.h"
 
-namespace cn4 
+namespace cn4
 {
-	struct Board 
+	struct Board
 	{
-		Board() 
+		Board()
 		{
 			for (int x = 0; x < width; x++)
 				for (int y = 0; y < height; y++)
 					board[x][y] = (int)cn4::PlayerColor::NONE;
 		}
 
-		Board(const cn4::Board& board) 
+		Board(const cn4::Board& board)
 		{
 			for (int x = 0; x < width; x++)
-				for (int y = 0; y < height; y++) 
+				for (int y = 0; y < height; y++)
 					this->board[x][y] = board.board[x][y];
 		}
 
@@ -32,9 +32,9 @@ namespace cn4
 
 		void print() const
 		{
-			for (int y = height-1; y >= 0; y--) 
+			for (int y = height - 1; y >= 0; y--)
 			{
-				for (int x = 0; x < width; x++) 
+				for (int x = 0; x < width; x++)
 				{
 					std::cout << convertPlayerColorToChar(board[x][y]) << " ";
 				}
@@ -46,8 +46,10 @@ namespace cn4
 		{
 			std::string result;
 
-			for (int y = 0; y < height; y++) {
-				for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++)
+			{
+				for (int x = 0; x < width; x++)
+				{
 					result += std::to_string(board[x][y]);
 				}
 			}

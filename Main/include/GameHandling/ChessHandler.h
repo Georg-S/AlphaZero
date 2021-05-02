@@ -11,7 +11,7 @@
 #include "Evaluation.h"
 #include "TrainingParameters.h"
 
-class ChessHandler 
+class ChessHandler
 {
 public:
 	ChessHandler();

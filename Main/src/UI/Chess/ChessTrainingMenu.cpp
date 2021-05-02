@@ -122,6 +122,7 @@ void ChessTrainingMenu::handleTrainingFinished()
 	delete trainingThread;
 }
 
-void ChessTrainingMenu::reset() {
+void ChessTrainingMenu::reset()
+{
 	this->setParent(nullptr);
 }

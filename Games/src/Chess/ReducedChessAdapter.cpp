@@ -1,24 +1,28 @@
 #include "Chess/ReducedChessAdapter.h"
 
-ReducedChessAdapter::ReducedChessAdapter() 
+ReducedChessAdapter::ReducedChessAdapter()
 {
 
 }
 
-std::vector<int> ReducedChessAdapter::getAllPossibleMoves(const std::string& state, int currentPlayer) 
+std::vector<int> ReducedChessAdapter::getAllPossibleMoves(const std::string& state, int currentPlayer)
 {
 	chess::Board board = convertStateStringToBoard(state);
 	std::vector<int> resultVec;
 
-	for (int fromX = 0; fromX < 8; fromX++) {
-		for (int fromY = 0; fromY < 8; fromY++) {
+	for (int fromX = 0; fromX < 8; fromX++)
+	{
+		for (int fromY = 0; fromY < 8; fromY++)
+		{
 			if (board.board[fromX][fromY] == nullptr)
 				continue;
 			if (board.board[fromX][fromY]->getPieceColor() != ((chess::PieceColor)currentPlayer))
 				continue;
 
-			for (int toX = 0; toX < 8; toX++) {
-				for (int toY = 0; toY < 8; toY++) {
+			for (int toX = 0; toX < 8; toX++)
+			{
+				for (int toY = 0; toY < 8; toY++)
+				{
 					chess::Move move = chess::Move(fromX, fromY, toX, toY);
 					if (chess::GameLogic::isMoveValid(board, move))
 						resultVec.push_back(move.getSingleIntRepresentation());
@@ -31,18 +35,18 @@ std::vector<int> ReducedChessAdapter::getAllPossibleMoves(const std::string& sta
 	return resultVec;
 }
 
-int ReducedChessAdapter::getInitialPlayer() 
+int ReducedChessAdapter::getInitialPlayer()
 {
 	return (int)chess::PieceColor::WHITE;
 }
 
-std::string ReducedChessAdapter::getInitialGameState() 
+std::string ReducedChessAdapter::getInitialGameState()
 {
 	static const std::string initialState = "1RHBQKBHRPPPPPPPP--------------------------------PPPPPPPPRHBQKBHR2222222222222222--------------------------------1111111111111111";
 	return initialState;
 }
 
-int ReducedChessAdapter::getPlayerWon(const std::string& state) 
+int ReducedChessAdapter::getPlayerWon(const std::string& state)
 {
 	chess::Board board = convertStateStringToBoard(state);
 	int result = 0;
@@ -56,12 +60,12 @@ int ReducedChessAdapter::getPlayerWon(const std::string& state)
 	return result;
 }
 
-int ReducedChessAdapter::getNextPlayer(int currentPlayer) 
+int ReducedChessAdapter::getNextPlayer(int currentPlayer)
 {
 	return (int)(chess::GameLogic::getNextPlayer((chess::PieceColor)currentPlayer));
 }
 
-std::string ReducedChessAdapter::makeMove(const std::string& state, int move, int currentPlayer) 
+std::string ReducedChessAdapter::makeMove(const std::string& state, int move, int currentPlayer)
 {
 	chess::Board board = convertStateStringToBoard(state);
 	chess::Move chessMove = chess::Move(move);
@@ -78,7 +82,8 @@ std::string ReducedChessAdapter::makeMove(const std::string& state, int move, in
 
 	std::string resultString = convertStateToString(board, getNextPlayer(currentPlayer));
 
-	if (!bothKingsStillThere(board)) {
+	if (!bothKingsStillThere(board))
+	{
 		std::cout << "Move: " << move << std::endl;
 		std::cout << "Before: " << state << std::endl;
 		std::cout << "After: " << resultString << std::endl;
@@ -89,7 +94,7 @@ std::string ReducedChessAdapter::makeMove(const std::string& state, int move, in
 }
 
 torch::Tensor ReducedChessAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer,
-	torch::Device device) 
+	torch::Device device)
 {
 	chess::Board board = convertStateStringToBoard(state);
 	chess::PieceColor otherPlayer = (chess::PieceColor)getNextPlayer(currentPlayer);
@@ -114,7 +119,7 @@ torch::Tensor ReducedChessAdapter::convertStateToNeuralNetInput(const std::strin
 	return result;
 }
 
-bool ReducedChessAdapter::isGameOver(const std::string& state) 
+bool ReducedChessAdapter::isGameOver(const std::string& state)
 {
 	chess::PieceColor currentPlayer = getCurrentPlayerFromState(state);
 	chess::Board board = convertStateStringToBoard(state);
@@ -124,7 +129,7 @@ bool ReducedChessAdapter::isGameOver(const std::string& state)
 	return result;
 }
 
-int ReducedChessAdapter::gameOverReward(const std::string& state, int currentPlayer) 
+int ReducedChessAdapter::gameOverReward(const std::string& state, int currentPlayer)
 {
 	chess::Board board = convertStateStringToBoard(state);
 	int value = 0;
@@ -140,17 +145,19 @@ int ReducedChessAdapter::gameOverReward(const std::string& state, int currentPla
 	return value;
 }
 
-std::string ReducedChessAdapter::convertBoardToString(chess::Board& board) 
+std::string ReducedChessAdapter::convertBoardToString(chess::Board& board)
 {
 	return convertPiecesToString(board) + convertColorToString(board);
 }
 
-std::string ReducedChessAdapter::convertPiecesToString(const chess::Board& board) 
+std::string ReducedChessAdapter::convertPiecesToString(const chess::Board& board)
 {
 	std::string resultStr = "";
 
-	for (int y = 0; y < 8; y++) {
-		for (int x = 0; x < 8; x++) {
+	for (int y = 0; y < 8; y++)
+	{
+		for (int x = 0; x < 8; x++)
+		{
 			if (board.board[x][y] == nullptr)
 				resultStr += '-';
 			else
@@ -160,12 +167,14 @@ std::string ReducedChessAdapter::convertPiecesToString(const chess::Board& board
 	return resultStr;
 }
 
-std::string ReducedChessAdapter::convertColorToString(const chess::Board& board) 
+std::string ReducedChessAdapter::convertColorToString(const chess::Board& board)
 {
 	std::string resultStr = "";
 
-	for (int y = 0; y < 8; y++) {
-		for (int x = 0; x < 8; x++) {
+	for (int y = 0; y < 8; y++)
+	{
+		for (int x = 0; x < 8; x++)
+		{
 			if (board.board[x][y] == nullptr)
 				resultStr += '-';
 			else
@@ -175,20 +184,22 @@ std::string ReducedChessAdapter::convertColorToString(const chess::Board& board)
 	return resultStr;
 }
 
-chess::Board ReducedChessAdapter::convertStringToBoard(std::string state) 
+chess::Board ReducedChessAdapter::convertStringToBoard(std::string state)
 {
 	chess::Board resultBoard = chess::Board();
 	std::string pieces = state.substr(0, 64);
 	std::string colors = state.substr(64);
 
-	for (int iter = 0; iter < 64; iter++) {
+	for (int iter = 0; iter < 64; iter++)
+	{
 		char pieceChar = pieces.at(iter);
 		int iColor = colors.at(iter) - '0';
 		chess::PieceColor color = (chess::PieceColor)iColor;
 
 		if (pieceChar == '-')
 			continue;
-		else {
+		else
+		{
 			int x = iter % 8;
 			int y = iter / 8;
 			resultBoard.board[x][y] = getPieceFromChar(pieceChar, color);
@@ -205,7 +216,8 @@ chess::Board ReducedChessAdapter::convertStringToBoard(std::string state)
 
 chess::Piece* ReducedChessAdapter::getPieceFromChar(const char& pieceChar, const chess::PieceColor& color)
 {
-	switch (pieceChar) {
+	switch (pieceChar)
+	{
 	case 'Q':
 		return new Queen(color);
 	case 'H':
@@ -230,10 +242,12 @@ chess::PieceColor ReducedChessAdapter::getCurrentPlayerFromState(const std::stri
 
 
 void ReducedChessAdapter::convertPiecesToTensor(chess::Board& board, const chess::PieceColor& color,
-	at::Tensor destination, const char& pieceChar) 
+	at::Tensor destination, const char& pieceChar)
 {
-	for (int x = 0; x < 8; x++) {
-		for (int y = 0; y < 8; y++) {
+	for (int x = 0; x < 8; x++)
+	{
+		for (int y = 0; y < 8; y++)
+		{
 			if (board.board[x][y] == nullptr)
 				continue;
 			if (board.board[x][y]->getPieceChar() != pieceChar)
@@ -244,15 +258,16 @@ void ReducedChessAdapter::convertPiecesToTensor(chess::Board& board, const chess
 	}
 }
 
-void ReducedChessAdapter::replacePawnsWithQueens(chess::Board& board) 
+void ReducedChessAdapter::replacePawnsWithQueens(chess::Board& board)
 {
 	replacePawnsWithQueens(board, 0);
 	replacePawnsWithQueens(board, 7);
 }
 
-void ReducedChessAdapter::replacePawnsWithQueens(chess::Board& board, int row) 
+void ReducedChessAdapter::replacePawnsWithQueens(chess::Board& board, int row)
 {
-	for (int x = 0; x < 8; x++) {
+	for (int x = 0; x < 8; x++)
+	{
 		if (board.board[x][row] == nullptr)
 			continue;
 		if (board.board[x][row]->getPieceChar() != 'P')
@@ -264,11 +279,13 @@ void ReducedChessAdapter::replacePawnsWithQueens(chess::Board& board, int row)
 	}
 }
 
-bool ReducedChessAdapter::bothKingsStillThere(const chess::Board& board) 
+bool ReducedChessAdapter::bothKingsStillThere(const chess::Board& board)
 {
 	int numberKings = 0;
-	for (int x = 0; x < 8; x++) {
-		for (int y = 0; y < 8; y++) {
+	for (int x = 0; x < 8; x++)
+	{
+		for (int y = 0; y < 8; y++)
+		{
 			if (board.board[x][y] == nullptr)
 				continue;
 			if (board.board[x][y]->getPieceChar() == 'K')
@@ -282,12 +299,12 @@ bool ReducedChessAdapter::bothKingsStillThere(const chess::Board& board)
 	return false;
 }
 
-std::string ReducedChessAdapter::convertStateToString(chess::Board& board, int currentPlayer) 
+std::string ReducedChessAdapter::convertStateToString(chess::Board& board, int currentPlayer)
 {
 	return std::to_string(currentPlayer) + convertBoardToString(board);
 }
 
-chess::Board ReducedChessAdapter::convertStateStringToBoard(std::string state) 
+chess::Board ReducedChessAdapter::convertStateStringToBoard(std::string state)
 {
 	state = state.substr(1);
 	return convertStringToBoard(state);

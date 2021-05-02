@@ -1,6 +1,6 @@
 #include "Chess/Renderer.h"
 
-chess::Renderer::Renderer() 
+chess::Renderer::Renderer()
 {
 	this->sdlHandler = new SDLHandler(windowWidth, windowHeight, true);
 	pieceWidth = windowWidth / 8;
@@ -8,12 +8,12 @@ chess::Renderer::Renderer()
 	this->sdlHandler->start("Chess");
 }
 
-chess::Renderer::~Renderer() 
+chess::Renderer::~Renderer()
 {
 	delete sdlHandler;
 }
 
-void chess::Renderer::render(const chess::RenderInformation& renderInfo) 
+void chess::Renderer::render(const chess::RenderInformation& renderInfo)
 {
 	sdlHandler->clear();
 	renderChessBoard();
@@ -35,22 +35,26 @@ void chess::Renderer::renderChessBoard()
 	sdlHandler->createAndPushBackRenderElement("Images/Chess/Board.png", 0, 0, windowWidth, windowHeight);
 }
 
-void chess::Renderer::renderPieces(const chess::Board& board) 
+void chess::Renderer::renderPieces(const chess::Board& board)
 {
-	for (int x = 0; x < 8; x++) {
-		for (int y = 0; y < 8; y++) {
+	for (int x = 0; x < 8; x++)
+	{
+		for (int y = 0; y < 8; y++)
+		{
 			if (board.board[x][y] != nullptr)
 				renderPiece(board, x, y);
 		}
 	}
 }
 
-void chess::Renderer::renderPiecesWithSelectedOnMousePosition(const chess::RenderInformation& renderInfo) 
+void chess::Renderer::renderPiecesWithSelectedOnMousePosition(const chess::RenderInformation& renderInfo)
 {
 	Piece* foreGroundPiece = nullptr;
 
-	for (int x = 0; x < 8; x++) {
-		for (int y = 0; y < 8; y++) {
+	for (int x = 0; x < 8; x++)
+	{
+		for (int y = 0; y < 8; y++)
+		{
 			if (x == renderInfo.selectedPieceX && y == renderInfo.selectedPieceY)
 				foreGroundPiece = renderInfo.board.board[x][y];
 			else if (renderInfo.board.board[x][y] != nullptr)
@@ -69,20 +73,20 @@ void chess::Renderer::renderPreviousMove(const Move& previousMove)
 		, pieceWidth, pieceHeight);
 }
 
-void chess::Renderer::renderPiece(const chess::Board& board, int x, int y) 
+void chess::Renderer::renderPiece(const chess::Board& board, int x, int y)
 {
 	std::string fileString = getFileString(board.board[x][y]);
 	sdlHandler->createAndPushBackRenderElement(fileString, pieceWidth * x, pieceHeight * y, pieceWidth, pieceHeight);
 }
 
-std::string chess::Renderer::getFileString(chess::Piece* piece) 
+std::string chess::Renderer::getFileString(chess::Piece* piece)
 {
 	chess::PieceColor pieceColor = piece->getPieceColor();
 	char pieceChar = piece->getPieceChar();
 	return getFileString(pieceChar, pieceColor);
 }
 
-std::string chess::Renderer::getFileString(const char& pieceChar, const chess::PieceColor& pieceColor) 
+std::string chess::Renderer::getFileString(const char& pieceChar, const chess::PieceColor& pieceColor)
 {
 	std::string color;
 	std::string pieceStr;
@@ -92,7 +96,8 @@ std::string chess::Renderer::getFileString(const char& pieceChar, const chess::P
 		color = "black";
 
 
-	switch (pieceChar) {
+	switch (pieceChar)
+	{
 	case 'P':
 		pieceStr = "Pawn";
 		break;
@@ -118,17 +123,17 @@ std::string chess::Renderer::getFileString(const char& pieceChar, const chess::P
 	return "Images/Chess/" + pieceStr + "_" + color + ".png";
 }
 
-int chess::Renderer::getWindowWidth() 
+int chess::Renderer::getWindowWidth()
 {
 	return this->windowWidth;
 }
 
-int chess::Renderer::getWindowHeight() 
+int chess::Renderer::getWindowHeight()
 {
 	return this->windowHeight;
 }
 
-void chess::Renderer::renderPieceOnMousePosition(chess::Piece* piece, int mouseX, int mouseY) 
+void chess::Renderer::renderPieceOnMousePosition(chess::Piece* piece, int mouseX, int mouseY)
 {
 	std::string fileString = getFileString(piece);
 	sdlHandler->createAndPushBackRenderElement(fileString, mouseX - (pieceWidth / 2), mouseY - (pieceHeight / 2), pieceWidth, pieceHeight);
@@ -152,17 +157,17 @@ void chess::Renderer::renderPromotionSelection(chess::PieceColor color)
 	sdlHandler->updateRendering();
 }
 
-void chess::Renderer::updateQuit() 
+void chess::Renderer::updateQuit()
 {
 	sdlHandler->updateQuit();
 }
 
-bool chess::Renderer::isQuit() 
+bool chess::Renderer::isQuit()
 {
 	return sdlHandler->exit;
 }
 
-void chess::Renderer::quit() 
+void chess::Renderer::quit()
 {
 	sdlHandler->close();
 }

@@ -11,7 +11,7 @@
 #include "Renderer.h"
 #include "SDL/Mouse.h"
 
-class TicTacToe 
+class TicTacToe
 {
 public:
 	TicTacToe();

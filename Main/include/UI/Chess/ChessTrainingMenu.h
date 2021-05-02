@@ -10,7 +10,7 @@
 #include "GameHandling/ChessHandler.h"
 #define slots Q_SLOTS
 
-class ChessTrainingMenu : public QWidget 
+class ChessTrainingMenu : public QWidget
 {
 	Q_OBJECT;
 public:

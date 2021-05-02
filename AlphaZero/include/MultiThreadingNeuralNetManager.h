@@ -6,7 +6,7 @@
 #include <tuple>
 #include "NeuralNetworks/NeuralNetwork.h"
 
-class MultiThreadingNeuralNetManager 
+class MultiThreadingNeuralNetManager
 {
 public:
 	MultiThreadingNeuralNetManager(int threadCount, int activeThreads, NeuralNetwork* net);

@@ -10,7 +10,7 @@
 // Reduced means, the adapter doesn't know about Castling and En passant
 // This is mainly a simplification and hopefully speeds up learning
 
-class ReducedChessAdapter : public Game 
+class ReducedChessAdapter : public Game
 {
 public:
 	ReducedChessAdapter();

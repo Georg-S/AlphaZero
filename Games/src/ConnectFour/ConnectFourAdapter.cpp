@@ -22,7 +22,8 @@ cn4::Board ConnectFourAdapter::convertStringToBoard(const std::string& state)
 {
 	cn4::Board result = cn4::Board();
 
-	for (int index = 0; index < state.size(); index++) {
+	for (int index = 0; index < state.size(); index++)
+	{
 		int x = index % result.width;
 		int y = index / result.width;
 
@@ -78,7 +79,8 @@ std::vector<int> ConnectFourAdapter::getAllPossibleMoves(const std::string& stat
 	std::vector<int> possibleMoves;
 	cn4::Board board = convertStringToBoard(state);
 
-	for (int i = 0; i < actionCount; i++) {
+	for (int i = 0; i < actionCount; i++)
+	{
 		if (cn4::GameLogic::isMovePossible(board, i))
 			possibleMoves.push_back(i);
 	}
@@ -93,8 +95,10 @@ torch::Tensor ConnectFourAdapter::convertStateToNeuralNetInput(const std::string
 	int otherPlayer = currentPlayer % 2 + 1;
 	torch::Tensor neuralInput = torch::zeros({ 1,2,board.width, board.height });
 
-	for (int x = 0; x < board.width; x++) {
-		for (int y = 0; y < board.height; y++) {
+	for (int x = 0; x < board.width; x++)
+	{
+		for (int y = 0; y < board.height; y++)
+		{
 			if (currentPlayer == board.board[x][y])
 				neuralInput[0][0][x][y] = 1;
 			else if (otherPlayer == board.board[x][y])

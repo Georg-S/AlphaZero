@@ -6,9 +6,9 @@
 #include "AI/Ai.h"
 #include "Pieces/Queen.h"
 
-namespace chess 
+namespace chess
 {
-	class MiniMaxAi : public Ai 
+	class MiniMaxAi : public Ai
 	{
 	public:
 		MiniMaxAi(int depth);

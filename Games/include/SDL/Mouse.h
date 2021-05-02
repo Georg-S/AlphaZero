@@ -5,7 +5,7 @@
 #include "MouseInformation.h"
 #include <SDL.h>
 
-class Mouse 
+class Mouse
 {
 public:
 	Mouse();

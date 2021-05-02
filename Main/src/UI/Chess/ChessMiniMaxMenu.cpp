@@ -1,6 +1,6 @@
 #include "UI/Chess/ChessMiniMaxMenu.h"
 
-ChessMiniMaxMenu::ChessMiniMaxMenu(QWidget* w, QWidget* parent) : QWidget(parent), chessMiniMax(new Ui::TwoPlayerMiniMaxWidget) 
+ChessMiniMaxMenu::ChessMiniMaxMenu(QWidget* w, QWidget* parent) : QWidget(parent), chessMiniMax(new Ui::TwoPlayerMiniMaxWidget)
 {
 	chessMiniMax->setupUi(this);
 	chessMiniMax->MiniMaxDepthInput->setText("3");
@@ -10,7 +10,7 @@ ChessMiniMaxMenu::ChessMiniMaxMenu(QWidget* w, QWidget* parent) : QWidget(parent
 	gameHandler = ChessHandler();
 }
 
-ChessMiniMaxMenu::~ChessMiniMaxMenu() 
+ChessMiniMaxMenu::~ChessMiniMaxMenu()
 {
 	delete chessMiniMax;
 }

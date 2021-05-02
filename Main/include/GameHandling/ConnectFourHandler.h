@@ -15,7 +15,7 @@
 #include "TrainingParameters.h"
 
 
-class ConnectFourHandler 
+class ConnectFourHandler
 {
 public:
 	ConnectFourHandler();

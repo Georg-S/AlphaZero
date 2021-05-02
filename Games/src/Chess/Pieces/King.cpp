@@ -69,8 +69,10 @@ King::castlingPossible(chess::Piece* board[8][8], int fromX, int fromY, int toX,
 
 	int direction = (toX - fromX) / abs(toX - fromX);
 
-	for (int x = fromX + direction; x != rookX; x += direction) {
-		if (!(isFieldEmpty(board, x, fromY))) {
+	for (int x = fromX + direction; x != rookX; x += direction)
+	{
+		if (!(isFieldEmpty(board, x, fromY)))
+		{
 			return false;
 		}
 	}
@@ -104,9 +106,10 @@ bool King::isValidRookForCastlingField(chess::Piece* board[8][8], int rookX, int
 }
 
 bool King::testCheckOnPositionAndResetBoard(chess::Piece* board[8][8], int fromX, int fromY, int toX,
-	int toY) 
+	int toY)
 {
-	if (board[toX][toY] != nullptr) {
+	if (board[toX][toY] != nullptr)
+	{
 		debugPrintBoardToConsole(board);
 		std::cout << "We have a Problem " << std::endl;
 	}

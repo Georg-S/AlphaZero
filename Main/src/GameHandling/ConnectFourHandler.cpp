@@ -88,7 +88,8 @@ void ConnectFourHandler::evalConnectFour(bool multiThreaded)
 		result = evalConnectFour(preTrainedPath + "/start", miniMaxDepth, torch::kCUDA);
 	writeEvaluationResultToFile(0, result, myfile);
 
-	for (int i = 0; i < 25; i++) {
+	for (int i = 0; i < 25; i++)
+	{
 		std::string path = preTrainedPath + "/iteration" + std::to_string(i);
 		std::cout << path << std::endl;
 

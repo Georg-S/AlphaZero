@@ -4,7 +4,7 @@
 #include <math.h>
 #include "Piece.h"
 
-class Knight : public chess::Piece 
+class Knight : public chess::Piece
 {
 public:
 	Knight(chess::PieceColor color);

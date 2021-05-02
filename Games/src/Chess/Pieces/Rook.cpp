@@ -1,13 +1,13 @@
 #include "Chess/Pieces/Rook.h"
 
-Rook::Rook(chess::PieceColor color) 
+Rook::Rook(chess::PieceColor color)
 {
 	this->color = color;
 	this->pieceChar = 'R';
 	this->moved = false;
 }
 
-bool Rook::isMoveValid(chess::Piece* (*board)[8], const chess::Move& move) 
+bool Rook::isMoveValid(chess::Piece* (*board)[8], const chess::Move& move)
 {
 
 	if (move.fromX != move.toX && move.fromY != move.toY)
@@ -20,19 +20,21 @@ bool Rook::isMoveValid(chess::Piece* (*board)[8], const chess::Move& move)
 		downPossible(board, move.fromX, move.fromY, move.toX, move.toY);
 }
 
-void Rook::makeMove(chess::Piece* (*board)[8], const chess::Move& move) 
+void Rook::makeMove(chess::Piece* (*board)[8], const chess::Move& move)
 {
 	setEnPassantDirectionsOfOneColorToZero(board, board[move.fromX][move.fromY]->getPieceColor());
 	movePieceToPosition(board, move);
 }
 
-bool Rook::rightPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY) 
+bool Rook::rightPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY)
 {
 	if (fromX >= toX)
 		return false;
 
-	for (int x = fromX + 1; x < 8; x++) {
-		if (x == toX && fromY == toY) {
+	for (int x = fromX + 1; x < 8; x++)
+	{
+		if (x == toX && fromY == toY)
+		{
 			if (isFieldEmpty(board, toX, toY))
 				return true;
 
@@ -47,10 +49,12 @@ bool Rook::rightPossible(chess::Piece* (*board)[8], int fromX, int fromY, int to
 	return false;
 }
 
-bool Rook::upPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY) 
+bool Rook::upPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY)
 {
-	for (int y = fromY - 1; y >= 0; y--) {
-		if (fromX == toX && y == toY) {
+	for (int y = fromY - 1; y >= 0; y--)
+	{
+		if (fromX == toX && y == toY)
+		{
 			if (isFieldEmpty(board, toX, toY))
 				return true;
 
@@ -65,13 +69,15 @@ bool Rook::upPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, 
 	return false;
 }
 
-bool Rook::leftPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY) 
+bool Rook::leftPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY)
 {
 	if (fromX <= toX)
 		return false;
 
-	for (int x = fromX - 1; x >= 0; x--) {
-		if (x == toX && fromY == toY) {
+	for (int x = fromX - 1; x >= 0; x--)
+	{
+		if (x == toX && fromY == toY)
+		{
 			if (isFieldEmpty(board, toX, toY))
 				return true;
 
@@ -87,10 +93,12 @@ bool Rook::leftPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX
 	return false;
 }
 
-bool Rook::downPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY) 
+bool Rook::downPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX, int toY)
 {
-	for (int y = fromY + 1; y < 8; y++) {
-		if (fromX == toX && y == toY) {
+	for (int y = fromY + 1; y < 8; y++)
+	{
+		if (fromX == toX && y == toY)
+		{
 			if (isFieldEmpty(board, toX, toY))
 				return true;
 
@@ -105,7 +113,7 @@ bool Rook::downPossible(chess::Piece* (*board)[8], int fromX, int fromY, int toX
 	return false;
 }
 
-chess::Piece* Rook::getDeepCopy() 
+chess::Piece* Rook::getDeepCopy()
 {
 	Rook* rook = new Rook(this->color);
 	rook->moved = this->moved;

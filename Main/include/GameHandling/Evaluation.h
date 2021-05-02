@@ -25,7 +25,7 @@ public:
 	static int runGame(Ai* ai1, Ai* ai2, Game* game);
 
 	EvalResult evalMultiThreaded(MultiThreadingNeuralNetManager* threadManager, Ai* miniMaxAi, Game* game, int numberEvalGames = 100);
-	void selfPlayMultiThreadGames(MultiThreadingNeuralNetManager* threadManager, Ai* miniMaxAi, 
+	void selfPlayMultiThreadGames(MultiThreadingNeuralNetManager* threadManager, Ai* miniMaxAi,
 		Game* game, EvalResult& result, int& gamesToPlay, int& color, int seed);
 	int runGameMultiThreaded(MultiThreadingNeuralNetManager* threadManager, Ai* minMaxAi, Game* game, int neuralNetColor);
 

@@ -14,7 +14,8 @@ EvalResult Evaluation::eval(Ai* neuralNetAi, Ai* miniMaxAi, Game* game, int numb
 	Ai* currentPlayer1 = neuralNetAi;
 	Ai* currentPlayer2 = miniMaxAi;
 
-	for (int i = 0; i < numberEvalGames; i++) {
+	for (int i = 0; i < numberEvalGames; i++)
+	{
 		int winner = Evaluation::runGame(currentPlayer1, currentPlayer2, game);
 
 		std::swap(currentPlayer1, currentPlayer2);
@@ -41,7 +42,8 @@ int Evaluation::runGame(Ai* ai1, Ai* ai2, Game* game)
 	std::string state = game->getInitialGameState();
 	int currentPlayer = game->getInitialPlayer();
 
-	while (!game->isGameOver(state)) {
+	while (!game->isGameOver(state))
+	{
 		int move = -1;
 		if (currentPlayer == 1)
 			move = ai1->getMove(state, currentPlayer);
@@ -61,9 +63,9 @@ EvalResult Evaluation::evalMultiThreaded(MultiThreadingNeuralNetManager* threadM
 	EvalResult result;
 	int currentNetColor = game->getInitialPlayer();
 	int gamesToPlay = numberEvalGames;
-	for (int i = 0; i < threadManager->getThreadCount(); i++) 
+	for (int i = 0; i < threadManager->getThreadCount(); i++)
 	{
-		threadPool.push_back(std::thread(&Evaluation::selfPlayMultiThreadGames, this, threadManager, miniMaxAi, game, 
+		threadPool.push_back(std::thread(&Evaluation::selfPlayMultiThreadGames, this, threadManager, miniMaxAi, game,
 			std::ref(result), std::ref(gamesToPlay), std::ref(currentNetColor), rand()));
 		currentNetColor = game->getNextPlayer(currentNetColor);
 	}
@@ -117,7 +119,8 @@ int Evaluation::runGameMultiThreaded(MultiThreadingNeuralNetManager* threadManag
 	int currentPlayer = game->getInitialPlayer();
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(game->getActionCount());
 
-	while (!game->isGameOver(state)) {
+	while (!game->isGameOver(state))
+	{
 		int move = -1;
 		if (currentPlayer == neuralNetColor)
 		{

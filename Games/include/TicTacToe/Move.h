@@ -1,11 +1,12 @@
 #ifndef DEEPREINFORCEMENTLEARNING_ttt_MOVE_H
 #define DEEPREINFORCEMENTLEARNING_ttt_MOVE_H
 
-namespace ttt 
+namespace ttt
 {
-	struct Move 
+	struct Move
 	{
-		Move(int x, int y) {
+		Move(int x, int y)
+		{
 			this->x = x;
 			this->y = y;
 		}

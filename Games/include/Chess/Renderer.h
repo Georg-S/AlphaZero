@@ -5,9 +5,9 @@
 #include "Board.h"
 #include "RenderInformation.h"
 
-namespace chess 
+namespace chess
 {
-	class Renderer 
+	class Renderer
 	{
 	public:
 		Renderer();

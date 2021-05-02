@@ -13,7 +13,7 @@
 #include "PlayerColor.h"
 
 
-class ConnectFour 
+class ConnectFour
 {
 public:
 	ConnectFour();

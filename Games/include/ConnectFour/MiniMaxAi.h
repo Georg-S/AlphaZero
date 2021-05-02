@@ -6,9 +6,9 @@
 #include "Board.h"
 #include "ConnectFourAdapter.h"
 
-namespace cn4 
+namespace cn4
 {
-	class MiniMaxAi : public Ai 
+	class MiniMaxAi : public Ai
 	{
 	public:
 		MiniMaxAi(int depth = 5);

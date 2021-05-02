@@ -11,42 +11,47 @@
 #include "Pieces/Queen.h"
 #include "Pieces/Rook.h"
 
-namespace chess 
+namespace chess
 {
-	struct Board 
+	struct Board
 	{
 	public:
 		Piece* board[8][8];
 
-		Board() 
+		Board()
 		{
 			zeroInitialize();
 		}
 
-		Board(const Board& board) 
+		Board(const Board& board)
 		{
 			zeroInitialize();
 
-			for (int x = 0; x < 8; x++) {
-				for (int y = 0; y < 8; y++) {
+			for (int x = 0; x < 8; x++)
+			{
+				for (int y = 0; y < 8; y++)
+				{
 					if (board.board[x][y] != nullptr)
 						this->board[x][y] = board.board[x][y]->getDeepCopy();
 				}
 			}
 		}
 
-		void setToInitialState() 
+		void setToInitialState()
 		{
 			zeroInitialize();
 			initialStateBlackSite();
 			initialStateWhiteSite();
 		}
 
-		void deletePieces() 
+		void deletePieces()
 		{
-			for (int x = 0; x < 8; x++) {
-				for (int y = 0; y < 8; y++) {
-					if (board[x][y] != nullptr) {
+			for (int x = 0; x < 8; x++)
+			{
+				for (int y = 0; y < 8; y++)
+				{
+					if (board[x][y] != nullptr)
+					{
 						delete board[x][y];
 						board[x][y] = nullptr;
 					}
@@ -55,7 +60,7 @@ namespace chess
 		}
 
 	private:
-		void initialStateBlackSite() 
+		void initialStateBlackSite()
 		{
 			board[0][0] = new Rook(chess::PieceColor::BLACK);
 			board[7][0] = new Rook(chess::PieceColor::BLACK);
@@ -69,12 +74,13 @@ namespace chess
 			board[3][0] = new Queen(chess::PieceColor::BLACK);
 			board[4][0] = new King(chess::PieceColor::BLACK);
 
-			for (int i = 0; i < 8; i++) {
+			for (int i = 0; i < 8; i++)
+			{
 				board[i][1] = new Pawn(chess::PieceColor::BLACK);
 			}
 		}
 
-		void initialStateWhiteSite() 
+		void initialStateWhiteSite()
 		{
 			board[0][7] = new Rook(chess::PieceColor::WHITE);
 			board[7][7] = new Rook(chess::PieceColor::WHITE);
@@ -88,15 +94,18 @@ namespace chess
 			board[3][7] = new Queen(chess::PieceColor::WHITE);
 			board[4][7] = new King(chess::PieceColor::WHITE);
 
-			for (int i = 0; i < 8; i++) {
+			for (int i = 0; i < 8; i++)
+			{
 				board[i][6] = new Pawn(chess::PieceColor::WHITE);
 			}
 		}
 
-		void zeroInitialize() 
+		void zeroInitialize()
 		{
-			for (int x = 0; x < 8; x++) {
-				for (int y = 0; y < 8; y++) {
+			for (int x = 0; x < 8; x++)
+			{
+				for (int y = 0; y < 8; y++)
+				{
 					board[x][y] = nullptr;
 				}
 			}

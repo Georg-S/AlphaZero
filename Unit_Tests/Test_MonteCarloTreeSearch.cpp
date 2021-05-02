@@ -109,7 +109,8 @@ int getRandomAction(const std::vector<float>& probabilities)
 		r -= FLT_MIN;
 	float acc = 0.f;
 	int x = 0;
-	for (; x < probabilities.size(); x++) {
+	for (; x < probabilities.size(); x++)
+	{
 		acc += probabilities[x];
 
 		if (acc >= r)

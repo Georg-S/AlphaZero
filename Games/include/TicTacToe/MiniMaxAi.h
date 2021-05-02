@@ -10,9 +10,9 @@
 #include "TicTacToe/Move.h"
 #include "TicTacToe/Board.h"
 
-namespace ttt 
+namespace ttt
 {
-	class MiniMaxAi : public Ai 
+	class MiniMaxAi : public Ai
 	{
 	public:
 		MiniMaxAi();

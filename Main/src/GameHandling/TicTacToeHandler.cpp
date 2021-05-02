@@ -1,6 +1,6 @@
 #include "GameHandling/TicTacToeHandler.h"
 
-TicTacToeHandler::TicTacToeHandler() 
+TicTacToeHandler::TicTacToeHandler()
 {
 	adap = TicTacToeAdapter();
 }
@@ -29,7 +29,7 @@ void TicTacToeHandler::startTwoPlayerTicTacToeGame()
 	ttt.gameLoop();
 }
 
-void TicTacToeHandler::traininingPerformanceTest(torch::DeviceType device) 
+void TicTacToeHandler::traininingPerformanceTest(torch::DeviceType device)
 {
 	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 3, 3, 9, device);
 	AlphaZeroTraining training = AlphaZeroTraining(9, neuralNet, device);
@@ -53,16 +53,17 @@ void TicTacToeHandler::evalTicTacToe(bool multiThreaded)
 
 	if (multiThreaded)
 		result = evalTicTacToeMultiThreaded(preTrainedPath + "/start", torch::kCUDA);
-	else 
+	else
 		result = evalTicTacToe(preTrainedPath + "/start", torch::kCUDA);
 	writeEvaluationResultToFile(0, result, myfile);
 
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 10; i++)
+	{
 		std::string path = preTrainedPath + "/iteration" + std::to_string(i);
 		std::cout << path << std::endl;
 		if (multiThreaded)
 			result = evalTicTacToeMultiThreaded(path, torch::kCUDA);
-		else 
+		else
 			result = evalTicTacToe(path, torch::kCUDA);
 		writeEvaluationResultToFile(i + 1, result, myfile);
 	}
