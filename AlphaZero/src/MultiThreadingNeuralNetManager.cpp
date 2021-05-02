@@ -58,6 +58,11 @@ void MultiThreadingNeuralNetManager::calculateAndWakeup()
 	wakeUpAllThreads();
 }
 
+int MultiThreadingNeuralNetManager::getThreadCount() const 
+{
+	return this->threadCount;
+}
+
 void MultiThreadingNeuralNetManager::calculateOutput()
 {
 	this->output = net->calculate(this->inputBuffer);

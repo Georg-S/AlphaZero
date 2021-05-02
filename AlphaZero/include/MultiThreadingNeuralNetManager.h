@@ -15,6 +15,7 @@ public:
 	void safeDecrementActiveThreads();
 	void handleWaitingAndWakeup();
 	void calculateAndWakeup();
+	int getThreadCount() const;
 
 private:
 	void calculateOutput();
