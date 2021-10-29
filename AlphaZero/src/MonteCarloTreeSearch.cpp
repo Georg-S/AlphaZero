@@ -121,12 +121,12 @@ float MonteCarloTreeSearch::expandNewEncounteredState(const std::string& strStat
 {
 	visited[strState] = true;
 	auto input = game->convertStateToNeuralNetInput(strState, currentPlayer, device);
-	auto netPredict = net->calculate(input);
-	torch::Tensor rawProbs = std::get<1>(netPredict)[0].detach().to(torch::kCPU);
+	auto [valueTens, rawProbs] = net->calculate(input);
+	rawProbs = rawProbs[0].detach().to(torch::kCPU);
 	probabilities[strState] = rawProbs;
 	fillQValuesAndVisitCount(strState);
 
-	torch::Tensor valueTens = std::get<0>(netPredict)[0][0].to(torch::kCPU);
+	valueTens = valueTens[0][0].to(torch::kCPU);
 	float value = *(valueTens.data_ptr<float>());
 
 	return value;
