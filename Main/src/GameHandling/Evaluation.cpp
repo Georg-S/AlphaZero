@@ -117,6 +117,7 @@ int Evaluation::runGameMultiThreaded(MultiThreadingNeuralNetManager* threadManag
 {
 	std::string state = game->getInitialGameState();
 	int currentPlayer = game->getInitialPlayer();
+	// One difference between single threaded and multi threaded eval
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(game->getActionCount());
 
 	while (!game->isGameOver(state))
