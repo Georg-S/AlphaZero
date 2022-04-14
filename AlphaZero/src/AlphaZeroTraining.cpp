@@ -99,7 +99,7 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlayGame(NeuralNetwork* net, G
 			mcts.search(SELF_PLAY_MCTS_COUNT, currentState, net, game, currentPlayer, device);
 		std::vector<float> probs = mcts.getProbabilities(currentState);
 
-		trainingData.push_back(ReplayElement(currentState, currentPlayer, probs, -1));
+		trainingData.emplace_back(currentState, currentPlayer, probs, -1);
 
 		int action;
 		if (currentStep < RANDOM_MOVE_COUNT)
@@ -120,7 +120,7 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlayGame(NeuralNetwork* net, G
 	if (TRAINING_DONT_USE_DRAWS && (playerWon == 0))
 		trainingData.clear();
 
-	return trainingData;
+	return std::move(trainingData);
 }
 
 int AlphaZeroTraining::getRandomAction(const std::vector<float>& probabilities)
