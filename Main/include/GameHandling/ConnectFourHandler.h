@@ -18,7 +18,7 @@
 class ConnectFourHandler
 {
 public:
-	ConnectFourHandler();
+	ConnectFourHandler() = default;
 	void connectFourAgainstNeuralNetAi(cn4::PlayerColor playerColor, std::string netName, int countMcts, bool probabilistic, torch::DeviceType device);
 	void connectFourAgainstMiniMaxAi(int depth, cn4::PlayerColor playerColor);
 	void runTrainingWithDefaultParameters();

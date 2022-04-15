@@ -19,6 +19,7 @@ struct EvalResult
 class Evaluation
 {
 public:
+	Evaluation() = default;
 	Evaluation(torch::DeviceType device, int mctsCount);
 
 	static EvalResult eval(Ai* neuralNetAi, Ai* miniMaxAi, Game* game, int numberEvalGames = 100);

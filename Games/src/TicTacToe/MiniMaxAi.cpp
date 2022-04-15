@@ -4,7 +4,7 @@ ttt::MiniMaxAi::MiniMaxAi()
 {
 }
 
-int ttt::MiniMaxAi::getMove(std::string state, int color)
+int ttt::MiniMaxAi::getMove(const std::string& state, int color)
 {
 	TicTacToeAdapter adap = TicTacToeAdapter();
 

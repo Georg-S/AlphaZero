@@ -12,7 +12,7 @@ class NeuralNetAi : public Ai
 {
 public:
 	NeuralNetAi(NeuralNetwork* net, Game* game, int actionCount, int mctsCount = 50, bool probabilistic = false, torch::DeviceType device = torch::kCPU);
-	int getMove(std::string state, int color) override;
+	int getMove(const std::string& state, int color) override;
 
 private:
 	int getArgMaxIndex(const std::vector<float>& vec);

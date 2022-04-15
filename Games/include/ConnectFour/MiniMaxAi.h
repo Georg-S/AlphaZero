@@ -12,7 +12,7 @@ namespace cn4
 	{
 	public:
 		MiniMaxAi(int depth = 5);
-		int getMove(std::string state, int playerColor) override;
+		int getMove(const std::string& state, int playerColor) override;
 
 	private:
 		int evaluateBoard(const cn4::Board& board, int depth, int currentPlayer, bool maximizingPlayer, int alpha, int beta);

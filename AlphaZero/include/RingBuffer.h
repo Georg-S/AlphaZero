@@ -26,6 +26,7 @@ public:
 
 	void add(const T& element)
 	{
+		assert(maxSize > 0);
 		if (currentIndex == maxSize)
 		{
 			wrappedAround = true;
@@ -68,7 +69,7 @@ public:
 	}
 
 private:
-	int maxSize;
+	int maxSize = 0;
 	int currentIndex = 0;
 	bool wrappedAround = false;
 	std::vector<T> data;

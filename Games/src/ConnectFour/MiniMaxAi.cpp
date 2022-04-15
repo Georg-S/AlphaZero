@@ -8,7 +8,7 @@ cn4::MiniMaxAi::MiniMaxAi(int depth)
 }
 
 
-int cn4::MiniMaxAi::getMove(std::string state, int playerColor)
+int cn4::MiniMaxAi::getMove(const std::string& state, int playerColor)
 {
 	aiColor = playerColor;
 

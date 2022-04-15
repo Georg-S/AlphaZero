@@ -16,7 +16,7 @@ namespace ttt
 	{
 	public:
 		MiniMaxAi();
-		int getMove(std::string state, int color) override;
+		int getMove(const std::string& state, int color) override;
 
 	private:
 		ttt::Move getMove(ttt::Board board, int color);

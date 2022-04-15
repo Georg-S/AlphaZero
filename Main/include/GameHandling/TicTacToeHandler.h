@@ -17,12 +17,11 @@
 class TicTacToeHandler
 {
 public:
-	TicTacToeHandler();
+	TicTacToeHandler() = default;
 	void ticTacToeAgainstNeuralNetAi(int playerColor, std::string netName, int countMcts, bool probabilistic, torch::DeviceType device);
 	void ticTacToeAgainstMiniMaxAi(int playerColor);
 	void runTraining(const TrainingParameters& params);
 	void setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params);
-	void runTrainingWithAlphaZero(torch::DeviceType device);
 	void startTwoPlayerTicTacToeGame();
 	void traininingPerformanceTest(torch::DeviceType device);
 	void evalTicTacToe(bool multiThreaded = true);
@@ -34,7 +33,6 @@ private:
 	void loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraining& ticTacToeZero);
 	void loadPerformanceTestParameters(AlphaZeroTraining& ticTacToeZero);
 
-	TicTacToeAdapter adap;
 	inline static const std::string trainingPath = "NeuralNets/Training/TicTacToe";
 	inline static const std::string preTrainedPath = "NeuralNets/PreTrained/TicTacToe";
 	int mcts_count = 50;

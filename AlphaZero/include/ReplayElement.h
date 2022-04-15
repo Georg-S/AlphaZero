@@ -5,9 +5,9 @@ struct ReplayElement
 {
 	ReplayElement(std::string state, int currentPlayer, std::vector<float> probs, float result)
 	{
-		this->state = state;
+		this->state = std::move(state);
 		this->currentPlayer = currentPlayer;
-		this->mctsProbabilities = probs;
+		this->mctsProbabilities = std::move(probs);
 		this->result = result;
 	}
 
