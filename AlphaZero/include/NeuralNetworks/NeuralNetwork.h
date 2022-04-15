@@ -7,6 +7,7 @@
 class NeuralNetwork
 {
 public:
+	virtual ~NeuralNetwork() = default;
 	virtual std::tuple<torch::Tensor, torch::Tensor> calculate(const torch::Tensor& input) = 0;
 	virtual void save(std::string) = 0;
 	virtual void load(std::string) = 0;

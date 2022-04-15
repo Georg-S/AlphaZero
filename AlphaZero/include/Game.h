@@ -7,6 +7,7 @@
 class Game
 {
 public:
+	virtual ~Game() = default;
 	virtual int getInitialPlayer() = 0;
 	virtual std::string getInitialGameState() = 0;
 	virtual bool isGameOver(const std::string& state) = 0;
