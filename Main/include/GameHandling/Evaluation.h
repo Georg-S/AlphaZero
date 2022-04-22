@@ -4,8 +4,8 @@
 #include <string>
 #include <iostream>
 #include <Game.h>
-#include <AI/Ai.h>
-#include <AI/NeuralNetAi.h>
+#include <Other/Ai.h>
+#include <Other/NeuralNetAi.h>
 #include <TicTacToe/TicTacToeAdapter.h>
 
 struct EvalResult

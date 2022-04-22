@@ -1,10 +1,12 @@
 #include "GameHandling/TicTacToeHandler.h"
 
-void TicTacToeHandler::ticTacToeAgainstMiniMaxAi(int playerColor)
+using namespace ttt;
+
+void TicTacToeHandler::ticTacToeAgainstMiniMaxAi(PlayerColor playerColor)
 {
-	ttt::MiniMaxAi ai = ttt::MiniMaxAi();
-	int aiColor = ttt::GameLogic::getNextPlayer(playerColor);
-	ttt::MiniMaxAi miMaxAi = ttt::MiniMaxAi();
+	MiniMaxAi ai = MiniMaxAi();
+	PlayerColor aiColor = getNextPlayer(playerColor);
+	MiniMaxAi miMaxAi = ttt::MiniMaxAi();
 	TicTacToe tic = TicTacToe(&miMaxAi, aiColor);
 	tic.gameLoop();
 }
@@ -145,13 +147,13 @@ void TicTacToeHandler::setTrainingParameters(AlphaZeroTraining& training, const 
 	training.NUMBER_CPU_THREADS = params.cpuThreads;
 }
 
-void TicTacToeHandler::ticTacToeAgainstNeuralNetAi(int playerColor, std::string netName, int countMcts, bool probabilistic,
+void TicTacToeHandler::ticTacToeAgainstNeuralNetAi(ttt::PlayerColor playerColor, std::string netName, int countMcts, bool probabilistic,
 	torch::DeviceType device)
 {
 	TicTacToeAdapter adap = TicTacToeAdapter();
 	DefaultNeuralNet neuralNet = DefaultNeuralNet(2, 3, 3, 9, preTrainedPath + "/" + netName, device);
 	NeuralNetAi ai = NeuralNetAi(&neuralNet, &adap, 9, countMcts, probabilistic, device);
-	int aiColor = ttt::GameLogic::getNextPlayer(playerColor);
+	PlayerColor aiColor = getNextPlayer(playerColor);
 	TicTacToe ttt = TicTacToe(&ai, aiColor);
 
 	ttt.gameLoop();

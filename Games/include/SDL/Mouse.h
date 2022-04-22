@@ -2,13 +2,13 @@
 #define DEEPREINFORCEMENTLEARNING_MOUSE_H
 
 #include <iostream>
-#include "MouseInformation.h"
 #include <SDL.h>
+#include "MouseInformation.h"
 
 class Mouse
 {
 public:
-	Mouse();
+	Mouse() = default;
 	void update();
 	bool isLeftPressed();
 	bool isRightPressed();

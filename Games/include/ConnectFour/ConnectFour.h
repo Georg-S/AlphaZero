@@ -9,7 +9,7 @@
 #include "SDL/Mouse.h"
 #include "Renderer.h"
 #include "Board.h"
-#include "AI/Ai.h"
+#include "Other/Ai.h"
 #include "PlayerColor.h"
 
 

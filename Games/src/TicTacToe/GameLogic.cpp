@@ -1,126 +1,144 @@
 #include "TicTacToe/GameLogic.h"
 
+using namespace ttt;
+using namespace game;
 
-bool ttt::GameLogic::isBoardFull(const ttt::Board& board)
+Board::Board()
+	: m_crosses(0),
+	m_dots(0),
+	m_occupied(0)
+{}
+
+ttt::Board::Board(const std::string& str)
 {
-	for (int x = 0; x < 3; x++)
+	assert(str.size() == 9);
+	m_crosses = 0;
+	m_dots = 0;
+
+	for (int i = 0; i < 9; i++) 
 	{
-		for (int y = 0; y < 3; y++)
-		{
-			if (board.board[x][y] == 0)
-				return false;
-		}
+		if (str.at(i) == 'X')
+			setBit(m_crosses, i);
+		else if (str.at(i) == 'O')
+			setBit(m_dots, i);
 	}
-	return true;
+	m_occupied = m_dots | m_crosses;
 }
 
-bool ttt::GameLogic::isGameOver(const ttt::Board& board)
+void ttt::Board::makeMove(int pos, PlayerColor color)
 {
-	return (isThreeInARowHorizontal(board) || isThreeInARowVertical(board) || isThreeInARowDiagonal(board) ||
-		ttt::GameLogic::isBoardFull(board));
+	assert(color != PlayerColor::None);
+
+	if (color == PlayerColor::Cross)
+		game::setBit(m_crosses, pos);
+	else
+		game::setBit(m_dots, pos);
+
+	m_occupied = m_crosses | m_dots;
 }
 
-int ttt::GameLogic::getPlayerWon(const ttt::Board& board)
+void ttt::Board::makeMove(const Move& move, PlayerColor color)
 {
-	if (playerWon(board, 1))
-		return 1;
-	if (playerWon(board, 2))
-		return 2;
-	return 0;
+	makeMove(move.y * 3 + move.x, color);
 }
 
-bool ttt::GameLogic::isThreeInARowHorizontal(const ttt::Board& board, int player)
+bool ttt::Board::isBoardFull() const
 {
-	return isThreeInARowHorizontal(board, 0, player)
-		|| isThreeInARowHorizontal(board, 1, player)
-		|| isThreeInARowHorizontal(board, 2, player);
+	return m_occupied == fullBoard;
 }
 
-bool ttt::GameLogic::isThreeInARowHorizontal(const ttt::Board& board, int y, int player)
+bool ttt::Board::isMovePossible(const Move& move) const
 {
-	if (player != -1 && board.board[0][y] != player)
-		return false;
-	if (board.board[0][y] == 0)
-		return false;
-	if (board.board[0][y] != board.board[1][y])
-		return false;
-	if (board.board[1][y] != board.board[2][y])
-		return false;
-	return true;
+	return !isBitSet(m_occupied, move.x + move.y * 3);
 }
 
-bool ttt::GameLogic::isThreeInARowVertical(const ttt::Board& board, int player)
+PlayerColor ttt::Board::at(int x, int y) const
 {
-	return isThreeInARowVertical(board, 0, player)
-		|| isThreeInARowVertical(board, 1, player)
-		|| isThreeInARowVertical(board, 2, player);
+	int index = x + y * 3;
+	if (!isBitSet(m_occupied, index))
+		return PlayerColor::None;
+	if (isBitSet(m_crosses, index))
+		return PlayerColor::Cross;
+
+	return PlayerColor::Dot;
 }
 
-bool ttt::GameLogic::isThreeInARowVertical(const ttt::Board& board, int x, int player)
+uint32_t ttt::Board::getPieces(PlayerColor color) const
 {
-	if (player != -1 && board.board[x][0] != player)
-		return false;
-	if (board.board[x][0] == 0)
-		return false;
-	if (board.board[x][0] != board.board[x][1])
-		return false;
-	if (board.board[x][1] != board.board[x][2])
-		return false;
-	return true;
+	assert(color != PlayerColor::None);
+
+	if (color == PlayerColor::Dot)
+		return this->m_dots;
+	else
+		return this->m_crosses;
 }
 
-bool ttt::GameLogic::isThreeInARowDiagonal(const ttt::Board& board, int player)
+uint32_t ttt::Board::occupied() const
 {
-	if (isThreeInARowDiagonalLeftCorner(board, player) || isThreeInARowDiagonalRightCorner(board, player))
-		return true;
-	return false;
+	return m_occupied;
 }
 
-bool ttt::GameLogic::isThreeInARowDiagonalLeftCorner(const ttt::Board& board, int player)
+std::string ttt::Board::toString() const
 {
-	if (player != -1 && board.board[0][0] != player)
-		return false;
-	if (board.board[0][0] != 0)
+	std::string result;
+	for(int i = 0; i < 9; i++)
 	{
-		if ((board.board[0][0] == board.board[1][1]) && (board.board[1][1] == board.board[2][2]))
-			return true;
+		char c = '-';
+		if (isBitSet(m_crosses, i))
+			c = 'X';
+		else if (isBitSet(m_dots, i))
+			c = 'O';
+
+		result += c;
 	}
-	return false;
+
+	return result;
 }
 
-bool ttt::GameLogic::isThreeInARowDiagonalRightCorner(const ttt::Board& board, int player)
+bool ttt::isGameOver(const Board& board)
 {
-	if (player != -1 && board.board[2][0] != player)
-		return false;
-	if (board.board[2][0] != 0)
-	{
-		if ((board.board[2][0] == board.board[1][1]) && (board.board[1][1] == board.board[0][2]))
-			return true;
-	}
-	return false;
+	return board.isBoardFull() || playerWon(board, PlayerColor::Cross) || playerWon(board, PlayerColor::Dot);
 }
 
-bool ttt::GameLogic::playerWon(const ttt::Board& board, int player)
+bool ttt::playerWon(const Board& board, PlayerColor color)
 {
-	return isThreeInARowHorizontal(board, player)
-		|| isThreeInARowVertical(board, player)
-		|| isThreeInARowDiagonal(board, player);
+	auto pieces = board.getPieces(color);
+
+	return horizontalThreeInARow(pieces) || verticalThreeInARow(pieces) || diagonalThreeInARow(pieces);
 }
 
-int ttt::GameLogic::getNextPlayer(int currentPlayer)
+bool ttt::horizontalThreeInARow(uint32_t pieces)
 {
-	return currentPlayer % 2 + 1;
+	constexpr uint32_t firstColumnMask = 438;	// first column is zero
+	constexpr uint32_t firstAndSecondColumnMask = 292; // first and second column are zero
+
+	return pieces & ((pieces << 1) & firstColumnMask) & ((pieces << 2) & firstAndSecondColumnMask);
 }
 
-bool ttt::GameLogic::isMovePossible(const ttt::Board& board, const ttt::Move& move)
+bool ttt::verticalThreeInARow(uint32_t pieces)
 {
-	if (board.board[move.x][move.y] != 0)
-		return false;
-
-	return true;
+	return pieces & (pieces << 3) & (pieces << 6);
 }
 
-void ttt::GameLogic::makeMove(ttt::Board& board, int currentPlayer, const ttt::Move& move)
+bool ttt::diagonalThreeInARow(uint32_t pieces)
 {
-	board.board[move.x][move.y] = currentPlayer;
+	constexpr uint32_t diagonalDownMask = 273;
+	constexpr uint32_t diagonalUpMask = 84;
+
+	return ((pieces & diagonalDownMask) == diagonalDownMask) || ((pieces & diagonalUpMask) == diagonalUpMask);
+}
+
+PlayerColor ttt::getNextPlayer(PlayerColor color)
+{
+	assert(color != PlayerColor::None);
+
+	if (color == PlayerColor::Cross)
+		return PlayerColor::Dot;
+	else
+		return PlayerColor::Cross;
+}
+
+int ttt::getNextPlayer(int player)
+{
+	return static_cast<int>(getNextPlayer(static_cast<PlayerColor>(player)));
 }

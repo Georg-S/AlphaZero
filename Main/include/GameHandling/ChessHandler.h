@@ -7,7 +7,7 @@
 #include <Chess/Chess.h>
 #include <Chess/ReducedChessAdapter.h>
 #include <Chess/MiniMaxAi.h>
-#include <AI/NeuralNetAi.h>
+#include <Other/NeuralNetAi.h>
 #include "Evaluation.h"
 #include "TrainingParameters.h"
 

@@ -18,8 +18,8 @@ class TicTacToeHandler
 {
 public:
 	TicTacToeHandler() = default;
-	void ticTacToeAgainstNeuralNetAi(int playerColor, std::string netName, int countMcts, bool probabilistic, torch::DeviceType device);
-	void ticTacToeAgainstMiniMaxAi(int playerColor);
+	void ticTacToeAgainstNeuralNetAi(ttt::PlayerColor playerColor, std::string netName, int countMcts, bool probabilistic, torch::DeviceType device);
+	void ticTacToeAgainstMiniMaxAi(ttt::PlayerColor playerColor);
 	void runTraining(const TrainingParameters& params);
 	void setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params);
 	void startTwoPlayerTicTacToeGame();

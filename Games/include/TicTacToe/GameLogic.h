@@ -1,30 +1,73 @@
 #ifndef DEEPREINFORCEMENTLEARNING_ttt_GAMELOGIC_H
 #define DEEPREINFORCEMENTLEARNING_ttt_GAMELOGIC_H
 
-#include "Board.h"
-#include "Move.h"
+#include <cassert>
+#include <cstdint>
+#include <vector>
+#include <string>
+#include "Other/Utility.h"
 
 namespace ttt
 {
-	class GameLogic
+	struct Move
+	{
+		Move() = default;
+		Move(int x, int y) : x(x), y(y) {};
+		Move(int rawMove)
+		{
+			x = rawMove % 3;
+			y = rawMove / 3;
+		}
+		int x;
+		int y;
+	};
+
+	enum class PlayerColor { None, Cross, Dot };
+
+	class Board
 	{
 	public:
-		static bool isGameOver(const ttt::Board& board);
-		static bool isBoardFull(const ttt::Board& board);
-		static int getPlayerWon(const ttt::Board& board);
-		static bool playerWon(const ttt::Board& board, int player);
-		static int getNextPlayer(int currentPlayer);
-		static bool isMovePossible(const ttt::Board& board, const ttt::Move& move);
-		static void makeMove(ttt::Board& board, int currentPlayer, const ttt::Move& move);
+		Board();
+		Board(const std::string& str);
+		void makeMove(int pos, PlayerColor color);
+		void makeMove(const Move& move, PlayerColor color);
+		bool isBoardFull() const;
+		bool isMovePossible(const Move& move) const;
+		PlayerColor at(int x, int y) const;
+		uint32_t getPieces(PlayerColor color) const;
+		uint32_t occupied() const;
+		std::string toString() const;
 
+		static constexpr uint32_t fullBoard = 511;
 	private:
-		static bool isThreeInARowHorizontal(const ttt::Board& board, int player = -1);
-		static bool isThreeInARowHorizontal(const ttt::Board& board, int y, int player);
-		static bool isThreeInARowVertical(const ttt::Board& board, int player = -1);
-		static bool isThreeInARowVertical(const ttt::Board& board, int x, int player);
-		static bool isThreeInARowDiagonal(const ttt::Board& board, int player = -1);
-		static bool isThreeInARowDiagonalLeftCorner(const ttt::Board& board, int player);
-		static bool isThreeInARowDiagonalRightCorner(const ttt::Board& board, int player);
+		uint32_t m_dots;
+		uint32_t m_crosses;
+		uint32_t m_occupied;
 	};
+
+	bool isGameOver(const Board& board);
+	bool playerWon(const Board& board, PlayerColor color);
+	bool horizontalThreeInARow(uint32_t pieces);
+	bool verticalThreeInARow(uint32_t pieces);
+	bool diagonalThreeInARow(uint32_t pieces);
+	PlayerColor getNextPlayer(PlayerColor color);
+	int getNextPlayer(int player);
+	template<typename T>
+	std::vector<T> getAllPossibleMoves(const Board& board)
+	{
+		std::vector<T> moves;
+
+		auto remainingPieces = ~board.occupied();
+		remainingPieces &= Board::fullBoard;
+
+		while (remainingPieces)
+		{
+			int move = game::lowestBitIndex(remainingPieces);
+			moves.emplace_back(move);
+			game::resetLowestBit(remainingPieces);
+		}
+
+		return moves;
+	}
 }
 #endif //DEEPREINFORCEMENTLEARNING_ttt_GAMELOGIC_H

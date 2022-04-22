@@ -1,60 +1,50 @@
 #include "TicTacToe/TicTacToeAdapter.h"
 
-TicTacToeAdapter::TicTacToeAdapter()
-{
-
-}
+using namespace ttt;
 
 int TicTacToeAdapter::getInitialPlayer()
 {
-	return 1;
+	constexpr int initialPlayer = static_cast<int>(PlayerColor::Cross);
+	return initialPlayer;
 }
 
 std::string TicTacToeAdapter::getInitialGameState()
 {
-	static const std::string initialState = "000000000";
-	return initialState;
+	return "---------";
 }
 
 std::vector<int> TicTacToeAdapter::getAllPossibleMoves(const std::string& state, int currentPlayer)
 {
-	ttt::Board board = convertStringToBoard(state);
+	Board board = Board(state);
 
-	std::vector<int> possibleMoves;
-	for (int y = 0; y < 3; y++)
-	{
-		for (int x = 0; x < 3; x++)
-		{
-			if (board.board[x][y] == 0)
-				possibleMoves.push_back(x + y * 3);
-		}
-	}
-	return possibleMoves;
+	return ttt::getAllPossibleMoves<int>(board);
 }
 
 torch::Tensor TicTacToeAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Device device)
 {
-	ttt::Board board = convertStringToBoard(state);
-	int otherPlayer = getNextPlayer(currentPlayer);
+	Board board = Board(state);
+	PlayerColor playercolor = PlayerColor(currentPlayer);
+	PlayerColor otherPlayer = ttt::getNextPlayer(playercolor);
 	torch::Tensor neuralInput = torch::zeros({ 1,2,3,3 });
 
 	for (int x = 0; x < 3; x++)
 	{
 		for (int y = 0; y < 3; y++)
 		{
-			if (currentPlayer == board.board[x][y])
+			if (playercolor == board.at(x, y))
 				neuralInput[0][0][x][y] = 1;
-			else if (otherPlayer == board.board[x][y])
+			else if (otherPlayer == board.at(x, y))
 				neuralInput[0][1][x][y] = 1;
 		}
 	}
 	neuralInput = neuralInput.to(device);
+
 	return neuralInput;
 }
 
 int TicTacToeAdapter::getNextPlayer(int currentPlayer)
 {
-	return currentPlayer % 2 + 1;
+	return static_cast<int>(ttt::getNextPlayer(PlayerColor(currentPlayer)));
 }
 
 int TicTacToeAdapter::gameOverReward(const std::string& state, int currentPlayer)
@@ -70,45 +60,32 @@ int TicTacToeAdapter::gameOverReward(const std::string& state, int currentPlayer
 
 bool TicTacToeAdapter::isGameOver(const std::string& state)
 {
-	ttt::Board board = convertStringToBoard(state);
-	return ttt::GameLogic::isGameOver(board);
+	Board board = Board(state);
+
+	return ttt::isGameOver(board);
 }
 
 std::string TicTacToeAdapter::makeMove(const std::string& state, int move, int currentPlayer)
 {
-	ttt::Board board = convertStringToBoard(state);
-
-	int x = move % 3;
-	int y = move / 3;
-	if (board.board[x][y] != 0 || (x < 0) || (x >= 3) || (y < 0) || (y >= 3))
-	{
-		std::cout << "invalid move in state: " << state << std::endl;
-		return state;
-	}
-	board.board[x][y] = currentPlayer;
+	Board board = Board(state);
+	board.makeMove(move, PlayerColor(currentPlayer));
 
 	return board.toString();
 }
 
-ttt::Board TicTacToeAdapter::convertStringToBoard(const std::string& state)
-{
-	ttt::Board board = ttt::Board();
-	char zeroOffset = '0';
-
-	for (int x = 0; x < 3; x++)
-		for (int y = 0; y < 3; y++)
-			board.board[x][y] = state.at(y * 3 + x) - zeroOffset;
-
-	return board;
-}
-
 int TicTacToeAdapter::getActionCount() const
 {
-	return this->actionCount;
+	return actionCount;
 }
 
 int TicTacToeAdapter::getPlayerWon(const std::string& state)
 {
-	ttt::Board board = convertStringToBoard(state);
-	return ttt::GameLogic::getPlayerWon(board);
+	Board board = Board(state);
+
+	if (playerWon(board, PlayerColor::Cross))
+		return static_cast<int>(PlayerColor::Cross);
+	if (playerWon(board, PlayerColor::Dot))
+		return static_cast<int>(PlayerColor::Cross);
+
+	return static_cast<int>(PlayerColor::None);
 }

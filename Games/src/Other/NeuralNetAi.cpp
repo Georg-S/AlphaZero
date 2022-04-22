@@ -1,4 +1,4 @@
-#include "AI/NeuralNetAi.h"
+#include "Other/NeuralNetAi.h"
 
 NeuralNetAi::NeuralNetAi(NeuralNetwork* net, Game* game, int actionCount, int mctsCount, bool probabilistic, torch::DeviceType device)
 {

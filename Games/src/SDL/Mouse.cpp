@@ -1,10 +1,5 @@
 #include "SDL/Mouse.h"
 
-Mouse::Mouse()
-{
-
-}
-
 void Mouse::update()
 {
 	SDL_PumpEvents();

@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "Chess/ReducedChessAdapter.h"
-#include "AI/Ai.h"
+#include "Other/Ai.h"
 #include "Pieces/Queen.h"
 
 namespace chess

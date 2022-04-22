@@ -18,9 +18,9 @@ TicTacToeMiniMaxMenu::~TicTacToeMiniMaxMenu()
 
 void TicTacToeMiniMaxMenu::on_PlayButton_clicked()
 {
-	int playerColor = 2;
+	ttt::PlayerColor playerColor = ttt::PlayerColor::Dot;
 	if (ticTacToeMiniMax->PlayerColor1Radio->isChecked())
-		playerColor = 1;
+		playerColor = ttt::PlayerColor::Cross;
 
 	gameHandler.ticTacToeAgainstMiniMaxAi(playerColor);
 }

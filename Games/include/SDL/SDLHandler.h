@@ -1,8 +1,6 @@
 #ifndef DEEPREINFORCEMENTLEARNING_SDLHANDLER_H
 #define DEEPREINFORCEMENTLEARNING_SDLHANDLER_H
 
-#include <SDL.h>
-#include <SDL_image.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string>
@@ -10,6 +8,8 @@
 #include <vector>
 #include <memory>
 #include <map>
+#include <SDL.h>
+#include <SDL_image.h>
 
 
 struct RenderingElement

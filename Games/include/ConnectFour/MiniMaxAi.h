@@ -1,7 +1,7 @@
 #ifndef DEEPREINFORCEMENTLEARNING_cn4_MINIMAXAI_H
 #define DEEPREINFORCEMENTLEARNING_cn4_MINIMAXAI_H
 
-#include "AI/Ai.h"
+#include "Other/Ai.h"
 #include "GameLogic.h"
 #include "Board.h"
 #include "ConnectFourAdapter.h"
