@@ -85,7 +85,7 @@ int TicTacToeAdapter::getPlayerWon(const std::string& state)
 	if (playerWon(board, PlayerColor::Cross))
 		return static_cast<int>(PlayerColor::Cross);
 	if (playerWon(board, PlayerColor::Dot))
-		return static_cast<int>(PlayerColor::Cross);
+		return static_cast<int>(PlayerColor::Dot);
 
 	return static_cast<int>(PlayerColor::None);
 }

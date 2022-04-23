@@ -20,10 +20,10 @@ public:
 private:
 	bool m_lastTickLeftClicked = false;
 	bool m_newLeftClick = false;
-	int m_xPosition;
-	int m_yPosition;
-	bool m_leftButtonPressed;
-	bool m_rightButtonPressed;
+	int m_xPosition = 0;
+	int m_yPosition = 0;
+	bool m_leftButtonPressed = false;
+	bool m_rightButtonPressed = false;
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_MOUSE_H

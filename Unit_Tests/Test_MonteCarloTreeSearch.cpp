@@ -29,7 +29,7 @@ TEST(MonteCarloTreeSearch, test_mcts_ttt_draw_board)
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9);
 	DefaultNeuralNet net(2, 3, 3, 9);
 	TicTacToeAdapter adap = TicTacToeAdapter();
-	int result = mcts.search("211112221", &net, &adap, 1);
+	int result = mcts.search("OXXXXOOOX", &net, &adap, 1);
 
 	ASSERT_EQ(result, 0);
 }
@@ -40,7 +40,7 @@ TEST(MonteCarloTreeSearch, test_mcts_ttt_player_one_wins)
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9);
 	DefaultNeuralNet net(2, 3, 3, 9);
 	TicTacToeAdapter adap = TicTacToeAdapter();
-	float result = mcts.search("121212211", &net, &adap, 1);
+	float result = mcts.search("XOXOXOOXX", &net, &adap, 1);
 
 	ASSERT_FLOAT_EQ(result, -1);
 }
@@ -50,14 +50,14 @@ TEST(MonteCarloTreeSearch, test_mcts_ttt_player_two_wins)
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9);
 	DefaultNeuralNet net(2, 3, 3, 9);
 	TicTacToeAdapter adap = TicTacToeAdapter();
-	float result = mcts.search("112221211", &net, &adap, 2);
+	float result = mcts.search("XXOOOXOXX", &net, &adap, 2);
 
 	ASSERT_FLOAT_EQ(result, -1);
 }
 
 TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_one_move_possible)
 {
-	std::string state = "112201211";
+	std::string state = "XXOO-XOXX";
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9);
 	DefaultNeuralNet net(2, 3, 3, 9);
 	TicTacToeAdapter adap = TicTacToeAdapter();
@@ -77,7 +77,7 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_one_move_possible)
 
 TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_wins)
 {
-	std::string state = "212121100";
+	std::string state = "OXOXOXX--";
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9);
 	DefaultNeuralNet net(2, 3, 3, 9);
 	TicTacToeAdapter adap = TicTacToeAdapter();
@@ -90,7 +90,7 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_win
 
 TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_gets_draw)
 {
-	std::string state = "212112001";
+	std::string state = "OXOXXO--X";
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9);
 	DefaultNeuralNet net(2, 3, 3, 9);
 	TicTacToeAdapter adap = TicTacToeAdapter();
@@ -125,7 +125,7 @@ void test_mcts(MultiThreadingNeuralNetManager& manager, NeuralNetwork* net)
 	constexpr int actionCount = 9;
 	TicTacToeAdapter game = TicTacToeAdapter();
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(actionCount);
-	std::string currentState = "102210102";
+	std::string currentState = "X-OOX-X-O";
 
 	mcts.multiThreadedSearch(100, currentState, &game, 1, &manager);
 	std::vector<float> probs = mcts.getProbabilities(currentState);

@@ -1,107 +1,110 @@
 #include <gtest/gtest.h>
 #include <TicTacToe/TicTacToeAdapter.h>
+#include <TicTacToe/Renderer.h>
 #include <string>
 
+using namespace ttt;
+
+TicTacToeAdapter adap = TicTacToeAdapter();
+
+void renderBoard(const Board& board) 
+{
+	Renderer renderer = Renderer();
+	while (!renderer.isQuit())
+		renderer.update(board);
+
+	renderer.quit();
+}
+
+void renderBoard(const std::string& boardStr) 
+{
+	renderBoard(Board(boardStr));
+}
 
 TEST(TicTacToeAdapter, test_getNextPlayer)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-
 	ASSERT_EQ(adap.getNextPlayer(1), 2);
 	ASSERT_EQ(adap.getNextPlayer(2), 1);
 }
 
 TEST(TicTacToeAdapter, test_get_initial_player)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-
 	ASSERT_EQ(adap.getInitialPlayer(), 1);
 }
 
 TEST(TicTacToeAdapter, test_get_player_won_draw)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	std::string state = "211112221";
+	std::string state = "OXXXXOOOX";
 
 	ASSERT_EQ(adap.getPlayerWon(state), 0);
 }
 
 TEST(TicTacToeAdapter, test_get_player_won_player_one_horizontal)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	std::string state = "111220000";
+	std::string state = "XXXOO----";
 
 	ASSERT_EQ(adap.getPlayerWon(state), 1);
 }
 
 TEST(TicTacToeAdapter, test_get_player_won_player_two_diagonal)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	std::string state = "102120200";
+	std::string state = "X-OXO-O--";
 
 	ASSERT_EQ(adap.getPlayerWon(state), 2);
 }
 
 TEST(TicTacToeAdapter, test_get_player_won_player_two_vertical)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	std::string state = "201201210";
+	std::string state = "O-XO-XOX-";
 
 	ASSERT_EQ(adap.getPlayerWon(state), 2);
 }
 
 TEST(TicTacToeAdapter, test_get_player_won_player_two_board_full)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	std::string state = "112122211";
+	std::string state = "XXOXOOOXX";
 
 	ASSERT_EQ(adap.getPlayerWon(state), 2);
 }
 
 TEST(TicTacToeAdapter, test_game_over_reward_draw_player_one)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	std::string state = "211112221";
+	std::string state = "OXXXXOOOX";
 
 	ASSERT_EQ(adap.gameOverReward(state, 1), 0);
 }
 
 TEST(TicTacToeAdapter, test_game_over_reward_draw_player_two)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	std::string state = "211112221";
+	std::string state = "OXXXXOOOX";
 
 	ASSERT_EQ(adap.gameOverReward(state, 2), 0);
 }
 
 TEST(TicTacToeAdapter, test_game_over_reward_player_one_wins)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	std::string state = "102102100";
+	std::string state = "X-OX-OX--";
 
 	ASSERT_EQ(adap.gameOverReward(state, 1), 1);
 }
 
 TEST(TicTacToeAdapter, test_game_over_reward_player_two_wins)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	std::string state = "210021102";
+	std::string state = "OX--OXX-O";
 
 	ASSERT_EQ(adap.gameOverReward(state, 2), 1);
 }
 
 TEST(TicTacToeAdapter, test_game_over_reward_player_one_loses_board_full)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	std::string state = "112122211";
+	std::string state = "XXOXOOOXX";
 
 	ASSERT_EQ(adap.gameOverReward(state, 1), -1);
 }
 
 TEST(TicTacToeAdapter, test_convert_state_to_neural_input_player_one)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	std::string state = "100000002";
+	std::string state = "X-------O";
 
 	auto input = adap.convertStateToNeuralNetInput(state, 1);
 	input = input[0];
@@ -118,8 +121,7 @@ TEST(TicTacToeAdapter, test_convert_state_to_neural_input_player_one)
 
 TEST(TicTacToeAdapter, test_convert_state_to_neural_input_player_two)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	std::string state = "102001002";
+	std::string state = "X-O--X--O";
 
 	auto input = adap.convertStateToNeuralNetInput(state, 2);
 	input = input[0];
@@ -141,8 +143,7 @@ TEST(TicTacToeAdapter, test_convert_state_to_neural_input_player_two)
 
 TEST(TicTacToeAdapter, test_get_all_possible_moves)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	std::vector<int> moves = adap.getAllPossibleMoves("010000000", 1);
+	std::vector<int> moves = adap.getAllPossibleMoves("-X-------", 1);
 
 	ASSERT_EQ(moves.size(), 8);
 	ASSERT_EQ(moves[1], 2);
@@ -156,91 +157,81 @@ TEST(TicTacToeAdapter, test_get_all_possible_moves)
 
 TEST(TicTacToeAdapter, test_get_all_possible_moves_board_full)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	std::vector<int> moves = adap.getAllPossibleMoves("121212121", 1);
+	std::vector<int> moves = adap.getAllPossibleMoves("XOXOXOXOX", 1);
 
 	ASSERT_EQ(moves.size(), 0);
 }
 
 TEST(TicTacToeAdapter, test_is_game_over_draw)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	bool gameOver = adap.isGameOver("211112221");
+	bool gameOver = adap.isGameOver("OXXXXOOOX");
 
 	ASSERT_EQ(gameOver, true);
 }
 
 TEST(TicTacToeAdapter, test_is_game_over_false)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	bool gameOver = adap.isGameOver("211112220");
+	bool gameOver = adap.isGameOver("OXXXXOOO-");
 
 	ASSERT_EQ(gameOver, false);
 }
 
 TEST(TicTacToeAdapter, test_is_game_over_player_one_won)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	bool gameOver = adap.isGameOver("001221001");
+	bool gameOver = adap.isGameOver("--XOOX--X");
 
 	ASSERT_EQ(gameOver, true);
 }
 
 TEST(TicTacToeAdapter, test_is_game_over_player_two_won)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	bool gameOver = adap.isGameOver("102021201");
+	bool gameOver = adap.isGameOver("X-O-OXO-X");
 
 	ASSERT_EQ(gameOver, true);
 }
 
 TEST(TicTacToeAdapter, test_make_move)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	std::string state = "010200100";
+	std::string state = "-X-O--X--";
 	state = adap.makeMove(state, 2, 2);
 
-	ASSERT_EQ(state, "012200100");
+	ASSERT_EQ(state, "-XOO--X--");
 }
 
 TEST(TicTacToeAdapter, test_make_invalid_move)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	std::string state = "010200100";
+	std::string state = "-X-O--X--";
 	state = adap.makeMove(state, 3, 2);
 
-	ASSERT_EQ(state, "010200100");
+	ASSERT_EQ(state, "-X-O--X--");
 }
 
 TEST(TicTacToeAdapter, test_convert_string_to_board)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	ttt::Board board = adap.convertStringToBoard("010200121");
+	Board board = Board("-X-O--XOX");
 
-	ASSERT_EQ(board.board[0][0], 0);
-	ASSERT_EQ(board.board[1][0], 1);
-	ASSERT_EQ(board.board[0][1], 2);
-	ASSERT_EQ(board.board[0][2], 1);
-	ASSERT_EQ(board.board[1][2], 2);
-	ASSERT_EQ(board.board[2][2], 1);
-}
+	ASSERT_EQ(board.at(0,0), PlayerColor::None);
+	ASSERT_EQ(board.at(1,0), PlayerColor::Cross);
+	ASSERT_EQ(board.at(0,1), PlayerColor::Dot);
+	ASSERT_EQ(board.at(0,2), PlayerColor::Cross);
+	ASSERT_EQ(board.at(1,2), PlayerColor::Dot);
+	ASSERT_EQ(board.at(2,2), PlayerColor::Cross);
+}						  
 
 TEST(TicTacToeAdapter, test_convert_board_to_string)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	ttt::Board board = ttt::Board();
-	board.board[1][0] = 1;
-	board.board[2][0] = 2;
-	board.board[2][2] = 1;
+	Board board = Board();
+	board.makeMove(Move(1, 0), PlayerColor::Cross);
+	board.makeMove(Move(2, 0), PlayerColor::Dot);
+	board.makeMove(Move(2, 2), PlayerColor::Cross);
 
-	ASSERT_EQ(board.toString(), "012000001");
+	ASSERT_EQ(board.toString(), "-XO-----X");
 }
 
 TEST(TicTacToeAdapter, test_convert_string_to_board_and_back)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	std::string state = "121212121";
-	ttt::Board board = adap.convertStringToBoard(state);
+	std::string state = "XOXOXOXOX";
+	Board board = Board(state);
 	std::string converted = board.toString();
 
 	ASSERT_EQ(state, converted);
