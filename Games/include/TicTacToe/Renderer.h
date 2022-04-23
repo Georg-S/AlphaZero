@@ -11,8 +11,7 @@ namespace ttt
 	{
 	public:
 		Renderer();
-		void renderBoard(const ttt::Board& board);
-		void updateQuit();
+		void update(const ttt::Board& board);
 		void quit();
 		bool isQuit() const;
 		int windowWidth() const;

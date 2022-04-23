@@ -62,7 +62,6 @@ set(ConnectFourFiles
 
 set(SDLFiles
 	"include/SDL/Mouse.h"
-	"include/SDL/MouseInformation.h"
 	"include/SDL/SDLHandler.h"
 	"src/SDL/Mouse.cpp"
 	"src/SDL/SDLHandler.cpp"

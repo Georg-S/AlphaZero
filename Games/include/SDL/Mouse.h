@@ -3,24 +3,27 @@
 
 #include <iostream>
 #include <SDL.h>
-#include "MouseInformation.h"
+#include <utility>
 
 class Mouse
 {
 public:
 	Mouse() = default;
 	void update();
-	bool isLeftPressed();
-	bool isRightPressed();
-	bool isNewLeftClick();
-	void getMousePosition(int& x, int& y);
-	int getMousePositionX();
-	int getMousePositionY();
+	bool isLeftPressed() const;
+	bool isRightPressed() const;
+	bool isNewLeftClick() const;
+	std::pair<int, int> getMousePosition() const;
+	int getMousePositionX() const;
+	int getMousePositionY() const;
 
 private:
-	bool lastTickLeftClicked = false;
-	bool newLeftClick = false;
-	MouseInformation mouseInfo{};
+	bool m_lastTickLeftClicked = false;
+	bool m_newLeftClick = false;
+	int m_xPosition;
+	int m_yPosition;
+	bool m_leftButtonPressed;
+	bool m_rightButtonPressed;
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_MOUSE_H

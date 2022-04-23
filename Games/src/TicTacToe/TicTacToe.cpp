@@ -18,30 +18,19 @@ TicTacToe::TicTacToe(Ai* ai, PlayerColor aiColor)
 
 void TicTacToe::gameLoop()
 {
-	outputBoard(m_board);
-	while (!m_quit)
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-		updateGame();
-	}
-
 	while (!m_renderer->isQuit())
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
-		m_renderer->updateQuit();
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		m_renderer->update(m_board);
+		if(!m_gameOver)
+			updateGame();
 	}
+
 	m_renderer->quit();
 }
 
 void TicTacToe::updateGame()
 {
-	m_renderer->updateQuit();
-	if (m_renderer->isQuit())
-	{
-		m_quit = true;
-		return;
-	}
-
 	if (m_playerCount == 1)
 		updateOnePlayerGame();
 	else
@@ -66,7 +55,6 @@ void TicTacToe::updateAiMove(PlayerColor currentPlayer, Board& board)
 	int act = m_ai->getMove(board.toString(), static_cast<int>(m_aiColor));
 	Move move = act;
 	board.makeMove(move, currentPlayer);
-	outputBoard(board);
 
 	if (isGameOver(board))
 		handleGameOver();
@@ -81,7 +69,6 @@ void TicTacToe::updateHumanPlayerMove(PlayerColor currentPlayer, Board& board)
 		return;
 
 	board.makeMove(move, currentPlayer);
-	outputBoard(board);
 	if (isGameOver(board))
 		handleGameOver();
 	else
@@ -95,8 +82,7 @@ ttt::Move TicTacToe::getMoveFromMouseInput()
 	if (!m_mouse.isNewLeftClick())
 		return Move(-1, -1);
 
-	int x = m_mouse.getMousePositionX();
-	int y = m_mouse.getMousePositionY();
+	auto [x, y] = m_mouse.getMousePosition();
 	int moveX = x / (m_renderer->windowWidth() / 3);
 	int moveY = y / (m_renderer->windowHeight() / 3);
 
@@ -105,8 +91,7 @@ ttt::Move TicTacToe::getMoveFromMouseInput()
 
 void TicTacToe::handleGameOver()
 {
-	outputBoard(m_board);
-	m_quit = true;
+	m_gameOver = true;
 }
 
 bool TicTacToe::isValid(const Move& move)
@@ -117,11 +102,6 @@ bool TicTacToe::isValid(const Move& move)
 		return false;
 
 	return true;
-}
-
-void TicTacToe::outputBoard(const ttt::Board& board)
-{
-	m_renderer->renderBoard(board);
 }
 
 bool TicTacToe::isValidMove(const Move& move, const Board& board)
