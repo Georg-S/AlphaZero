@@ -1,7 +1,10 @@
 #ifndef DEEPREINFORCEMENTLEARNING_POLICYHEAD_H
 #define DEEPREINFORCEMENTLEARNING_POLICYHEAD_H
 
+// Libtorch has many warnings which clutter the output, so we ignore them
+#pragma warning(push, 0)
 #include <torch/nn.h>
+#pragma warning(pop)
 
 struct PolicyHeadImpl : public torch::nn::Module
 {

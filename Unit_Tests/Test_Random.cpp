@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 #include <stddef.h>
-#include <torch/torch.h>
 #include <stdio.h>
 #include <algorithm>
 #include <chrono>

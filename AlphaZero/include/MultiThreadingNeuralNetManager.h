@@ -1,9 +1,12 @@
 #ifndef DEEPREINFORCEMENTLEARNING_MULTITHREADINGNEURALNETMANAGER_H
 #define DEEPREINFORCEMENTLEARNING_MULTITHREADINGNEURALNETMANAGER_H
 
-#include <torch/torch.h>
 #include <mutex>
 #include <tuple>
+// Libtorch has many warnings which clutter the output, so we ignore them
+#pragma warning(push, 0)
+#include <torch/torch.h>
+#pragma warning(pop)
 #include "NeuralNetworks/NeuralNetwork.h"
 
 class MultiThreadingNeuralNetManager

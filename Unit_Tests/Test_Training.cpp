@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-#include <torch/torch.h>
 #include <iostream>
 #include <TicTacToe/TicTacToeAdapter.h>
 #include <AlphaZeroTraining.h>

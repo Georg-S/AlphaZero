@@ -4,10 +4,13 @@
 #include <map>
 #include <vector>
 #include <string>
-#include <torch/torch.h>
 #include <limits>
 #include <utility>
 #include <mutex>
+// Libtorch has many warnings which clutter the output, so we ignore them
+#pragma warning(push, 0)
+#include <torch/torch.h>
+#pragma warning(pop)
 #include "MultiThreadingNeuralNetManager.h"
 #include "Game.h"
 #include "NeuralNetworks/NeuralNetwork.h"

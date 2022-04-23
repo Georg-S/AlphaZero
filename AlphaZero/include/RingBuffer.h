@@ -1,7 +1,6 @@
 #ifndef DEEPREINFORCEMENTLEARNING_RINGBUFFER_H
 #define DEEPREINFORCEMENTLEARNING_RINGBUFFER_H
 
-
 #include <vector>
 #include <algorithm>
 #include <iterator>
