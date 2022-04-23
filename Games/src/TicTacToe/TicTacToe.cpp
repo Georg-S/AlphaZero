@@ -25,17 +25,12 @@ void TicTacToe::gameLoop()
 		updateGame();
 	}
 
-	bool renderingClosed = false;
-	while (!renderingClosed)
+	while (!m_renderer->isQuit())
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		m_renderer->updateQuit();
-		if (m_renderer->isQuit())
-		{
-			m_renderer->quit();
-			renderingClosed = true;
-		}
 	}
+	m_renderer->quit();
 }
 
 void TicTacToe::updateGame()

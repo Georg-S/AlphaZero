@@ -4,9 +4,8 @@ using namespace ttt;
 
 void TicTacToeHandler::ticTacToeAgainstMiniMaxAi(PlayerColor playerColor)
 {
-	MiniMaxAi ai = MiniMaxAi();
 	PlayerColor aiColor = getNextPlayer(playerColor);
-	MiniMaxAi miMaxAi = ttt::MiniMaxAi();
+	MiniMaxAi miMaxAi = MiniMaxAi();
 	TicTacToe tic = TicTacToe(&miMaxAi, aiColor);
 	tic.gameLoop();
 }

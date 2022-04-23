@@ -27,7 +27,7 @@ void chess::Renderer::render(const chess::RenderInformation& renderInfo)
 		renderPiecesWithSelectedOnMousePosition(renderInfo);
 
 
-	sdlHandler->updateRendering();
+	sdlHandler->update();
 }
 
 void chess::Renderer::renderChessBoard()
@@ -154,17 +154,17 @@ void chess::Renderer::renderPromotionSelection(chess::PieceColor color)
 	sdlHandler->createAndPushBackRenderElement(knightStr, 0, windowHeight / 2, windowWidth / 2, windowHeight / 2);
 	sdlHandler->createAndPushBackRenderElement(bishopStr, windowWidth / 2, windowHeight / 2, windowWidth / 2, windowHeight / 2);
 
-	sdlHandler->updateRendering();
+	sdlHandler->update();
 }
 
 void chess::Renderer::updateQuit()
 {
-	sdlHandler->updateQuit();
+	sdlHandler->update();
 }
 
 bool chess::Renderer::isQuit()
 {
-	return sdlHandler->exit;
+	return sdlHandler->isExit();
 }
 
 void chess::Renderer::quit()

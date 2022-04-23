@@ -1,6 +1,6 @@
-#ifndef DEEPREINFORCEMENTLEARNING_SDLHANDLER_H
-#define DEEPREINFORCEMENTLEARNING_SDLHANDLER_H
-
+#pragma once
+#include <SDL.h>
+#include <SDL_image.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string>
@@ -8,37 +8,48 @@
 #include <vector>
 #include <memory>
 #include <map>
-#include <SDL.h>
-#include <SDL_image.h>
+#include <utility>
 
 
 struct RenderingElement
 {
-	SDL_Rect transform;
-	SDL_Texture* texture;
+	RenderingElement() = default;
+	RenderingElement(SDL_Rect transform, SDL_Texture* texture) 
+		: transform(std::move(transform))
+		, texture(texture) 
+	{};
+
+	SDL_Rect transform = {};
+	SDL_Texture* texture = nullptr;
 	bool render = true;
+};
+
+class SDLTextureWrapper
+{
+public:
+	SDLTextureWrapper() = delete;
+	SDLTextureWrapper(SDL_Texture* texture) : m_texture(texture) {};
+	~SDLTextureWrapper() { SDL_DestroyTexture(m_texture); }
+	SDL_Texture* texture() const { return m_texture; };
+private:
+	SDL_Texture* m_texture = nullptr;
 };
 
 class SDLHandler
 {
 public:
-	SDLHandler(int screenWidth, int screenHeight, bool useCaching = false);
+	SDLHandler(int screenWidth, int screenHeight, bool useCaching = true);
 	bool start(const std::string& windowName);
-	void updateRendering();
-	std::shared_ptr<RenderingElement> createAndPushFrontRenderElement(std::string fileName, int x, int y, int width, int height);
-	std::shared_ptr<RenderingElement> createAndPushBackRenderElement(std::string fileName, int x, int y, int width, int height);
+	void update();
+	bool createAndPushBackRenderElement(const std::string& fileName, int x, int y, int width, int height);
 	void clear();
-	void deleteRenderingElementAndTexture(std::shared_ptr<RenderingElement> element);
-	static void changePositionOfRenderingElement(std::shared_ptr<RenderingElement> element, int x, int y);
 	void close();
-	void setToForeground(std::shared_ptr<RenderingElement> element);
-	void getWindowPosition(int* x, int* y);
-	void updateQuit();
-
-	bool exit = false;
-	SDL_Event event;
+	bool isExit() const;
+	std::pair<int, int> getWindowPosition() const;
 
 private:
+	void updateQuit();
+	void updateRendering();
 	void deleteCache();
 	SDL_Texture* createAndReturnTexture(std::string fileName);
 	bool initialize(const std::string& windowName);
@@ -47,17 +58,14 @@ private:
 	bool initializeRenderer();
 	bool initializeTime();
 	bool initializeImageFlags();
-	int getIndex(std::shared_ptr<RenderingElement> element);
 
-	std::vector<std::shared_ptr<RenderingElement>> elements;
-	SDL_Window* window = NULL;
-	SDL_Renderer* renderer = NULL;
+	std::vector<std::unique_ptr<RenderingElement>> m_elements;
+	SDL_Window* m_window = NULL;
+	SDL_Renderer* m_renderer = NULL;
 	int m_screenWidth;
 	int m_screenHeight;
-	uint32_t startTime;
-	bool useCaching = false;
-	std::map<std::string, SDL_Texture*>cache;
+	uint32_t m_startTime;
+	bool m_useCaching = false;
+	bool m_exit = false;
+	std::map<std::string, std::unique_ptr<SDLTextureWrapper>> m_cache;
 };
-
-
-#endif //DEEPREINFORCEMENTLEARNING_SDLHANDLER_H

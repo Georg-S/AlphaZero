@@ -28,12 +28,12 @@ void ttt::Renderer::renderBoard(const Board& board)
 		}
 	}
 
-	m_sdlHandler->updateRendering();
+	m_sdlHandler->update();
 }
 
 void ttt::Renderer::updateQuit()
 {
-	m_sdlHandler->updateQuit();
+	m_sdlHandler->update();
 }
 
 void ttt::Renderer::quit()
@@ -43,7 +43,7 @@ void ttt::Renderer::quit()
 
 bool ttt::Renderer::isQuit() const
 {
-	return m_sdlHandler->exit;
+	return m_sdlHandler->isExit();
 }
 
 int ttt::Renderer::windowWidth() const

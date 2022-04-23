@@ -15,7 +15,6 @@ cn4::Renderer::~Renderer()
 void cn4::Renderer::renderBoard(cn4::Board board)
 {
 	handler->clear();
-	handler->createAndPushBackRenderElement("Images/ConnectFour/Board.png", 0, 0, windowWidth, windowHeight);
 
 	for (int x = 0; x < board.width; x++)
 	{
@@ -25,7 +24,9 @@ void cn4::Renderer::renderBoard(cn4::Board board)
 				renderPiece(board, x, y);
 		}
 	}
-	handler->updateRendering();
+
+	handler->createAndPushBackRenderElement("Images/ConnectFour/Board.png", 0, 0, windowWidth, windowHeight);
+	handler->update();
 }
 
 void cn4::Renderer::renderPiece(const cn4::Board& board, int x, int y)
@@ -36,11 +37,11 @@ void cn4::Renderer::renderPiece(const cn4::Board& board, int x, int y)
 
 	if (board.board[x][y] == (int)cn4::PlayerColor::YELLOW)
 	{
-		handler->createAndPushFrontRenderElement("Images/ConnectFour/YellowPiece.png", xRend, yRend, pieceWidth, pieceWidth);
+		handler->createAndPushBackRenderElement("Images/ConnectFour/YellowPiece.png", xRend, yRend, pieceWidth, pieceWidth);
 	}
 	else
 	{
-		handler->createAndPushFrontRenderElement("Images/ConnectFour/RedPiece.png", xRend, yRend, pieceWidth, pieceWidth);
+		handler->createAndPushBackRenderElement("Images/ConnectFour/RedPiece.png", xRend, yRend, pieceWidth, pieceWidth);
 	}
 }
 
@@ -61,23 +62,21 @@ int cn4::Renderer::convertBoardYPositionToRenderYPosition(const cn4::Board& boar
 
 int cn4::Renderer::getWindowXPosition()
 {
-	int x, y;
-	handler->getWindowPosition(&x, &y);
+	auto [x, y] = handler->getWindowPosition();
 
 	return x;
 }
 
 int cn4::Renderer::getWindowYPosition()
 {
-	int x, y;
-	handler->getWindowPosition(&x, &y);
+	auto [x, y] = handler->getWindowPosition();
 
 	return y;
 }
 
 bool cn4::Renderer::isQuit()
 {
-	return handler->exit;
+	return handler->isExit();
 }
 
 void cn4::Renderer::quit()
@@ -87,5 +86,5 @@ void cn4::Renderer::quit()
 
 void cn4::Renderer::updateQuit()
 {
-	handler->updateQuit();
+	handler->update();
 }
