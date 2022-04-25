@@ -1,52 +1,49 @@
 #include "TicTacToe/Renderer.h"
 
+using namespace ttt;
+
 ttt::Renderer::Renderer()
 {
-	sdlHandler = new SDLHandler(windowWidth, windowHeight, true);
-	pieceWidth = windowWidth / 3;
-	pieceHeight = windowHeight / 3;
-
-	sdlHandler->start("Tic-Tac-Toe");
+	m_sdlHandler = std::make_unique<SDLHandler>(m_windowWidth, m_windowHeight, true);
+	m_sdlHandler->start("Tic-Tac-Toe");
 }
 
-ttt::Renderer::~Renderer()
+void ttt::Renderer::update(const Board& board)
 {
-	delete sdlHandler;
-}
-
-void ttt::Renderer::renderBoard(const ttt::Board& board)
-{
-	sdlHandler->clear();
-	sdlHandler->createAndPushBackRenderElement("Images/TicTacToe/Board.png", 0, 0, windowWidth, windowHeight);
+	m_sdlHandler->clear();
+	m_sdlHandler->createAndPushBackRenderElement("Images/TicTacToe/Board.png", 0, 0, m_windowWidth, m_windowHeight);
 
 	for (int x = 0; x < 3; x++)
 	{
 		for (int y = 0; y < 3; y++)
 		{
-			if (board.board[x][y] != 0)
-			{
-				if (board.board[x][y] == 1)
-					sdlHandler->createAndPushBackRenderElement("Images/TicTacToe/Cross.png", x * pieceWidth, y * pieceWidth, pieceWidth, pieceHeight);
-				else
-					sdlHandler->createAndPushBackRenderElement("Images/TicTacToe/Dot.png", x * pieceWidth, y * pieceWidth, pieceWidth, pieceHeight);
-			}
+			PlayerColor color = board.at(x, y);
+			if (color == PlayerColor::Cross)
+				m_sdlHandler->createAndPushBackRenderElement("Images/TicTacToe/Cross.png", x * pieceWidth, y * pieceWidth, pieceWidth, pieceHeight);
+			else if (color == PlayerColor::Dot)
+				m_sdlHandler->createAndPushBackRenderElement("Images/TicTacToe/Dot.png", x * pieceWidth, y * pieceWidth, pieceWidth, pieceHeight);
 		}
 	}
 
-	sdlHandler->updateRendering();
-}
-
-void ttt::Renderer::updateQuit()
-{
-	sdlHandler->updateQuit();
+	m_sdlHandler->update();
 }
 
 void ttt::Renderer::quit()
 {
-	sdlHandler->close();
+	m_sdlHandler->close();
 }
 
-bool ttt::Renderer::isQuit()
+bool ttt::Renderer::isQuit() const
 {
-	return sdlHandler->exit;
+	return m_sdlHandler->isExit();
+}
+
+int ttt::Renderer::windowWidth() const
+{
+	return m_windowWidth;
+}
+
+int ttt::Renderer::windowHeight() const
+{
+	return m_windowHeight;
 }

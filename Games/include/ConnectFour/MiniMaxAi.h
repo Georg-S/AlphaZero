@@ -1,7 +1,7 @@
 #ifndef DEEPREINFORCEMENTLEARNING_cn4_MINIMAXAI_H
 #define DEEPREINFORCEMENTLEARNING_cn4_MINIMAXAI_H
 
-#include "AI/Ai.h"
+#include "Other/Ai.h"
 #include "GameLogic.h"
 #include "Board.h"
 #include "ConnectFourAdapter.h"
@@ -12,7 +12,7 @@ namespace cn4
 	{
 	public:
 		MiniMaxAi(int depth = 5);
-		int getMove(std::string state, int playerColor) override;
+		int getMove(const std::string& state, int playerColor) override;
 
 	private:
 		int evaluateBoard(const cn4::Board& board, int depth, int currentPlayer, bool maximizingPlayer, int alpha, int beta);

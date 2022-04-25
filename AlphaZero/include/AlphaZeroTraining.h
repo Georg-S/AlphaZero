@@ -48,7 +48,6 @@ private:
 public:
 	std::string neuralNetPath;
 
-
 	//Training Flags
 	bool TRAINING_DONT_USE_DRAWS = false;
 	//Training Parameters

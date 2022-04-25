@@ -57,8 +57,8 @@ namespace cn4
 			return result;
 		}
 
-		const static int width = 7;
-		const static int height = 6;
+		static const int width = 7;
+		static const int height = 6;
 		int board[width][height];
 	};
 }

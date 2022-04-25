@@ -1,10 +1,5 @@
 #include "GameHandling/ChessHandler.h"
 
-ChessHandler::ChessHandler()
-{
-
-}
-
 void ChessHandler::runTrainingWithDefaultParameters(torch::DeviceType device)
 {
 	DefaultNeuralNet* chessNet = new DefaultNeuralNet(12, 8, 8, 4096, device);

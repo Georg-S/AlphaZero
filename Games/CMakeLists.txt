@@ -3,10 +3,12 @@ project(Games)
 set(CMAKE_CXX_STANDARD 17)
 
 
-set(AIFiles
-	"include/AI/Ai.h"
-	"include/AI/NeuralNetAi.h"
-	"src/AI/NeuralNetAi.cpp"
+set(OtherFiles
+	"include/Other/Ai.h"
+	"include/Other/NeuralNetAi.h"
+	"include/Other/Utility.h"
+	"src/Other/NeuralNetAi.cpp"
+	"src/Other/Utility.cpp"
 	)
 
 set(ChessFiles
@@ -60,17 +62,14 @@ set(ConnectFourFiles
 
 set(SDLFiles
 	"include/SDL/Mouse.h"
-	"include/SDL/MouseInformation.h"
 	"include/SDL/SDLHandler.h"
 	"src/SDL/Mouse.cpp"
 	"src/SDL/SDLHandler.cpp"
 )
 
 set(TicTacToeFiles
-	"include/TicTacToe/Board.h"
 	"include/TicTacToe/GameLogic.h"
 	"include/TicTacToe/MiniMaxAi.h"
-	"include/TicTacToe/Move.h"
 	"include/TicTacToe/Renderer.h"
 	"include/TicTacToe/TicTacToe.h"
 	"include/TicTacToe/TicTacToeAdapter.h"
@@ -81,7 +80,7 @@ set(TicTacToeFiles
 	"src/TicTacToe/TicTacToeAdapter.cpp"
 )
 
-source_group("\\AI" FILES ${AIFiles})
+source_group("\\Other" FILES ${OtherFiles})
 source_group("\\Chess" FILES ${ChessFiles})
 source_group("\\Chess\\Pieces" FILES ${ChessPiecesFiles})
 source_group("\\ConnectFour" FILES ${ConnectFourFiles})
@@ -90,7 +89,7 @@ source_group("\\TicTacToe" FILES ${TicTacToeFiles})
 
 
 add_library(Games STATIC 
-	${AIFiles}
+	${OtherFiles}
 	${ChessFiles}
 	${ChessPiecesFiles}
 	${ConnectFourFiles}

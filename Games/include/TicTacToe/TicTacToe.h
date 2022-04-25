@@ -4,10 +4,9 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <memory>
 #include "GameLogic.h"
-#include "AI/Ai.h"
-#include "Move.h"
-#include "Board.h"
+#include "Other/Ai.h"
 #include "Renderer.h"
 #include "SDL/Mouse.h"
 
@@ -15,37 +14,28 @@ class TicTacToe
 {
 public:
 	TicTacToe();
-	TicTacToe(Ai* ai, int aiColor);
+	TicTacToe(Ai* ai, ttt::PlayerColor aiColor);
 	void updateGame();
-	void reset();
 	void gameLoop();
-	static void printBoardToConsole(const ttt::Board& board);
 
 private:
 	void updateTwoPlayerGame();
 	void updateOnePlayerGame();
-	void updateAiMove(int& currentPlayer, ttt::Board& board);
-	void updateHumanPlayerMove(int& currentPlayer, ttt::Board& board);
+	void updateAiMove(ttt::PlayerColor currentPlayer, ttt::Board& board);
+	void updateHumanPlayerMove(ttt::PlayerColor currentPlayer, ttt::Board& board);
 	void handleGameOver();
-	inline bool isValid(int x, int y);
+	bool isValid(const ttt::Move& move);
 	bool isValidMove(const ttt::Move& move, const ttt::Board& board);
-	static char convertPlayerNumberToChar(int number);
-	std::string convertBoardToString(const ttt::Board& board);
-	ttt::Move getMoveFromConsole();
 	ttt::Move getMoveFromMouseInput();
-	void outputBoard(const ttt::Board& board);
-	ttt::Move getInput();
-	void outputGameWinnerToConsole(const ttt::Board& board, const int currentPlayer);
 
-	Ai* ai;
-	int currentPlayer = 1;
-	int playerCount;
-	int aiColor;
-	ttt::Board board;
-	bool quit = false;
-	bool graphicalOutput = true;
-	ttt::Renderer* renderer;
-	Mouse mouse = Mouse();
+	Ai* m_ai;
+	int m_playerCount;
+	bool m_gameOver = false;
+	ttt::PlayerColor m_currentPlayer = ttt::PlayerColor::Cross;
+	ttt::PlayerColor m_aiColor;
+	ttt::Board m_board;
+	std::unique_ptr<ttt::Renderer> m_renderer;
+	Mouse m_mouse = Mouse();
 };
 
 

@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 #include <chrono>
-#include <torch/torch.h>
 #include <NeuralNetworks/CutDownAlphaGoZeroNet.h>
 
 TEST(NeuralNet, net_returns_same_value_after_save_and_load)

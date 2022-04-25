@@ -1,12 +1,17 @@
 #ifndef DEEPREINFORCEMENTLEARNING_GAME_H
 #define DEEPREINFORCEMENTLEARNING_GAME_H
+
 #include <string>
-#include <torch/torch.h>
 #include <vector>
+// Libtorch has many warnings which clutter the output, so we ignore them
+#pragma warning(push, 0)
+#include <torch/torch.h>
+#pragma warning(pop)
 
 class Game
 {
 public:
+	virtual ~Game() = default;
 	virtual int getInitialPlayer() = 0;
 	virtual std::string getInitialGameState() = 0;
 	virtual bool isGameOver(const std::string& state) = 0;

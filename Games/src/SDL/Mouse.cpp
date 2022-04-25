@@ -1,64 +1,58 @@
 #include "SDL/Mouse.h"
 
-Mouse::Mouse()
-{
-
-}
-
 void Mouse::update()
 {
 	SDL_PumpEvents();
-	Uint32 mouseState = SDL_GetMouseState(&mouseInfo.xPosition, &mouseInfo.yPosition);
+	Uint32 mouseState = SDL_GetMouseState(&m_xPosition, &m_yPosition);
 	if (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT))
 	{
-		mouseInfo.leftButtonPressed = true;
+		m_leftButtonPressed = true;
 
-		if (lastTickLeftClicked)
+		if (m_lastTickLeftClicked)
 		{
-			newLeftClick = false;
+			m_newLeftClick = false;
 		}
 		else
 		{
-			newLeftClick = true;
-			lastTickLeftClicked = true;
+			m_newLeftClick = true;
+			m_lastTickLeftClicked = true;
 		}
 	}
 	else
 	{
-		lastTickLeftClicked = false;
-		newLeftClick = false;
+		m_lastTickLeftClicked = false;
+		m_newLeftClick = false;
 	}
 
-	mouseInfo.rightButtonPressed = mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT);
+	m_rightButtonPressed = mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT);
 }
 
-bool Mouse::isNewLeftClick()
+bool Mouse::isNewLeftClick() const
 {
-	return newLeftClick;
+	return m_newLeftClick;
 }
 
-bool Mouse::isLeftPressed()
+bool Mouse::isLeftPressed() const
 {
-	return mouseInfo.leftButtonPressed;
+	return m_leftButtonPressed;
 }
 
-void Mouse::getMousePosition(int& x, int& y)
+std::pair<int, int> Mouse::getMousePosition() const
 {
-	x = mouseInfo.xPosition;
-	y = mouseInfo.yPosition;
+	return { m_xPosition, m_yPosition };
 }
 
-int Mouse::getMousePositionX()
+int Mouse::getMousePositionX() const
 {
-	return mouseInfo.xPosition;
+	return m_xPosition;
 }
 
-int Mouse::getMousePositionY()
+int Mouse::getMousePositionY() const
 {
-	return mouseInfo.yPosition;
+	return m_yPosition;
 }
 
-bool Mouse::isRightPressed()
+bool Mouse::isRightPressed() const
 {
-	return mouseInfo.rightButtonPressed;
+	return m_rightButtonPressed;
 }

@@ -4,8 +4,8 @@
 #include <string>
 #include <iostream>
 #include <Game.h>
-#include <AI/Ai.h>
-#include <AI/NeuralNetAi.h>
+#include <Other/Ai.h>
+#include <Other/NeuralNetAi.h>
 #include <TicTacToe/TicTacToeAdapter.h>
 
 struct EvalResult
@@ -19,6 +19,7 @@ struct EvalResult
 class Evaluation
 {
 public:
+	Evaluation() = default;
 	Evaluation(torch::DeviceType device, int mctsCount);
 
 	static EvalResult eval(Ai* neuralNetAi, Ai* miniMaxAi, Game* game, int numberEvalGames = 100);

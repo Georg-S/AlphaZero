@@ -1,7 +1,6 @@
 #ifndef DEEPREINFORCEMENTLEARNING_RINGBUFFER_H
 #define DEEPREINFORCEMENTLEARNING_RINGBUFFER_H
 
-
 #include <vector>
 #include <algorithm>
 #include <iterator>
@@ -12,16 +11,12 @@ class RingBuffer
 {
 
 public:
-	RingBuffer()
-	{
-
-	}
-
+	RingBuffer() = default;
 	RingBuffer(int maxSize)
 	{
 		this->maxSize = maxSize;
+		this->data.reserve(maxSize);
 	}
-
 
 	T& operator[](int index)
 	{
@@ -30,6 +25,7 @@ public:
 
 	void add(const T& element)
 	{
+		assert(maxSize > 0);
 		if (currentIndex == maxSize)
 		{
 			wrappedAround = true;
@@ -66,24 +62,16 @@ public:
 		wrappedAround = false;
 	}
 
-	std::vector<T> convertToVec() const
-	{
-		return data;
-	}
-
 	void getRandomSample(int sampleSize, std::vector<T>& destination) const
 	{
 		std::sample(data.begin(), data.end(), std::back_inserter(destination), sampleSize, std::mt19937{ std::random_device{}() });
 	}
 
 private:
-	int maxSize;
+	int maxSize = 0;
 	int currentIndex = 0;
 	bool wrappedAround = false;
 	std::vector<T> data;
 };
-
-
-
 
 #endif //DEEPREINFORCEMENTLEARNING_RINGBUFFER_H

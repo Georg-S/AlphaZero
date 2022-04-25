@@ -28,4 +28,18 @@ if (MSVC)
                      COMMAND ${CMAKE_COMMAND} -E copy_if_different
                      ${TORCH_DLLS}
                      $<TARGET_FILE_DIR:Unit_Tests>)
+
+
+    add_custom_command(TARGET Unit_Tests
+                        POST_BUILD
+                        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                        "$ENV{SDL2_BIN}/SDL2.dll"
+                        $<TARGET_FILE_DIR:Unit_Tests>)
+
+    file(GLOB SDL2_IMAGE_DLLS "$ENV{SDL2IMAGE_BIN}/*.dll")
+    add_custom_command(TARGET Unit_Tests
+                        POST_BUILD
+                        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                        ${SDL2_IMAGE_DLLS}
+                        $<TARGET_FILE_DIR:Unit_Tests>)
 endif (MSVC)

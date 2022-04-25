@@ -1,62 +1,52 @@
 #include "TicTacToe/MiniMaxAi.h"
 
-ttt::MiniMaxAi::MiniMaxAi()
-{
-}
+using namespace ttt;
 
-int ttt::MiniMaxAi::getMove(std::string state, int color)
+int ttt::MiniMaxAi::getMove(const std::string& state, int color)
 {
-	TicTacToeAdapter adap = TicTacToeAdapter();
-
-	ttt::Board board = adap.convertStringToBoard(state);
-	ttt::Move move = getMove(board, color);
+	Board board = Board(state);
+	Move move = getMove(board, color);
 
 	return move.x + move.y * 3;
 }
 
-ttt::Move ttt::MiniMaxAi::getMove(ttt::Board board, int color)
+Move ttt::MiniMaxAi::getMove(Board board, int color)
 {
-	this->color = color;
-	this->opponentColor = color % 2 + 1;
-
-	std::vector<ttt::Move> bestMoves;
-	std::vector<ttt::Move> possibleMoves = getAllPossibleMoves(board);
 	std::vector<int> values;
+	m_color = static_cast<PlayerColor>(color);
+	m_opponentColor = getNextPlayer(m_color);
 
-	for (int i = 0; i < possibleMoves.size(); i++)
+	std::vector<Move> possibleMoves = getAllPossibleMoves<Move>(board);
+	for (const auto& move : possibleMoves) 
 	{
-		ttt::Board copyBoard = ttt::Board(board);
-		ttt::GameLogic::makeMove(copyBoard, color, possibleMoves[i]);
-		values.push_back(evaluateBoard(copyBoard, opponentColor, false, INT_MIN, INT_MAX));
+		Board copyBoard = board;
+		copyBoard.makeMove(move, m_color);
+		values.push_back(evaluateBoard(copyBoard, m_opponentColor, false, INT_MIN, INT_MAX));
 	}
-	bestMoves = getBestMoves(possibleMoves, values);
 
-	return getRandomMove(bestMoves);
+	std::vector<Move> bestMoves = getBestMoves(possibleMoves, values);
+
+	return game::getRandomElement(bestMoves);
 }
 
-int ttt::MiniMaxAi::evaluateBoard(ttt::Board board, int currentPlayer, bool maximizingPlayer, int alpha, int beta)
+int ttt::MiniMaxAi::evaluateBoard(const Board& board, PlayerColor currentPlayer, bool maximizingPlayer, int alpha, int beta)
 {
-	int nextPlayer = ttt::GameLogic::getNextPlayer(currentPlayer);
-	if (ttt::GameLogic::playerWon(board, color))
+	PlayerColor nextPlayer = getNextPlayer(currentPlayer);
+	if (playerWon(board, m_color))
 		return 1;
-	else if (ttt::GameLogic::playerWon(board, opponentColor))
+	else if (playerWon(board, m_opponentColor))
 		return -1;
-	else if (ttt::GameLogic::isBoardFull(board))
+	else if (board.isBoardFull())
 		return 0;
 
-	int boardValue = 0;
-	if (maximizingPlayer)
-		boardValue = -10;
-	else
-		boardValue = 10;
+	int boardValue = maximizingPlayer ? -10 : 10;
+	std::vector<Move> allPossibleMoves = getAllPossibleMoves<Move>(board);
 
-	std::vector<ttt::Move> allPossibleMoves = getAllPossibleMoves(board);
-	for (int i = 0; i < allPossibleMoves.size(); i++)
+	for (const auto& move : allPossibleMoves) 
 	{
-		ttt::Board copyBoard = ttt::Board(board);
-		ttt::Move currentMove = allPossibleMoves[i];
-		ttt::GameLogic::makeMove(copyBoard, currentPlayer, currentMove);
-		int moveValue = evaluateBoard(copyBoard, nextPlayer, !maximizingPlayer, alpha, beta);
+		Board copyBoard = board;
+		copyBoard.makeMove(move, currentPlayer);
+		const int moveValue = evaluateBoard(copyBoard, nextPlayer, !maximizingPlayer, alpha, beta);
 
 		if (maximizingPlayer)
 		{
@@ -77,27 +67,12 @@ int ttt::MiniMaxAi::evaluateBoard(ttt::Board board, int currentPlayer, bool maxi
 	return boardValue;
 }
 
-std::vector<ttt::Move> ttt::MiniMaxAi::getAllPossibleMoves(const ttt::Board& board)
+std::vector<Move> ttt::MiniMaxAi::getBestMoves(const std::vector<Move>& moves, const std::vector<int>& values)
 {
-	std::vector<ttt::Move> allPossibleMoves;
+	assert(moves.size() == values.size());
+	const int highestValue = *(std::max_element(values.begin(), values.end()));
 
-	for (int x = 0; x < 3; x++)
-	{
-		for (int y = 0; y < 3; y++)
-		{
-			if (board.board[x][y] == 0)
-				allPossibleMoves.push_back(ttt::Move(x, y));
-		}
-	}
-
-	return allPossibleMoves;
-}
-
-std::vector<ttt::Move> ttt::MiniMaxAi::getBestMoves(std::vector<ttt::Move>& moves, std::vector<int>& values)
-{
-	std::vector <ttt::Move> bestMoves;
-	int highestValue = *(std::max_element(values.begin(), values.end()));
-
+	std::vector <Move> bestMoves;
 	for (int i = 0; i < moves.size(); i++)
 	{
 		if (values[i] == highestValue)
@@ -105,10 +80,4 @@ std::vector<ttt::Move> ttt::MiniMaxAi::getBestMoves(std::vector<ttt::Move>& move
 	}
 
 	return bestMoves;
-}
-
-ttt::Move ttt::MiniMaxAi::getRandomMove(const std::vector<ttt::Move>& moves)
-{
-	int randIndex = rand() % moves.size();
-	return moves[randIndex];
 }

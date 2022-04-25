@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "Chess/ReducedChessAdapter.h"
-#include "AI/Ai.h"
+#include "Other/Ai.h"
 #include "Pieces/Queen.h"
 
 namespace chess
@@ -12,7 +12,7 @@ namespace chess
 	{
 	public:
 		MiniMaxAi(int depth);
-		int getMove(std::string state, int playerColor) override;
+		int getMove(const std::string& state, int playerColor) override;
 
 	private:
 		int evaluateBoard(chess::Board& board, int depth, chess::PieceColor currentPlayer, bool maximizingPlayer, int alpha, int beta);

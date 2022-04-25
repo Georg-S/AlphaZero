@@ -6,7 +6,8 @@
 class Ai
 {
 public:
-	virtual int getMove(std::string state, int playerColor) = 0;
+	virtual ~Ai() = default;
+	virtual int getMove(const std::string& state, int playerColor) = 0;
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_AI_H

@@ -1,10 +1,5 @@
 #include "MonteCarloTreeSearch.h"
 
-MonteCarloTreeSearch::MonteCarloTreeSearch()
-{
-
-}
-
 MonteCarloTreeSearch::MonteCarloTreeSearch(int actionCount, float cpuct)
 {
 	this->actionCount = actionCount;

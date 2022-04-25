@@ -7,14 +7,14 @@
 #include <Chess/Chess.h>
 #include <Chess/ReducedChessAdapter.h>
 #include <Chess/MiniMaxAi.h>
-#include <AI/NeuralNetAi.h>
+#include <Other/NeuralNetAi.h>
 #include "Evaluation.h"
 #include "TrainingParameters.h"
 
 class ChessHandler
 {
 public:
-	ChessHandler();
+	ChessHandler() = default;
 	void chessAgainstNeuralNetAi(chess::PieceColor playerColor, std::string netName, int mctsCount, bool randomize, torch::DeviceType device);
 	void chessAgainstMiniMaxAi(int miniMaxDepth, chess::PieceColor playerColor);
 	void runTrainingWithDefaultParameters(torch::DeviceType device);

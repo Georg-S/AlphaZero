@@ -99,7 +99,7 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlayGame(NeuralNetwork* net, G
 			mcts.search(SELF_PLAY_MCTS_COUNT, currentState, net, game, currentPlayer, device);
 		std::vector<float> probs = mcts.getProbabilities(currentState);
 
-		trainingData.push_back(ReplayElement(currentState, currentPlayer, probs, -1));
+		trainingData.emplace_back(currentState, currentPlayer, probs, -1);
 
 		int action;
 		if (currentStep < RANDOM_MOVE_COUNT)
@@ -120,7 +120,7 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlayGame(NeuralNetwork* net, G
 	if (TRAINING_DONT_USE_DRAWS && (playerWon == 0))
 		trainingData.clear();
 
-	return trainingData;
+	return std::move(trainingData);
 }
 
 int AlphaZeroTraining::getRandomAction(const std::vector<float>& probabilities)
@@ -145,15 +145,15 @@ int AlphaZeroTraining::getRandomAction(const std::vector<float>& probabilities)
 
 void AlphaZeroTraining::addResult(std::vector<ReplayElement>& elements, int winner)
 {
-	for (int i = 0; i < elements.size(); i++)
+	for (auto& elem : elements) 
 	{
-		int player = elements[i].currentPlayer;
+		int player = elem.currentPlayer;
 		if (player == winner)
-			elements[i].result = 1;
+			elem.result = 1;
 		else if (winner == 0)
-			elements[i].result = 0;
+			elem.result = 0;
 		else
-			elements[i].result = -1;
+			elem.result = -1;
 	}
 }
 
@@ -250,7 +250,5 @@ void AlphaZeroTraining::save(int iteration)
 void AlphaZeroTraining::setMaxReplayMemorySize(int size)
 {
 	this->MAX_REPLAY_MEMORY_SIZE = size;
-
-	replayMemory.clear();
 	replayMemory = RingBuffer<ReplayElement>(MAX_REPLAY_MEMORY_SIZE);
 }

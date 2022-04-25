@@ -1,26 +1,13 @@
 #include "GameHandling/TicTacToeHandler.h"
 
-TicTacToeHandler::TicTacToeHandler()
-{
-	adap = TicTacToeAdapter();
-}
+using namespace ttt;
 
-void TicTacToeHandler::ticTacToeAgainstMiniMaxAi(int playerColor)
+void TicTacToeHandler::ticTacToeAgainstMiniMaxAi(PlayerColor playerColor)
 {
-	ttt::MiniMaxAi ai = ttt::MiniMaxAi();
-	int aiColor = ttt::GameLogic::getNextPlayer(playerColor);
-	ttt::MiniMaxAi miMaxAi = ttt::MiniMaxAi();
+	PlayerColor aiColor = getNextPlayer(playerColor);
+	MiniMaxAi miMaxAi = MiniMaxAi();
 	TicTacToe tic = TicTacToe(&miMaxAi, aiColor);
 	tic.gameLoop();
-}
-
-void TicTacToeHandler::runTrainingWithAlphaZero(torch::DeviceType device)
-{
-	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 3, 3, 9, device);
-	AlphaZeroTraining training = AlphaZeroTraining(9, neuralNet, device);
-	loadDefaultParametersForAlphaZeroTraining(training);
-
-	training.runTraining(&adap);
 }
 
 void TicTacToeHandler::startTwoPlayerTicTacToeGame()
@@ -31,6 +18,7 @@ void TicTacToeHandler::startTwoPlayerTicTacToeGame()
 
 void TicTacToeHandler::traininingPerformanceTest(torch::DeviceType device)
 {
+	TicTacToeAdapter adap = TicTacToeAdapter();
 	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 3, 3, 9, device);
 	AlphaZeroTraining training = AlphaZeroTraining(9, neuralNet, device);
 
@@ -73,6 +61,7 @@ void TicTacToeHandler::evalTicTacToe(bool multiThreaded)
 
 EvalResult TicTacToeHandler::evalTicTacToe(std::string netName, torch::DeviceType device)
 {
+	TicTacToeAdapter adap = TicTacToeAdapter();
 	DefaultNeuralNet* toEval = new DefaultNeuralNet(2, 3, 3, 9, netName, device);
 	NeuralNetAi neuralNetAi = NeuralNetAi(toEval, &adap, 9, evalMCTSCount, false, device);
 	ttt::MiniMaxAi minimaxAi = ttt::MiniMaxAi();
@@ -83,6 +72,7 @@ EvalResult TicTacToeHandler::evalTicTacToe(std::string netName, torch::DeviceTyp
 
 EvalResult TicTacToeHandler::evalTicTacToeMultiThreaded(std::string netName, torch::DeviceType device)
 {
+	TicTacToeAdapter adap = TicTacToeAdapter();
 	constexpr int threadCount = 5;
 
 	Evaluation evaluation = Evaluation(torch::kCUDA, evalMCTSCount);
@@ -156,13 +146,13 @@ void TicTacToeHandler::setTrainingParameters(AlphaZeroTraining& training, const 
 	training.NUMBER_CPU_THREADS = params.cpuThreads;
 }
 
-void TicTacToeHandler::ticTacToeAgainstNeuralNetAi(int playerColor, std::string netName, int countMcts, bool probabilistic,
+void TicTacToeHandler::ticTacToeAgainstNeuralNetAi(ttt::PlayerColor playerColor, std::string netName, int countMcts, bool probabilistic,
 	torch::DeviceType device)
 {
 	TicTacToeAdapter adap = TicTacToeAdapter();
 	DefaultNeuralNet neuralNet = DefaultNeuralNet(2, 3, 3, 9, preTrainedPath + "/" + netName, device);
 	NeuralNetAi ai = NeuralNetAi(&neuralNet, &adap, 9, countMcts, probabilistic, device);
-	int aiColor = ttt::GameLogic::getNextPlayer(playerColor);
+	PlayerColor aiColor = getNextPlayer(playerColor);
 	TicTacToe ttt = TicTacToe(&ai, aiColor);
 
 	ttt.gameLoop();

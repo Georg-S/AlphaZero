@@ -5,7 +5,7 @@ chess::MiniMaxAi::MiniMaxAi(int depth)
 	this->depth = depth;
 }
 
-int chess::MiniMaxAi::getMove(std::string state, int playerColor)
+int chess::MiniMaxAi::getMove(const std::string& state, int playerColor)
 {
 	this->aiColor = (chess::PieceColor)playerColor;
 	this->otherPlayer = chess::GameLogic::getNextPlayer(aiColor);

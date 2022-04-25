@@ -4,7 +4,7 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
-#include "AI/Ai.h"
+#include "Other/Ai.h"
 #include "SDL/Mouse.h"
 #include "Renderer.h"
 #include "RenderInformation.h"

@@ -1,8 +1,11 @@
 #ifndef DEEPREINFORCEMENTLEARNING_ALPHAGOZERONET_H
 #define DEEPREINFORCEMENTLEARNING_ALPHAGOZERONET_H
 
-#include <torch/nn.h>
 #include <tuple>
+// Libtorch has many warnings which clutter the output, so we ignore them
+#pragma warning(push, 0)
+#include <torch/nn.h>
+#pragma warning(pop)
 #include "NeuralNetworks/Components/ConvolutionBlock.h"
 #include "NeuralNetworks/Components/ResidualBlock.h"
 #include "NeuralNetworks/Components/PolicyHead.h"

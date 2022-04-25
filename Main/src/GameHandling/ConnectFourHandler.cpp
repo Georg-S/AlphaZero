@@ -1,10 +1,5 @@
 #include "GameHandling/ConnectFourHandler.h"
 
-ConnectFourHandler::ConnectFourHandler()
-{
-
-}
-
 void ConnectFourHandler::connectFourAgainstNeuralNetAi(cn4::PlayerColor playerColor, std::string netName,
 	int countMcts, bool probabilistic, torch::DeviceType device)
 {
