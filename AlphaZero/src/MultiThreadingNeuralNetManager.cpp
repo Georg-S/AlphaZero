@@ -1,10 +1,11 @@
 #include "MultiThreadingNeuralNetManager.h"
 
 MultiThreadingNeuralNetManager::MultiThreadingNeuralNetManager(int threadCount, int activeThreads, NeuralNetwork* net)
-	: threadCount(threadCount), activeThreads(activeThreads), net(net)
-{
-	elementsAdded = 0;
-}
+	: threadCount(threadCount)
+	, activeThreads(activeThreads)
+	, net(net)
+	, elementsAdded(0)
+{}
 
 int MultiThreadingNeuralNetManager::addInputThreadSafe(torch::Tensor input)
 {

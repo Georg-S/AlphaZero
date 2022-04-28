@@ -69,6 +69,7 @@ int ttt::MiniMaxAi::evaluateBoard(const Board& board, PlayerColor currentPlayer,
 
 std::vector<Move> ttt::MiniMaxAi::getBestMoves(const std::vector<Move>& moves, const std::vector<int>& values)
 {
+	assert(!moves.empty());
 	assert(moves.size() == values.size());
 	const int highestValue = *(std::max_element(values.begin(), values.end()));
 

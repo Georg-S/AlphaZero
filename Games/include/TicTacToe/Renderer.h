@@ -21,8 +21,6 @@ namespace ttt
 		std::unique_ptr<SDLHandler> m_sdlHandler;
 		static constexpr int m_windowWidth = 800;
 		static constexpr int m_windowHeight = 800;
-		static constexpr int pieceWidth = m_windowWidth / 3;
-		static constexpr int pieceHeight = m_windowHeight / 3;
 	};
 }
 
