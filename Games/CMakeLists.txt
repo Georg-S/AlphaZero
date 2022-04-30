@@ -49,12 +49,12 @@ set(ConnectFourFiles
 	"include/ConnectFour/ConnectFour.h"
 	"include/ConnectFour/ConnectFourAdapter.h"
 	"include/ConnectFour/GameLogic.h"
-	"include/ConnectFour/MiniMaxAi.h"
+	"include/ConnectFour/NegaMaxAi.h"
 	"include/ConnectFour/Renderer.h"
 	"src/ConnectFour/ConnectFour.cpp"
 	"src/ConnectFour/ConnectFourAdapter.cpp"
 	"src/ConnectFour/GameLogic.cpp"
-	"src/ConnectFour/MiniMaxAi.cpp"
+	"src/ConnectFour/NegaMaxAi.cpp"
 	"src/ConnectFour/Renderer.cpp"
 )
 

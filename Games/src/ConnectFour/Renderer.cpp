@@ -39,14 +39,14 @@ void cn4::Renderer::renderPiece(const Board& board, int x, int y)
 		handler->createAndPushBackRenderElement(basePath + "RedPiece.png", xRend, yRend, pieceWidth, pieceWidth);
 }
 
-int cn4::Renderer::convertBoardXPositionToRenderXPosition(const cn4::Board& board, int x)
+int cn4::Renderer::convertBoardXPositionToRenderXPosition(const Board& board, int x)
 {
 	int result = (m_windowWidth / boardWidth) * x;
 
 	return result;
 }
 
-int cn4::Renderer::convertBoardYPositionToRenderYPosition(const cn4::Board& board, int y)
+int cn4::Renderer::convertBoardYPositionToRenderYPosition(const Board& board, int y)
 {
 	int result = (m_windowHeight / boardHeight) * y;
 	result = m_windowHeight - m_windowHeight / boardHeight - result;

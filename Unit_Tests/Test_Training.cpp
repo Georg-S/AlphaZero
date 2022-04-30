@@ -4,6 +4,7 @@
 #include <AlphaZeroTraining.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
 
+#if 0
 
 TEST(Training, test_random_action)
 {
@@ -45,3 +46,5 @@ TEST(Training, test_mult_thread_training)
 
 	training.selfPlay(neuralNet, &adap);
 }
+
+#endif

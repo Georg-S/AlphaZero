@@ -9,7 +9,7 @@
 #include <NeuralNetworks/DefaultNeuralNet.h>
 #include <ConnectFour/ConnectFourAdapter.h>
 #include <ConnectFour/ConnectFour.h>
-#include <ConnectFour/MiniMaxAi.h>
+#include <ConnectFour/NegaMaxAi.h>
 #include <Other/NeuralNetAi.h>
 #include "Evaluation.h"
 #include "TrainingParameters.h"
