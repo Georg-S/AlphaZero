@@ -4,7 +4,7 @@ using namespace ttt;
 
 int TicTacToeAdapter::getInitialPlayer()
 {
-	constexpr int initialPlayer = static_cast<int>(PlayerColor::Cross);
+	constexpr int initialPlayer = static_cast<int>(PlayerColor::CROSS);
 	return initialPlayer;
 }
 
@@ -82,10 +82,10 @@ int TicTacToeAdapter::getPlayerWon(const std::string& state)
 {
 	Board board = Board(state);
 
-	if (playerWon(board, PlayerColor::Cross))
-		return static_cast<int>(PlayerColor::Cross);
-	if (playerWon(board, PlayerColor::Dot))
-		return static_cast<int>(PlayerColor::Dot);
+	if (playerWon(board, PlayerColor::CROSS))
+		return static_cast<int>(PlayerColor::CROSS);
+	if (playerWon(board, PlayerColor::DOT))
+		return static_cast<int>(PlayerColor::DOT);
 
-	return static_cast<int>(PlayerColor::None);
+	return static_cast<int>(PlayerColor::NONE);
 }

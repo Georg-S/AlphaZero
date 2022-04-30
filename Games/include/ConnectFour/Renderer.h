@@ -3,7 +3,7 @@
 
 
 #include "SDL/SDLHandler.h"
-#include "Board.h"
+#include "GameLogic.h"
 
 namespace cn4
 {
@@ -11,22 +11,23 @@ namespace cn4
 	{
 	public:
 		Renderer();
-		~Renderer();
-		void renderBoard(cn4::Board board);
-		int getWindowXPosition();
-		int getWindowYPosition();
+		~Renderer() = default;
+		void update(const Board& board);
 		void quit();
-		bool isQuit();
-		void updateQuit();
+		bool isQuit() const;
+		int getWindowXPosition() const;
+		int getWindowYPosition() const;
+		int windowWidth() const;
+		int windowHeight() const;
 
-		static constexpr int windowWidth = 700;
-		static constexpr int windowHeight = 600;
 	private:
-		void renderPiece(const cn4::Board& board, int x, int y);
-		int convertBoardXPositionToRenderXPosition(const cn4::Board& board, int x);
-		int convertBoardYPositionToRenderYPosition(const cn4::Board& board, int y);
+		static constexpr int m_windowWidth = 700;
+		static constexpr int m_windowHeight = 600;
+		void renderPiece(const Board& board, int x, int y);
+		int convertBoardXPositionToRenderXPosition(const Board& board, int x);
+		int convertBoardYPositionToRenderYPosition(const Board& board, int y);
 
-		SDLHandler* handler;
+		std::unique_ptr<SDLHandler> handler;
 	};
 }
 

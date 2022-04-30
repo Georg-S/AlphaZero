@@ -7,6 +7,7 @@
 #include <vector>
 #include <MultiThreadingNeuralNetManager.h>
 
+#if 0
 
 TEST(MonteCarloTreeSearch, test_sum_vector)
 {
@@ -149,3 +150,5 @@ TEST(MonteCarloTreeSearch, test_ttt_multi_threading_mcts)
 	for (auto& thread : threadPool)
 		thread.join();
 }
+
+#endif

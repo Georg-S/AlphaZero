@@ -31,7 +31,7 @@ private:
 	Ai* m_ai;
 	int m_playerCount;
 	bool m_gameOver = false;
-	ttt::PlayerColor m_currentPlayer = ttt::PlayerColor::Cross;
+	ttt::PlayerColor m_currentPlayer = ttt::PlayerColor::CROSS;
 	ttt::PlayerColor m_aiColor;
 	ttt::Board m_board;
 	std::unique_ptr<ttt::Renderer> m_renderer;

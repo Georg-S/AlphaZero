@@ -22,9 +22,9 @@ void ttt::Renderer::update(const Board& board)
 		for (int y = 0; y < 3; y++)
 		{
 			PlayerColor color = board.at(x, y);
-			if (color == PlayerColor::Cross)
+			if (color == PlayerColor::CROSS)
 				m_sdlHandler->createAndPushBackRenderElement(basePath + "Cross.png", x * pieceWidth, y * pieceWidth, pieceWidth, pieceHeight);
-			else if (color == PlayerColor::Dot)
+			else if (color == PlayerColor::DOT)
 				m_sdlHandler->createAndPushBackRenderElement(basePath + "Dot.png", x * pieceWidth, y * pieceWidth, pieceWidth, pieceHeight);
 		}
 	}

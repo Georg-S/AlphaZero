@@ -46,12 +46,10 @@ set(ChessPiecesFiles
 )
 
 set(ConnectFourFiles
-	"include/ConnectFour/Board.h"
 	"include/ConnectFour/ConnectFour.h"
 	"include/ConnectFour/ConnectFourAdapter.h"
 	"include/ConnectFour/GameLogic.h"
 	"include/ConnectFour/MiniMaxAi.h"
-	"include/ConnectFour/PlayerColor.h"
 	"include/ConnectFour/Renderer.h"
 	"src/ConnectFour/ConnectFour.cpp"
 	"src/ConnectFour/ConnectFourAdapter.cpp"

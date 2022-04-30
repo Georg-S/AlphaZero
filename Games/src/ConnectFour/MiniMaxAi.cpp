@@ -1,79 +1,62 @@
 #include "ConnectFour/MiniMaxAi.h"
 
+using namespace cn4;
 
 cn4::MiniMaxAi::MiniMaxAi(int depth)
+	: m_depth(depth)
+	, m_aiColor(PlayerColor::NONE)
 {
-	this->depth = depth;
-	ConnectFourAdapter adap = ConnectFourAdapter();
 }
-
 
 int cn4::MiniMaxAi::getMove(const std::string& state, int playerColor)
 {
-	aiColor = playerColor;
-
-	cn4::Board board = adap.convertStringToBoard(state);
-	std::vector<int> possibleMoves;
-	getAllPossibleMoves(possibleMoves, board);
+	m_aiColor = PlayerColor(playerColor);
+	Board board = Board(state);
+	std::vector<int> possibleMoves = getAllPossibleMoves(board);
 	orderMoves(possibleMoves);
 
 	std::vector<int> values;
 
-	for (int i = 0; i < possibleMoves.size(); i++)
+	for (auto move : possibleMoves)
 	{
-		cn4::Board copyBoard = cn4::Board(board);
-		makeMove(copyBoard, possibleMoves[i], playerColor);
-
-		int value = evaluateBoard(copyBoard, depth, adap.getNextPlayer(playerColor), false, INT_MIN, INT_MAX);
+		Board copyBoard = board;
+		copyBoard.makeMove(move, m_aiColor);
+		int value = evaluateBoard(copyBoard, m_depth, getNextPlayer(m_aiColor), false, INT_MIN, INT_MAX);
 		values.push_back(value);
 	}
 	std::vector<int> bestMoves = getBestMoves(possibleMoves, values);
 
-	return getRandomMove(bestMoves);
+	return game::getRandomElement(bestMoves);
 }
 
-void cn4::MiniMaxAi::makeMove(cn4::Board& board, int move, int currenPlayer)
+int cn4::MiniMaxAi::evaluateBoard(const cn4::Board& board, int depth, PlayerColor currentPlayer, bool maximizingPlayer, int alpha, int beta)
 {
-	for (int i = 0; i < board.height; i++)
-	{
-		if (board.board[move][i] == 0)
-		{
-			board.board[move][i] = currenPlayer;
-			return;
-		}
-	}
-}
+	PlayerColor nextPlayer = getNextPlayer(currentPlayer);
+	PlayerColor playerWon = getPlayerWon(board);
 
-int cn4::MiniMaxAi::evaluateBoard(const cn4::Board& board, int depth, int currentPlayer, bool maximizingPlayer, int alpha,
-	int beta)
-{
-
-	int nextPlayer = adap.getNextPlayer(currentPlayer);
-
-	if (cn4::GameLogic::isDraw(board))
+	if (playerWon == m_aiColor)
+		return m_maxValue + depth;
+	if (playerWon != PlayerColor::NONE)
+		return m_minValue + depth;
+	if (board.isFull())
 		return 0;
-	else if (cn4::GameLogic::getPlayerWon(board) == (cn4::PlayerColor)aiColor)
-		return maxValue + depth;
-	else if (cn4::GameLogic::getPlayerWon(board) != cn4::PlayerColor::NONE)
-		return minValue + depth;
-	else if (depth == 0)
+	if (depth == 0)
 		return staticBoardEvaluation(board);
 
 	int boardValue = 0;
 	if (maximizingPlayer)
-		boardValue = minValue;
+		boardValue = m_minValue;
 	else
-		boardValue = maxValue;
+		boardValue = m_maxValue;
 
 
-	std::vector<int> possibleMoves;
-	getAllPossibleMoves(possibleMoves, board);
+	std::vector<int> possibleMoves = getAllPossibleMoves(board);
 	orderMoves(possibleMoves);
 
-	for (int i = 0; i < possibleMoves.size(); i++)
+	for (auto move : possibleMoves)
 	{
 		cn4::Board copyBoard = Board(board);
-		makeMove(copyBoard, possibleMoves[i], currentPlayer);
+		copyBoard.makeMove(move, currentPlayer);
 		int moveValue = evaluateBoard(copyBoard, depth - 1, nextPlayer, !maximizingPlayer, alpha, beta);
 
 		if (maximizingPlayer)
@@ -94,135 +77,78 @@ int cn4::MiniMaxAi::evaluateBoard(const cn4::Board& board, int depth, int curren
 	return boardValue;
 }
 
-void cn4::MiniMaxAi::getAllPossibleMoves(std::vector<int>& destination, const cn4::Board& board) const
-{
-	for (int i = 0; i < board.width; i++)
-		if (board.board[i][board.height - 1] == (int)cn4::PlayerColor::NONE)
-			destination.push_back(i);
-}
-
 void cn4::MiniMaxAi::orderMoves(std::vector<int>& moves) const
 {
 	constexpr int middle = 3;
-	std::sort(moves.begin(), moves.end(), [middle](int a, int b) {return abs(middle - a) < abs(middle - b); });
+	std::sort(moves.begin(), moves.end(), [middle](int a, int b) { return abs(middle - a) < abs(middle - b); });
+}
+
+static int getCountOfPossibleConnectFours(uint64_t pieces, int count_connected, int shiftValue, uint64_t occupied, uint64_t additionalMask)
+{
+	int connectedShifts = count_connected - 1;
+	int occupationShifts = 4 - count_connected;
+
+	auto buf = pieces;
+	while (connectedShifts--)
+	{
+		buf &= pieces & (pieces << shiftValue);
+		buf &= (buf << shiftValue);
+		buf &= additionalMask;
+	}
+
+	const uint64_t invertedOccupied = ~occupied;
+	while (occupationShifts--)
+	{
+		buf = (buf << shiftValue) & invertedOccupied;
+		buf &= additionalMask;
+	}
+
+	int count = 0;
+	while (buf)
+	{
+		game::resetLowestBit(buf);
+		count++;
+	}
+
+	return count;
+}
+
+static int getScore(const cn4::Board& board, int shift, uint64_t additionalMask)
+{
+	constexpr int threeConectedWeight = 3;
+	constexpr int twoconnectedWeight = 2;
+	int yellowScoreThreeConnected = getCountOfPossibleConnectFours(board.yellowPieces(), 3, shift, board.occupied(), additionalMask);
+	int redScoreThreeConnected = getCountOfPossibleConnectFours(board.redPieces(), 3, shift, board.occupied(), additionalMask);
+	int yellowScoreTwoConnected = getCountOfPossibleConnectFours(board.yellowPieces(), 2, shift, board.occupied(), additionalMask);
+	int redScoreTwoConnected = getCountOfPossibleConnectFours(board.redPieces(), 2, shift, board.occupied(), additionalMask);
+
+	int yellowScore = (threeConectedWeight * yellowScoreThreeConnected) + (twoconnectedWeight * yellowScoreTwoConnected);
+	int redScore = (threeConectedWeight * redScoreThreeConnected) + (twoconnectedWeight * redScoreTwoConnected);
+
+	return yellowScore - redScore;
 }
 
 int cn4::MiniMaxAi::staticBoardEvaluation(const cn4::Board& board)
 {
-	int boardValue = 0;
-	for (int x = 0; x < board.width; x++)
-	{
-		for (int y = 0; y < board.height; y++)
-		{
-			boardValue += evaluateBoardPosition(board, x, y);
-		}
-	}
+	int horizontalScore = getScore(board, 1, leftColumnZeroMask);
+	int verticalScore = getScore(board, boardWidth, fullBoardMask); // fullBoardMask = Does nothing
+	int diagonalUpScore = getScore(board, boardWidth + 1, leftColumnZeroMask);
+	int diagonalDownScore = getScore(board, boardWidth - 1, rightColumnZeroMask);
 
-	return boardValue;
-}
+	int score = horizontalScore + verticalScore + diagonalUpScore + diagonalDownScore;
+	if (m_aiColor == PlayerColor::RED)
+		score = -score;
 
-int cn4::MiniMaxAi::evaluateBoardPosition(const cn4::Board& board, int x, int y)
-{
-	int value = rightDiagonalUpValue(board, x, y) + rightDiagonalDownValue(board, x, y)
-		+ rightHorizontalValue(board, x, y) + upVerticalValue(board, x, y);
-	if (board.board[x][y] != aiColor)
-		return -value;
-
-	return value;
-}
-
-int cn4::MiniMaxAi::rightHorizontalValue(const cn4::Board& board, int x, int y)
-{
-	if (x + 3 >= board.width)
-		return 0;
-
-	int value = 0;
-	int color = board.board[x][y];
-	for (int i = 1; i < 4; i++)
-	{
-		if (board.board[x + i][y] == (int)cn4::PlayerColor::NONE)
-			continue;
-		if (board.board[x + i][y] != color)
-			return 0;
-
-		value++;
-	}
-
-	return value;
-}
-
-int cn4::MiniMaxAi::rightDiagonalDownValue(const cn4::Board& board, int x, int y)
-{
-	if (x + 3 >= board.width)
-		return 0;
-	if (y - 3 < 0)
-		return 0;
-
-	int value = 0;
-	int color = board.board[x][y];
-
-	for (int i = 1; i < 4; i++)
-	{
-		if (board.board[x + i][y - i] == (int)cn4::PlayerColor::NONE)
-			continue;
-		if (board.board[x + i][y - i] != color)
-			return 0;
-
-		value++;
-	}
-	return value;
-}
-
-int cn4::MiniMaxAi::rightDiagonalUpValue(const cn4::Board& board, int x, int y)
-{
-	if (x + 3 >= board.width)
-		return 0;
-	if (y + 3 >= board.height)
-		return 0;
-
-	int value = 0;
-	int color = board.board[x][y];
-
-	for (int i = 1; i < 4; i++)
-	{
-		if (board.board[x + i][y + i] == (int)cn4::PlayerColor::NONE)
-			continue;
-
-		if (board.board[x + i][y + i] != color)
-			return 0;
-
-		value++;
-	}
-
-	return value;
-}
-
-int cn4::MiniMaxAi::upVerticalValue(const cn4::Board& board, int x, int y)
-{
-	if (y + 3 >= board.height)
-		return 0;
-
-	int value = 0;
-	int color = board.board[x][y];
-
-	for (int i = 1; i < 4; i++)
-	{
-		if (board.board[x][y + i] == (int)cn4::PlayerColor::NONE)
-			return value;
-
-		if (board.board[x][y + i] != color)
-			return 0;
-
-		value++;
-	}
-	return value;
+	return score;
 }
 
 std::vector<int> cn4::MiniMaxAi::getBestMoves(std::vector<int>& moves, std::vector<int>& values)
 {
-	std::vector <int> bestMoves;
-	int highestValue = *(std::max_element(values.begin(), values.end()));
+	assert(!moves.empty());
+	assert(moves.size() == values.size());
+	const int highestValue = *(std::max_element(values.begin(), values.end()));
 
+	std::vector <int> bestMoves;
 	for (int i = 0; i < moves.size(); i++)
 	{
 		if (values[i] == highestValue)
@@ -230,10 +156,4 @@ std::vector<int> cn4::MiniMaxAi::getBestMoves(std::vector<int>& moves, std::vect
 	}
 
 	return bestMoves;
-}
-
-int cn4::MiniMaxAi::getRandomMove(const std::vector<int>& moves)
-{
-	int randIndex = rand() % moves.size();
-	return moves[randIndex];
 }

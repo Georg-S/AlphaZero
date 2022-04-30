@@ -5,12 +5,11 @@
 #include <vector>
 #include <Game.h>
 #include "GameLogic.h"
-#include "Board.h"
 
 class ConnectFourAdapter : public Game
 {
 public:
-	ConnectFourAdapter();
+	ConnectFourAdapter() = default;
 	std::vector<int> getAllPossibleMoves(const std::string& state, int currentPlayer) override;
 	torch::Tensor convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Device device = torch::kCPU) override;
 	std::string getInitialGameState() override;
@@ -21,10 +20,8 @@ public:
 	bool isGameOver(const std::string& state) override;
 	std::string makeMove(const std::string& state, int move, int currentPlayer) override;
 	int getActionCount() const override;
-
-	cn4::Board convertStringToBoard(const std::string& state);
 private:
-	static constexpr int actionCount = 7;
+	static constexpr int m_actionCount = 7;
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_CONNECTFOURADAPTER_H

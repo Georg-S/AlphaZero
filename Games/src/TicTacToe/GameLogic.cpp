@@ -27,9 +27,9 @@ ttt::Board::Board(const std::string& str)
 
 void ttt::Board::makeMove(int pos, PlayerColor color)
 {
-	assert(color != PlayerColor::None);
+	assert(color != PlayerColor::NONE);
 
-	if (color == PlayerColor::Cross)
+	if (color == PlayerColor::CROSS)
 		game::setBit(m_crosses, pos);
 	else
 		game::setBit(m_dots, pos);
@@ -56,18 +56,18 @@ PlayerColor ttt::Board::at(int x, int y) const
 {
 	int index = x + y * 3;
 	if (!isBitSet(m_occupied, index))
-		return PlayerColor::None;
+		return PlayerColor::NONE;
 	if (isBitSet(m_crosses, index))
-		return PlayerColor::Cross;
+		return PlayerColor::CROSS;
 
-	return PlayerColor::Dot;
+	return PlayerColor::DOT;
 }
 
 uint32_t ttt::Board::getPieces(PlayerColor color) const
 {
-	assert(color != PlayerColor::None);
+	assert(color != PlayerColor::NONE);
 
-	if (color == PlayerColor::Dot)
+	if (color == PlayerColor::DOT)
 		return this->m_dots;
 	else
 		return this->m_crosses;
@@ -97,7 +97,7 @@ std::string ttt::Board::toString() const
 
 bool ttt::isGameOver(const Board& board)
 {
-	return board.isBoardFull() || playerWon(board, PlayerColor::Cross) || playerWon(board, PlayerColor::Dot);
+	return board.isBoardFull() || playerWon(board, PlayerColor::CROSS) || playerWon(board, PlayerColor::DOT);
 }
 
 bool ttt::playerWon(const Board& board, PlayerColor color)
@@ -130,12 +130,12 @@ bool ttt::diagonalThreeInARow(uint32_t pieces)
 
 PlayerColor ttt::getNextPlayer(PlayerColor color)
 {
-	assert(color != PlayerColor::None);
+	assert(color != PlayerColor::NONE);
 
-	if (color == PlayerColor::Cross)
-		return PlayerColor::Dot;
+	if (color == PlayerColor::CROSS)
+		return PlayerColor::DOT;
 	else
-		return PlayerColor::Cross;
+		return PlayerColor::CROSS;
 }
 
 int ttt::getNextPlayer(int player)

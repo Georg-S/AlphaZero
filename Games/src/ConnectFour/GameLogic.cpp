@@ -1,171 +1,180 @@
 #include "ConnectFour/GameLogic.h"
 
-bool cn4::GameLogic::isGameOver(const cn4::Board& board)
+using namespace game;
+
+cn4::Board::Board(const std::string& str)
 {
-	if (isDraw(board))
-		return true;
-	if (fourInARowHorizontal(board) || fourInARowVertical(board) || fourInARowDiagonal(board))
-		return true;
+	constexpr char yellowPiece = '1';
+	constexpr char redPiece = '2';
 
-	return false;
-}
-
-cn4::PlayerColor cn4::GameLogic::getPlayerWon(const cn4::Board& board)
-{
-	if (fourInARowHorizontal(board, (int)cn4::PlayerColor::YELLOW)
-		|| fourInARowVertical(board, (int)cn4::PlayerColor::YELLOW)
-		|| fourInARowDiagonal(board, (int)cn4::PlayerColor::YELLOW))
-		return cn4::PlayerColor::YELLOW;
-	if (fourInARowHorizontal(board, (int)cn4::PlayerColor::RED)
-		|| fourInARowVertical(board, (int)cn4::PlayerColor::RED)
-		|| fourInARowDiagonal(board, (int)cn4::PlayerColor::RED))
-		return cn4::PlayerColor::RED;
-
-	return cn4::PlayerColor::NONE;
-}
-
-bool cn4::GameLogic::fourInARowHorizontal(const cn4::Board& board, int player)
-{
-	for (int x = 0; x < board.width; x++)
+	assert(str.size() == (boardHeight * boardWidth));
+	for (int i = 0; i < (boardHeight * boardWidth); i++)
 	{
-		for (int y = 0; y < board.height; y++)
+		char c = str.at(i);
+		int row = i / boardWidth;
+		int column = i - (boardWidth * row);
+
+		if (c == yellowPiece)
 		{
-			if (board.board[x][y] == (int)cn4::PlayerColor::NONE)
-				break;
-			if (fourInARowHorizontal(board, player, x, y))
-				return true;
+			setBit(m_yellowPieces, i);
+			m_occupiedColumnSize[column] = std::max(m_occupiedColumnSize[column], row + 1);
+		}
+		else if (c == redPiece)
+		{
+			setBit(m_redPieces, i);
+			m_occupiedColumnSize[column] = std::max(m_occupiedColumnSize[column], row + 1);
 		}
 	}
-	return false;
+	m_occupied = m_redPieces | m_yellowPieces;
 }
 
-bool cn4::GameLogic::fourInARowHorizontal(const cn4::Board& board, int player, int xPos, int yPos)
+bool cn4::Board::isFull() const
 {
-	if (!((xPos + 3) < board.width))
-		return false;
-	if (player != -1 && player != board.board[xPos][yPos])
-		return false;
-	if (board.board[xPos][yPos] == (int)cn4::PlayerColor::NONE)
-		return false;
-
-	for (int x = xPos; x < xPos + 3; x++)
-	{
-		if (board.board[x][yPos] != board.board[x + 1][yPos])
-			return false;
-	}
-
-	return true;
+	return m_occupied == fullBoardMask;
 }
 
-bool cn4::GameLogic::fourInARowVertical(const cn4::Board& board, int player)
+uint64_t cn4::Board::occupied() const
 {
-	for (int x = 0; x < board.width; x++)
-	{
-		for (int y = 0; y < board.height; y++)
-		{
-			if (board.board[x][y] == (int)cn4::PlayerColor::NONE)
-				break;
-			if (fourInARowVertical(board, player, x, y))
-				return true;
-		}
-	}
-	return false;
+	return m_occupied;
 }
 
-bool cn4::GameLogic::fourInARowVertical(const cn4::Board& board, int player, int xPos, int yPos)
+uint64_t cn4::Board::yellowPieces() const
 {
-	if ((yPos + 3) >= board.height)
-		return false;
-	if ((player != -1) && (player != board.board[xPos][yPos]))
-		return false;
-	if (board.board[xPos][yPos] == (int)cn4::PlayerColor::NONE)
-		return false;
-
-	for (int y = yPos; y < yPos + 3; y++)
-	{
-		if (board.board[xPos][y] != board.board[xPos][y + 1])
-			return false;
-	}
-	return true;
+	return m_yellowPieces;
 }
 
-bool cn4::GameLogic::fourInARowDiagonal(const cn4::Board& board, int player)
+uint64_t cn4::Board::redPieces() const
 {
-	for (int x = 0; x < board.width; x++)
-	{
-		for (int y = 0; y < board.height; y++)
-		{
-			if (fourInARowDiagonalUp(board, player, x, y))
-				return true;
-			if (fourInARowDiagonalDown(board, player, x, y))
-				return true;
-		}
-	}
-	return false;
+	return m_redPieces;
 }
 
-bool cn4::GameLogic::fourInARowDiagonalUp(const cn4::Board& board, int player, int xPos, int yPos)
+void cn4::Board::makeMove(int column, PlayerColor color)
 {
-	if ((yPos + 3) >= board.height || (xPos + 3) >= board.width)
-		return false;
-	if ((player != -1) && (player != board.board[xPos][yPos]))
-		return false;
-	if (board.board[xPos][yPos] == (int)cn4::PlayerColor::NONE)
-		return false;
+	assert(m_occupiedColumnSize[column] < boardHeight);
+	assert(color != PlayerColor::NONE);
+	if (color == PlayerColor::RED)
+		setBit(m_redPieces, column + (boardWidth * m_occupiedColumnSize[column]));
+	else
+		setBit(m_yellowPieces, column + (boardWidth * m_occupiedColumnSize[column]));
 
-	for (int x = xPos, y = yPos; x < xPos + 3; x++, y++)
-	{
-		if (board.board[x][y] != board.board[x + 1][y + 1])
-			return false;
-	}
-	return true;
+	m_occupiedColumnSize[column]++;
+	m_occupied = m_redPieces | m_yellowPieces;
 }
 
-bool cn4::GameLogic::fourInARowDiagonalDown(const cn4::Board& board, int player, int xPos, int yPos)
+cn4::PlayerColor cn4::Board::at(int column, int row) const
 {
-	if ((yPos - 3) < 0 || (xPos + 3) >= board.width)
-		return false;
-	if ((player != -1) && (player != board.board[xPos][yPos]))
-		return false;
-	if (board.board[xPos][yPos] == (int)cn4::PlayerColor::NONE)
-		return false;
-
-	for (int x = xPos, y = yPos; x < xPos + 3; x++, y--)
-	{
-		if (board.board[x][y] != board.board[x + 1][y - 1])
-			return false;
-	}
-	return true;
+	int bitIndex = column + (row * boardWidth);
+	if (isBitSet(m_redPieces, bitIndex))
+		return PlayerColor::RED;
+	if (isBitSet(m_yellowPieces, bitIndex))
+		return PlayerColor::YELLOW;
+	return PlayerColor::NONE;
 }
 
-bool cn4::GameLogic::isDraw(const cn4::Board& board)
+static void setPieces(std::string& str, uint64_t pieces, char pieceC)
 {
-	for (int y = 0; y < board.height; y++)
+	while (pieces)
 	{
-		for (int x = 0; x < board.width; x++)
-		{
-			if (board.board[x][y] == (int)cn4::PlayerColor::NONE)
-				return false;
-		}
-	}
-	return true;
-}
-
-void cn4::GameLogic::makeMove(cn4::Board& board, int action, const cn4::PlayerColor& playerColor)
-{
-	for (int i = 0; i < board.height; i++)
-	{
-		if (board.board[action][i] == 0)
-		{
-			board.board[action][i] = (int)playerColor;
-			return;
-		}
+		int index = lowestBitIndex(pieces);
+		str[index] = pieceC;
+		resetLowestBit(pieces);
 	}
 }
 
-bool cn4::GameLogic::isMovePossible(const cn4::Board& board, int action)
+std::string cn4::Board::toString() const
 {
-	if (board.board[action][board.height - 1] == (int)cn4::PlayerColor::NONE)
-		return true;
-	return false;
+	std::string str = "000000000000000000000000000000000000000000"; // Empty board string
+	setPieces(str, m_yellowPieces, '1');
+	setPieces(str, m_redPieces, '2');
+
+	return str;
+}
+
+cn4::PlayerColor cn4::getPlayerWon(const Board& board)
+{
+	if (hasPlayerWon(board.redPieces()))
+		return PlayerColor::RED;
+	if (hasPlayerWon(board.yellowPieces()))
+		return PlayerColor::YELLOW;
+
+	return PlayerColor::NONE;
+}
+
+bool cn4::isGameOver(const Board& board)
+{
+	return board.isFull() || hasPlayerWon(board.yellowPieces()) || hasPlayerWon(board.redPieces());
+}
+
+cn4::PlayerColor cn4::getNextPlayer(PlayerColor color)
+{
+	assert(color != PlayerColor::NONE);
+	if (color == PlayerColor::RED)
+		return PlayerColor::YELLOW;
+	else
+		return PlayerColor::RED;
+}
+
+int cn4::getNextPlayer(int playerColor)
+{
+	return static_cast<int>(getNextPlayer(PlayerColor(playerColor)));
+}
+
+bool cn4::hasPlayerWon(uint64_t playerPieces)
+{
+	return verticalFourInARow(playerPieces) || horizontalFourInARow(playerPieces) || diagonalFourInARow(playerPieces);
+}
+
+static bool fourInARow(uint64_t pieces, int oneShiftVale, uint64_t maskAfterFirstShift)
+{
+	auto buf = pieces & (pieces << 2 * oneShiftVale) & maskAfterFirstShift;
+
+	return  buf & (buf << oneShiftVale);
+}
+
+bool cn4::verticalFourInARow(uint64_t pieces)
+{
+	constexpr int shiftOneRow = boardWidth;
+	return fourInARow(pieces, shiftOneRow, fullBoardMask);
+}
+
+bool cn4::horizontalFourInARow(uint64_t pieces)
+{
+	return fourInARow(pieces, 1, leftTwoColumnsZeroMask);
+}
+
+bool cn4::diagonalFourInARow(uint64_t pieces)
+{
+	return diagonalDownFourInARow(pieces) || diagonalUpFourInARow(pieces);
+}
+
+bool cn4::diagonalDownFourInARow(uint64_t pieces)
+{
+	constexpr int shiftDiagonalUpOneTime = boardWidth - 1;
+	return fourInARow(pieces, shiftDiagonalUpOneTime, rightTwoColumnsZeroMask);
+}
+
+bool cn4::diagonalUpFourInARow(uint64_t pieces)
+{
+	constexpr int shiftDiagonalDownOneTime = boardWidth + 1;
+	return fourInARow(pieces, shiftDiagonalDownOneTime, leftTwoColumnsZeroMask);
+}
+
+bool cn4::isMovePossible(const Board& board, int move)
+{
+	constexpr int uppermostRowBitShift = 35;
+	return !game::isBitSet(board.occupied(), uppermostRowBitShift + move);
+}
+
+std::vector<int> cn4::getAllPossibleMoves(const Board& board)
+{
+	std::vector<int> result;
+	result.reserve(7);
+
+	for (int i = 0; i < boardWidth; i++)
+	{
+		if (isMovePossible(board, i))
+			result.push_back(i);
+	}
+
+	return result;
 }
