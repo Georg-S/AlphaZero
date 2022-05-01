@@ -23,7 +23,7 @@ int cn4::NegaMaxAi::getMove(const std::string& state, int playerColor)
 		int value = negamax(copyBoard, m_depth, getNextPlayer(aiColor), m_minValue, m_maxValue);
 		values.push_back(value);
 	}
-	std::vector<int> bestMoves = getBestMoves(possibleMoves, values);
+	std::vector<int> bestMoves = game::getHighestValueElements(possibleMoves, values);
 
 	return game::getRandomElement(bestMoves);
 }
@@ -113,7 +113,7 @@ static int getScore(const Board& board, int shift, uint64_t additionalMask)
 	return yellowScore - redScore;
 }
 
-int cn4::NegaMaxAi::staticBoardEvaluation(const Board& board, PlayerColor currentPlayer)
+int cn4::NegaMaxAi::staticBoardEvaluation(const cn4::Board& board, PlayerColor currentPlayer) const
 {
 	int horizontalScore = getScore(board, 1, leftColumnZeroMask);
 	int verticalScore = getScore(board, boardWidth, fullBoardMask); // fullBoardMask = Does nothing
@@ -125,20 +125,4 @@ int cn4::NegaMaxAi::staticBoardEvaluation(const Board& board, PlayerColor curren
 		score = -score;
 
 	return score;
-}
-
-std::vector<int> cn4::NegaMaxAi::getBestMoves(std::vector<int>& moves, std::vector<int>& values)
-{
-	assert(!moves.empty());
-	assert(moves.size() == values.size());
-	const int highestValue = *(std::max_element(values.begin(), values.end()));
-
-	std::vector <int> bestMoves;
-	for (int i = 0; i < moves.size(); i++)
-	{
-		if (values[i] == highestValue)
-			bestMoves.push_back(moves[i]);
-	}
-
-	return bestMoves;
 }

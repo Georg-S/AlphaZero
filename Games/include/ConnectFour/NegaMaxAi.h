@@ -15,9 +15,8 @@ namespace cn4
 
 	private:
 		int negamax(const cn4::Board& board, int depth, PlayerColor currentPlayer, int alpha, int beta);
-		int staticBoardEvaluation(const cn4::Board& board, PlayerColor currentPlayer);
 		void orderMoves(std::vector<int>& moves) const;
-		std::vector<int> getBestMoves(std::vector<int>& moves, std::vector<int>& values);
+		int staticBoardEvaluation(const cn4::Board& board, PlayerColor currentPlayer) const;
 
 		int m_depth = 5;
 		static constexpr int m_maxValue = 10000;

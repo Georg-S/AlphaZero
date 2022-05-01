@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cassert>
 #include <vector>
+#include <algorithm>
 #include <iostream>
 
 namespace game 
@@ -43,6 +44,23 @@ namespace game
 			}
 			std::cout << std::endl;
 		}
+	}
+	/// Input two vectors, one for the elements and a second for the corresponding values, to get the element(s) with the highest value
+	template <typename T, typename Z>
+	std::vector<T> getHighestValueElements(const std::vector<T>& elements, const std::vector<Z>& values) 
+	{
+		assert(!elements.empty());
+		assert(elements.size() == values.size());
+		const int highestValue = *(std::max_element(values.begin(), values.end()));
+
+		std::vector <T> highestElements;
+		for (int i = 0; i < elements.size(); i++)
+		{
+			if (values[i] == highestValue)
+				highestElements.push_back(elements[i]);
+		}
+
+		return highestElements;
 	}
 }
 

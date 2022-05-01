@@ -56,14 +56,10 @@ void ConnectFour::update2PlayerGame()
 
 void ConnectFour::updateAiMove()
 {
-	std::cout << "Pre AI: " << m_board.toString() << std::endl;
 	int action = m_ai->getMove(m_board.toString(), static_cast<int>(m_currentPlayerColor));
 	m_board.makeMove(action, m_currentPlayerColor);
 	if (isGameOver(m_board))
-	{
-		std::cout << "Game Over: " << m_board.toString() << std::endl;
 		m_gameOver = true;
-	}
 	else
 		m_currentPlayerColor = getNextPlayer(m_currentPlayerColor);
 }
@@ -74,7 +70,6 @@ void ConnectFour::updateHumanMove()
 	if (!isValidInput(m_board, action))
 		return;
 
-	std::cout << "Pre Human: " << m_board.toString() << std::endl;
 	m_board.makeMove(action, m_currentPlayerColor);
 	if (isGameOver(m_board))
 		m_gameOver = true;
