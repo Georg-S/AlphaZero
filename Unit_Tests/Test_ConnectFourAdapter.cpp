@@ -112,8 +112,6 @@ TEST(ConnectFourAdapter, test_game_is_not_over)
 {
 	std::string state = "220121121011122101221120200221010011202002";
 
-	renderBoard(state);
-
 	ASSERT_EQ(adap.isGameOver(state), false);
 }
 

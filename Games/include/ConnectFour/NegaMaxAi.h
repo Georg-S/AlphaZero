@@ -14,7 +14,7 @@ namespace cn4
 		int getMove(const std::string& state, int playerColor) override;
 
 	private:
-		int negamax(const cn4::Board& board, int depth, PlayerColor currentPlayer, int alpha, int beta);
+		int negamax(const cn4::Board& board, int depth, PlayerColor currentPlayer, int alpha, int beta) const;
 		void orderMoves(std::vector<int>& moves) const;
 		int staticBoardEvaluation(const cn4::Board& board, PlayerColor currentPlayer) const;
 

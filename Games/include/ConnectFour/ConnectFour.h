@@ -19,12 +19,12 @@ public:
 	void updateGame();
 
 private:
+	static bool isValidInput(const cn4::Board& board, int action);
 	void update1PlayerGame();
 	void update2PlayerGame();
 	void updateAiMove();
 	void updateHumanMove();
 	int getActionFromMouseInput();
-	static bool isValidInput(const cn4::Board& board, int action);
 
 	Ai* m_ai;
 	cn4::PlayerColor m_currentPlayerColor;

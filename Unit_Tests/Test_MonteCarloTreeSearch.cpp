@@ -7,7 +7,7 @@
 #include <vector>
 #include <MultiThreadingNeuralNetManager.h>
 
-#if 0
+#if 1
 
 TEST(MonteCarloTreeSearch, test_sum_vector)
 {

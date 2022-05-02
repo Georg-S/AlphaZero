@@ -4,7 +4,7 @@
 #include <AlphaZeroTraining.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
 
-#if 0
+#if 1
 
 TEST(Training, test_random_action)
 {

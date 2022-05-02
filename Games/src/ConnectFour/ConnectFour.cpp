@@ -41,6 +41,16 @@ void ConnectFour::updateGame()
 		update2PlayerGame();
 }
 
+bool ConnectFour::isValidInput(const cn4::Board& board, int action)
+{
+	if (action < 0 || action >= cn4::boardWidth)
+		return false;
+	if (!isMovePossible(board, action))
+		return false;
+
+	return true;
+}
+
 void ConnectFour::update1PlayerGame()
 {
 	if (m_currentPlayerColor == m_aiColor)
@@ -89,14 +99,4 @@ int ConnectFour::getActionFromMouseInput()
 	action = x / (m_renderer->windowWidth() / boardWidth);
 
 	return action;
-}
-
-bool ConnectFour::isValidInput(const cn4::Board& board, int action)
-{
-	if (action < 0 || action >= cn4::boardWidth)
-		return false;
-	if (!isMovePossible(board, action))
-		return false;
-
-	return true;
 }

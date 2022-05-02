@@ -3,7 +3,7 @@
 #include <NeuralNetworks/CutDownAlphaGoZeroNet.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
 
-#if 0
+#if 1
 
 TEST(NeuralNet, net_returns_same_value_after_save_and_load)
 {
