@@ -22,9 +22,9 @@ void TicTacToeNeuralNetMenu::reset()
 
 void TicTacToeNeuralNetMenu::on_PlayButton_clicked()
 {
-	ttt::PlayerColor playerColor = ttt::PlayerColor::Dot;
+	ttt::PlayerColor playerColor = ttt::PlayerColor::DOT;
 	if (neuralNetUi->PlayerColor1Radio->isChecked())
-		playerColor = ttt::PlayerColor::Cross;
+		playerColor = ttt::PlayerColor::CROSS;
 
 	torch::DeviceType device = torch::kCUDA;
 	if (neuralNetUi->CPURadio->isChecked())

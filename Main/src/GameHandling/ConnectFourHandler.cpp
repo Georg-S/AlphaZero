@@ -14,7 +14,7 @@ void ConnectFourHandler::connectFourAgainstNeuralNetAi(cn4::PlayerColor playerCo
 
 void ConnectFourHandler::connectFourAgainstMiniMaxAi(int depth, cn4::PlayerColor color)
 {
-	cn4::MiniMaxAi ai = cn4::MiniMaxAi(depth);
+	cn4::NegaMaxAi ai = cn4::NegaMaxAi(depth);
 	cn4::PlayerColor  aiColor = (cn4::PlayerColor)((int)color % 2 + 1);
 	ConnectFour connect = ConnectFour(aiColor, &ai);
 	connect.gameLoop();
@@ -109,7 +109,7 @@ EvalResult ConnectFourHandler::evalConnectFour(std::string netName, int miniMaxD
 	ConnectFourAdapter adap = ConnectFourAdapter();
 	DefaultNeuralNet* toEval = new DefaultNeuralNet(2, 7, 6, 7, netName, device);
 	NeuralNetAi neuralNetAi = NeuralNetAi(toEval, &adap, 7, evalMCTSCount, false, device);
-	cn4::MiniMaxAi ai1 = cn4::MiniMaxAi(miniMaxDepth);
+	cn4::NegaMaxAi ai1 = cn4::NegaMaxAi(miniMaxDepth);
 
 	EvalResult result = Evaluation::eval(&neuralNetAi, &ai1, &adap, 50);
 	delete toEval;
@@ -124,7 +124,7 @@ EvalResult ConnectFourHandler::evalConnectFourMultiThreaded(std::string netName,
 
 	DefaultNeuralNet* toEval = new DefaultNeuralNet(2, 7, 6, 7, netName, device);
 	MultiThreadingNeuralNetManager threadManager = MultiThreadingNeuralNetManager(threadCount, threadCount, toEval);
-	cn4::MiniMaxAi miniMaxAi = cn4::MiniMaxAi(miniMaxDepth);
+	cn4::NegaMaxAi miniMaxAi = cn4::NegaMaxAi(miniMaxDepth);
 	ConnectFourAdapter adap = ConnectFourAdapter();
 	EvalResult result = evaluation.evalMultiThreaded(&threadManager, &miniMaxAi, &adap);
 	delete toEval;

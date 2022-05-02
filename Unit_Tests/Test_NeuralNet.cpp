@@ -1,6 +1,9 @@
 #include <gtest/gtest.h>
 #include <chrono>
 #include <NeuralNetworks/CutDownAlphaGoZeroNet.h>
+#include <NeuralNetworks/DefaultNeuralNet.h>
+
+#if 1
 
 TEST(NeuralNet, net_returns_same_value_after_save_and_load)
 {
@@ -21,3 +24,5 @@ TEST(NeuralNet, net_returns_same_value_after_save_and_load)
 
 	ASSERT_EQ(value1, value2);
 }
+
+#endif

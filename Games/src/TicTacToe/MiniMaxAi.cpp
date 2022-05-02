@@ -24,7 +24,7 @@ Move ttt::MiniMaxAi::getMove(Board board, int color)
 		values.push_back(evaluateBoard(copyBoard, m_opponentColor, false, INT_MIN, INT_MAX));
 	}
 
-	std::vector<Move> bestMoves = getBestMoves(possibleMoves, values);
+	std::vector<Move> bestMoves = game::getHighestValueElements(possibleMoves, values);
 
 	return game::getRandomElement(bestMoves);
 }
@@ -52,32 +52,15 @@ int ttt::MiniMaxAi::evaluateBoard(const Board& board, PlayerColor currentPlayer,
 		{
 			boardValue = std::max(moveValue, boardValue);
 			alpha = std::max(boardValue, alpha);
-			if (beta <= alpha)
-				break;
 		}
 		else
 		{
 			boardValue = std::min(moveValue, boardValue);
 			beta = std::min(boardValue, beta);
-			if (beta <= alpha)
-				break;
 		}
+		if (beta <= alpha)
+			break;
 	}
 
 	return boardValue;
-}
-
-std::vector<Move> ttt::MiniMaxAi::getBestMoves(const std::vector<Move>& moves, const std::vector<int>& values)
-{
-	assert(moves.size() == values.size());
-	const int highestValue = *(std::max_element(values.begin(), values.end()));
-
-	std::vector <Move> bestMoves;
-	for (int i = 0; i < moves.size(); i++)
-	{
-		if (values[i] == highestValue)
-			bestMoves.push_back(moves[i]);
-	}
-
-	return bestMoves;
 }

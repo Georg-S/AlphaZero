@@ -22,7 +22,7 @@ namespace ttt
 		int y;
 	};
 
-	enum class PlayerColor { None, Cross, Dot };
+	enum class PlayerColor { NONE, CROSS, DOT };
 
 	class Board
 	{

@@ -1,36 +1,19 @@
 #include "ConnectFour/ConnectFourAdapter.h"
 
-ConnectFourAdapter::ConnectFourAdapter()
-{
-
-}
+using namespace cn4;
 
 std::string ConnectFourAdapter::makeMove(const std::string& state, int move, int currentPlayer)
 {
-	cn4::Board board = convertStringToBoard(state);
-	cn4::PlayerColor playerColor = (cn4::PlayerColor)currentPlayer;
-	cn4::GameLogic::makeMove(board, move, playerColor);
+	Board board = Board(state);
+	PlayerColor playerColor = PlayerColor(currentPlayer);
+	board.makeMove(move, playerColor);
+
 	return board.toString();
 }
 
 int ConnectFourAdapter::getActionCount() const
 {
-	return this->actionCount;
-}
-
-cn4::Board ConnectFourAdapter::convertStringToBoard(const std::string& state)
-{
-	cn4::Board result = cn4::Board();
-
-	for (int index = 0; index < state.size(); index++)
-	{
-		int x = index % result.width;
-		int y = index / result.width;
-
-		result.board[x][y] = state.at(index) - '0';
-	}
-
-	return result;
+	return m_actionCount;
 }
 
 std::string ConnectFourAdapter::getInitialGameState()
@@ -41,8 +24,8 @@ std::string ConnectFourAdapter::getInitialGameState()
 
 bool ConnectFourAdapter::isGameOver(const std::string& state)
 {
-	cn4::Board board = convertStringToBoard(state);
-	return cn4::GameLogic::isGameOver(board);
+	Board board = Board(state);
+	return cn4::isGameOver(board);
 }
 
 int ConnectFourAdapter::gameOverReward(const std::string& state, int currentPlayer)
@@ -58,53 +41,46 @@ int ConnectFourAdapter::gameOverReward(const std::string& state, int currentPlay
 
 int ConnectFourAdapter::getPlayerWon(const std::string& state)
 {
-	cn4::Board board = convertStringToBoard(state);
-	int  winner = (int)cn4::GameLogic::getPlayerWon(board);
+	cn4::Board board = Board(state);
 
-	return winner;
+	return static_cast<int>(cn4::getPlayerWon(board));
 }
 
 int ConnectFourAdapter::getNextPlayer(int currentPlayer)
 {
-	return currentPlayer % 2 + 1;
+	return cn4::getNextPlayer(currentPlayer);
 }
 
 int ConnectFourAdapter::getInitialPlayer()
 {
-	return 1;
+	return static_cast<int>(PlayerColor::YELLOW);
 }
 
 std::vector<int> ConnectFourAdapter::getAllPossibleMoves(const std::string& state, int currentPlayer)
 {
-	std::vector<int> possibleMoves;
-	cn4::Board board = convertStringToBoard(state);
+	Board board = Board(state);
 
-	for (int i = 0; i < actionCount; i++)
-	{
-		if (cn4::GameLogic::isMovePossible(board, i))
-			possibleMoves.push_back(i);
-	}
-
-	return possibleMoves;
+	return cn4::getAllPossibleMoves(board);
 }
 
-torch::Tensor ConnectFourAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer,
-	torch::Device device)
+torch::Tensor ConnectFourAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Device device)
 {
-	cn4::Board board = convertStringToBoard(state);
-	int otherPlayer = currentPlayer % 2 + 1;
-	torch::Tensor neuralInput = torch::zeros({ 1,2,board.width, board.height });
+	Board board = Board(state);
+	PlayerColor playerColor = PlayerColor(currentPlayer);
+	PlayerColor otherPlayer = cn4::getNextPlayer(playerColor);
+	torch::Tensor neuralInput = torch::zeros({ 1,2, boardWidth, boardHeight });
 
-	for (int x = 0; x < board.width; x++)
+	for (int x = 0; x < boardWidth; x++)
 	{
-		for (int y = 0; y < board.height; y++)
+		for (int y = 0; y < boardHeight; y++)
 		{
-			if (currentPlayer == board.board[x][y])
+			if (playerColor == board.at(x, y))
 				neuralInput[0][0][x][y] = 1;
-			else if (otherPlayer == board.board[x][y])
+			else if (otherPlayer == board.at(x, y))
 				neuralInput[0][1][x][y] = 1;
 		}
 	}
 	neuralInput = neuralInput.to(device);
+
 	return neuralInput;
 }

@@ -10,18 +10,22 @@ ttt::Renderer::Renderer()
 
 void ttt::Renderer::update(const Board& board)
 {
+	constexpr int pieceWidth = m_windowWidth / 3;
+	constexpr int pieceHeight = m_windowHeight / 3;
+	const std::string basePath = "Images/TicTacToe/";
+
 	m_sdlHandler->clear();
-	m_sdlHandler->createAndPushBackRenderElement("Images/TicTacToe/Board.png", 0, 0, m_windowWidth, m_windowHeight);
+	m_sdlHandler->createAndPushBackRenderElement(basePath + "Board.png", 0, 0, m_windowWidth, m_windowHeight);
 
 	for (int x = 0; x < 3; x++)
 	{
 		for (int y = 0; y < 3; y++)
 		{
 			PlayerColor color = board.at(x, y);
-			if (color == PlayerColor::Cross)
-				m_sdlHandler->createAndPushBackRenderElement("Images/TicTacToe/Cross.png", x * pieceWidth, y * pieceWidth, pieceWidth, pieceHeight);
-			else if (color == PlayerColor::Dot)
-				m_sdlHandler->createAndPushBackRenderElement("Images/TicTacToe/Dot.png", x * pieceWidth, y * pieceWidth, pieceWidth, pieceHeight);
+			if (color == PlayerColor::CROSS)
+				m_sdlHandler->createAndPushBackRenderElement(basePath + "Cross.png", x * pieceWidth, y * pieceWidth, pieceWidth, pieceHeight);
+			else if (color == PlayerColor::DOT)
+				m_sdlHandler->createAndPushBackRenderElement(basePath + "Dot.png", x * pieceWidth, y * pieceWidth, pieceWidth, pieceHeight);
 		}
 	}
 

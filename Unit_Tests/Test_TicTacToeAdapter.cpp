@@ -7,7 +7,7 @@ using namespace ttt;
 
 TicTacToeAdapter adap = TicTacToeAdapter();
 
-void renderBoard(const Board& board) 
+static void renderBoard(const Board& board) 
 {
 	Renderer renderer = Renderer();
 	while (!renderer.isQuit())
@@ -16,7 +16,7 @@ void renderBoard(const Board& board)
 	renderer.quit();
 }
 
-void renderBoard(const std::string& boardStr) 
+static void renderBoard(const std::string& boardStr) 
 {
 	renderBoard(Board(boardStr));
 }
@@ -210,20 +210,20 @@ TEST(TicTacToeAdapter, test_convert_string_to_board)
 {
 	Board board = Board("-X-O--XOX");
 
-	ASSERT_EQ(board.at(0,0), PlayerColor::None);
-	ASSERT_EQ(board.at(1,0), PlayerColor::Cross);
-	ASSERT_EQ(board.at(0,1), PlayerColor::Dot);
-	ASSERT_EQ(board.at(0,2), PlayerColor::Cross);
-	ASSERT_EQ(board.at(1,2), PlayerColor::Dot);
-	ASSERT_EQ(board.at(2,2), PlayerColor::Cross);
+	ASSERT_EQ(board.at(0,0), PlayerColor::NONE);
+	ASSERT_EQ(board.at(1,0), PlayerColor::CROSS);
+	ASSERT_EQ(board.at(0,1), PlayerColor::DOT);
+	ASSERT_EQ(board.at(0,2), PlayerColor::CROSS);
+	ASSERT_EQ(board.at(1,2), PlayerColor::DOT);
+	ASSERT_EQ(board.at(2,2), PlayerColor::CROSS);
 }						  
 
 TEST(TicTacToeAdapter, test_convert_board_to_string)
 {
 	Board board = Board();
-	board.makeMove(Move(1, 0), PlayerColor::Cross);
-	board.makeMove(Move(2, 0), PlayerColor::Dot);
-	board.makeMove(Move(2, 2), PlayerColor::Cross);
+	board.makeMove(Move(1, 0), PlayerColor::CROSS);
+	board.makeMove(Move(2, 0), PlayerColor::DOT);
+	board.makeMove(Move(2, 2), PlayerColor::CROSS);
 
 	ASSERT_EQ(board.toString(), "-XO-----X");
 }
