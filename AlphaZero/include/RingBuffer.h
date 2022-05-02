@@ -9,69 +9,75 @@
 template <class T>
 class RingBuffer
 {
-
 public:
 	RingBuffer() = default;
 	RingBuffer(int maxSize)
 	{
-		this->maxSize = maxSize;
-		this->data.reserve(maxSize);
+		m_maxSize = maxSize;
+		m_data.reserve(maxSize);
 	}
 
 	T& operator[](int index)
 	{
-		return data[index];
+		return m_data[index];
 	}
 
-	void add(const T& element)
+	void add_m(T&& element) 
 	{
-		assert(maxSize > 0);
-		if (currentIndex == maxSize)
+		assert(m_maxSize > 0);
+		if (m_currentIndex == m_maxSize)
 		{
-			wrappedAround = true;
-			currentIndex = 0;
+			m_wrappedAround = true;
+			m_currentIndex = 0;
 		}
 
-		if (!wrappedAround)
-			data.push_back(element);
+		if (!m_wrappedAround)
+			m_data.emplace_back(std::move(element));
 		else
-			data[currentIndex] = element;
-		currentIndex++;
+			m_data[m_currentIndex] = std::move(element);
+		m_currentIndex++;
+	}
+
+	void add(T element)
+	{
+		add_m(std::move(element));
 	}
 
 	int size() const
 	{
-		return data.size();
+		return m_data.size();
 	}
 
 	int getMaxSize() const
 	{
-		return maxSize;
+		return m_maxSize;
 	}
 
 	void add(const std::vector<T>& elements)
 	{
-		for (int x = 0; x < elements.size(); x++)
-			add(elements[x]);
+		for (T elem : elements)
+			add_m(std::move(elem));
 	}
 
 	void clear()
 	{
-		data.clear();
-		currentIndex = 0;
-		wrappedAround = false;
+		m_data.clear();
+		m_currentIndex = 0;
+		m_wrappedAround = false;
 	}
 
-	void getRandomSample(int sampleSize, std::vector<T>& destination) const
+	std::vector<T> getRandomSample(int sampleSize) 
 	{
-		std::sample(data.begin(), data.end(), std::back_inserter(destination), sampleSize, std::mt19937{ std::random_device{}() });
+		std::vector<T> destination;
+		std::sample(m_data.begin(), m_data.end(), std::back_inserter(destination), sampleSize, std::mt19937{ std::random_device{}() });
+		return destination;
 	}
 
 private:
-	int maxSize = 0;
-	int currentIndex = 0;
-	bool wrappedAround = false;
-	std::vector<T> data;
+	int m_maxSize = 0;
+	int m_currentIndex = 0;
+	bool m_wrappedAround = false;
+	std::vector<T> m_data;
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_RINGBUFFER_H

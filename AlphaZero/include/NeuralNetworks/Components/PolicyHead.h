@@ -29,7 +29,6 @@ struct PolicyHeadImpl : public torch::nn::Module
 		return pol;
 	}
 
-
 private:
 	torch::nn::Conv2d convPolicy = nullptr;
 	torch::nn::BatchNorm2d normPolicy = nullptr;

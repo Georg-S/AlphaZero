@@ -145,7 +145,7 @@ int AlphaZeroTraining::getRandomAction(const std::vector<float>& probabilities)
 
 void AlphaZeroTraining::addResult(std::vector<ReplayElement>& elements, int winner)
 {
-	for (auto& elem : elements) 
+	for (auto& elem : elements)
 	{
 		int player = elem.currentPlayer;
 		if (player == winner)
@@ -166,15 +166,12 @@ void AlphaZeroTraining::trainNet(NeuralNetwork* net, Game* game)
 	int batchIndex = 0;
 	while (batchIndex < (replayMemory.size() / TRAINING_BATCH_SIZE))
 	{
-		std::vector<ReplayElement> batch;
-		replayMemory.getRandomSample(TRAINING_BATCH_SIZE, batch);
+		std::vector<ReplayElement> batch = replayMemory.getRandomSample(TRAINING_BATCH_SIZE);
 
 		torch::Tensor neuralInput = convertSampleToNeuralInput(batch, game);
 		torch::Tensor valueTarget = convertToValueTarget(batch);
 		torch::Tensor probsTarget = convertToProbsTarget(batch);
-		auto buf = net->calculate(neuralInput);
-		torch::Tensor probsTensor = std::get<1>(buf);
-		torch::Tensor valueTensor = std::get<0>(buf);
+		auto [valueTensor, probsTensor] = net->calculate(neuralInput);
 
 		net->training(valueTensor, probsTensor, probsTarget, valueTarget);
 
