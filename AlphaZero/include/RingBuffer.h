@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <iterator>
 #include <random>
+#include "Utility.h"
 
 template <class T>
 class RingBuffer
@@ -22,7 +23,7 @@ public:
 		return m_data[index];
 	}
 
-	void add_m(T&& element) 
+	void add(T&& element) 
 	{
 		assert(m_maxSize > 0);
 		if (m_currentIndex == m_maxSize)
@@ -38,11 +39,6 @@ public:
 		m_currentIndex++;
 	}
 
-	void add(T element)
-	{
-		add_m(std::move(element));
-	}
-
 	int size() const
 	{
 		return m_data.size();
@@ -56,7 +52,7 @@ public:
 	void add(const std::vector<T>& elements)
 	{
 		for (T elem : elements)
-			add_m(std::move(elem));
+			add(std::move(elem));
 	}
 
 	void clear()
@@ -69,7 +65,7 @@ public:
 	std::vector<T> getRandomSample(int sampleSize) 
 	{
 		std::vector<T> destination;
-		std::sample(m_data.begin(), m_data.end(), std::back_inserter(destination), sampleSize, std::mt19937{ std::random_device{}() });
+		std::sample(m_data.begin(), m_data.end(), std::back_inserter(destination), sampleSize, ALZ::getRNG());
 		return destination;
 	}
 

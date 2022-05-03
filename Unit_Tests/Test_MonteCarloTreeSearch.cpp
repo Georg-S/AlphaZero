@@ -12,7 +12,7 @@
 TEST(MonteCarloTreeSearch, test_sum_vector)
 {
 	std::vector<int> test{ 0,1,2,3,4,5,6,7,8,9 };
-	int sum = MonteCarloTreeSearch::sum(test);
+	int sum = ALZ::sum(test);
 
 	ASSERT_EQ(sum, 45);
 }
@@ -20,7 +20,7 @@ TEST(MonteCarloTreeSearch, test_sum_vector)
 TEST(MonteCarloTreeSearch, test_sum_vector_0_size_vector)
 {
 	std::vector<int> test;
-	int sum = MonteCarloTreeSearch::sum(test);
+	int sum = ALZ::sum(test);
 
 	ASSERT_FLOAT_EQ(sum, 0);
 }
@@ -99,26 +99,6 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_get
 	std::vector<float> probs = mcts.getProbabilities(state);
 
 	ASSERT_GT(probs[7], probs[6]);
-}
-
-int getRandomAction(const std::vector<float>& probabilities)
-{
-	float r = ((float)rand() / (RAND_MAX));
-	if (r == 0)
-		r += FLT_MIN;
-	else if (r == 1)
-		r -= FLT_MIN;
-	float acc = 0.f;
-	int x = 0;
-	for (; x < probabilities.size(); x++)
-	{
-		acc += probabilities[x];
-
-		if (acc >= r)
-			return x;
-	}
-
-	return x;
 }
 
 void test_mcts(MultiThreadingNeuralNetManager& manager, NeuralNetwork* net)

@@ -1,5 +1,7 @@
 #include "AlphaZeroTraining.h"
 
+using namespace ALZ;
+
 AlphaZeroTraining::AlphaZeroTraining(int actionCount, NeuralNetwork* currentBest, torch::DeviceType device)
 {
 	this->neuralNet = currentBest;
@@ -103,9 +105,9 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlayGame(NeuralNetwork* net, G
 
 		int action;
 		if (currentStep < RANDOM_MOVE_COUNT)
-			action = getRandomAction(probs);
+			action = getRandomIndex(probs, 1.0);
 		else
-			action = getArgMaxIndex(probs);
+			action = getMaxElementIndex(probs);
 
 		currentState = game->makeMove(currentState, action, currentPlayer);
 		currentPlayer = game->getNextPlayer(currentPlayer);
@@ -121,26 +123,6 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlayGame(NeuralNetwork* net, G
 		trainingData.clear();
 
 	return std::move(trainingData);
-}
-
-int AlphaZeroTraining::getRandomAction(const std::vector<float>& probabilities)
-{
-	float r = ((float)rand() / (RAND_MAX));
-	if (r == 0)
-		r += FLT_MIN;
-	else if (r == 1)
-		r -= FLT_MIN;
-	float acc = 0.f;
-	int x = 0;
-	for (; x < probabilities.size(); x++)
-	{
-		acc += probabilities[x];
-
-		if (acc >= r)
-			return x;
-	}
-
-	return x;
 }
 
 void AlphaZeroTraining::addResult(std::vector<ReplayElement>& elements, int winner)
@@ -231,11 +213,6 @@ torch::Tensor AlphaZeroTraining::convertToProbsTarget(const std::vector<ReplayEl
 	probsTarget = probsTarget.to(device);
 
 	return probsTarget;
-}
-
-int AlphaZeroTraining::getArgMaxIndex(const std::vector<float>& vec)
-{
-	return std::max_element(vec.begin(), vec.end()) - vec.begin();
 }
 
 void AlphaZeroTraining::save(int iteration)

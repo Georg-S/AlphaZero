@@ -7,9 +7,18 @@
 #include <ratio>
 #include <omp.h>
 #include <vector>
+#include <Utility.h>
 #include <MonteCarloTreeSearch.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
 #include <TicTacToe/TicTacToeAdapter.h>
+
+/*
+TEST(RandomTest, rand)
+{
+	for(int i= 0; i < 10 ; i++)
+		std::cout << ALZ::getRandomNumber(0.0, 1.0) << std::endl;
+}
+*/
 
 /*
 TEST(RandomTest, parallel) {

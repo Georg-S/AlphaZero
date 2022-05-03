@@ -5,7 +5,8 @@ MultiThreadingNeuralNetManager::MultiThreadingNeuralNetManager(int threadCount, 
 	, activeThreads(activeThreads)
 	, net(net)
 	, elementsAdded(0)
-{}
+{
+}
 
 int MultiThreadingNeuralNetManager::addInputThreadSafe(torch::Tensor input)
 {

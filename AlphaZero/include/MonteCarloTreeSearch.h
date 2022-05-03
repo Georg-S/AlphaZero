@@ -11,6 +11,7 @@
 #pragma warning(push, 0)
 #include <torch/torch.h>
 #pragma warning(pop)
+#include "Utility.h"
 #include "MultiThreadingNeuralNetManager.h"
 #include "Game.h"
 #include "NeuralNetworks/NeuralNetwork.h"
@@ -29,7 +30,6 @@ public:
 		MultiThreadingNeuralNetManager* threadingManager,
 		torch::DeviceType device = torch::kCPU);
 	std::vector<float> getProbabilities(const std::string& state, float temperature = 1.0);
-	static int sum(const std::vector<int>& vector);
 	void clearAll();
 	void fillQValuesAndVisitCount(const std::string& state);
 

@@ -15,7 +15,7 @@ TEST(Training, test_random_action)
 
 	for (int i = 0; i < amount; i++)
 	{
-		int buf = AlphaZeroTraining::getRandomAction(test);
+		int buf = ALZ::getRandomIndex(test, 1.0);
 		results[buf] += 1;
 	}
 

@@ -103,15 +103,6 @@ std::vector<float> MonteCarloTreeSearch::getProbabilities(const std::string& sta
 	return probs;
 }
 
-int MonteCarloTreeSearch::sum(const std::vector<int>& vector)
-{
-	int sum_of_elems = 0;
-	for (int n : vector)
-		sum_of_elems += n;
-
-	return sum_of_elems;
-}
-
 float MonteCarloTreeSearch::expandNewEncounteredState(const std::string& strState, int currentPlayer, Game* game, NeuralNetwork* net, torch::DeviceType device)
 {
 	visited[strState] = true;

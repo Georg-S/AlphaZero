@@ -7,6 +7,7 @@
 #include <cfloat>
 #include <thread>
 #include <mutex>
+#include "Utility.h"
 #include "MultiThreadingNeuralNetManager.h"
 #include "NeuralNetworks/NeuralNetwork.h"
 #include "Game.h"
@@ -24,13 +25,11 @@ public:
 	void selfPlayMultiThread(NeuralNetwork* net, Game* game);
 	void selfPlayMultiThreadGames(NeuralNetwork* net, Game* game, int& gamesToPlay, MultiThreadingNeuralNetManager* threadManager, int seed);
 	std::vector<ReplayElement> selfPlayGame(NeuralNetwork* net, Game* game, bool multiThreading);
-	static int getRandomAction(const std::vector<float>& probabilities);
 	void addResult(std::vector<ReplayElement>& elements, int winner);
 	void trainNet(NeuralNetwork* net, Game* game);
 	torch::Tensor convertSampleToNeuralInput(const std::vector<ReplayElement>& sample, Game* game);
 	torch::Tensor convertToValueTarget(const std::vector<ReplayElement>& sample);
 	torch::Tensor convertToProbsTarget(const std::vector<ReplayElement>& sample);
-	int getArgMaxIndex(const std::vector<float>& vec);
 	void save(int iteration);
 	void setMaxReplayMemorySize(int size);
 
