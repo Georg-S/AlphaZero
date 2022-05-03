@@ -40,22 +40,20 @@ void AlphaZeroTraining::selfPlayMultiThread(NeuralNetwork* net, Game* game)
 {
 	threadManager = std::make_unique<MultiThreadingNeuralNetManager>(NUMBER_CPU_THREADS, NUMBER_CPU_THREADS, net);
 	std::vector<std::thread> threadPool;
-	int gamesToPlay = NUM_SELF_PLAY_GAMES;
+	m_gamesToPlay = NUM_SELF_PLAY_GAMES;
 	for (int i = 0; i < NUMBER_CPU_THREADS; i++)
-		threadPool.push_back(std::thread(&AlphaZeroTraining::selfPlayMultiThreadGames, this, net, game, std::ref(gamesToPlay), threadManager.get(), rand()));
+		threadPool.push_back(std::thread(&AlphaZeroTraining::selfPlayMultiThreadGames, this, net, game, threadManager.get()));
 
 	for (auto& thread : threadPool)
 		thread.join();
 }
 
-void AlphaZeroTraining::selfPlayMultiThreadGames(NeuralNetwork* net, Game* game, int& gamesToPlay, MultiThreadingNeuralNetManager* threadManager, int seed)
+void AlphaZeroTraining::selfPlayMultiThreadGames(NeuralNetwork* net, Game* game, MultiThreadingNeuralNetManager* threadManager)
 {
-	srand(seed);
-
 	while (true)
 	{
 		mut.lock();
-		if (gamesToPlay == 0)
+		if (m_gamesToPlay == 0)
 		{
 			threadManager->safeDecrementActiveThreads();
 			mut.unlock();
@@ -63,14 +61,14 @@ void AlphaZeroTraining::selfPlayMultiThreadGames(NeuralNetwork* net, Game* game,
 		}
 		else
 		{
-			gamesToPlay--;
+			m_gamesToPlay--;
 			mut.unlock();
 		}
 
 		std::vector<ReplayElement> trainData = selfPlayGame(net, game, true);
 
 		mut.lock();
-		replayMemory.add(trainData);
+		replayMemory.add(std::move(trainData));
 		mut.unlock();
 	}
 }
@@ -122,7 +120,7 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlayGame(NeuralNetwork* net, G
 	if (TRAINING_DONT_USE_DRAWS && (playerWon == 0))
 		trainingData.clear();
 
-	return std::move(trainingData);
+	return trainingData;
 }
 
 void AlphaZeroTraining::addResult(std::vector<ReplayElement>& elements, int winner)

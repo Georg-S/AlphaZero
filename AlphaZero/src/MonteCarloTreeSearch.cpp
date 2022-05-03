@@ -1,11 +1,12 @@
 #include "MonteCarloTreeSearch.h"
 
+using namespace ALZ;
+
 MonteCarloTreeSearch::MonteCarloTreeSearch(int actionCount, float cpuct)
 {
 	this->actionCount = actionCount;
 	this->cpuct = cpuct;
 }
-
 
 void MonteCarloTreeSearch::search(int count, std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device)
 {

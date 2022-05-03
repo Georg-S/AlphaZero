@@ -23,7 +23,7 @@ public:
 	void selfPlay(NeuralNetwork* net, Game* game);
 	void selfPlaySingleThread(NeuralNetwork* net, Game* game);
 	void selfPlayMultiThread(NeuralNetwork* net, Game* game);
-	void selfPlayMultiThreadGames(NeuralNetwork* net, Game* game, int& gamesToPlay, MultiThreadingNeuralNetManager* threadManager, int seed);
+	void selfPlayMultiThreadGames(NeuralNetwork* net, Game* game, MultiThreadingNeuralNetManager* threadManager);
 	std::vector<ReplayElement> selfPlayGame(NeuralNetwork* net, Game* game, bool multiThreading);
 	void addResult(std::vector<ReplayElement>& elements, int winner);
 	void trainNet(NeuralNetwork* net, Game* game);
@@ -36,6 +36,7 @@ public:
 private:
 	RingBuffer<ReplayElement> replayMemory;
 	std::unique_ptr<MultiThreadingNeuralNetManager> threadManager;
+	int m_gamesToPlay = 0;
 	int actionCount = -1;
 	torch::DeviceType device;
 	NeuralNetwork* neuralNet;

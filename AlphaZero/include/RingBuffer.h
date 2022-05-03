@@ -49,6 +49,12 @@ public:
 		return m_maxSize;
 	}
 
+	void add(std::vector<T>&& elements) 
+	{
+		for (T& elem : elements)
+			add(std::move(elem));
+	}
+
 	void add(const std::vector<T>& elements)
 	{
 		for (T elem : elements)
