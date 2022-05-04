@@ -3,21 +3,21 @@
 using namespace ALZ;
 
 AlphaZeroTraining::AlphaZeroTraining(int actionCount, NeuralNetwork* currentBest, torch::DeviceType device)
+	: m_neuralNet(currentBest),
+	m_actionCount(actionCount),
+	m_device(device)
 {
-	this->neuralNet = currentBest;
-	this->actionCount = actionCount;
-	replayMemory = RingBuffer<ReplayElement>(m_params.MAX_REPLAY_MEMORY_SIZE);
-	this->device = device;
+	m_replayMemory = RingBuffer<ReplayElement>(m_params.MAX_REPLAY_MEMORY_SIZE);
 }
 
 void AlphaZeroTraining::runTraining(Game* game)
 {
-	neuralNet->save(m_params.neuralNetPath + "/start");
+	m_neuralNet->save(m_params.neuralNetPath + "/start");
 	for (int iteration = 0; iteration < m_params.TRAINING_ITERATIONS; iteration++)
 	{
 		std::cout << "Current Iteration " << iteration << std::endl;
-		selfPlay(neuralNet, game);
-		trainNet(neuralNet, game);
+		selfPlay(m_neuralNet, game);
+		trainNet(m_neuralNet, game);
 		save(iteration);
 	}
 }
@@ -33,16 +33,16 @@ void AlphaZeroTraining::selfPlay(NeuralNetwork* net, Game* game)
 void AlphaZeroTraining::selfPlaySingleThread(NeuralNetwork* net, Game* game)
 {
 	for (int x = 0; x < m_params.NUM_SELF_PLAY_GAMES; x++)
-		replayMemory.add(selfPlayGame(net, game, false));
+		m_replayMemory.add(selfPlayGame(net, game, false));
 }
 
 void AlphaZeroTraining::selfPlayMultiThread(NeuralNetwork* net, Game* game)
 {
-	threadManager = std::make_unique<MultiThreadingNeuralNetManager>(m_params.NUMBER_CPU_THREADS, m_params.NUMBER_CPU_THREADS, net);
+	m_threadManager = std::make_unique<MultiThreadingNeuralNetManager>(m_params.NUMBER_CPU_THREADS, m_params.NUMBER_CPU_THREADS, net);
 	std::vector<std::thread> threadPool;
 	m_gamesToPlay = m_params.NUM_SELF_PLAY_GAMES;
 	for (int i = 0; i < m_params.NUMBER_CPU_THREADS; i++)
-		threadPool.push_back(std::thread(&AlphaZeroTraining::selfPlayMultiThreadGames, this, net, game, threadManager.get()));
+		threadPool.push_back(std::thread(&AlphaZeroTraining::selfPlayMultiThreadGames, this, net, game, m_threadManager.get()));
 
 	for (auto& thread : threadPool)
 		thread.join();
@@ -52,30 +52,30 @@ void AlphaZeroTraining::selfPlayMultiThreadGames(NeuralNetwork* net, Game* game,
 {
 	while (true)
 	{
-		mut.lock();
+		m_mut.lock();
 		if (m_gamesToPlay == 0)
 		{
 			threadManager->safeDecrementActiveThreads();
-			mut.unlock();
+			m_mut.unlock();
 			return;
 		}
 		else
 		{
 			m_gamesToPlay--;
-			mut.unlock();
+			m_mut.unlock();
 		}
 
 		std::vector<ReplayElement> trainData = selfPlayGame(net, game, true);
 
-		mut.lock();
-		replayMemory.add(std::move(trainData));
-		mut.unlock();
+		m_mut.lock();
+		m_replayMemory.add(std::move(trainData));
+		m_mut.unlock();
 	}
 }
 
 std::vector<ReplayElement> AlphaZeroTraining::selfPlayGame(NeuralNetwork* net, Game* game, bool multiThreading)
 {
-	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(actionCount);
+	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(m_actionCount);
 
 	std::vector<ReplayElement> trainingData;
 	std::string currentState = game->getInitialGameState();
@@ -94,9 +94,9 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlayGame(NeuralNetwork* net, G
 			}
 		}
 		if (multiThreading)
-			mcts.multiThreadedSearch(m_params.SELF_PLAY_MCTS_COUNT, currentState, game, currentPlayer, this->threadManager.get(), device);
+			mcts.multiThreadedSearch(m_params.SELF_PLAY_MCTS_COUNT, currentState, game, currentPlayer, this->m_threadManager.get(), m_device);
 		else
-			mcts.search(m_params.SELF_PLAY_MCTS_COUNT, currentState, net, game, currentPlayer, device);
+			mcts.search(m_params.SELF_PLAY_MCTS_COUNT, currentState, net, game, currentPlayer, m_device);
 		std::vector<float> probs = mcts.getProbabilities(currentState);
 
 		trainingData.emplace_back(currentState, currentPlayer, probs, -1);
@@ -139,14 +139,14 @@ void AlphaZeroTraining::addResult(std::vector<ReplayElement>& elements, int winn
 
 void AlphaZeroTraining::trainNet(NeuralNetwork* net, Game* game)
 {
-	std::cout << "Current Replay Memory Size " << replayMemory.size() << std::endl;
-	if (replayMemory.size() < m_params.MIN_REPLAY_MEMORY_SIZE)
+	std::cout << "Current Replay Memory Size " << m_replayMemory.size() << std::endl;
+	if (m_replayMemory.size() < m_params.MIN_REPLAY_MEMORY_SIZE)
 		return;
 
 	int batchIndex = 0;
-	while (batchIndex < (replayMemory.size() / m_params.TRAINING_BATCH_SIZE))
+	while (batchIndex < (m_replayMemory.size() / m_params.TRAINING_BATCH_SIZE))
 	{
-		std::vector<ReplayElement> batch = replayMemory.getRandomSample(m_params.TRAINING_BATCH_SIZE);
+		std::vector<ReplayElement> batch = m_replayMemory.getRandomSample(m_params.TRAINING_BATCH_SIZE);
 
 		torch::Tensor neuralInput = convertSampleToNeuralInput(batch, game);
 		torch::Tensor valueTarget = convertToValueTarget(batch);
@@ -178,7 +178,7 @@ torch::Tensor AlphaZeroTraining::convertSampleToNeuralInput(const std::vector<Re
 		}
 		neuralInput[i] = converted[0];
 	}
-	neuralInput = neuralInput.to(device);
+	neuralInput = neuralInput.to(m_device);
 
 	return neuralInput;
 }
@@ -191,7 +191,7 @@ torch::Tensor AlphaZeroTraining::convertToValueTarget(const std::vector<ReplayEl
 	for (int i = 0; i < sampleSize; i++)
 		valueTarget[i][0] = sample[i].result;
 
-	valueTarget = valueTarget.to(device);
+	valueTarget = valueTarget.to(m_device);
 
 	return valueTarget;
 }
@@ -199,16 +199,16 @@ torch::Tensor AlphaZeroTraining::convertToValueTarget(const std::vector<ReplayEl
 torch::Tensor AlphaZeroTraining::convertToProbsTarget(const std::vector<ReplayElement>& sample)
 {
 	int sampleSize = sample.size();
-	torch::Tensor probsTarget = torch::zeros({ sampleSize, actionCount });
+	torch::Tensor probsTarget = torch::zeros({ sampleSize, m_actionCount });
 
 	for (int x = 0; x < sampleSize; x++)
 	{
-		for (int y = 0; y < actionCount; y++)
+		for (int y = 0; y < m_actionCount; y++)
 		{
 			probsTarget[x][y] = sample[x].mctsProbabilities[y];
 		}
 	}
-	probsTarget = probsTarget.to(device);
+	probsTarget = probsTarget.to(m_device);
 
 	return probsTarget;
 }
@@ -216,11 +216,11 @@ torch::Tensor AlphaZeroTraining::convertToProbsTarget(const std::vector<ReplayEl
 void AlphaZeroTraining::save(int iteration)
 {
 	if ((iteration % m_params.SAVE_ITERATION_COUNT) == 0)
-		neuralNet->save(m_params.neuralNetPath + "/iteration" + std::to_string(iteration));
+		m_neuralNet->save(m_params.neuralNetPath + "/iteration" + std::to_string(iteration));
 }
 
 void AlphaZeroTraining::setTrainingParams(Parameters params)
 {
 	m_params = std::move(params);
-	replayMemory = RingBuffer<ReplayElement>(m_params.MAX_REPLAY_MEMORY_SIZE);
+	m_replayMemory = RingBuffer<ReplayElement>(m_params.MAX_REPLAY_MEMORY_SIZE);
 }

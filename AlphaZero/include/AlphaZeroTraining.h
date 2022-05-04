@@ -56,13 +56,13 @@ public:
 	void setTrainingParams(Parameters params);
 
 private:
-	RingBuffer<ReplayElement> replayMemory;
-	std::unique_ptr<MultiThreadingNeuralNetManager> threadManager;
+	RingBuffer<ReplayElement> m_replayMemory;
+	std::unique_ptr<MultiThreadingNeuralNetManager> m_threadManager;
 	int m_gamesToPlay = 0;
-	int actionCount = -1;
-	torch::DeviceType device;
-	NeuralNetwork* neuralNet;
-	std::mutex mut;
+	int m_actionCount = -1;
+	torch::DeviceType m_device;
+	NeuralNetwork* m_neuralNet;
+	std::mutex m_mut;
 	Parameters m_params;
 };
 
