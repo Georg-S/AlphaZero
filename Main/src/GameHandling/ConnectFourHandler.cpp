@@ -41,29 +41,12 @@ void ConnectFourHandler::traininingPerformanceTest(torch::DeviceType device)
 	std::cout << (after - before) / 1000.f << std::endl;
 }
 
-void ConnectFourHandler::loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraining& connectFourZero)
-{
-	connectFourZero.setMaxReplayMemorySize(100000);
-	connectFourZero.neuralNetPath = trainingPath;
-	connectFourZero.TRAINING_DONT_USE_DRAWS = false;
-	connectFourZero.RESTRICT_GAME_LENGTH = false;
-
-	connectFourZero.DRAW_AFTER_COUNT_OF_STEPS = 50;
-
-	connectFourZero.TRAINING_ITERATIONS = 10000;
-	connectFourZero.MIN_REPLAY_MEMORY_SIZE = 100;
-	connectFourZero.SELF_PLAY_MCTS_COUNT = mctsCount;
-	connectFourZero.NUM_SELF_PLAY_GAMES = 100;
-	connectFourZero.TRAINING_BATCH_SIZE = 100;
-	connectFourZero.SAVE_ITERATION_COUNT = 1;
-	connectFourZero.RANDOM_MOVE_COUNT = 10;
-}
-
 void ConnectFourHandler::loadPerformanceTestParameters(AlphaZeroTraining& connectFourZero)
 {
-	loadDefaultParametersForAlphaZeroTraining(connectFourZero);
-	connectFourZero.TRAINING_ITERATIONS = 1;
-	connectFourZero.NUM_SELF_PLAY_GAMES = 1;
+	auto params = getDefaultConnectFourTrainingParameters();
+	params.TRAINING_ITERATIONS = 1;
+	params.NUM_SELF_PLAY_GAMES = 1;
+	connectFourZero.setTrainingParams(params);
 }
 
 void ConnectFourHandler::evalConnectFour(bool multiThreaded)
@@ -104,6 +87,25 @@ void ConnectFourHandler::writeEvaluationResultToFile(int iteration, const EvalRe
 	file << std::to_string(iteration) << ";" << std::to_string(result.wins) << ";" << std::to_string(result.draws) << ";" << std::to_string(result.losses) << std::endl;
 }
 
+AlphaZeroTraining::Parameters ConnectFourHandler::getDefaultConnectFourTrainingParameters() const
+{
+	auto params = AlphaZeroTraining::Parameters{};
+	params.MAX_REPLAY_MEMORY_SIZE = 100000;
+	params.neuralNetPath = trainingPath;
+	params.TRAINING_DONT_USE_DRAWS = false;
+	params.RESTRICT_GAME_LENGTH = false;
+	params.DRAW_AFTER_COUNT_OF_STEPS = 50;
+	params.TRAINING_ITERATIONS = 10000;
+	params.MIN_REPLAY_MEMORY_SIZE = 100;
+	params.SELF_PLAY_MCTS_COUNT = mctsCount;
+	params.NUM_SELF_PLAY_GAMES = 100;
+	params.TRAINING_BATCH_SIZE = 100;
+	params.SAVE_ITERATION_COUNT = 1;
+	params.RANDOM_MOVE_COUNT = 10;
+
+	return params;
+}
+
 EvalResult ConnectFourHandler::evalConnectFour(std::string netName, int miniMaxDepth, torch::DeviceType device)
 {
 	ConnectFourAdapter adap = ConnectFourAdapter();
@@ -133,20 +135,8 @@ EvalResult ConnectFourHandler::evalConnectFourMultiThreaded(std::string netName,
 
 void ConnectFourHandler::setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params)
 {
-	training.setMaxReplayMemorySize(params.replayMemorySize);
-	training.neuralNetPath = trainingPath;
-	training.TRAINING_DONT_USE_DRAWS = !params.useDraws;
-	training.RESTRICT_GAME_LENGTH = params.restrictGameLength;
-
-	training.DRAW_AFTER_COUNT_OF_STEPS = params.maxGameLength;
-
-	training.TRAINING_ITERATIONS = params.trainingIterations;
-	training.SELF_PLAY_MCTS_COUNT = params.selfPlayMctsCount;
-	training.NUM_SELF_PLAY_GAMES = params.selfPlayGamesCount;
-	training.TRAINING_BATCH_SIZE = params.trainingBatchSize;
-	training.SAVE_ITERATION_COUNT = params.saveIterationCount;
-	training.RANDOM_MOVE_COUNT = params.randomizedMoveCount;
-	training.NUMBER_CPU_THREADS = params.cpuThreads;
+	auto trainingParams = params.getAlphaZeroParams(trainingPath);
+	training.setTrainingParams(trainingParams);
 }
 
 void ConnectFourHandler::runTrainingWithDefaultParameters()
@@ -155,7 +145,8 @@ void ConnectFourHandler::runTrainingWithDefaultParameters()
 	torch::DeviceType device = torch::kCUDA;
 	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 7, 6, 7, device);
 	AlphaZeroTraining training = AlphaZeroTraining(7, neuralNet, device);
-	loadDefaultParametersForAlphaZeroTraining(training);
+	auto params = getDefaultConnectFourTrainingParameters();
+	training.setTrainingParams(params);
 
 	training.runTraining(&adap);
 }

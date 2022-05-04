@@ -90,28 +90,31 @@ void TicTacToeHandler::writeEvaluationResultToFile(int iteration, const EvalResu
 	file << std::to_string(iteration) << ";" << std::to_string(result.wins) << ";" << std::to_string(result.draws) << ";" << std::to_string(result.losses) << std::endl;
 }
 
-void TicTacToeHandler::loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraining& ticTacToeZero)
+AlphaZeroTraining::Parameters TicTacToeHandler::getDefaultTicTacToeTrainingParameters() const
 {
-	ticTacToeZero.neuralNetPath = trainingPath;
-	ticTacToeZero.TRAINING_DONT_USE_DRAWS = false;
-	ticTacToeZero.RESTRICT_GAME_LENGTH = false;
+	auto params = AlphaZeroTraining::Parameters{};
+	params.neuralNetPath = trainingPath;
+	params.TRAINING_DONT_USE_DRAWS = false;
+	params.RESTRICT_GAME_LENGTH = false;
+	params.DRAW_AFTER_COUNT_OF_STEPS = 50;
+	params.TRAINING_ITERATIONS = 10000;
+	params.MAX_REPLAY_MEMORY_SIZE = 40000;
+	params.MIN_REPLAY_MEMORY_SIZE = 100;
+	params.SELF_PLAY_MCTS_COUNT = mcts_count;
+	params.NUM_SELF_PLAY_GAMES = 1000;
+	params.TRAINING_BATCH_SIZE = 100;
+	params.SAVE_ITERATION_COUNT = 1;
+	params.RANDOM_MOVE_COUNT = 3;
 
-	ticTacToeZero.DRAW_AFTER_COUNT_OF_STEPS = 50;
-	ticTacToeZero.TRAINING_ITERATIONS = 10000;
-	ticTacToeZero.setMaxReplayMemorySize(40000);
-	ticTacToeZero.MIN_REPLAY_MEMORY_SIZE = 100;
-	ticTacToeZero.SELF_PLAY_MCTS_COUNT = mcts_count;
-	ticTacToeZero.NUM_SELF_PLAY_GAMES = 1000;
-	ticTacToeZero.TRAINING_BATCH_SIZE = 100;
-	ticTacToeZero.SAVE_ITERATION_COUNT = 1;
-	ticTacToeZero.RANDOM_MOVE_COUNT = 3;
+	return params;
 }
 
 void TicTacToeHandler::loadPerformanceTestParameters(AlphaZeroTraining& ticTacToeZero)
 {
-	loadDefaultParametersForAlphaZeroTraining(ticTacToeZero);
-	ticTacToeZero.NUM_SELF_PLAY_GAMES = 20;
-	ticTacToeZero.TRAINING_ITERATIONS = 1;
+	auto params = getDefaultTicTacToeTrainingParameters();
+	params.NUM_SELF_PLAY_GAMES = 20;
+	params.TRAINING_ITERATIONS = 1;
+	ticTacToeZero.setTrainingParams(params);
 }
 
 void TicTacToeHandler::runTraining(const TrainingParameters& params)
@@ -130,20 +133,8 @@ void TicTacToeHandler::runTraining(const TrainingParameters& params)
 
 void TicTacToeHandler::setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params)
 {
-	training.setMaxReplayMemorySize(params.replayMemorySize);
-	training.neuralNetPath = trainingPath;
-	training.TRAINING_DONT_USE_DRAWS = !params.useDraws;
-	training.RESTRICT_GAME_LENGTH = params.restrictGameLength;
-
-	training.DRAW_AFTER_COUNT_OF_STEPS = params.maxGameLength;
-
-	training.TRAINING_ITERATIONS = params.trainingIterations;
-	training.SELF_PLAY_MCTS_COUNT = params.selfPlayMctsCount;
-	training.NUM_SELF_PLAY_GAMES = params.selfPlayGamesCount;
-	training.TRAINING_BATCH_SIZE = params.trainingBatchSize;
-	training.SAVE_ITERATION_COUNT = params.saveIterationCount;
-	training.RANDOM_MOVE_COUNT = params.randomizedMoveCount;
-	training.NUMBER_CPU_THREADS = params.cpuThreads;
+	auto trainingParams = params.getAlphaZeroParams(trainingPath);
+	training.setTrainingParams(trainingParams);
 }
 
 void TicTacToeHandler::ticTacToeAgainstNeuralNetAi(ttt::PlayerColor playerColor, std::string netName, int countMcts, bool probabilistic,

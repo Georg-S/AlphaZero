@@ -32,7 +32,7 @@ private:
 	EvalResult evalConnectFour(std::string netName, int miniMaxDepth, torch::DeviceType device = torch::kCPU);
 	EvalResult evalConnectFourMultiThreaded(std::string netName, int miniMaxDepth, torch::DeviceType device);
 	void writeEvaluationResultToFile(int iteration, const EvalResult& result, std::ofstream& file);
-	void loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraining& connectFourZero);
+	AlphaZeroTraining::Parameters getDefaultConnectFourTrainingParameters() const;
 	void loadPerformanceTestParameters(AlphaZeroTraining& connectFourZero);
 
 	inline static const std::string trainingPath = "NeuralNets/Training/ConnectFour";

@@ -24,7 +24,7 @@ public:
 	void setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params);
 
 private:
-	void loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraining& chessZero);
+	AlphaZeroTraining::Parameters getDefaultChessTrainingParameters() const;
 	void loadPerformanceTestParameters(AlphaZeroTraining& chessZero);
 
 	inline static const std::string preTrainedPath = "NeuralNets/PreTrained/Chess";

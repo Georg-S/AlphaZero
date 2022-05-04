@@ -6,7 +6,8 @@ void ChessHandler::runTrainingWithDefaultParameters(torch::DeviceType device)
 	chessNet->setLearningRate(0.2);
 	ReducedChessAdapter adap = ReducedChessAdapter();
 	AlphaZeroTraining alphaZero = AlphaZeroTraining(4096, chessNet, device);
-	loadDefaultParametersForAlphaZeroTraining(alphaZero);
+	auto params = getDefaultChessTrainingParameters();
+	alphaZero.setTrainingParams(params);
 
 	alphaZero.runTraining(&adap);
 }
@@ -42,48 +43,40 @@ void ChessHandler::traininingPerformanceTest(torch::DeviceType device)
 	std::cout << (after - before) / 1000.f << std::endl;
 }
 
-void ChessHandler::loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraining& chessZero)
+AlphaZeroTraining::Parameters ChessHandler::getDefaultChessTrainingParameters() const
 {
-	chessZero.setMaxReplayMemorySize(300000);
-	chessZero.neuralNetPath = trainingPath;
-	chessZero.TRAINING_DONT_USE_DRAWS = false;
-	chessZero.RESTRICT_GAME_LENGTH = true;
+	auto params = AlphaZeroTraining::Parameters{};
+	params.MAX_REPLAY_MEMORY_SIZE = 300000;
+	params.neuralNetPath = trainingPath;
+	params.TRAINING_DONT_USE_DRAWS = false;
+	params.RESTRICT_GAME_LENGTH = true;
 
-	chessZero.DRAW_AFTER_COUNT_OF_STEPS = 100;
-	chessZero.TRAINING_ITERATIONS = 10000;
-	chessZero.MIN_REPLAY_MEMORY_SIZE = 100;
-	chessZero.SELF_PLAY_MCTS_COUNT = mctsCount;
-	chessZero.NUM_SELF_PLAY_GAMES = 1000;
-	chessZero.TRAINING_BATCH_SIZE = 100;
-	chessZero.SAVE_ITERATION_COUNT = 1;
-	chessZero.RANDOM_MOVE_COUNT = 20;
+	params.DRAW_AFTER_COUNT_OF_STEPS = 100;
+	params.TRAINING_ITERATIONS = 10000;
+	params.MIN_REPLAY_MEMORY_SIZE = 100;
+	params.SELF_PLAY_MCTS_COUNT = mctsCount;
+	params.NUM_SELF_PLAY_GAMES = 1000;
+	params.TRAINING_BATCH_SIZE = 100;
+	params.SAVE_ITERATION_COUNT = 1;
+	params.RANDOM_MOVE_COUNT = 20;
+
+	return params;
 }
 
 void ChessHandler::loadPerformanceTestParameters(AlphaZeroTraining& chessZero)
 {
-	loadDefaultParametersForAlphaZeroTraining(chessZero);
+	auto params = getDefaultChessTrainingParameters();
+	params.TRAINING_ITERATIONS = 1;
+	params.NUM_SELF_PLAY_GAMES = 1;
+	params.SELF_PLAY_MCTS_COUNT = 800;
 
-	chessZero.TRAINING_ITERATIONS = 1;
-	chessZero.NUM_SELF_PLAY_GAMES = 1;
-	chessZero.SELF_PLAY_MCTS_COUNT = 800;
+	chessZero.setTrainingParams(params);
 }
 
 void ChessHandler::setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params)
 {
-	training.setMaxReplayMemorySize(params.replayMemorySize);
-	training.neuralNetPath = trainingPath;
-	training.TRAINING_DONT_USE_DRAWS = !params.useDraws;
-	training.RESTRICT_GAME_LENGTH = params.restrictGameLength;
-
-	training.DRAW_AFTER_COUNT_OF_STEPS = params.maxGameLength;
-
-	training.TRAINING_ITERATIONS = params.trainingIterations;
-	training.SELF_PLAY_MCTS_COUNT = params.selfPlayMctsCount;
-	training.NUM_SELF_PLAY_GAMES = params.selfPlayGamesCount;
-	training.TRAINING_BATCH_SIZE = params.trainingBatchSize;
-	training.SAVE_ITERATION_COUNT = params.saveIterationCount;
-	training.RANDOM_MOVE_COUNT = params.randomizedMoveCount;
-	training.NUMBER_CPU_THREADS = params.cpuThreads;
+	auto trainingParams = params.getAlphaZeroParams(trainingPath);
+	training.setTrainingParams(trainingParams);
 }
 
 void ChessHandler::runTraining(const TrainingParameters& params)
