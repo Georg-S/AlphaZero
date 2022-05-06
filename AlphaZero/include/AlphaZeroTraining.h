@@ -41,11 +41,9 @@ public:
 
 	AlphaZeroTraining(int actionCount, NeuralNetwork* currentBest, torch::DeviceType = torch::kCPU);
 	void runTraining(Game* game);
-	void selfPlay(NeuralNetwork* net, Game* game);
-	void selfPlaySingleThread(NeuralNetwork* net, Game* game);
 	void selfPlayMultiThread(NeuralNetwork* net, Game* game);
 	void selfPlayMultiThreadGames(NeuralNetwork* net, Game* game, MultiThreadingNeuralNetManager* threadManager);
-	std::vector<ReplayElement> selfPlayGame(NeuralNetwork* net, Game* game, bool multiThreading);
+	std::vector<ReplayElement> selfPlayGame(NeuralNetwork* net, Game* game);
 	void addResult(std::vector<ReplayElement>& elements, int winner);
 	void trainNet(NeuralNetwork* net, Game* game);
 	torch::Tensor convertSampleToNeuralInput(const std::vector<ReplayElement>& sample, Game* game);

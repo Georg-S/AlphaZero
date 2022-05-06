@@ -46,7 +46,7 @@ TEST(Training, test_mult_thread_training)
 	trainingParams.NUMBER_CPU_THREADS = 10;
 	training.setTrainingParams(trainingParams);
 
-	training.selfPlay(neuralNet, &adap);
+	training.selfPlayMultiThread(neuralNet, &adap);
 }
 
 #endif

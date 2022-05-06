@@ -16,24 +16,10 @@ void AlphaZeroTraining::runTraining(Game* game)
 	for (int iteration = 0; iteration < m_params.TRAINING_ITERATIONS; iteration++)
 	{
 		std::cout << "Current Iteration " << iteration << std::endl;
-		selfPlay(m_neuralNet, game);
+		selfPlayMultiThread(m_neuralNet, game);
 		trainNet(m_neuralNet, game);
 		save(iteration);
 	}
-}
-
-void AlphaZeroTraining::selfPlay(NeuralNetwork* net, Game* game)
-{
-	if (m_params.NUMBER_CPU_THREADS <= 1)
-		selfPlaySingleThread(net, game);
-	else
-		selfPlayMultiThread(net, game);
-}
-
-void AlphaZeroTraining::selfPlaySingleThread(NeuralNetwork* net, Game* game)
-{
-	for (int x = 0; x < m_params.NUM_SELF_PLAY_GAMES; x++)
-		m_replayMemory.add(selfPlayGame(net, game, false));
 }
 
 void AlphaZeroTraining::selfPlayMultiThread(NeuralNetwork* net, Game* game)
@@ -65,7 +51,7 @@ void AlphaZeroTraining::selfPlayMultiThreadGames(NeuralNetwork* net, Game* game,
 			m_mut.unlock();
 		}
 
-		std::vector<ReplayElement> trainData = selfPlayGame(net, game, true);
+		std::vector<ReplayElement> trainData = selfPlayGame(net, game);
 
 		m_mut.lock();
 		m_replayMemory.add(std::move(trainData));
@@ -73,7 +59,7 @@ void AlphaZeroTraining::selfPlayMultiThreadGames(NeuralNetwork* net, Game* game,
 	}
 }
 
-std::vector<ReplayElement> AlphaZeroTraining::selfPlayGame(NeuralNetwork* net, Game* game, bool multiThreading)
+std::vector<ReplayElement> AlphaZeroTraining::selfPlayGame(NeuralNetwork* net, Game* game)
 {
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(m_actionCount);
 
@@ -85,21 +71,14 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlayGame(NeuralNetwork* net, G
 
 	while (!game->isGameOver(currentState))
 	{
-		if (m_params.RESTRICT_GAME_LENGTH)
+		if (m_params.RESTRICT_GAME_LENGTH && (currentStep >= m_params.DRAW_AFTER_COUNT_OF_STEPS))
 		{
-			if (currentStep != 0 && ((currentStep % m_params.DRAW_AFTER_COUNT_OF_STEPS) == 0))
-			{
-				gameTooLong = true;
-				break;
-			}
+			gameTooLong = true;
+			break;
 		}
-		if (multiThreading)
-			mcts.multiThreadedSearch(m_params.SELF_PLAY_MCTS_COUNT, currentState, game, currentPlayer, this->m_threadManager.get(), m_device);
-		else
-			mcts.search(m_params.SELF_PLAY_MCTS_COUNT, currentState, net, game, currentPlayer, m_device);
-		std::vector<float> probs = mcts.getProbabilities(currentState);
+		mcts.multiThreadedSearch(m_params.SELF_PLAY_MCTS_COUNT, currentState, game, currentPlayer, m_threadManager.get(), m_device);
 
-		trainingData.emplace_back(currentState, currentPlayer, probs, -1);
+		std::vector<float> probs = mcts.getProbabilities(currentState);
 
 		int action;
 		if (currentStep < m_params.RANDOM_MOVE_COUNT)
@@ -107,13 +86,12 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlayGame(NeuralNetwork* net, G
 		else
 			action = getMaxElementIndex(probs);
 
+		trainingData.emplace_back(currentState, currentPlayer, std::move(probs), -1);
 		currentState = game->makeMove(currentState, action, currentPlayer);
 		currentPlayer = game->getNextPlayer(currentPlayer);
 		currentStep++;
 	}
-	int playerWon = 0;
-	if (!gameTooLong)
-		playerWon = game->getPlayerWon(currentState);
+	int playerWon = gameTooLong ? 0 : game->getPlayerWon(currentState);
 
 	addResult(trainingData, playerWon);
 
