@@ -40,13 +40,13 @@ private:
 	int getActionWithHighestUpperConfidenceBound(const std::string& strState, int currentPlayer, Game* game);
 	float calculateUpperConfidenceBound(const std::string& strState, int action);
 
-	int actionCount;
-	float cpuct;
-	std::map<std::string, bool> loopDetection;
-	std::map<std::string, bool> visited;
-	std::map<std::string, std::vector<int>> visitCount;
-	std::map<std::string, std::vector<float>> qValues;
-	std::map<std::string, torch::Tensor> probabilities;
+	int m_actionCount;
+	float m_cpuct;
+	std::map<std::string, bool> m_loopDetection;
+	std::map<std::string, bool> m_visited;
+	std::map<std::string, std::vector<int>> m_visitCount;
+	std::map<std::string, std::vector<float>> m_qValues;
+	std::map<std::string, torch::Tensor> m_probabilities;
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_MONTECARLOTREESEARCH_H

@@ -8,12 +8,12 @@ set(AlphaZeroFiles
 	"include/MonteCarloTreeSearch.h"
 	"include/ReplayElement.h"
 	"include/RingBuffer.h"
-	"include/Utility.h"
+	"include/AlphaZeroUtility.h"
 	"include/MultiThreadingNeuralNetManager.h"
 	"src/MultiThreadingNeuralNetManager.cpp"
 	"src/AlphaZeroTraining.cpp"
 	"src/MonteCarloTreeSearch.cpp"
-	"src/Utility.cpp"
+	"src/AlphaZeroUtility.cpp"
 	)
 
 set(NeuralNetworkFiles 

@@ -1,4 +1,4 @@
-#include "Utility.h"
+#include "AlphaZeroUtility.h"
 
 //TODO is this good and valid?
 static std::mt19937 createRNG()

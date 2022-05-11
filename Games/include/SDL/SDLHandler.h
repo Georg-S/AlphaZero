@@ -14,10 +14,11 @@
 struct RenderingElement
 {
 	RenderingElement() = default;
-	RenderingElement(SDL_Rect transform, SDL_Texture* texture) 
+	RenderingElement(SDL_Rect transform, SDL_Texture* texture)
 		: transform(std::move(transform))
-		, texture(texture) 
-	{};
+		, texture(texture)
+	{
+	};
 
 	SDL_Rect transform = {};
 	SDL_Texture* texture = nullptr;

@@ -22,7 +22,7 @@ public:
 	int getActionCount() const override;
 
 private:
-	static constexpr int actionCount = 9;
+	static constexpr int m_actionCount = 9;
 };
 
 

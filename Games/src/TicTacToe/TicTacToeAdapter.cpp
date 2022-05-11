@@ -75,7 +75,7 @@ std::string TicTacToeAdapter::makeMove(const std::string& state, int move, int c
 
 int TicTacToeAdapter::getActionCount() const
 {
-	return actionCount;
+	return m_actionCount;
 }
 
 int TicTacToeAdapter::getPlayerWon(const std::string& state)
