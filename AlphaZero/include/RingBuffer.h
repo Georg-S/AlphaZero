@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <iterator>
 #include <random>
-#include "Utility.h"
+#include "AlphaZeroUtility.h"
 
 template <class T>
 class RingBuffer
@@ -23,7 +23,7 @@ public:
 		return m_data[index];
 	}
 
-	void add(T&& element) 
+	void add(T&& element)
 	{
 		assert(m_maxSize > 0);
 		if (m_currentIndex == m_maxSize)
@@ -37,6 +37,11 @@ public:
 		else
 			m_data[m_currentIndex] = std::move(element);
 		m_currentIndex++;
+	}
+
+	void add(const T& element)
+	{
+		add(T(element));
 	}
 
 	int size() const
@@ -68,7 +73,7 @@ public:
 		m_wrappedAround = false;
 	}
 
-	std::vector<T> getRandomSample(int sampleSize) 
+	std::vector<T> getRandomSample(int sampleSize) const
 	{
 		std::vector<T> destination;
 		std::sample(m_data.begin(), m_data.end(), std::back_inserter(destination), sampleSize, ALZ::getRNG());

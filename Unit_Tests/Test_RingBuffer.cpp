@@ -41,6 +41,15 @@ TEST(RingBuffer, wrapAroundByTwo)
 	ASSERT_EQ(rbuf[1], 5);
 }
 
+TEST(RingBuffer, RValueReferenceWrapAroundByTwo)
+{
+	RingBuffer rbuf = RingBuffer<int>(3);
+	std::vector<int> vec{ 1,2,3,4,5 };
+	rbuf.add(std::move(vec));
+
+	ASSERT_EQ(rbuf[1], 5);
+}
+
 TEST(RingBuffer, getSample)
 {
 	RingBuffer rbuf = RingBuffer<int>(10);

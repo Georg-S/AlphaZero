@@ -7,7 +7,7 @@
 #include <ratio>
 #include <omp.h>
 #include <vector>
-#include <Utility.h>
+#include <AlphaZeroUtility.h>
 #include <MonteCarloTreeSearch.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
 #include <TicTacToe/TicTacToeAdapter.h>

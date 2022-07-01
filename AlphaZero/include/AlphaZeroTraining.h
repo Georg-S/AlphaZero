@@ -7,7 +7,7 @@
 #include <cfloat>
 #include <thread>
 #include <mutex>
-#include "Utility.h"
+#include "AlphaZeroUtility.h"
 #include "MultiThreadingNeuralNetManager.h"
 #include "NeuralNetworks/NeuralNetwork.h"
 #include "Game.h"
