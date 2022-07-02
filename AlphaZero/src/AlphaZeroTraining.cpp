@@ -45,11 +45,8 @@ void AlphaZeroTraining::selfPlayMultiThreadGames(NeuralNetwork* net, Game* game,
 			m_mut.unlock();
 			return;
 		}
-		else
-		{
-			m_gamesToPlay--;
-			m_mut.unlock();
-		}
+		m_gamesToPlay--;
+		m_mut.unlock();
 
 		std::vector<ReplayElement> trainData = selfPlayGame(net, game);
 
@@ -96,7 +93,7 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlayGame(NeuralNetwork* net, G
 	addResult(trainingData, playerWon);
 
 	if (m_params.TRAINING_DONT_USE_DRAWS && (playerWon == 0))
-		trainingData.clear();
+		return {};
 
 	return trainingData;
 }

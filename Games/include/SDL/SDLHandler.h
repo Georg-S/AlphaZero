@@ -29,6 +29,8 @@ class SDLTextureWrapper
 {
 public:
 	SDLTextureWrapper() = delete;
+	SDLTextureWrapper(const SDLTextureWrapper&) = delete;
+	SDLTextureWrapper& operator=(const SDLTextureWrapper&) = delete;
 	SDLTextureWrapper(SDL_Texture* texture) : m_texture(texture) {};
 	~SDLTextureWrapper() { SDL_DestroyTexture(m_texture); }
 	SDL_Texture* texture() const { return m_texture; };

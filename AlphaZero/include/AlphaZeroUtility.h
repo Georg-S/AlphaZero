@@ -15,7 +15,7 @@ namespace ALZ
 	int getRandomIndex(const std::vector<float>& probs, float sumOfProbs);
 
 	template <class T>
-	T sum(std::vector<T>& vec) 
+	T sum(const std::vector<T>& vec) 
 	{
 		T sum = T(0);
 		for (auto n : vec)

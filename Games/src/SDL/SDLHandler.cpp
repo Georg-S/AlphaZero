@@ -34,7 +34,7 @@ bool SDLHandler::createAndPushBackRenderElement(const std::string& fileName, int
 		return false;
 	}
 
-	m_elements.push_back(std::make_unique<RenderingElement>(SDL_Rect{ x,y,width, height }, texture ));
+	m_elements.emplace_back(std::make_unique<RenderingElement>(SDL_Rect{ x,y,width, height }, texture ));
 
 	return true;
 }
