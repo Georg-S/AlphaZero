@@ -2,6 +2,7 @@
 #define DEEPREINFORCEMENTLEARNING_cn4_MINIMAXAI_H
 
 #include <algorithm>
+#include <AlphaZeroUtility.h>
 #include "Other/Ai.h"
 #include "GameLogic.h"
 

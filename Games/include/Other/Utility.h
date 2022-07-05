@@ -28,12 +28,6 @@ namespace game
 		return num & (T(1) << index);
 	}
 	template <typename T>
-	T getRandomElement(const std::vector<T>& vec)
-	{
-		assert(!vec.empty());
-		return vec[rand() % vec.size()];
-	}
-	template <typename T>
 	void printBitBoard(T num, int width, int height)
 	{
 		for (int y = height - 1; y >= 0; y--)

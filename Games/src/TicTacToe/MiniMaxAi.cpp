@@ -26,7 +26,7 @@ Move ttt::MiniMaxAi::getMove(Board board, int color)
 
 	std::vector<Move> bestMoves = game::getHighestValueElements(possibleMoves, values);
 
-	return game::getRandomElement(bestMoves);
+	return ALZ::getRandomElement(bestMoves);
 }
 
 int ttt::MiniMaxAi::evaluateBoard(const Board& board, PlayerColor currentPlayer, bool maximizingPlayer, int alpha, int beta)
