@@ -55,20 +55,3 @@ int ALZ::getRandomIndex(const std::vector<float>& probs, float sumOfProbs)
 
 	return probs.size() - 1;
 }
-
-ALZ::ScopedTimer::ScopedTimer(std::string message)
-{
-	if (m_message.empty())
-		m_message = "Time passed in ms: ";
-	else
-		m_message = std::move(message);
-
-	m_startTime = getCurrentTime();
-}
-
-ALZ::ScopedTimer::~ScopedTimer()
-{
-	auto endTime = getCurrentTime();
-
-	std::cout << m_message << endTime - m_startTime << std::endl;
-}

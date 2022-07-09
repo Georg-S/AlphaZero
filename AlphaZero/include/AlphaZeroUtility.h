@@ -43,10 +43,35 @@ namespace ALZ
 	class ScopedTimer
 	{
 	public:
-		ScopedTimer(std::string message = "");
-		~ScopedTimer();
+		ScopedTimer()
+		{
+			m_startTime = getCurrentTime();
+		}
+		~ScopedTimer()
+		{
+			auto endTime = getCurrentTime();
+			const auto timePassed = endTime - m_startTime;
+			auto milliseconds = timePassed;
+			auto seconds = timePassed / 1000;
+			auto minutes = seconds / 60;
+			auto hours = minutes / 60;
+
+			auto displayedMilliseconds = timePassed % 1000;
+			auto displayedSeconds = seconds % 60;
+			auto displayedMinutes = minutes % 60;
+			auto displayedHours = hours;
+
+			std::cout << "Time passed: ";
+			if (displayedHours > 0)
+				std::cout << displayedHours << " hours, ";
+			if (displayedMinutes > 0)
+				std::cout << displayedMinutes << " minutes, ";
+			if (displayedSeconds > 0)
+				std::cout << displayedSeconds << " seconds, ";
+
+			std::cout << displayedMilliseconds << " milliseconds";
+		}
 	private:
-		std::string m_message;
 		long long m_startTime;
 	};
 }
