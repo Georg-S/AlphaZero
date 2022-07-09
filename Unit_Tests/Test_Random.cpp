@@ -12,6 +12,12 @@
 #include <NeuralNetworks/DefaultNeuralNet.h>
 #include <TicTacToe/TicTacToeAdapter.h>
 
+TEST(RandomTest, test_get_random_element) 
+{
+	std::vector<int> vec = { 3 };
+	ASSERT_EQ(ALZ::getRandomElement(vec), 3);
+}
+
 /*
 TEST(RandomTest, rand)
 {

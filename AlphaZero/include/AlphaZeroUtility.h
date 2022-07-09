@@ -19,8 +19,8 @@ namespace ALZ
 	template <class T>
 	T sum(const std::vector<T>& vec) 
 	{
-		T sum = T(0);
-		for (auto n : vec)
+		auto sum = T(0);
+		for (const auto& n : vec)
 			sum += n;
 
 		return sum;
@@ -30,7 +30,7 @@ namespace ALZ
 	T getRandomElement(const std::vector<T>& vec)
 	{
 		assert(!vec.empty());
-		return getRandomNumber(0, vec.size() - 1);
+		return vec[getRandomNumber(0, vec.size() - 1)];
 	}
 
 	template <class T>

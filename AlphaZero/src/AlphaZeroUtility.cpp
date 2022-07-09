@@ -8,6 +8,7 @@ static std::mt19937 createRNG()
 
 	auto seed = hasher(id);
 	seed += time(NULL);
+
 	return std::mt19937(seed);
 }
 
