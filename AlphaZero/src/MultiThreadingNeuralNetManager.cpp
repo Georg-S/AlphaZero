@@ -45,7 +45,7 @@ void MultiThreadingNeuralNetManager::handleWaitingAndWakeup()
 	if ((m_waitingThreads + 1) != m_activeThreads)
 	{
 		m_waitingThreads++;
-		m_cond.wait(lck);
+		m_cond.wait(lck); // TODO somehow handle spurious wakeup
 	}
 	else
 	{
@@ -74,13 +74,6 @@ void MultiThreadingNeuralNetManager::clearInput()
 {
 	m_inputBuffer = {};
 	m_elementsAdded = 0;
-}
-
-void MultiThreadingNeuralNetManager::waitUntilResultIsReady()
-{
-	std::unique_lock<std::mutex> lck(m_threadingMutex);
-	m_waitingThreads++;
-	m_cond.wait(lck);
 }
 
 void MultiThreadingNeuralNetManager::wakeUpAllThreads()

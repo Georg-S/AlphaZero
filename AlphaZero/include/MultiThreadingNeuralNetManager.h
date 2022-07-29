@@ -23,7 +23,6 @@ public:
 private:
 	void calculateOutput();
 	void clearInput();
-	void waitUntilResultIsReady();
 	void wakeUpAllThreads();
 
 	NeuralNetwork* m_net;

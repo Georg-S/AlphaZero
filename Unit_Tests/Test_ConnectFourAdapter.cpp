@@ -8,7 +8,7 @@
 
 using namespace cn4;
 
-ConnectFourAdapter adap = ConnectFourAdapter();
+static ConnectFourAdapter adap = ConnectFourAdapter();
 
 static void renderBoard(const Board& board)
 {
