@@ -28,12 +28,14 @@ private:
 	NeuralNetwork* m_net;
 	torch::Tensor m_inputBuffer;
 	std::tuple<torch::Tensor, torch::Tensor> m_output;
-	std::condition_variable m_cond;
+	std::condition_variable m_outputCalculated;
+	std::condition_variable m_allThreadsWokenUp;
 	std::mutex m_threadingMutex;
 	int m_elementsAdded = 0;
 	const int m_threadCount;
 	int m_activeThreads = 0;
-	int m_waitingThreads = 0;
+	int m_threadsWaitingOnOutput = 0;
+	int m_threadsToWakeup = 0;
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_MULTITHREADINGNEURALNETMANAGER_H

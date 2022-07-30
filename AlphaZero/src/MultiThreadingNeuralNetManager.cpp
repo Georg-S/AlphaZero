@@ -35,17 +35,24 @@ void MultiThreadingNeuralNetManager::safeDecrementActiveThreads()
 	std::unique_lock<std::mutex> lck(m_threadingMutex);
 
 	m_activeThreads--;
-	if ((m_activeThreads != 0) && (m_waitingThreads >= m_activeThreads))
+	if ((m_activeThreads != 0) && (m_threadsWaitingOnOutput >= m_activeThreads))
 		calculateAndWakeup();
 }
 
 void MultiThreadingNeuralNetManager::handleWaitingAndWakeup()
 {
 	std::unique_lock<std::mutex> lck(m_threadingMutex);
-	if ((m_waitingThreads + 1) != m_activeThreads)
+	if ((m_threadsWaitingOnOutput + 1) != m_activeThreads)
 	{
-		m_waitingThreads++;
-		m_cond.wait(lck); // TODO somehow handle spurious wakeup
+		// Two waiting conditions are needed to handle "spurious wakeups"
+		m_allThreadsWokenUp.wait(lck, [this]() { return m_threadsToWakeup == 0; });
+
+		m_threadsWaitingOnOutput++;
+		m_outputCalculated.wait(lck, [this]() { return m_threadsWaitingOnOutput == 0; });
+
+		m_threadsToWakeup--;
+		if (m_threadsToWakeup == 0)
+			m_allThreadsWokenUp.notify_all();
 	}
 	else
 	{
@@ -78,6 +85,7 @@ void MultiThreadingNeuralNetManager::clearInput()
 
 void MultiThreadingNeuralNetManager::wakeUpAllThreads()
 {
-	m_waitingThreads = 0;
-	m_cond.notify_all();
+	m_threadsToWakeup = m_threadsWaitingOnOutput;
+	m_threadsWaitingOnOutput = 0;
+	m_outputCalculated.notify_all();
 }
