@@ -10,40 +10,34 @@ set(OtherFiles
 	"src/Other/NeuralNetAi.cpp"
 	"src/Other/Utility.cpp"
 	)
-
-set(ChessFiles
-	"include/Chess/Board.h"
-	"include/Chess/Chess.h"
-	"include/Chess/GameLogic.h"
-	"include/Chess/MiniMaxAi.h"
-	"include/Chess/Move.h"
-	"include/Chess/PieceColor.h"
-	"include/Chess/ReducedChessAdapter.h"
-	"include/Chess/Renderer.h"
-	"include/Chess/RenderInformation.h"
-	"src/Chess/Chess.cpp"
-	"src/Chess/GameLogic.cpp"
-	"src/Chess/MiniMaxAi.cpp"
-	"src/Chess/ReducedChessAdapter.cpp"
-	"src/Chess/Renderer.cpp"
+	
+set(ChessEngine
+	"include/Chess/Engine/BitBoard.h"
+	"include/Chess/Engine/ChessEngine.h"
+	"include/Chess/Engine/MoveGenerator.h"
+	"include/Chess/Engine/NegamaxAI.h"
+	"include/Chess/Engine/Utility.h"
+	"include/Chess/Engine/ValueTables.h"
+	"src/Chess/Engine/BitBoard.cpp"
+	"src/Chess/Engine/ChessEngine.cpp"
+	"src/Chess/Engine/MoveGenerator.cpp"
+	"src/Chess/Engine/NegamaxAI.cpp"
+	"src/Chess/Engine/Utility.cpp"
 	)
 
-set(ChessPiecesFiles
-	"include/Chess/Pieces/Bishop.h"
-	"include/Chess/Pieces/King.h"
-	"include/Chess/Pieces/Knight.h"
-	"include/Chess/Pieces/Pawn.h"
-	"include/Chess/Pieces/Piece.h"
-	"include/Chess/Pieces/Queen.h"
-	"include/Chess/Pieces/Rook.h"
-	"src/Chess/Pieces/Bishop.cpp"
-	"src/Chess/Pieces/King.cpp"
-	"src/Chess/Pieces/Knight.cpp"
-	"src/Chess/Pieces/Pawn.cpp"
-	"src/Chess/Pieces/Piece.cpp"
-	"src/Chess/Pieces/Queen.cpp"
-	"src/Chess/Pieces/Rook.cpp"
-)
+set(ChessFiles
+	"include/Chess/ReducedChessAdapter.h"
+	"include/Chess/RenderInformation.h"
+	"include/Chess/Chess.h"
+	"include/Chess/Constant.h"
+	"include/Chess/Renderer.h"
+	"include/Chess/RenderInformation.h"
+	"include/Chess/ChessAiAdapter.h"
+	"src/Chess/ReducedChessAdapter.cpp"
+	"src/Chess/Chess.cpp"
+	"src/Chess/Renderer.cpp"
+	"src/Chess/ChessAiAdapter.cpp"
+	)
 
 set(ConnectFourFiles
 	"include/ConnectFour/ConnectFour.h"
@@ -80,7 +74,7 @@ set(TicTacToeFiles
 
 source_group("\\Other" FILES ${OtherFiles})
 source_group("\\Chess" FILES ${ChessFiles})
-source_group("\\Chess\\Pieces" FILES ${ChessPiecesFiles})
+source_group("\\Chess\\Engine" FILES ${ChessEngine})
 source_group("\\ConnectFour" FILES ${ConnectFourFiles})
 source_group("\\SDL" FILES ${SDLFiles})
 source_group("\\TicTacToe" FILES ${TicTacToeFiles})
@@ -88,8 +82,8 @@ source_group("\\TicTacToe" FILES ${TicTacToeFiles})
 
 add_library(Games STATIC 
 	${OtherFiles}
+	${ChessEngine}
 	${ChessFiles}
-	${ChessPiecesFiles}
 	${ConnectFourFiles}
 	${SDLFiles}
 	${TicTacToeFiles}

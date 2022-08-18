@@ -1,33 +1,30 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include <string>
-#include <Chess/GameLogic.h>
+#include <Chess/Engine/BitBoard.h>
 #include <Chess/ReducedChessAdapter.h>
 #include <MonteCarloTreeSearch.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
 
+static ReducedChessAdapter adap = ReducedChessAdapter();
+static ceg::ChessEngine chessEngine = ceg::ChessEngine();
 
 TEST(ReducedChessAdapter, test_conversion_to_string_and_back_doesnt_change_board_positions)
 {
-	ReducedChessAdapter adap = ReducedChessAdapter();
-	chess::Board board = chess::Board();
-	board.setToInitialState();
-	chess::GameLogic::makeMove(board, chess::Move(1, 1, 1, 3));
-
-	std::string before = adap.convertStateToString(board, 1);
-	board = adap.convertStateStringToBoard(before);
-	std::string after = adap.convertStateToString(board, 1);
+	ceg::BitBoard board = ceg::BitBoard(adap.getInitialGameState());
+	chessEngine.make_move(board, ceg::Move(1, 1, 1, 3));
+	
+	auto before = ceg::to_FEN_string(board, true);
+	board = ceg::BitBoard(before);
+	auto after = ceg::to_FEN_string(board, true);
 
 	ASSERT_EQ(before, after);
 }
 
 TEST(ReducedChessAdapter, test_get_initial_state)
 {
-	ReducedChessAdapter adap = ReducedChessAdapter();
-	chess::Board board = chess::Board();
-	board.setToInitialState();
-
-	std::string converted = adap.convertStateToString(board, 1);
+	ceg::BitBoard board = ceg::BitBoard(adap.getInitialGameState());
+	std::string converted = ceg::to_FEN_string(board, false);
 
 	ASSERT_EQ(converted, adap.getInitialGameState());
 }
@@ -35,7 +32,6 @@ TEST(ReducedChessAdapter, test_get_initial_state)
 
 TEST(ReducedChessAdapter, test_get_all_possible_moves_returns_right_amount_of_moves_in_beginning)
 {
-	ReducedChessAdapter adap = ReducedChessAdapter();
 	std::vector<int> possibleMoves = adap.getAllPossibleMoves(adap.getInitialGameState(), 1);
 
 	ASSERT_EQ(possibleMoves.size(), 20);
@@ -43,24 +39,14 @@ TEST(ReducedChessAdapter, test_get_all_possible_moves_returns_right_amount_of_mo
 
 TEST(ReducedChessAdapter, test_get_next_Player_for_Player_one)
 {
-	ReducedChessAdapter adap = ReducedChessAdapter();
-	int player = (int)chess::PieceColor::WHITE;
+	int player = static_cast<int>(ceg::PieceColor::WHITE);
 
-	ASSERT_EQ(adap.getNextPlayer(player), 2);
+	ASSERT_EQ(adap.getNextPlayer(player), static_cast<int>(ceg::PieceColor::BLACK));
 }
 
 TEST(ReducedChessAdapter, test_get_next_Player_for_Player_two)
 {
-	ReducedChessAdapter adap = ReducedChessAdapter();
-	int player = (int)chess::PieceColor::BLACK;
+	int player = static_cast<int>(ceg::PieceColor::BLACK);
 
-	ASSERT_EQ(adap.getNextPlayer(player), 1);
-}
-
-TEST(ReducedChessAdapter, test_get_next_Player_for_Player_None)
-{
-	ReducedChessAdapter adap = ReducedChessAdapter();
-	int player = (int)chess::PieceColor::NONE;
-
-	ASSERT_EQ(adap.getNextPlayer(player), 0);
+	ASSERT_EQ(adap.getNextPlayer(player), static_cast<int>(ceg::PieceColor::WHITE));
 }

@@ -139,18 +139,6 @@ void ConnectFourHandler::setTrainingParameters(AlphaZeroTraining& training, cons
 	training.setTrainingParams(trainingParams);
 }
 
-void ConnectFourHandler::runTrainingWithDefaultParameters()
-{
-	ConnectFourAdapter adap = ConnectFourAdapter();
-	torch::DeviceType device = torch::kCUDA;
-	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 7, 6, 7, device);
-	AlphaZeroTraining training = AlphaZeroTraining(7, neuralNet, device);
-	auto params = getDefaultConnectFourTrainingParameters();
-	training.setTrainingParams(params);
-
-	training.runTraining(&adap);
-}
-
 void ConnectFourHandler::runTraining(const TrainingParameters& params)
 {
 	ConnectFourAdapter adap = ConnectFourAdapter();

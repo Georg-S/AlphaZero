@@ -11,6 +11,7 @@ namespace ALZ
 {
 	long long getCurrentTime();
 	int getRandomNumber(int min, int max);
+	uint64_t getRandomLongNumber(uint64_t min, uint64_t max);
 	double getRandomNumber(double min, double max);
 	std::mt19937& getRNG();
 	/// Returns an index of the probs vector, weighted by the elements inside the probs vector

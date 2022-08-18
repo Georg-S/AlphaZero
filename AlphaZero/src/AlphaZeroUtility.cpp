@@ -28,6 +28,13 @@ int ALZ::getRandomNumber(int min, int max)
 	return distribution(generator);
 }
 
+uint64_t ALZ::getRandomLongNumber(uint64_t min, uint64_t max)
+{
+	std::uniform_int_distribution<uint64_t> distribution(min, max);
+
+	return distribution(generator);
+}
+
 double ALZ::getRandomNumber(double min, double max)
 {
 	std::uniform_real_distribution<double> distribution(min, max);

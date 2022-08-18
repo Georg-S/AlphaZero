@@ -1,316 +1,161 @@
 #include "Chess/ReducedChessAdapter.h"
 
+ceg::Move chess::getMoveFromInt(int move) 
+{
+	ceg::Move res;
+	int from = move % 64;
+	int to = move / 64;
+	
+	res.from_x = from % 8;
+	res.from_y = from / 8;
+	res.to_x = to % 8;
+	res.to_y = to / 8;
+
+	return res;
+}
+
+int chess::getIntFromMove(const ceg::Move& move) 
+{
+	int from = move.from_x + (8 * move.from_y);
+	int to = (move.to_x + (8 * move.to_y)) * 64;
+
+	return from | to;
+}
+
 ReducedChessAdapter::ReducedChessAdapter()
 {
-
+	chessEngine = std::make_unique<ceg::ChessEngine>();
 }
 
 std::vector<int> ReducedChessAdapter::getAllPossibleMoves(const std::string& state, int currentPlayer)
 {
-	chess::Board board = convertStateStringToBoard(state);
-	std::vector<int> resultVec;
+	ceg::BitBoard board(state);
 
-	for (int fromX = 0; fromX < 8; fromX++)
-	{
-		for (int fromY = 0; fromY < 8; fromY++)
-		{
-			if (board.board[fromX][fromY] == nullptr)
-				continue;
-			if (board.board[fromX][fromY]->getPieceColor() != ((chess::PieceColor)currentPlayer))
-				continue;
+	auto moves = chessEngine->get_all_possible_moves(board, ceg::PieceColor(currentPlayer));
 
-			for (int toX = 0; toX < 8; toX++)
-			{
-				for (int toY = 0; toY < 8; toY++)
-				{
-					chess::Move move = chess::Move(fromX, fromY, toX, toY);
-					if (chess::GameLogic::isMoveValid(board, move))
-						resultVec.push_back(move.getSingleIntRepresentation());
-				}
-			}
-		}
-	}
+	auto result = std::vector<int>();
+	result.reserve(moves.size());
 
-	board.deletePieces();
-	return resultVec;
+	for(const auto& move : moves) 
+		result.emplace_back(chess::getIntFromMove(move));
+
+	return result;
 }
 
 int ReducedChessAdapter::getInitialPlayer()
 {
-	return (int)chess::PieceColor::WHITE;
+	return static_cast<int>(ceg::PieceColor::WHITE);
 }
 
 std::string ReducedChessAdapter::getInitialGameState()
 {
-	static const std::string initialState = "1RHBQKBHRPPPPPPPP--------------------------------PPPPPPPPRHBQKBHR2222222222222222--------------------------------1111111111111111";
-	return initialState;
+	return "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -";
 }
 
 int ReducedChessAdapter::getPlayerWon(const std::string& state)
 {
-	chess::Board board = convertStateStringToBoard(state);
-	int result = 0;
+	ceg::BitBoard board(state);
+	if (chessEngine->is_check_mate(board, ceg::PieceColor::WHITE))
+		return static_cast<int>(ceg::PieceColor::BLACK);
+	if (chessEngine->is_check_mate(board, ceg::PieceColor::BLACK))
+		return static_cast<int>(ceg::PieceColor::WHITE);
 
-	if (chess::GameLogic::isCheckMate(board, chess::PieceColor::BLACK))
-		result = (int)chess::PieceColor::BLACK;
-	else if (chess::GameLogic::isCheckMate(board, chess::PieceColor::WHITE))
-		result = (int)chess::PieceColor::WHITE;
-
-	board.deletePieces();
-	return result;
+	return static_cast<int>(ceg::PieceColor::NONE);
 }
 
 int ReducedChessAdapter::getNextPlayer(int currentPlayer)
 {
-	return (int)(chess::GameLogic::getNextPlayer((chess::PieceColor)currentPlayer));
+	auto color = ceg::PieceColor(currentPlayer);
+	assert(color != ceg::PieceColor::NONE);
+
+	return static_cast<int>(chessEngine->get_next_player(color));
 }
 
 std::string ReducedChessAdapter::makeMove(const std::string& state, int move, int currentPlayer)
 {
-	chess::Board board = convertStateStringToBoard(state);
-	chess::Move chessMove = chess::Move(move);
+	ceg::BitBoard board(state);
+	auto mMove = chess::getMoveFromInt(move);
+	chessEngine->make_move(board, mMove);
 
-	int currentPlayerFromState = atoi(state.substr(0, 1).c_str());
-	if (currentPlayerFromState != currentPlayer)
-		std::cout << "Here might be a Problem" << std::endl;
+	int nextPlayer = getNextPlayer(currentPlayer);
+	auto result = ceg::to_FEN_string(board, ceg::PieceColor(nextPlayer) == ceg::PieceColor::BLACK);
 
+	return result;
+}
 
-	chess::GameLogic::makeMove(board, chessMove);
-
-	if (chess::GameLogic::pawnReachedEndOfBoard(board))
-		replacePawnsWithQueens(board);
-
-	std::string resultString = convertStateToString(board, getNextPlayer(currentPlayer));
-
-	if (!bothKingsStillThere(board))
+static void convertPiecesToTensor(uint64_t pieces, at::Tensor destination)
+{
+	while (pieces) 
 	{
-		std::cout << "Move: " << move << std::endl;
-		std::cout << "Before: " << state << std::endl;
-		std::cout << "After: " << resultString << std::endl;
-	}
+		int index = ceg::get_bit_index_lsb(pieces);
+		ceg::reset_lsb(pieces);
 
-	board.deletePieces();
-	return resultString;
+		int x = index % 8;
+		int y = index / 8;
+
+		assert(y <= 8);
+
+		destination[x][y] = 1.f;
+	}
+}
+
+static void setPiecesInTensor(const ceg::Pieces& pieces, at::Tensor destination, int startIndex) 
+{
+	convertPiecesToTensor(pieces.pawns, destination[startIndex]);
+	convertPiecesToTensor(pieces.rooks, destination[startIndex + 1]);
+	convertPiecesToTensor(pieces.knights, destination[startIndex + 2]);
+	convertPiecesToTensor(pieces.bishops, destination[startIndex + 3]);
+	convertPiecesToTensor(pieces.queens, destination[startIndex + 4]);
+	convertPiecesToTensor(pieces.king, destination[startIndex + 5]);
+	//convertPiecesToTensor(pieces.castling, destination[startIndex + 6]);
 }
 
 torch::Tensor ReducedChessAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer,
 	torch::Device device)
 {
-	chess::Board board = convertStateStringToBoard(state);
-	chess::PieceColor otherPlayer = (chess::PieceColor)getNextPlayer(currentPlayer);
+	constexpr int perPlayerSize = 6;
+	ceg::BitBoard board(state);
+	ceg::PieceColor currentColor = ceg::PieceColor(currentPlayer);
 	torch::Tensor result = torch::zeros({ 1,12,8,8 });
 
-	convertPiecesToTensor(board, (chess::PieceColor)currentPlayer, result[0][0], 'P');
-	convertPiecesToTensor(board, (chess::PieceColor)currentPlayer, result[0][1], 'R');
-	convertPiecesToTensor(board, (chess::PieceColor)currentPlayer, result[0][2], 'H');
-	convertPiecesToTensor(board, (chess::PieceColor)currentPlayer, result[0][3], 'B');
-	convertPiecesToTensor(board, (chess::PieceColor)currentPlayer, result[0][4], 'Q');
-	convertPiecesToTensor(board, (chess::PieceColor)currentPlayer, result[0][5], 'K');
-
-	convertPiecesToTensor(board, (chess::PieceColor)otherPlayer, result[0][6], 'P');
-	convertPiecesToTensor(board, (chess::PieceColor)otherPlayer, result[0][7], 'R');
-	convertPiecesToTensor(board, (chess::PieceColor)otherPlayer, result[0][8], 'H');
-	convertPiecesToTensor(board, (chess::PieceColor)otherPlayer, result[0][9], 'B');
-	convertPiecesToTensor(board, (chess::PieceColor)otherPlayer, result[0][10], 'Q');
-	convertPiecesToTensor(board, (chess::PieceColor)otherPlayer, result[0][11], 'K');
+	if (currentColor == ceg::PieceColor::WHITE) 
+	{
+		setPiecesInTensor(board.white_pieces, result[0], 0);
+		setPiecesInTensor(board.black_pieces, result[0], perPlayerSize);
+	}
+	else
+	{
+		setPiecesInTensor(board.black_pieces, result[0], 0);
+		setPiecesInTensor(board.white_pieces, result[0], perPlayerSize);
+	}
 
 	result = result.to(device);
-	board.deletePieces();
+
 	return result;
 }
 
 bool ReducedChessAdapter::isGameOver(const std::string& state)
 {
-	chess::PieceColor currentPlayer = getCurrentPlayerFromState(state);
-	chess::Board board = convertStateStringToBoard(state);
-	bool result = chess::GameLogic::isGameOver(board, currentPlayer);
-	board.deletePieces();
+	auto [player, board] = chessEngine->get_player_and_board_from_fen_string(state);
 
-	return result;
+	return chessEngine->is_game_over(board, player);
 }
 
 int ReducedChessAdapter::gameOverReward(const std::string& state, int currentPlayer)
 {
-	chess::Board board = convertStateStringToBoard(state);
-	int value = 0;
-	chess::PieceColor otherPlayer = chess::GameLogic::getNextPlayer((chess::PieceColor)currentPlayer);
+	auto color = ceg::PieceColor(currentPlayer);
+	auto otherColor = chessEngine->get_next_player(color);
+	ceg::BitBoard board(state);
 
-	if (chess::GameLogic::isCheckMate(board, (chess::PieceColor)currentPlayer))
-		value = -1;
-	else if (chess::GameLogic::isCheckMate(board, (chess::PieceColor)otherPlayer))
-		value = 1;
+	if (chessEngine->is_check_mate(board, color))
+		return -1;
+	else if (chessEngine->is_check_mate(board, otherColor))
+		return 1;
 
-
-	board.deletePieces();
-	return value;
-}
-
-std::string ReducedChessAdapter::convertBoardToString(chess::Board& board)
-{
-	return convertPiecesToString(board) + convertColorToString(board);
-}
-
-std::string ReducedChessAdapter::convertPiecesToString(const chess::Board& board)
-{
-	std::string resultStr = "";
-
-	for (int y = 0; y < 8; y++)
-	{
-		for (int x = 0; x < 8; x++)
-		{
-			if (board.board[x][y] == nullptr)
-				resultStr += '-';
-			else
-				resultStr += board.board[x][y]->getPieceChar();
-		}
-	}
-	return resultStr;
-}
-
-std::string ReducedChessAdapter::convertColorToString(const chess::Board& board)
-{
-	std::string resultStr = "";
-
-	for (int y = 0; y < 8; y++)
-	{
-		for (int x = 0; x < 8; x++)
-		{
-			if (board.board[x][y] == nullptr)
-				resultStr += '-';
-			else
-				resultStr += std::to_string((int)board.board[x][y]->getPieceColor());
-		}
-	}
-	return resultStr;
-}
-
-chess::Board ReducedChessAdapter::convertStringToBoard(std::string state)
-{
-	chess::Board resultBoard = chess::Board();
-	std::string pieces = state.substr(0, 64);
-	std::string colors = state.substr(64);
-
-	for (int iter = 0; iter < 64; iter++)
-	{
-		char pieceChar = pieces.at(iter);
-		int iColor = colors.at(iter) - '0';
-		chess::PieceColor color = (chess::PieceColor)iColor;
-
-		if (pieceChar == '-')
-			continue;
-		else
-		{
-			int x = iter % 8;
-			int y = iter / 8;
-			resultBoard.board[x][y] = getPieceFromChar(pieceChar, color);
-
-			if (resultBoard.board[x][y]->getPieceChar() == 'P')
-				resultBoard.board[x][y]->moved = false;
-			else
-				resultBoard.board[x][y]->moved = true;
-		}
-	}
-
-	return resultBoard;
-}
-
-chess::Piece* ReducedChessAdapter::getPieceFromChar(const char& pieceChar, const chess::PieceColor& color)
-{
-	switch (pieceChar)
-	{
-	case 'Q':
-		return new Queen(color);
-	case 'H':
-		return new Knight(color);
-	case 'P':
-		return new Pawn(color);
-	case 'R':
-		return new Rook(color);
-	case 'K':
-		return new King(color);
-	case 'B':
-		return new Bishop(color);
-	default:
-		return nullptr;
-	}
-}
-
-chess::PieceColor ReducedChessAdapter::getCurrentPlayerFromState(const std::string& state)
-{
-	return (chess::PieceColor)(state[0] - '0');
-}
-
-
-void ReducedChessAdapter::convertPiecesToTensor(chess::Board& board, const chess::PieceColor& color,
-	at::Tensor destination, const char& pieceChar)
-{
-	for (int x = 0; x < 8; x++)
-	{
-		for (int y = 0; y < 8; y++)
-		{
-			if (board.board[x][y] == nullptr)
-				continue;
-			if (board.board[x][y]->getPieceChar() != pieceChar)
-				continue;
-			if (board.board[x][y]->getPieceColor() == color)
-				destination[x][y] = 1.f;
-		}
-	}
-}
-
-void ReducedChessAdapter::replacePawnsWithQueens(chess::Board& board)
-{
-	replacePawnsWithQueens(board, 0);
-	replacePawnsWithQueens(board, 7);
-}
-
-void ReducedChessAdapter::replacePawnsWithQueens(chess::Board& board, int row)
-{
-	for (int x = 0; x < 8; x++)
-	{
-		if (board.board[x][row] == nullptr)
-			continue;
-		if (board.board[x][row]->getPieceChar() != 'P')
-			continue;
-
-		chess::PieceColor  pawnColor = board.board[x][row]->getPieceColor();
-		delete board.board[x][row];
-		board.board[x][row] = new Queen(pawnColor);
-	}
-}
-
-bool ReducedChessAdapter::bothKingsStillThere(const chess::Board& board)
-{
-	int numberKings = 0;
-	for (int x = 0; x < 8; x++)
-	{
-		for (int y = 0; y < 8; y++)
-		{
-			if (board.board[x][y] == nullptr)
-				continue;
-			if (board.board[x][y]->getPieceChar() == 'K')
-				numberKings++;
-		}
-	}
-
-	if (numberKings == 2)
-		return true;
-
-	return false;
-}
-
-std::string ReducedChessAdapter::convertStateToString(chess::Board& board, int currentPlayer)
-{
-	return std::to_string(currentPlayer) + convertBoardToString(board);
-}
-
-chess::Board ReducedChessAdapter::convertStateStringToBoard(std::string state)
-{
-	state = state.substr(1);
-	return convertStringToBoard(state);
+	return 0;
 }
 
 int ReducedChessAdapter::getActionCount() const
 {
-	return this->actionCount;
+	return m_actionCount;
 }
