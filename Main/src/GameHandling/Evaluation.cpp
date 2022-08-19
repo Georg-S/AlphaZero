@@ -68,8 +68,7 @@ EvalResult Evaluation::evalMultiThreaded(MultiThreadingNeuralNetManager* threadM
 	for (int i = 0; i < threadManager->getThreadCount(); i++)
 	{
 		threadPool.push_back(std::thread(&Evaluation::selfPlayMultiThreadGames, this, threadManager, miniMaxAi, game,
-			std::ref(result), std::ref(gamesToPlay), std::ref(currentNetColor), rand())); // TODO use alphazero RNG instead of rand() ???
-		currentNetColor = game->getNextPlayer(currentNetColor);
+			&result, &gamesToPlay, &currentNetColor));
 	}
 
 	for (auto& thread : threadPool)
@@ -79,15 +78,13 @@ EvalResult Evaluation::evalMultiThreaded(MultiThreadingNeuralNetManager* threadM
 }
 
 void Evaluation::selfPlayMultiThreadGames(MultiThreadingNeuralNetManager* threadManager, Ai* miniMaxAi, Game* game,
-	EvalResult& result, int& gamesToPlay, int& color, int seed)
+	EvalResult* outResult, int* gamesToPlay, int* color)
 {
-	srand(seed);
-
 	int myColor = 0;
 	while (true)
 	{
 		mut.lock();
-		if (gamesToPlay == 0)
+		if ((*gamesToPlay) == 0)
 		{
 			threadManager->safeDecrementActiveThreads();
 			mut.unlock();
@@ -95,9 +92,9 @@ void Evaluation::selfPlayMultiThreadGames(MultiThreadingNeuralNetManager* thread
 		}
 		else
 		{
-			myColor = color;
-			color = game->getNextPlayer(color);
-			gamesToPlay--;
+			myColor = *color;
+			*color = game->getNextPlayer(*color);
+			(*gamesToPlay)--;
 			mut.unlock();
 		}
 
@@ -105,13 +102,12 @@ void Evaluation::selfPlayMultiThreadGames(MultiThreadingNeuralNetManager* thread
 
 		mut.lock();
 		if (winner == 0)
-			result.draws++;
+			outResult->draws++;
 		else if (winner == myColor)
-			result.wins++;
+			outResult->wins++;
 		else
-			result.losses++;
+			outResult->losses++;
 		mut.unlock();
-
 	}
 }
 
@@ -143,4 +139,3 @@ int Evaluation::runGameMultiThreaded(MultiThreadingNeuralNetManager* threadManag
 
 	return game->getPlayerWon(state);
 }
-

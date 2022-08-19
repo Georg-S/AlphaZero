@@ -19,8 +19,8 @@ void TicTacToeHandler::startTwoPlayerTicTacToeGame()
 void TicTacToeHandler::traininingPerformanceTest(torch::DeviceType device)
 {
 	TicTacToeAdapter adap = TicTacToeAdapter();
-	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 3, 3, 9, device);
-	AlphaZeroTraining training = AlphaZeroTraining(9, neuralNet, device);
+	auto neuralNet = std::make_unique<DefaultNeuralNet>(2, 3, 3, 9, device);
+	AlphaZeroTraining training = AlphaZeroTraining(9, neuralNet.get(), device);
 
 	loadPerformanceTestParameters(training);
 
@@ -55,18 +55,16 @@ void TicTacToeHandler::evalTicTacToe(bool multiThreaded)
 			result = evalTicTacToe(path, torch::kCUDA);
 		writeEvaluationResultToFile(i + 1, result, myfile);
 	}
-
-	myfile.close();
 }
 
 EvalResult TicTacToeHandler::evalTicTacToe(std::string netName, torch::DeviceType device)
 {
 	TicTacToeAdapter adap = TicTacToeAdapter();
-	DefaultNeuralNet* toEval = new DefaultNeuralNet(2, 3, 3, 9, netName, device);
-	NeuralNetAi neuralNetAi = NeuralNetAi(toEval, &adap, 9, evalMCTSCount, false, device);
+	auto toEval = std::make_unique <DefaultNeuralNet>(2, 3, 3, 9, netName, device);
+	NeuralNetAi neuralNetAi = NeuralNetAi(toEval.get(), &adap, 9, evalMCTSCount, false, device);
 	ttt::MiniMaxAi minimaxAi = ttt::MiniMaxAi();
 	EvalResult result = Evaluation::eval(&neuralNetAi, &minimaxAi, &adap);
-	delete toEval;
+
 	return result;
 }
 
@@ -77,11 +75,11 @@ EvalResult TicTacToeHandler::evalTicTacToeMultiThreaded(std::string netName, tor
 
 	Evaluation evaluation = Evaluation(torch::kCUDA, evalMCTSCount);
 
-	DefaultNeuralNet* toEval = new DefaultNeuralNet(2, 3, 3, 9, netName, device);
-	MultiThreadingNeuralNetManager threadManager = MultiThreadingNeuralNetManager(threadCount, threadCount, toEval);
+	auto toEval = std::make_unique<DefaultNeuralNet>(2, 3, 3, 9, netName, device);
+	MultiThreadingNeuralNetManager threadManager = MultiThreadingNeuralNetManager(threadCount, threadCount, toEval.get());
 	ttt::MiniMaxAi minimaxAi = ttt::MiniMaxAi();
 	EvalResult result = evaluation.evalMultiThreaded(&threadManager, &minimaxAi, &adap);
-	delete toEval;
+
 	return result;
 }
 
@@ -122,13 +120,12 @@ void TicTacToeHandler::runTraining(const TrainingParameters& params)
 	TicTacToeAdapter adap = TicTacToeAdapter();
 
 	torch::DeviceType device = params.device;
-	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 3, 3, 9, device);
+	auto neuralNet = std::make_unique<DefaultNeuralNet>(2, 3, 3, 9, device);
 	neuralNet->setLearningRate(params.learningRate);
-	AlphaZeroTraining training = AlphaZeroTraining(9, neuralNet, device);
+	AlphaZeroTraining training = AlphaZeroTraining(9, neuralNet.get(), device);
 	setTrainingParameters(training, params);
 
 	training.runTraining(&adap);
-	delete neuralNet;
 }
 
 void TicTacToeHandler::setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params)

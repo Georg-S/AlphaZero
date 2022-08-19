@@ -4,8 +4,8 @@ void ConnectFourHandler::connectFourAgainstNeuralNetAi(cn4::PlayerColor playerCo
 	int countMcts, bool probabilistic, torch::DeviceType device)
 {
 	ConnectFourAdapter adap = ConnectFourAdapter();
-	DefaultNeuralNet neuralNet = DefaultNeuralNet(2, 7, 6, 7, preTrainedPath + "/" + netName, device);
-	NeuralNetAi* ai = new NeuralNetAi(&neuralNet, &adap, 7, countMcts, probabilistic, device);
+	auto neuralNet = std::make_unique<DefaultNeuralNet>(2, 7, 6, 7, preTrainedPath + "/" + netName, device);
+	NeuralNetAi* ai = new NeuralNetAi(neuralNet.get(), &adap, 7, countMcts, probabilistic, device);
 	cn4::PlayerColor aiColor = (cn4::PlayerColor)((int)playerColor % 2 + 1);
 	ConnectFour connectFour = ConnectFour(aiColor, ai);
 
@@ -29,8 +29,8 @@ void ConnectFourHandler::startTwoPlayerConnectFourGame()
 void ConnectFourHandler::traininingPerformanceTest(torch::DeviceType device)
 {
 	ConnectFourAdapter adap = ConnectFourAdapter();
-	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 7, 6, 7, device);
-	AlphaZeroTraining training = AlphaZeroTraining(7, neuralNet, device);
+	auto neuralNet = std::make_unique<DefaultNeuralNet>(2, 7, 6, 7, device);
+	AlphaZeroTraining training = AlphaZeroTraining(7, neuralNet.get(), device);
 	loadPerformanceTestParameters(training);
 
 
@@ -109,12 +109,12 @@ AlphaZeroTraining::Parameters ConnectFourHandler::getDefaultConnectFourTrainingP
 EvalResult ConnectFourHandler::evalConnectFour(std::string netName, int miniMaxDepth, torch::DeviceType device)
 {
 	ConnectFourAdapter adap = ConnectFourAdapter();
-	DefaultNeuralNet* toEval = new DefaultNeuralNet(2, 7, 6, 7, netName, device);
-	NeuralNetAi neuralNetAi = NeuralNetAi(toEval, &adap, 7, evalMCTSCount, false, device);
+	auto toEval = std::make_unique<DefaultNeuralNet>(2, 7, 6, 7, netName, device);
+	NeuralNetAi neuralNetAi = NeuralNetAi(toEval.get(), &adap, 7, evalMCTSCount, false, device);
 	cn4::NegaMaxAi ai1 = cn4::NegaMaxAi(miniMaxDepth);
 
 	EvalResult result = Evaluation::eval(&neuralNetAi, &ai1, &adap, 50);
-	delete toEval;
+
 	return result;
 }
 
@@ -123,13 +123,12 @@ EvalResult ConnectFourHandler::evalConnectFourMultiThreaded(std::string netName,
 	constexpr int threadCount = 100;
 
 	Evaluation evaluation = Evaluation(torch::kCUDA, evalMCTSCount);
-
-	DefaultNeuralNet* toEval = new DefaultNeuralNet(2, 7, 6, 7, netName, device);
-	MultiThreadingNeuralNetManager threadManager = MultiThreadingNeuralNetManager(threadCount, threadCount, toEval);
+	auto toEval = std::make_unique<DefaultNeuralNet>(2, 7, 6, 7, netName, device);
+	MultiThreadingNeuralNetManager threadManager = MultiThreadingNeuralNetManager(threadCount, threadCount, toEval.get());
 	cn4::NegaMaxAi miniMaxAi = cn4::NegaMaxAi(miniMaxDepth);
 	ConnectFourAdapter adap = ConnectFourAdapter();
 	EvalResult result = evaluation.evalMultiThreaded(&threadManager, &miniMaxAi, &adap);
-	delete toEval;
+
 	return result;
 }
 
@@ -143,11 +142,10 @@ void ConnectFourHandler::runTraining(const TrainingParameters& params)
 {
 	ConnectFourAdapter adap = ConnectFourAdapter();
 	torch::DeviceType device = params.device;
-	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 7, 6, 7, device);
+	auto neuralNet = std::make_unique<DefaultNeuralNet>(2, 7, 6, 7, device);
 	neuralNet->setLearningRate(params.learningRate);
-	AlphaZeroTraining training = AlphaZeroTraining(7, neuralNet, device);
+	AlphaZeroTraining training = AlphaZeroTraining(7, neuralNet.get(), device);
 	setTrainingParameters(training, params);
 
 	training.runTraining(&adap);
-	delete neuralNet;
 }
