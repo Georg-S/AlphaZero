@@ -34,45 +34,31 @@ void TicTacToeHandler::traininingPerformanceTest(torch::DeviceType device)
 
 void TicTacToeHandler::evalTicTacToe(bool multiThreaded)
 {
+	constexpr int multiThreadingThreadCount = 1;
 	std::ofstream myfile;
 	myfile.open(std::to_string(evalMCTSCount) + "_50_100k_001.csv");
 	myfile << "Iteration; Wins; Draws; Losses \n";
 	EvalResult result;
 
-	if (multiThreaded)
-		result = evalTicTacToeMultiThreaded(preTrainedPath + "/start", torch::kCUDA);
-	else
-		result = evalTicTacToe(preTrainedPath + "/start", torch::kCUDA);
+	const int threads = multiThreaded ? multiThreadingThreadCount : 1;
+
+	result = evalTicTacToeMultiThreaded(preTrainedPath + "/start", torch::kCUDA, threads);
+
 	writeEvaluationResultToFile(0, result, myfile);
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 40; i++)
 	{
 		std::string path = preTrainedPath + "/iteration" + std::to_string(i);
 		std::cout << path << std::endl;
-		if (multiThreaded)
-			result = evalTicTacToeMultiThreaded(path, torch::kCUDA);
-		else
-			result = evalTicTacToe(path, torch::kCUDA);
+		result = evalTicTacToeMultiThreaded(path, torch::kCUDA, threads);
+
 		writeEvaluationResultToFile(i + 1, result, myfile);
 	}
 }
 
-EvalResult TicTacToeHandler::evalTicTacToe(std::string netName, torch::DeviceType device)
+EvalResult TicTacToeHandler::evalTicTacToeMultiThreaded(std::string netName, torch::DeviceType device, int threadCount)
 {
 	TicTacToeAdapter adap = TicTacToeAdapter();
-	auto toEval = std::make_unique <DefaultNeuralNet>(2, 3, 3, 9, netName, device);
-	NeuralNetAi neuralNetAi = NeuralNetAi(toEval.get(), &adap, 9, evalMCTSCount, false, device);
-	ttt::MiniMaxAi minimaxAi = ttt::MiniMaxAi();
-	EvalResult result = Evaluation::eval(&neuralNetAi, &minimaxAi, &adap);
-
-	return result;
-}
-
-EvalResult TicTacToeHandler::evalTicTacToeMultiThreaded(std::string netName, torch::DeviceType device)
-{
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	constexpr int threadCount = 5;
-
 	Evaluation evaluation = Evaluation(torch::kCUDA, evalMCTSCount);
 
 	auto toEval = std::make_unique<DefaultNeuralNet>(2, 3, 3, 9, netName, device);

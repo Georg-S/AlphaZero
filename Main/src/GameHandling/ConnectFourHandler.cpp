@@ -57,13 +57,12 @@ void ConnectFourHandler::evalConnectFour(bool multiThreaded)
 
 	myfile << "Iteration; Wins; Draws; Losses \n";
 
+	constexpr int multiThreadingThreads = 10;
+	const int miniMaxDepth = 0;
+	const int threads = multiThreaded ? multiThreadingThreads : 1;
 
-	int miniMaxDepth = 0;
+	result = evalConnectFourMultiThreaded(preTrainedPath + "/start", miniMaxDepth, torch::kCUDA, threads);
 
-	if (multiThreaded)
-		result = evalConnectFourMultiThreaded(preTrainedPath + "/start", miniMaxDepth, torch::kCUDA);
-	else
-		result = evalConnectFour(preTrainedPath + "/start", miniMaxDepth, torch::kCUDA);
 	writeEvaluationResultToFile(0, result, myfile);
 
 	for (int i = 0; i < 25; i++)
@@ -71,10 +70,7 @@ void ConnectFourHandler::evalConnectFour(bool multiThreaded)
 		std::string path = preTrainedPath + "/iteration" + std::to_string(i);
 		std::cout << path << std::endl;
 
-		if (multiThreaded)
-			result = evalConnectFourMultiThreaded(path, miniMaxDepth, torch::kCUDA);
-		else
-			result = evalConnectFour(path, miniMaxDepth, torch::kCUDA);
+		result = evalConnectFourMultiThreaded(path, miniMaxDepth, torch::kCUDA, threads);
 
 		writeEvaluationResultToFile(i + 1, result, myfile);
 	}
@@ -106,22 +102,8 @@ AlphaZeroTraining::Parameters ConnectFourHandler::getDefaultConnectFourTrainingP
 	return params;
 }
 
-EvalResult ConnectFourHandler::evalConnectFour(std::string netName, int miniMaxDepth, torch::DeviceType device)
+EvalResult ConnectFourHandler::evalConnectFourMultiThreaded(std::string netName, int miniMaxDepth, torch::DeviceType device, int threadCount)
 {
-	ConnectFourAdapter adap = ConnectFourAdapter();
-	auto toEval = std::make_unique<DefaultNeuralNet>(2, 7, 6, 7, netName, device);
-	NeuralNetAi neuralNetAi = NeuralNetAi(toEval.get(), &adap, 7, evalMCTSCount, false, device);
-	cn4::NegaMaxAi ai1 = cn4::NegaMaxAi(miniMaxDepth);
-
-	EvalResult result = Evaluation::eval(&neuralNetAi, &ai1, &adap, 50);
-
-	return result;
-}
-
-EvalResult ConnectFourHandler::evalConnectFourMultiThreaded(std::string netName, int miniMaxDepth, torch::DeviceType device)
-{
-	constexpr int threadCount = 100;
-
 	Evaluation evaluation = Evaluation(torch::kCUDA, evalMCTSCount);
 	auto toEval = std::make_unique<DefaultNeuralNet>(2, 7, 6, 7, netName, device);
 	MultiThreadingNeuralNetManager threadManager = MultiThreadingNeuralNetManager(threadCount, threadCount, toEval.get());

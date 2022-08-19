@@ -28,8 +28,7 @@ public:
 	void setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params);
 
 private:
-	EvalResult evalConnectFour(std::string netName, int miniMaxDepth, torch::DeviceType device = torch::kCPU);
-	EvalResult evalConnectFourMultiThreaded(std::string netName, int miniMaxDepth, torch::DeviceType device);
+	EvalResult evalConnectFourMultiThreaded(std::string netName, int miniMaxDepth, torch::DeviceType device, int threadCount);
 	void writeEvaluationResultToFile(int iteration, const EvalResult& result, std::ofstream& file);
 	AlphaZeroTraining::Parameters getDefaultConnectFourTrainingParameters() const;
 	void loadPerformanceTestParameters(AlphaZeroTraining& connectFourZero);
