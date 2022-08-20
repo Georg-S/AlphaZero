@@ -13,6 +13,7 @@ DefaultNeuralNet::DefaultNeuralNet(int64_t numPlanes, int64_t width, int64_t hei
 	net = CutDownAlphaGoZeroNet(numPlanes, width, height, numOutputs);
 	this->load(fileName);
 	net->to(device);
+	net->eval();
 }
 
 void DefaultNeuralNet::load(std::string fileName)
@@ -54,4 +55,14 @@ void DefaultNeuralNet::training(torch::Tensor& val, torch::Tensor& probs, torch:
 
 	loss.backward();
 	optimizer.step();
+}
+
+void DefaultNeuralNet::setToEval()
+{
+	net->eval();
+}
+
+void DefaultNeuralNet::setToTraining()
+{
+	net->train();
 }

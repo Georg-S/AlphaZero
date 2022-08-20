@@ -34,7 +34,7 @@ void TicTacToeHandler::traininingPerformanceTest(torch::DeviceType device)
 
 void TicTacToeHandler::evalTicTacToe(bool multiThreaded)
 {
-	constexpr int multiThreadingThreadCount = 1;
+	constexpr int multiThreadingThreadCount = 10;
 	std::ofstream myfile;
 	myfile.open(std::to_string(evalMCTSCount) + "_50_100k_001.csv");
 	myfile << "Iteration; Wins; Draws; Losses \n";

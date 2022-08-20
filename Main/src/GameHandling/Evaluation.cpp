@@ -15,9 +15,7 @@ EvalResult Evaluation::evalMultiThreaded(MultiThreadingNeuralNetManager* threadM
 	m_gamesToPlay = numberEvalGames;
 
 	for (int i = 0; i < threadManager->getThreadCount(); i++)
-	{
 		threadPool.push_back(std::thread(&Evaluation::selfPlayMultiThreadGames, this, threadManager, miniMaxAi, game, &result));
-	}
 
 	for (auto& thread : threadPool)
 		thread.join();

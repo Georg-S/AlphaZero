@@ -17,6 +17,8 @@ public:
 	void copyNetFrom(NeuralNetwork* copySource) override;
 	void setLearningRate(float learningRate) override;
 	void training(torch::Tensor& val, torch::Tensor& probs, torch::Tensor& probsTarget, torch::Tensor& valueTarget) override;
+	void setToEval();
+	void setToTraining();
 
 private:
 	CutDownAlphaGoZeroNet net = nullptr;
