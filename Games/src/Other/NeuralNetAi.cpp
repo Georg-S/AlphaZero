@@ -8,13 +8,13 @@ NeuralNetAi::NeuralNetAi(NeuralNetwork* net, Game* game, int actionCount, int mc
 	m_probabilistic(probabilistic),
 	m_device(device)
 {
+	m_mcts = MonteCarloTreeSearch(m_actionCount);
 }
 
 int NeuralNetAi::getMove(const std::string& state, int color)
 {
-	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(m_actionCount);
-	mcts.search(m_mctsCount, state, m_net, m_game, color, m_device);
-	std::vector<float> probs = mcts.getProbabilities(state);
+	m_mcts.search(m_mctsCount, state, m_net, m_game, color, m_device);
+	std::vector<float> probs = m_mcts.getProbabilities(state);
 
 	if (m_probabilistic)
 		return ALZ::getRandomIndex(probs, 1.0);
