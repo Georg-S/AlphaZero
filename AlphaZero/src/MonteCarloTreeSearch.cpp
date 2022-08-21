@@ -96,6 +96,7 @@ void MonteCarloTreeSearch::clearAll()
 std::vector<float> MonteCarloTreeSearch::getProbabilities(const std::string& state, float temperature)
 {
 	std::vector<float> probs;
+	probs.reserve(m_actionCount);
 	int countSum = sum(m_visitCount[state]);
 
 	for (int i = 0; i < m_actionCount; i++)

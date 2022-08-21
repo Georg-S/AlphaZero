@@ -5,6 +5,7 @@ void ConnectFourHandler::connectFourAgainstNeuralNetAi(cn4::PlayerColor playerCo
 {
 	ConnectFourAdapter adap = ConnectFourAdapter();
 	auto neuralNet = std::make_unique<DefaultNeuralNet>(2, 7, 6, 7, preTrainedPath + "/" + netName, device);
+	neuralNet->setToEval();
 	NeuralNetAi* ai = new NeuralNetAi(neuralNet.get(), &adap, 7, countMcts, probabilistic, device);
 	cn4::PlayerColor aiColor = (cn4::PlayerColor)((int)playerColor % 2 + 1);
 	ConnectFour connectFour = ConnectFour(aiColor, ai);
@@ -30,6 +31,7 @@ void ConnectFourHandler::traininingPerformanceTest(torch::DeviceType device)
 {
 	ConnectFourAdapter adap = ConnectFourAdapter();
 	auto neuralNet = std::make_unique<DefaultNeuralNet>(2, 7, 6, 7, device);
+	neuralNet->setToTraining();
 	AlphaZeroTraining training = AlphaZeroTraining(7, neuralNet.get(), device);
 	loadPerformanceTestParameters(training);
 
@@ -51,14 +53,14 @@ void ConnectFourHandler::loadPerformanceTestParameters(AlphaZeroTraining& connec
 
 void ConnectFourHandler::evalConnectFour(bool multiThreaded)
 {
+	constexpr int multiThreadingThreads = 10;
 	EvalResult result;
 	std::ofstream myfile;
 	myfile.open(std::to_string(evalMCTSCount) + "_100_200k_001.csv");
 
 	myfile << "Iteration; Wins; Draws; Losses \n";
 
-	constexpr int multiThreadingThreads = 10;
-	const int miniMaxDepth = 0;
+	const int miniMaxDepth = 5;
 	const int threads = multiThreaded ? multiThreadingThreads : 1;
 
 	result = evalConnectFourMultiThreaded(preTrainedPath + "/start", miniMaxDepth, torch::kCUDA, threads);
@@ -106,6 +108,7 @@ EvalResult ConnectFourHandler::evalConnectFourMultiThreaded(std::string netName,
 {
 	Evaluation evaluation = Evaluation(torch::kCUDA, evalMCTSCount);
 	auto toEval = std::make_unique<DefaultNeuralNet>(2, 7, 6, 7, netName, device);
+	toEval->setToEval();
 	MultiThreadingNeuralNetManager threadManager = MultiThreadingNeuralNetManager(threadCount, threadCount, toEval.get());
 	cn4::NegaMaxAi miniMaxAi = cn4::NegaMaxAi(miniMaxDepth);
 	ConnectFourAdapter adap = ConnectFourAdapter();
@@ -126,6 +129,7 @@ void ConnectFourHandler::runTraining(const TrainingParameters& params)
 	torch::DeviceType device = params.device;
 	auto neuralNet = std::make_unique<DefaultNeuralNet>(2, 7, 6, 7, device);
 	neuralNet->setLearningRate(params.learningRate);
+	neuralNet->setToTraining();
 	AlphaZeroTraining training = AlphaZeroTraining(7, neuralNet.get(), device);
 	setTrainingParameters(training, params);
 

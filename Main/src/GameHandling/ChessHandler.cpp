@@ -4,6 +4,7 @@ void ChessHandler::chessAgainstNeuralNetAi(ceg::PieceColor playerColor, std::str
 	torch::DeviceType device)
 {
 	auto chessNet = std::make_unique<DefaultNeuralNet>(12, 8, 8, 4096, preTrainedPath + "/" + netName, device);
+	chessNet->setToEval();
 	ReducedChessAdapter adap = ReducedChessAdapter();
 	NeuralNetAi neuralNetAi = NeuralNetAi(chessNet.get(), &adap, 4096, mctsCount, randomize, device);
 	Chess chess = Chess(&neuralNetAi, playerColor);
@@ -20,6 +21,7 @@ void ChessHandler::startTwoPlayerChessGame()
 void ChessHandler::traininingPerformanceTest(torch::DeviceType device)
 {
 	auto chessNet = std::make_unique<DefaultNeuralNet>(12, 8, 8, 4096, device);
+	chessNet->setToTraining();
 	ReducedChessAdapter adap = ReducedChessAdapter();
 	AlphaZeroTraining alphaZero = AlphaZeroTraining(4096, chessNet.get(), device);
 	loadPerformanceTestParameters(alphaZero);
@@ -73,6 +75,7 @@ void ChessHandler::runTraining(const TrainingParameters& params)
 	torch::DeviceType device = params.device;
 	auto neuralNet = std::make_unique<DefaultNeuralNet>(12, 8, 8, 4096, device);
 	neuralNet->setLearningRate(params.learningRate);
+	neuralNet->setToTraining();
 	AlphaZeroTraining training = AlphaZeroTraining(4096, neuralNet.get(), device);
 	setTrainingParameters(training, params);
 

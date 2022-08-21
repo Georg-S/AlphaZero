@@ -17,6 +17,7 @@ public:
 	int getMove(const std::string& state, int color) override;
 
 private:
+	MonteCarloTreeSearch m_mcts;
 	NeuralNetwork* m_net;
 	Game* m_game;
 	int m_actionCount;

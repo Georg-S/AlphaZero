@@ -17,6 +17,12 @@ public:
 	void copyNetFrom(NeuralNetwork* copySource) override;
 	void setLearningRate(float learningRate) override;
 	void training(torch::Tensor& val, torch::Tensor& probs, torch::Tensor& probsTarget, torch::Tensor& valueTarget) override;
+	/// Sets the network to production mode (interference)
+	/**
+	*  This is needed because some parts of a neural network differ from training to interference.
+	*  E.g. In "Training Mode" the result of a batch normalization depends on the batch size of the input
+	*  however in interference mode, the batch size has no impact on the batch normalization at all.
+	*/
 	void setToEval();
 	void setToTraining();
 

@@ -5,6 +5,8 @@ DefaultNeuralNet::DefaultNeuralNet(int64_t numPlanes, int64_t width, int64_t hei
 {
 	net = CutDownAlphaGoZeroNet(numPlanes, width, height, numOutputs);
 	net->to(device);
+	// By default if we create a new neural net, we are in training mode
+	net->train();
 }
 
 DefaultNeuralNet::DefaultNeuralNet(int64_t numPlanes, int64_t width, int64_t height, int64_t numOutputs,
@@ -13,6 +15,7 @@ DefaultNeuralNet::DefaultNeuralNet(int64_t numPlanes, int64_t width, int64_t hei
 	net = CutDownAlphaGoZeroNet(numPlanes, width, height, numOutputs);
 	this->load(fileName);
 	net->to(device);
+	// By default if we load a neural net, we are in eval mode (interference / production)
 	net->eval();
 }
 
