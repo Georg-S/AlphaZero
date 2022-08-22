@@ -36,13 +36,11 @@ void Evaluation::selfPlayMultiThreadGames(MultiThreadingNeuralNetManager* thread
 			m_mut.unlock();
 			return;
 		}
-		else
-		{
-			myColor = m_currentColor;
-			m_currentColor = game->getNextPlayer(m_currentColor);
-			m_gamesToPlay--;
-			m_mut.unlock();
-		}
+
+		myColor = m_currentColor;
+		m_currentColor = game->getNextPlayer(m_currentColor);
+		m_gamesToPlay--;
+		m_mut.unlock();
 
 		int winner = runGameMultiThreaded(threadManager, miniMaxAi, game, myColor);
 
