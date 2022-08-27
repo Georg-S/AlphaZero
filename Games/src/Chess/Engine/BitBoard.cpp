@@ -127,7 +127,7 @@ void ceg::BitBoard::set_en_passant(const std::string& FEN_str)
 		if (c >= 'a' && c <= 'h')
 			x = c - 'a';
 		if (c >= '1' && c <= '8')
-			y = c - '1';
+			y = '8' - c;	// Convert from "official" coordinates to internal board coordinates
 	}
 	if (x != -1 && y != -1)
 		set_bit(en_passant_mask, x, y);
@@ -247,10 +247,10 @@ std::string ceg::BitBoard::getEnPassantFENString() const
 
 	int index = get_bit_index_lsb(en_passant_mask);
 	int x = index % 8;
-	int y = index / 8;
+	int y = 8 - (index / 8); // Convert from internal board coordinates to "official" coordinates
 
 	char column = 'a' + x;
-	std::string rowStr = std::to_string(y + 1);
+	std::string rowStr = std::to_string(y);
 
 	return column + rowStr;
 }

@@ -6,7 +6,7 @@
 #include <Chess/ChessAiAdapter.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
 #include <Chess/Chess.h>
-#include <Chess/ReducedChessAdapter.h>
+#include <Chess/ChessAdapter.h>
 #include <Chess/Engine/NegamaxAI.h>
 #include <Other/NeuralNetAi.h>
 #include "Evaluation.h"

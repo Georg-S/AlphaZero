@@ -10,14 +10,10 @@ namespace chess
 	int getIntFromMove(const ceg::Move& move);
 }
 
-// The Reduced Adapter for Chess
-// Reduced means, the adapter doesn't know about Castling and En passant
-// This is mainly a simplification and hopefully speeds up learning
-
-class ReducedChessAdapter : public Game
+class ChessAdapter : public Game
 {
 public:
-	ReducedChessAdapter();
+	ChessAdapter();
 	std::vector<int> getAllPossibleMoves(const std::string& state, int currentPlayer) override;
 	int getInitialPlayer() override;
 	std::string getInitialGameState() override;

@@ -26,14 +26,14 @@ set(ChessEngine
 	)
 
 set(ChessFiles
-	"include/Chess/ReducedChessAdapter.h"
+	"include/Chess/ChessAdapter.h"
 	"include/Chess/RenderInformation.h"
 	"include/Chess/Chess.h"
 	"include/Chess/Constant.h"
 	"include/Chess/Renderer.h"
 	"include/Chess/RenderInformation.h"
 	"include/Chess/ChessAiAdapter.h"
-	"src/Chess/ReducedChessAdapter.cpp"
+	"src/Chess/ChessAdapter.cpp"
 	"src/Chess/Chess.cpp"
 	"src/Chess/Renderer.cpp"
 	"src/Chess/ChessAiAdapter.cpp"

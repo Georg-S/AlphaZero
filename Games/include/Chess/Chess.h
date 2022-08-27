@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "Chess/ReducedChessAdapter.h"
+#include "Chess/ChessAdapter.h"
 #include "Other/Ai.h"
 #include "Engine/ChessEngine.h"
 #include "Renderer.h"
