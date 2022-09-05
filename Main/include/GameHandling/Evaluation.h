@@ -22,17 +22,16 @@ public:
 	Evaluation() = default;
 	Evaluation(torch::DeviceType device, int mctsCount);
 
-	static EvalResult eval(Ai* neuralNetAi, Ai* miniMaxAi, Game* game, int numberEvalGames = 100);
-	static int runGame(Ai* ai1, Ai* ai2, Game* game);
-
 	EvalResult evalMultiThreaded(MultiThreadingNeuralNetManager* threadManager, Ai* miniMaxAi, Game* game, int numberEvalGames = 100);
 	void selfPlayMultiThreadGames(MultiThreadingNeuralNetManager* threadManager, Ai* miniMaxAi,
-		Game* game, EvalResult& result, int& gamesToPlay, int& color, int seed);
+		Game* game, EvalResult* outResult);
 	int runGameMultiThreaded(MultiThreadingNeuralNetManager* threadManager, Ai* minMaxAi, Game* game, int neuralNetColor);
 
 private:
-	std::mutex mut;
-	int mctsCount = 50;
+	std::mutex m_mut;
+	int m_gamesToPlay = 0;
+	int m_currentColor = 0;
+	int m_mctsCount = 50;
 	torch::DeviceType device = torch::kCUDA;
 };
 

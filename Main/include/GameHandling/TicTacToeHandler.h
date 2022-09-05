@@ -27,10 +27,9 @@ public:
 	void evalTicTacToe(bool multiThreaded = true);
 
 private:
-	EvalResult evalTicTacToeMultiThreaded(std::string netName, torch::DeviceType device);
-	EvalResult evalTicTacToe(std::string netName, torch::DeviceType device = torch::kCPU);
+	EvalResult evalTicTacToeMultiThreaded(std::string netName, torch::DeviceType device, int threadCount);
 	void writeEvaluationResultToFile(int iteration, const EvalResult& result, std::ofstream& file);
-	void loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraining& ticTacToeZero);
+	AlphaZeroTraining::Parameters getDefaultTicTacToeTrainingParameters() const;
 	void loadPerformanceTestParameters(AlphaZeroTraining& ticTacToeZero);
 
 	inline static const std::string trainingPath = "NeuralNets/Training/TicTacToe";

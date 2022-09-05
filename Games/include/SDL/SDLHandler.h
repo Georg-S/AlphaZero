@@ -14,10 +14,11 @@
 struct RenderingElement
 {
 	RenderingElement() = default;
-	RenderingElement(SDL_Rect transform, SDL_Texture* texture) 
+	RenderingElement(SDL_Rect transform, SDL_Texture* texture)
 		: transform(std::move(transform))
-		, texture(texture) 
-	{};
+		, texture(texture)
+	{
+	};
 
 	SDL_Rect transform = {};
 	SDL_Texture* texture = nullptr;
@@ -28,6 +29,8 @@ class SDLTextureWrapper
 {
 public:
 	SDLTextureWrapper() = delete;
+	SDLTextureWrapper(const SDLTextureWrapper&) = delete;
+	SDLTextureWrapper& operator=(const SDLTextureWrapper&) = delete;
 	SDLTextureWrapper(SDL_Texture* texture) : m_texture(texture) {};
 	~SDLTextureWrapper() { SDL_DestroyTexture(m_texture); }
 	SDL_Texture* texture() const { return m_texture; };

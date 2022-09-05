@@ -25,7 +25,7 @@ int cn4::NegaMaxAi::getMove(const std::string& state, int playerColor)
 	}
 	std::vector<int> bestMoves = game::getHighestValueElements(possibleMoves, values);
 
-	return game::getRandomElement(bestMoves);
+	return ALZ::getRandomElement(bestMoves);
 }
 
 int cn4::NegaMaxAi::negamax(const Board& board, int depth, PlayerColor currentPlayer, int alpha, int beta) const

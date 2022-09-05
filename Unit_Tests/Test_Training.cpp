@@ -15,7 +15,7 @@ TEST(Training, test_random_action)
 
 	for (int i = 0; i < amount; i++)
 	{
-		int buf = AlphaZeroTraining::getRandomAction(test);
+		int buf = ALZ::getRandomIndex(test, 1.0);
 		results[buf] += 1;
 	}
 
@@ -31,20 +31,22 @@ TEST(Training, test_mult_thread_training)
 	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 3, 3, 9, device);
 	AlphaZeroTraining training = AlphaZeroTraining(9, neuralNet, device);
 
-	training.TRAINING_DONT_USE_DRAWS = false;
-	training.RESTRICT_GAME_LENGTH = false;
-	training.DRAW_AFTER_COUNT_OF_STEPS = 50;
-	training.TRAINING_ITERATIONS = 100;
-	training.setMaxReplayMemorySize(40000);
-	training.MIN_REPLAY_MEMORY_SIZE = 100;
-	training.SELF_PLAY_MCTS_COUNT = 50;
-	training.NUM_SELF_PLAY_GAMES = 10;
-	training.TRAINING_BATCH_SIZE = 100;
-	training.SAVE_ITERATION_COUNT = 1;
-	training.RANDOM_MOVE_COUNT = 3;
-	training.NUMBER_CPU_THREADS = 10;
+	auto trainingParams = AlphaZeroTraining::Parameters{};
+	trainingParams.TRAINING_DONT_USE_DRAWS = false;
+	trainingParams.RESTRICT_GAME_LENGTH = false;
+	trainingParams.DRAW_AFTER_COUNT_OF_STEPS = 50;
+	trainingParams.TRAINING_ITERATIONS = 100;
+	trainingParams.MAX_REPLAY_MEMORY_SIZE = 40000;
+	trainingParams.MIN_REPLAY_MEMORY_SIZE = 100;
+	trainingParams.SELF_PLAY_MCTS_COUNT = 50;
+	trainingParams.NUM_SELF_PLAY_GAMES = 10;
+	trainingParams.TRAINING_BATCH_SIZE = 100;
+	trainingParams.SAVE_ITERATION_COUNT = 1;
+	trainingParams.RANDOM_MOVE_COUNT = 3;
+	trainingParams.NUMBER_CPU_THREADS = 10;
+	training.setTrainingParams(trainingParams);
 
-	training.selfPlay(neuralNet, &adap);
+	training.selfPlayMultiThread(neuralNet, &adap);
 }
 
 #endif

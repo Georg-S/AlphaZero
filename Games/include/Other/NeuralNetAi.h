@@ -5,6 +5,8 @@
 #include <MonteCarloTreeSearch.h>
 #include <NeuralNetworks/NeuralNetwork.h>
 #include <Game.h>
+#include <AlphaZeroUtility.h>
+#include "Utility.h"
 #include "Ai.h"
 
 
@@ -15,15 +17,13 @@ public:
 	int getMove(const std::string& state, int color) override;
 
 private:
-	int getArgMaxIndex(const std::vector<float>& vec);
-	int getProbabilisticAction(const std::vector<float>& vec);
-
-	NeuralNetwork* net;
-	Game* game;
-	int actionCount;
-	int mctsCount;
-	torch::DeviceType device;
-	bool probabilistic = false;
+	MonteCarloTreeSearch m_mcts;
+	NeuralNetwork* m_net;
+	Game* m_game;
+	int m_actionCount;
+	int m_mctsCount;
+	torch::DeviceType m_device;
+	bool m_probabilistic = false;
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_NEURALNETAI_H

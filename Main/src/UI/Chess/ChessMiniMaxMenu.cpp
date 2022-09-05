@@ -23,11 +23,11 @@ void ChessMiniMaxMenu::reset()
 void ChessMiniMaxMenu::on_PlayButton_clicked()
 {
 	int miniMaxDepth = chessMiniMax->MiniMaxDepthInput->text().toInt();
-	chess::PieceColor playerColor;
+	ceg::PieceColor playerColor;
 	if (chessMiniMax->PlayerColor1Radio->isChecked())
-		playerColor = chess::PieceColor::WHITE;
+		playerColor = ceg::PieceColor::WHITE;
 	else
-		playerColor = chess::PieceColor::BLACK;
+		playerColor = ceg::PieceColor::BLACK;
 
 	gameHandler.chessAgainstMiniMaxAi(miniMaxDepth, playerColor);
 }

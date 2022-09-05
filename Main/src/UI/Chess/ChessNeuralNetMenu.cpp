@@ -21,11 +21,11 @@ void ChessNeuralNetMenu::reset()
 
 void ChessNeuralNetMenu::on_PlayButton_clicked()
 {
-	chess::PieceColor playerColor;
+	ceg::PieceColor playerColor;
 	if (neuralNetUi->PlayerColor1Radio->isChecked())
-		playerColor = chess::PieceColor::WHITE;
+		playerColor = ceg::PieceColor::WHITE;
 	else
-		playerColor = chess::PieceColor::BLACK;
+		playerColor = ceg::PieceColor::BLACK;
 
 	torch::DeviceType device;
 	if (neuralNetUi->CPURadio->isChecked())

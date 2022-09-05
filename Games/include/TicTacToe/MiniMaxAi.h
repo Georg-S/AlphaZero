@@ -4,6 +4,7 @@
 #include <vector>
 #include <climits>
 #include <algorithm>
+#include <AlphaZeroUtility.h>
 #include "Other/Ai.h"
 #include "Other/Utility.h"
 #include "TicTacToe/GameLogic.h"

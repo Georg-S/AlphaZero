@@ -23,18 +23,19 @@ public:
 private:
 	void calculateOutput();
 	void clearInput();
-	void waitUntilResultIsReady();
 	void wakeUpAllThreads();
 
-	NeuralNetwork* net;
-	torch::Tensor inputBuffer;
-	std::tuple<torch::Tensor, torch::Tensor> output;
-	std::condition_variable cond;
-	std::mutex threadingMutex;
-	int elementsAdded = 0;
-	const int threadCount;
-	int activeThreads = 0;
-	int waitingThreads = 0;
+	NeuralNetwork* m_net;
+	torch::Tensor m_inputBuffer;
+	std::tuple<torch::Tensor, torch::Tensor> m_output;
+	std::condition_variable m_outputCalculated;
+	std::condition_variable m_allThreadsWokenUp;
+	std::mutex m_threadingMutex;
+	int m_elementsAdded = 0;
+	const int m_threadCount;
+	int m_activeThreads = 0;
+	int m_threadsWaitingOnOutput = 0;
+	int m_threadsToWakeup = 0;
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_MULTITHREADINGNEURALNETMANAGER_H

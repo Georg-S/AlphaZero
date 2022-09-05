@@ -19,8 +19,9 @@ void TicTacToeHandler::startTwoPlayerTicTacToeGame()
 void TicTacToeHandler::traininingPerformanceTest(torch::DeviceType device)
 {
 	TicTacToeAdapter adap = TicTacToeAdapter();
-	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 3, 3, 9, device);
-	AlphaZeroTraining training = AlphaZeroTraining(9, neuralNet, device);
+	auto neuralNet = std::make_unique<DefaultNeuralNet>(2, 3, 3, 9, device);
+	neuralNet->setToTraining();
+	AlphaZeroTraining training = AlphaZeroTraining(9, neuralNet.get(), device);
 
 	loadPerformanceTestParameters(training);
 
@@ -34,54 +35,39 @@ void TicTacToeHandler::traininingPerformanceTest(torch::DeviceType device)
 
 void TicTacToeHandler::evalTicTacToe(bool multiThreaded)
 {
+	constexpr int multiThreadingThreadCount = 10;
 	std::ofstream myfile;
 	myfile.open(std::to_string(evalMCTSCount) + "_50_100k_001.csv");
 	myfile << "Iteration; Wins; Draws; Losses \n";
 	EvalResult result;
 
-	if (multiThreaded)
-		result = evalTicTacToeMultiThreaded(preTrainedPath + "/start", torch::kCUDA);
-	else
-		result = evalTicTacToe(preTrainedPath + "/start", torch::kCUDA);
+	const int threads = multiThreaded ? multiThreadingThreadCount : 1;
+
+	result = evalTicTacToeMultiThreaded(preTrainedPath + "/start", torch::kCUDA, threads);
+
 	writeEvaluationResultToFile(0, result, myfile);
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 40; i++)
 	{
 		std::string path = preTrainedPath + "/iteration" + std::to_string(i);
 		std::cout << path << std::endl;
-		if (multiThreaded)
-			result = evalTicTacToeMultiThreaded(path, torch::kCUDA);
-		else
-			result = evalTicTacToe(path, torch::kCUDA);
+		result = evalTicTacToeMultiThreaded(path, torch::kCUDA, threads);
+
 		writeEvaluationResultToFile(i + 1, result, myfile);
 	}
-
-	myfile.close();
 }
 
-EvalResult TicTacToeHandler::evalTicTacToe(std::string netName, torch::DeviceType device)
+EvalResult TicTacToeHandler::evalTicTacToeMultiThreaded(std::string netName, torch::DeviceType device, int threadCount)
 {
 	TicTacToeAdapter adap = TicTacToeAdapter();
-	DefaultNeuralNet* toEval = new DefaultNeuralNet(2, 3, 3, 9, netName, device);
-	NeuralNetAi neuralNetAi = NeuralNetAi(toEval, &adap, 9, evalMCTSCount, false, device);
-	ttt::MiniMaxAi minimaxAi = ttt::MiniMaxAi();
-	EvalResult result = Evaluation::eval(&neuralNetAi, &minimaxAi, &adap);
-	delete toEval;
-	return result;
-}
-
-EvalResult TicTacToeHandler::evalTicTacToeMultiThreaded(std::string netName, torch::DeviceType device)
-{
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	constexpr int threadCount = 5;
-
 	Evaluation evaluation = Evaluation(torch::kCUDA, evalMCTSCount);
 
-	DefaultNeuralNet* toEval = new DefaultNeuralNet(2, 3, 3, 9, netName, device);
-	MultiThreadingNeuralNetManager threadManager = MultiThreadingNeuralNetManager(threadCount, threadCount, toEval);
+	auto toEval = std::make_unique<DefaultNeuralNet>(2, 3, 3, 9, netName, device);
+	toEval->setToEval();
+	MultiThreadingNeuralNetManager threadManager = MultiThreadingNeuralNetManager(threadCount, threadCount, toEval.get());
 	ttt::MiniMaxAi minimaxAi = ttt::MiniMaxAi();
 	EvalResult result = evaluation.evalMultiThreaded(&threadManager, &minimaxAi, &adap);
-	delete toEval;
+
 	return result;
 }
 
@@ -90,28 +76,31 @@ void TicTacToeHandler::writeEvaluationResultToFile(int iteration, const EvalResu
 	file << std::to_string(iteration) << ";" << std::to_string(result.wins) << ";" << std::to_string(result.draws) << ";" << std::to_string(result.losses) << std::endl;
 }
 
-void TicTacToeHandler::loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraining& ticTacToeZero)
+AlphaZeroTraining::Parameters TicTacToeHandler::getDefaultTicTacToeTrainingParameters() const
 {
-	ticTacToeZero.neuralNetPath = trainingPath;
-	ticTacToeZero.TRAINING_DONT_USE_DRAWS = false;
-	ticTacToeZero.RESTRICT_GAME_LENGTH = false;
+	auto params = AlphaZeroTraining::Parameters{};
+	params.neuralNetPath = trainingPath;
+	params.TRAINING_DONT_USE_DRAWS = false;
+	params.RESTRICT_GAME_LENGTH = false;
+	params.DRAW_AFTER_COUNT_OF_STEPS = 50;
+	params.TRAINING_ITERATIONS = 10000;
+	params.MAX_REPLAY_MEMORY_SIZE = 40000;
+	params.MIN_REPLAY_MEMORY_SIZE = 100;
+	params.SELF_PLAY_MCTS_COUNT = mcts_count;
+	params.NUM_SELF_PLAY_GAMES = 1000;
+	params.TRAINING_BATCH_SIZE = 100;
+	params.SAVE_ITERATION_COUNT = 1;
+	params.RANDOM_MOVE_COUNT = 3;
 
-	ticTacToeZero.DRAW_AFTER_COUNT_OF_STEPS = 50;
-	ticTacToeZero.TRAINING_ITERATIONS = 10000;
-	ticTacToeZero.setMaxReplayMemorySize(40000);
-	ticTacToeZero.MIN_REPLAY_MEMORY_SIZE = 100;
-	ticTacToeZero.SELF_PLAY_MCTS_COUNT = mcts_count;
-	ticTacToeZero.NUM_SELF_PLAY_GAMES = 1000;
-	ticTacToeZero.TRAINING_BATCH_SIZE = 100;
-	ticTacToeZero.SAVE_ITERATION_COUNT = 1;
-	ticTacToeZero.RANDOM_MOVE_COUNT = 3;
+	return params;
 }
 
 void TicTacToeHandler::loadPerformanceTestParameters(AlphaZeroTraining& ticTacToeZero)
 {
-	loadDefaultParametersForAlphaZeroTraining(ticTacToeZero);
-	ticTacToeZero.NUM_SELF_PLAY_GAMES = 20;
-	ticTacToeZero.TRAINING_ITERATIONS = 1;
+	auto params = getDefaultTicTacToeTrainingParameters();
+	params.NUM_SELF_PLAY_GAMES = 20;
+	params.TRAINING_ITERATIONS = 1;
+	ticTacToeZero.setTrainingParams(params);
 }
 
 void TicTacToeHandler::runTraining(const TrainingParameters& params)
@@ -119,31 +108,19 @@ void TicTacToeHandler::runTraining(const TrainingParameters& params)
 	TicTacToeAdapter adap = TicTacToeAdapter();
 
 	torch::DeviceType device = params.device;
-	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 3, 3, 9, device);
+	auto neuralNet = std::make_unique<DefaultNeuralNet>(2, 3, 3, 9, device);
 	neuralNet->setLearningRate(params.learningRate);
-	AlphaZeroTraining training = AlphaZeroTraining(9, neuralNet, device);
+	neuralNet->setToTraining();
+	AlphaZeroTraining training = AlphaZeroTraining(9, neuralNet.get(), device);
 	setTrainingParameters(training, params);
 
 	training.runTraining(&adap);
-	delete neuralNet;
 }
 
 void TicTacToeHandler::setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params)
 {
-	training.setMaxReplayMemorySize(params.replayMemorySize);
-	training.neuralNetPath = trainingPath;
-	training.TRAINING_DONT_USE_DRAWS = !params.useDraws;
-	training.RESTRICT_GAME_LENGTH = params.restrictGameLength;
-
-	training.DRAW_AFTER_COUNT_OF_STEPS = params.maxGameLength;
-
-	training.TRAINING_ITERATIONS = params.trainingIterations;
-	training.SELF_PLAY_MCTS_COUNT = params.selfPlayMctsCount;
-	training.NUM_SELF_PLAY_GAMES = params.selfPlayGamesCount;
-	training.TRAINING_BATCH_SIZE = params.trainingBatchSize;
-	training.SAVE_ITERATION_COUNT = params.saveIterationCount;
-	training.RANDOM_MOVE_COUNT = params.randomizedMoveCount;
-	training.NUMBER_CPU_THREADS = params.cpuThreads;
+	auto trainingParams = params.getAlphaZeroParams(trainingPath);
+	training.setTrainingParams(trainingParams);
 }
 
 void TicTacToeHandler::ticTacToeAgainstNeuralNetAi(ttt::PlayerColor playerColor, std::string netName, int countMcts, bool probabilistic,
@@ -151,6 +128,7 @@ void TicTacToeHandler::ticTacToeAgainstNeuralNetAi(ttt::PlayerColor playerColor,
 {
 	TicTacToeAdapter adap = TicTacToeAdapter();
 	DefaultNeuralNet neuralNet = DefaultNeuralNet(2, 3, 3, 9, preTrainedPath + "/" + netName, device);
+	neuralNet.setToEval();
 	NeuralNetAi ai = NeuralNetAi(&neuralNet, &adap, 9, countMcts, probabilistic, device);
 	PlayerColor aiColor = getNextPlayer(playerColor);
 	TicTacToe ttt = TicTacToe(&ai, aiColor);

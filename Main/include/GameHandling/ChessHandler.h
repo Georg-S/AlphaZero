@@ -3,10 +3,11 @@
 
 #include <chrono>
 #include <AlphaZeroTraining.h>
+#include <Chess/ChessAiAdapter.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
 #include <Chess/Chess.h>
-#include <Chess/ReducedChessAdapter.h>
-#include <Chess/MiniMaxAi.h>
+#include <Chess/ChessAdapter.h>
+#include <Chess/Engine/NegamaxAI.h>
 #include <Other/NeuralNetAi.h>
 #include "Evaluation.h"
 #include "TrainingParameters.h"
@@ -15,16 +16,15 @@ class ChessHandler
 {
 public:
 	ChessHandler() = default;
-	void chessAgainstNeuralNetAi(chess::PieceColor playerColor, std::string netName, int mctsCount, bool randomize, torch::DeviceType device);
-	void chessAgainstMiniMaxAi(int miniMaxDepth, chess::PieceColor playerColor);
-	void runTrainingWithDefaultParameters(torch::DeviceType device);
+	void chessAgainstNeuralNetAi(ceg::PieceColor playerColor, std::string netName, int mctsCount, bool randomize, torch::DeviceType device);
+	void chessAgainstMiniMaxAi(int miniMaxDepth, ceg::PieceColor playerColor);
 	void runTraining(const TrainingParameters& params);
 	static void startTwoPlayerChessGame();
 	void traininingPerformanceTest(torch::DeviceType device);
 	void setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params);
 
 private:
-	void loadDefaultParametersForAlphaZeroTraining(AlphaZeroTraining& chessZero);
+	AlphaZeroTraining::Parameters getDefaultChessTrainingParameters() const;
 	void loadPerformanceTestParameters(AlphaZeroTraining& chessZero);
 
 	inline static const std::string preTrainedPath = "NeuralNets/PreTrained/Chess";

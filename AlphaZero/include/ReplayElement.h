@@ -4,11 +4,11 @@
 struct ReplayElement
 {
 	ReplayElement(std::string state, int currentPlayer, std::vector<float> probs, float result)
+		: state(std::move(state)),
+		currentPlayer(currentPlayer),
+		mctsProbabilities(std::move(probs)),
+		result(result)
 	{
-		this->state = std::move(state);
-		this->currentPlayer = currentPlayer;
-		this->mctsProbabilities = std::move(probs);
-		this->result = result;
 	}
 
 	std::string state;
