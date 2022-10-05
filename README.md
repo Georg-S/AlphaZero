@@ -58,7 +58,7 @@ Install the following:
 -	CMake
 -	Libtorch
 -	Cuda Toolkit	with the apropriate version to Libtorch
--	cuDNN		with the aprpriate version to the Cuda Toolkit
+-	cuDNN		with the appropriate version to the Cuda Toolkit
 -	SDL2
 -	SDL2_image
 -	Visual Studio 2019 (you need the MSVC)
@@ -115,7 +115,7 @@ Install the following:
 -	CMake
 -	Libtorch
 -	Cuda    Toolkit	with the apropriate version to Libtorch
--	cuDNN		with the aprpriate version to the Cuda Toolkit
+-	cuDNN		with the appropriate version to the Cuda Toolkit
 -	SDL2
 -	SDL2_image
 -	Qt
