@@ -18,7 +18,7 @@ public:
 		m_data.reserve(maxSize);
 	}
 
-	T& operator[](int index)
+	T& operator[](size_t index)
 	{
 		return m_data[index];
 	}

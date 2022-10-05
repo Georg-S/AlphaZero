@@ -3,9 +3,9 @@
 using namespace ALZ;
 
 MonteCarloTreeSearch::MonteCarloTreeSearch(int actionCount, float cpuct)
+	: m_actionCount(actionCount)
+	, m_cpuct(cpuct)
 {
-	m_actionCount = actionCount;
-	m_cpuct = cpuct;
 }
 
 void MonteCarloTreeSearch::search(int count, std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device)
@@ -30,7 +30,7 @@ float MonteCarloTreeSearch::search(std::string strState, NeuralNetwork* net, Gam
 	int bestAction = getActionWithHighestUpperConfidenceBound(strState, currentPlayer, game);
 	std::string nextStateString = game->makeMove(strState, bestAction, currentPlayer);
 
-	if (!(m_loopDetection.find(nextStateString) == m_loopDetection.end()))
+	if (m_loopDetection.find(nextStateString) != m_loopDetection.end())
 		return 0;
 
 	int nextPlayer = game->getNextPlayer(currentPlayer);
@@ -66,7 +66,7 @@ float MonteCarloTreeSearch::multiThreadedSearch(std::string strState, Game* game
 	int bestAction = getActionWithHighestUpperConfidenceBound(strState, currentPlayer, game);
 	std::string nextStateString = game->makeMove(strState, bestAction, currentPlayer);
 
-	if (!(m_loopDetection.find(nextStateString) == m_loopDetection.end()))
+	if (m_loopDetection.find(nextStateString) != m_loopDetection.end())
 		return 0;
 
 	int nextPlayer = game->getNextPlayer(currentPlayer);
@@ -81,7 +81,7 @@ float MonteCarloTreeSearch::multiThreadedSearch(std::string strState, Game* game
 void MonteCarloTreeSearch::fillQValuesAndVisitCount(const std::string& state)
 {
 	m_qValues[state] = std::vector<float>(m_actionCount, 0.f);
-	m_visitCount[state] = std::vector<int>(m_actionCount, 0.f);
+	m_visitCount[state] = std::vector<int>(m_actionCount, 0);
 }
 
 void MonteCarloTreeSearch::clearAll()
@@ -140,13 +140,12 @@ float MonteCarloTreeSearch::multiThreadedExpandNewState(const std::string& strSt
 
 int MonteCarloTreeSearch::getActionWithHighestUpperConfidenceBound(const std::string& strState, int currentPlayer, Game* game)
 {
-	float maxUtility = -std::numeric_limits<float>::max();
+	float maxUtility = std::numeric_limits<float>::lowest();
 	int bestAction = -1;
-	std::vector<int> possibleMoves = game->getAllPossibleMoves(strState, currentPlayer);
+	auto possibleMoves = game->getAllPossibleMoves(strState, currentPlayer);
 
-	for (int i = 0; i < possibleMoves.size(); i++)
+	for (auto action : possibleMoves)
 	{
-		int action = possibleMoves[i];
 		float utility = calculateUpperConfidenceBound(strState, action);
 
 		if (utility > maxUtility)
