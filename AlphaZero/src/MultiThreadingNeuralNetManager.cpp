@@ -1,9 +1,9 @@
 #include "MultiThreadingNeuralNetManager.h"
 
 MultiThreadingNeuralNetManager::MultiThreadingNeuralNetManager(int threadCount, int activeThreads, NeuralNetwork* net)
-	: m_threadCount(threadCount)
+	: m_net(net)
+	, m_threadCount(threadCount)
 	, m_activeThreads(activeThreads)
-	, m_net(net)
 	, m_elementsAdded(0)
 {
 }

@@ -31,9 +31,9 @@ private:
 	std::condition_variable m_outputCalculated;
 	std::condition_variable m_allThreadsWokenUp;
 	std::mutex m_threadingMutex;
-	int m_elementsAdded = 0;
 	const int m_threadCount;
 	int m_activeThreads = 0;
+	int m_elementsAdded = 0;
 	int m_threadsWaitingOnOutput = 0;
 	int m_threadsToWakeup = 0;
 };
