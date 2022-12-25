@@ -165,17 +165,10 @@ std::vector<uint64_t> ceg::get_every_bit_combination(const std::vector<int>& bit
 		return result;
 
 	std::vector<int> values = std::vector<int>(bit_indices.size());
-	bool not_finished = true;
 	int index = 0;
 
-	while (not_finished)
+	while (index < values.size())
 	{
-		if (index >= values.size()) 
-		{
-			not_finished = true;
-			break;
-		}
-
 		if (values[index] == 0) 
 		{
 			values[index] = 1;

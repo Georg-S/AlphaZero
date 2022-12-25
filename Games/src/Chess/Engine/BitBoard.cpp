@@ -210,10 +210,7 @@ std::string ceg::BitBoard::getPiecesFENString() const
 		}
 
 		if (counter != 0)
-		{
 			piecesString += std::to_string(counter);
-			counter = 0;
-		}
 
 		if (y != 7)
 			piecesString += "/";

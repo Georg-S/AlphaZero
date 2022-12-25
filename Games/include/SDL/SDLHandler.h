@@ -67,8 +67,8 @@ private:
 	SDL_Renderer* m_renderer = NULL;
 	int m_screenWidth;
 	int m_screenHeight;
-	uint32_t m_startTime;
 	bool m_useCaching = false;
+	uint32_t m_startTime;
 	bool m_exit = false;
 	std::map<std::string, std::unique_ptr<SDLTextureWrapper>> m_cache;
 };

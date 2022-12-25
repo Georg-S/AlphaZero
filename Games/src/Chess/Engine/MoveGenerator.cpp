@@ -7,9 +7,6 @@ ceg::MoveGenerator::MoveGenerator()
 
 ceg::CheckInfo ceg::MoveGenerator::get_check_info(BitBoard board, bool black) const
 {
-	Pieces black_pieces = board.black_pieces;
-	Pieces white_pieces = board.white_pieces;
-
 	if (black)
 		return get_check_info(&board.white_pieces, &board.black_pieces, board, white_pawn_attack_moves);
 	else
@@ -129,7 +126,7 @@ std::vector<ceg::InternalMove> ceg::MoveGenerator::get_all_possible_moves(Pieces
 	auto other_pawn_attack_moves = black ? white_pawn_attack_moves : black_pawn_attack_moves;
 	CheckInfo info = get_check_info(&cop_other, playing, board, other_pawn_attack_moves);
 
-	return std::move(get_all_possible_moves(playing, other, board, pawn_normal_moves, pawn_attack_moves, black, info));
+	return get_all_possible_moves(playing, other, board, pawn_normal_moves, pawn_attack_moves, black, info);
 }
 
 ceg::CheckInfo ceg::MoveGenerator::get_check_info(Pieces* player, const Pieces* other, const BitBoard& board,
@@ -146,9 +143,6 @@ ceg::CheckInfo ceg::MoveGenerator::get_check_info(Pieces* player, const Pieces* 
 	const auto king_diagonal_down = get_diagonal_down_moves(other_king_index, occupied);
 	const auto king_bishop_moves = king_diagonal_down | king_diagonal_up;
 	const auto king_rook_moves = king_vertical | king_horizontal;
-	const auto king_mask = king_bishop_moves | king_rook_moves;
-
-	const uint64_t playing_occupied_mask = ~(player->occupied);
 
 	auto add_to_pin_mask = [&result](uint64_t moves, uint64_t king_moves, const uint64_t* mask) -> bool
 	{

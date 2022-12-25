@@ -40,8 +40,8 @@ namespace ttt
 
 		static constexpr uint32_t fullBoard = 511;
 	private:
-		uint32_t m_dots;
 		uint32_t m_crosses;
+		uint32_t m_dots;
 		uint32_t m_occupied;
 	};
 

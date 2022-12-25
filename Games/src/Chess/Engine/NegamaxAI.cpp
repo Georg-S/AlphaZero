@@ -2,7 +2,7 @@
 
 ceg::NegamaxAI::NegamaxAI(MoveGenerator* move_generator)
 {
-	srand(time(NULL));
+	srand(static_cast<unsigned int>(time(NULL)));
 	init_hashing_table();
 	tt_table = new TTEntry[max_tt_entries];
 	this->move_generator = move_generator;

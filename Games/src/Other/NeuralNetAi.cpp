@@ -5,8 +5,8 @@ NeuralNetAi::NeuralNetAi(NeuralNetwork* net, Game* game, int actionCount, int mc
 	m_game(game),
 	m_actionCount(actionCount),
 	m_mctsCount(mctsCount),
-	m_probabilistic(probabilistic),
-	m_device(device)
+	m_device(device),
+	m_probabilistic(probabilistic)
 {
 	m_mcts = MonteCarloTreeSearch(m_actionCount);
 }

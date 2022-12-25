@@ -40,8 +40,8 @@ private:
 	int getActionWithHighestUpperConfidenceBound(const std::string& strState, int currentPlayer, Game* game);
 	float calculateUpperConfidenceBound(const std::string& strState, int action);
 
-	int m_actionCount;
-	float m_cpuct;
+	int m_actionCount = -1;
+	float m_cpuct = -1.0;
 	std::map<std::string, bool> m_loopDetection;
 	std::map<std::string, bool> m_visited;
 	std::map<std::string, std::vector<int>> m_visitCount;
