@@ -20,10 +20,9 @@ namespace ttt
 	private:
 		ttt::Move getMove(ttt::Board board, int color);
 		int evaluateBoard(const ttt::Board& board, PlayerColor currentPlayer, bool maximizingPlayer, int alpha, int beta);
-		std::vector<ttt::Move> getBestMoves(const std::vector<ttt::Move>& moves, const std::vector<int>& values);
 
-		PlayerColor m_color;
-		PlayerColor m_opponentColor;
+		PlayerColor m_color = PlayerColor::NONE;
+		PlayerColor m_opponentColor = PlayerColor::NONE;
 	};
 }
 

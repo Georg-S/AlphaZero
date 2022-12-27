@@ -51,7 +51,7 @@ namespace game
 		for (int i = 0; i < elements.size(); i++)
 		{
 			if (values[i] == highestValue)
-				highestElements.push_back(elements[i]);
+				highestElements.emplace_back(elements[i]);
 		}
 
 		return highestElements;

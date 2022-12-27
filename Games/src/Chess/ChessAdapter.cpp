@@ -99,7 +99,7 @@ static void convertPiecesToTensor(uint64_t pieces, at::Tensor destination)
 	}
 }
 
-static void setPiecesInTensor(const ceg::Pieces& pieces, uint64_t en_passant, at::Tensor destination, int startIndex)
+static void setPiecesInTensor(const ceg::Pieces& pieces, uint64_t en_passant, at::Tensor destination, size_t startIndex)
 {
 	convertPiecesToTensor(pieces.pawns, destination[startIndex]);
 	convertPiecesToTensor(pieces.rooks, destination[startIndex + 1]);

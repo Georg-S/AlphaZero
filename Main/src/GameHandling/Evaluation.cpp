@@ -1,8 +1,8 @@
 #include "GameHandling/Evaluation.h"
 
 Evaluation::Evaluation(torch::DeviceType device, int mctsCount) 
-	: device(device), 
-	m_mctsCount(mctsCount)
+	: m_mctsCount(mctsCount)
+	, device(device)
 {
 }
 
