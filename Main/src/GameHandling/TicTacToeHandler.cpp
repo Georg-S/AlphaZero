@@ -114,6 +114,7 @@ void TicTacToeHandler::runTraining(const TrainingParameters& params)
 	AlphaZeroTraining training = AlphaZeroTraining(9, neuralNet.get(), device);
 	setTrainingParameters(training, params);
 
+	ALZ::ScopedTimer timer{};
 	training.runTraining(&adap);
 }
 

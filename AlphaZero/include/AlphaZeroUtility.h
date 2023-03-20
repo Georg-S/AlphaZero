@@ -70,7 +70,7 @@ namespace ALZ
 			if (displayedSeconds > 0)
 				std::cout << displayedSeconds << " seconds, ";
 
-			std::cout << displayedMilliseconds << " milliseconds";
+			std::cout << displayedMilliseconds << " milliseconds" << std::endl;
 		}
 	private:
 		long long m_startTime;

@@ -79,6 +79,7 @@ void ChessHandler::runTraining(const TrainingParameters& params)
 	AlphaZeroTraining training = AlphaZeroTraining(4096, neuralNet.get(), device);
 	setTrainingParameters(training, params);
 
+	ALZ::ScopedTimer timer{};
 	training.runTraining(&adap);
 }
 
