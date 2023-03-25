@@ -79,7 +79,7 @@ void MultiThreadingNeuralNetManager::calculateOutput()
 
 void MultiThreadingNeuralNetManager::clearInput()
 {
-	m_inputBuffer = {};
+	m_inputBuffer = torch::Tensor{};
 	m_elementsAdded = 0;
 }
 

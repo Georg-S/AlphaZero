@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 project(Main)
 set(CMAKE_CXX_STANDARD 17)
 
-find_package(Qt5Widgets REQUIRED)
+find_package(Qt6Widgets REQUIRED)
 
 set(GameHandlingFiles
     "include/GameHandling/ChessHandler.h"
@@ -100,7 +100,7 @@ add_executable(Main
     )
 
 target_include_directories(Main PUBLIC include)
-target_link_libraries(Main AlphaZero Games Qt5::Widgets)
+target_link_libraries(Main AlphaZero Games Qt6::Widgets)
 
 #   create image folder and copy files into it
 add_custom_command(TARGET Main 
