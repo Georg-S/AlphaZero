@@ -53,6 +53,8 @@ public:
 	/// Sets the training parameters and creates a new replay buffer -> all elements in replay buffer get destroyed
 	void setTrainingParams(Parameters params);
 
+	std::vector<ReplayElement> selfPlayBatch(NeuralNetwork* net, Game* game) const;
+
 private:
 	RingBuffer<ReplayElement> m_replayMemory;
 	std::unique_ptr<MultiThreadingNeuralNetManager> m_threadManager;

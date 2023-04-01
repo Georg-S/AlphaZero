@@ -199,3 +199,59 @@ void AlphaZeroTraining::setTrainingParams(Parameters params)
 	m_params = std::move(params);
 	m_replayMemory = RingBuffer<ReplayElement>(m_params.MAX_REPLAY_MEMORY_SIZE);
 }
+
+namespace 
+{
+	struct GameState 
+	{
+		GameState(std::string currentState, int currentPlayer) 
+			: currentState(currentState)
+			, currentPlayer(currentPlayer)
+		{
+		}
+
+		std::string currentState;
+		int currentPlayer;
+	};
+}
+
+std::vector<ReplayElement> AlphaZeroTraining::selfPlayBatch(NeuralNetwork* net, Game* game) const
+{
+	constexpr int batchSize = 100;
+	int currentStep = 0;
+	auto trainingDataBuf = std::vector<std::vector<ReplayElement>>(batchSize);
+	auto monteCarloTreeSearchBuffer = std::vector<MonteCarloTreeSearch>(batchSize, { game->getActionCount() });
+	auto currentStates = std::vector<GameState>(batchSize, { game->getInitialGameState(), game->getInitialPlayer() });
+
+	while (!currentStates.empty())
+	{
+		for (size_t i = 0; i < currentStates.size(); i++)
+		{
+			auto& mcts = monteCarloTreeSearchBuffer[i];
+			auto& currentState = currentStates[i].currentState;
+			auto currentPlayer = currentStates[i].currentPlayer;
+			//if (m_params.RESTRICT_GAME_LENGTH && (currentStep >= m_params.DRAW_AFTER_COUNT_OF_STEPS))
+			//	gameTooLong = true;
+
+//			mcts.multiThreadedSearch(m_params.SELF_PLAY_MCTS_COUNT, currentState, game, currentPlayer, m_threadManager.get(), m_device);
+
+
+			
+
+			std::vector<float> probs = mcts.getProbabilities(currentState);
+
+			int action;
+			if (currentStep < m_params.RANDOM_MOVE_COUNT)
+				action = getRandomIndex(probs, 1.0);
+			else
+				action = getMaxElementIndex(probs);
+
+			trainingDataBuf[i].emplace_back(currentState, currentPlayer, std::move(probs), -1);
+			currentState = game->makeMove(currentState, action, currentPlayer);
+			currentPlayer = game->getNextPlayer(currentPlayer);
+			currentStep++;
+		}
+	}
+
+	return {};
+}

@@ -26,6 +26,8 @@ public:
 	float search(std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device = torch::kCPU);
 	void multiThreadedSearch(int count, std::string strState, Game* game, int currentPlayer,
 		MultiThreadingNeuralNetManager* threadingManager, torch::DeviceType device = torch::kCPU);
+	void specialSearch(std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device = torch::kCPU);
+	float searchWithoutExpansion(std::string strState, Game* game, int currentPlayer, bool* expansionNeeded);
 	float multiThreadedSearch(std::string strState, Game* game, int currentPlayer,
 		MultiThreadingNeuralNetManager* threadingManager,
 		torch::DeviceType device = torch::kCPU);
@@ -47,6 +49,15 @@ private:
 	std::map<std::string, std::vector<int>> m_visitCount;
 	std::map<std::string, std::vector<float>> m_qValues;
 	std::map<std::string, torch::Tensor> m_probabilities;
+	struct BackPropData 
+	{
+		BackPropData(std::string state, int player) : state(std::move(state)), player(player) {};
+
+		std::string state;
+		int player;
+		int bestAction;
+	};
+	std::vector<BackPropData> m_backProp;
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_MONTECARLOTREESEARCH_H
