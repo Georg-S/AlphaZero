@@ -26,8 +26,13 @@ public:
 	float search(std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device = torch::kCPU);
 	void multiThreadedSearch(int count, std::string strState, Game* game, int currentPlayer,
 		MultiThreadingNeuralNetManager* threadingManager, torch::DeviceType device = torch::kCPU);
-	void specialSearch(std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device = torch::kCPU);
-	float searchWithoutExpansion(std::string strState, Game* game, int currentPlayer, bool* expansionNeeded);
+	void backpropagateValue(float value);
+	void deferredExpansion(torch::Tensor valueTens, torch::Tensor probabilities);
+	bool runMultipleSearches(const std::string& strState, Game* game, int currentPlayer);
+	bool specialSearch(const std::string& strState, Game* game, int currentPlayer, int count);
+	bool continueSpecialSearch(const std::string& strState, Game* game, int currentPlayer, torch::Tensor valueTens, torch::Tensor probabilities);
+	void specialSearch(const std::string& strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device = torch::kCPU);
+	float searchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer, bool* expansionNeeded);
 	float multiThreadedSearch(std::string strState, Game* game, int currentPlayer,
 		MultiThreadingNeuralNetManager* threadingManager,
 		torch::DeviceType device = torch::kCPU);
@@ -44,6 +49,7 @@ private:
 
 	int m_actionCount = -1;
 	float m_cpuct = -1.0;
+	int m_mctsCount = 0;
 	std::map<std::string, bool> m_loopDetection;
 	std::map<std::string, bool> m_visited;
 	std::map<std::string, std::vector<int>> m_visitCount;

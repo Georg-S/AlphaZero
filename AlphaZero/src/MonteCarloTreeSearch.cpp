@@ -53,7 +53,63 @@ void MonteCarloTreeSearch::multiThreadedSearch(int count, std::string strState, 
 	}
 }
 
-void MonteCarloTreeSearch::specialSearch(std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device)
+void MonteCarloTreeSearch::backpropagateValue(float value)
+{
+	while(!m_backProp.empty())
+	{
+		value = -value;
+		auto& backProp = m_backProp.back();
+		auto& state = backProp.state;
+		auto bestAction = backProp.bestAction;
+		m_qValues[state][bestAction] = (m_visitCount[state][bestAction] * m_qValues[state][bestAction] + value) / (m_visitCount[state][bestAction] + 1);
+		m_visitCount[state][bestAction] += 1;
+		m_backProp.pop_back();
+	}
+}
+
+void MonteCarloTreeSearch::deferredExpansion(torch::Tensor valueTens, torch::Tensor probabilities)
+{
+	assert(!m_backProp.empty());
+	auto expansionState = m_backProp.back().state;
+	m_visited[expansionState] = true;
+	m_probabilities[expansionState] = probabilities[0].detach().to(torch::kCPU);
+	fillQValuesAndVisitCount(expansionState);
+	valueTens = valueTens[0][0].to(torch::kCPU);
+	float value = *(valueTens.data_ptr<float>());
+	m_backProp.pop_back();
+	backpropagateValue(value);
+}
+
+bool MonteCarloTreeSearch::runMultipleSearches(const std::string& strState, Game* game, int currentPlayer)
+{
+	bool expansionNeeded = false;
+	while (m_mctsCount--)
+	{
+		m_loopDetection.clear();
+		float value = searchWithoutExpansion(strState, game, currentPlayer, &expansionNeeded);
+		if (expansionNeeded)
+			return true;
+		else
+			backpropagateValue(value);
+	}
+	return false;
+}
+
+bool MonteCarloTreeSearch::specialSearch(const std::string& strState, Game* game, int currentPlayer, int count)
+{
+	m_mctsCount = count;
+
+	return runMultipleSearches(strState, game, currentPlayer);
+}
+
+bool MonteCarloTreeSearch::continueSpecialSearch(const std::string& strState, Game* game, int currentPlayer, torch::Tensor valueTens, torch::Tensor probabilities)
+{
+	deferredExpansion(valueTens, probabilities);
+
+	return runMultipleSearches(strState, game, currentPlayer);
+}
+
+void MonteCarloTreeSearch::specialSearch(const std::string& strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device)
 {
 	m_backProp.clear();
 	bool expansionNeeded = false;
@@ -66,19 +122,10 @@ void MonteCarloTreeSearch::specialSearch(std::string strState, NeuralNetwork* ne
 		m_backProp.pop_back();
 	}
 
-	for (size_t i = m_backProp.size(); i > 0;)
-	{
-		--i;
-		value = -value;
-		auto& backProp = m_backProp[i];
-		auto& state = backProp.state;
-		auto bestAction = backProp.bestAction;
-		m_qValues[state][bestAction] = (m_visitCount[state][bestAction] * m_qValues[state][bestAction] + value) / (m_visitCount[state][bestAction] + 1);
-		m_visitCount[state][bestAction] += 1;
-	}
+	backpropagateValue(value);
 }
 
-float MonteCarloTreeSearch::searchWithoutExpansion(std::string strState, Game* game, int currentPlayer, bool* expansionNeeded)
+float MonteCarloTreeSearch::searchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer, bool* expansionNeeded)
 {
 	m_loopDetection[strState] = true;
 
