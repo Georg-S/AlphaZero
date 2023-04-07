@@ -16,6 +16,48 @@
 #include "Game.h"
 #include "NeuralNetworks/NeuralNetwork.h"
 
+class NeuralNetInputBuffer 
+{
+public:
+	NeuralNetInputBuffer() = default;
+	NeuralNetInputBuffer(const NeuralNetInputBuffer&) = delete;
+	NeuralNetInputBuffer& operator=(const NeuralNetInputBuffer&) = delete;
+
+	void addToInput(torch::Tensor inputTensor) 
+	{
+		if (m_input.numel() == 0)
+			m_input = inputTensor;
+		else
+			m_input = torch::cat({ m_input, inputTensor }, 0);
+		m_inputSize++;
+	}
+
+	void calculateOutput(NeuralNetwork* net)
+	{
+		auto rawOutput = net->calculate(m_input);
+		m_outputSize = m_inputSize;
+		m_inputSize = 0;
+		m_input = torch::Tensor{};
+
+		m_outputValues = std::get<0>(rawOutput).detach().to(torch::kCPU);
+		m_outputProbabilities = std::get<1>(rawOutput).detach().to(torch::kCPU);
+	}
+
+	std::pair<torch::Tensor,torch::Tensor> getOutput(size_t index)
+	{
+		assert(index < m_outputSize);
+
+		return { m_outputValues[index], m_outputProbabilities[index] };
+	}
+
+private:
+	torch::Tensor m_input;
+	torch::Tensor m_outputProbabilities;
+	torch::Tensor m_outputValues;
+	size_t m_inputSize = 0;
+	size_t m_outputSize = 0;
+};
+
 class MonteCarloTreeSearch
 {
 public:
