@@ -23,17 +23,20 @@ public:
 	NeuralNetInputBuffer(const NeuralNetInputBuffer&) = delete;
 	NeuralNetInputBuffer& operator=(const NeuralNetInputBuffer&) = delete;
 
-	void addToInput(torch::Tensor inputTensor) 
+	int addToInput(torch::Tensor inputTensor) 
 	{
 		if (m_input.numel() == 0)
 			m_input = inputTensor;
 		else
 			m_input = torch::cat({ m_input, inputTensor }, 0);
-		m_inputSize++;
+		return m_inputSize++;
 	}
 
 	void calculateOutput(NeuralNetwork* net)
 	{
+		if (m_inputSize == 0)
+			return;
+
 		auto rawOutput = net->calculate(m_input);
 		m_outputSize = m_inputSize;
 		m_inputSize = 0;

@@ -204,39 +204,77 @@ namespace
 {
 	struct GameState 
 	{
-		GameState(std::string currentState, int currentPlayer) 
+		GameState(std::string currentState, int currentPlayer, int actionCount) 
 			: currentState(currentState)
 			, currentPlayer(currentPlayer)
+			, mcts(MonteCarloTreeSearch(actionCount))
 		{
 		}
 
 		std::string currentState;
 		int currentPlayer;
+		bool continueMcts = false;
+		int netBufferIndex = -1;
+		MonteCarloTreeSearch mcts;
+		std::vector<ReplayElement> trainingData;
 	};
 }
 
-std::vector<ReplayElement> AlphaZeroTraining::selfPlayBatch(NeuralNetwork* net, Game* game) const
+std::vector<ReplayElement> AlphaZeroTraining::selfPlayBatch(NeuralNetwork* net, Game* game)
 {
-	constexpr int batchSize = 100;
+	std::vector<ReplayElement> resultingTrainingsData;
+	bool gameTooLong = false;
+	torch::DeviceType device = torch::kCUDA;
+	NeuralNetInputBuffer netInputBuffer = {};
+	constexpr int batchSize = 2;
+	constexpr int mctsCount = 50;
+	int finishedGamesCounter = 0;
 	int currentStep = 0;
-	auto trainingDataBuf = std::vector<std::vector<ReplayElement>>(batchSize);
-	auto monteCarloTreeSearchBuffer = std::vector<MonteCarloTreeSearch>(batchSize, { game->getActionCount() });
-	auto currentStates = std::vector<GameState>(batchSize, { game->getInitialGameState(), game->getInitialPlayer() });
+	auto currentStates = std::vector<GameState>(batchSize, { game->getInitialGameState(), game->getInitialPlayer(), game->getActionCount()});
 
 	while (!currentStates.empty())
 	{
+		netInputBuffer.calculateOutput(net);
+
 		for (size_t i = 0; i < currentStates.size(); i++)
 		{
-			auto& mcts = monteCarloTreeSearchBuffer[i];
+			auto& mcts = currentStates[i].mcts;
 			auto& currentState = currentStates[i].currentState;
-			auto currentPlayer = currentStates[i].currentPlayer;
-			//if (m_params.RESTRICT_GAME_LENGTH && (currentStep >= m_params.DRAW_AFTER_COUNT_OF_STEPS))
-			//	gameTooLong = true;
+			auto& continueMcts = currentStates[i].continueMcts;
+			auto& currentPlayer = currentStates[i].currentPlayer;
+			auto& netInputIndex = currentStates[i].netBufferIndex;
+			auto& trainingData = currentStates[i].trainingData;
 
-//			mcts.multiThreadedSearch(m_params.SELF_PLAY_MCTS_COUNT, currentState, game, currentPlayer, m_threadManager.get(), m_device);
+			if (m_params.RESTRICT_GAME_LENGTH && (currentStep >= m_params.DRAW_AFTER_COUNT_OF_STEPS)) 
+			{
+				addResult(currentStates[i].trainingData, 0);
+				if (!m_params.TRAINING_DONT_USE_DRAWS) 
+				{
+					resultingTrainingsData.insert(resultingTrainingsData.end()
+						, std::make_move_iterator(trainingData.begin())
+						, std::make_move_iterator(trainingData.end()));
+				}
 
+				currentStates.erase(currentStates.begin() + i); // Instead of erase it is thinkable to restart the game here
+				i--;
+				continue;
+			}
 
-			
+			if (!continueMcts) 
+			{
+				continueMcts = mcts.specialSearch(currentState, game, currentPlayer, mctsCount);
+			}
+			else 
+			{
+				auto [valueTens, probTens] = netInputBuffer.getOutput(netInputIndex);
+				continueMcts = mcts.continueSpecialSearch(currentState, game, currentPlayer, valueTens, probTens);
+			}
+
+			if (continueMcts)
+			{
+				netInputIndex = netInputBuffer.addToInput(mcts.getExpansionNeuralNetInput(game, device));
+				continue;
+			}
 
 			std::vector<float> probs = mcts.getProbabilities(currentState);
 
@@ -246,12 +284,22 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlayBatch(NeuralNetwork* net, 
 			else
 				action = getMaxElementIndex(probs);
 
-			trainingDataBuf[i].emplace_back(currentState, currentPlayer, std::move(probs), -1);
+			trainingData.emplace_back(currentState, currentPlayer, std::move(probs), -1);
 			currentState = game->makeMove(currentState, action, currentPlayer);
 			currentPlayer = game->getNextPlayer(currentPlayer);
 			currentStep++;
+
+			if (game->isGameOver(currentState)) 
+			{
+				addResult(trainingData, game->getPlayerWon(currentState));
+				resultingTrainingsData.insert(resultingTrainingsData.end()
+					, std::make_move_iterator(trainingData.begin())
+					, std::make_move_iterator(trainingData.end()));
+				currentStates.erase(currentStates.begin() + i); // Instead of erase it is thinkable to restart the game here
+				i--;
+			}
 		}
 	}
 
-	return {};
+	return resultingTrainingsData;
 }

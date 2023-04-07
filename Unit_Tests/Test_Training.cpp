@@ -29,8 +29,8 @@ TEST(Training, test_mult_thread_training)
 	torch::DeviceType device = torch::kCUDA;
 	TicTacToeAdapter adap = TicTacToeAdapter();
 
-	DefaultNeuralNet* neuralNet = new DefaultNeuralNet(2, 3, 3, 9, device);
-	AlphaZeroTraining training = AlphaZeroTraining(9, neuralNet, device);
+	DefaultNeuralNet neuralNet = DefaultNeuralNet(2, 3, 3, 9, device);
+	AlphaZeroTraining training = AlphaZeroTraining(9, &neuralNet, device);
 
 	auto trainingParams = AlphaZeroTraining::Parameters{};
 	trainingParams.TRAINING_DONT_USE_DRAWS = false;
@@ -47,7 +47,7 @@ TEST(Training, test_mult_thread_training)
 	trainingParams.NUMBER_CPU_THREADS = 10;
 	training.setTrainingParams(trainingParams);
 
-	training.selfPlayMultiThread(neuralNet, &adap);
+	training.selfPlayMultiThread(&neuralNet, &adap);
 }
 
 #endif //RunTests
