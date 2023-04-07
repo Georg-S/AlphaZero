@@ -215,6 +215,7 @@ namespace
 		int currentPlayer;
 		bool continueMcts = false;
 		int netBufferIndex = -1;
+		int currentStep = 0;
 		MonteCarloTreeSearch mcts;
 		std::vector<ReplayElement> trainingData;
 	};
@@ -229,7 +230,6 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlayBatch(NeuralNetwork* net, 
 	constexpr int batchSize = 2;
 	constexpr int mctsCount = 50;
 	int finishedGamesCounter = 0;
-	int currentStep = 0;
 	auto currentStates = std::vector<GameState>(batchSize, { game->getInitialGameState(), game->getInitialPlayer(), game->getActionCount()});
 
 	while (!currentStates.empty())
@@ -244,6 +244,7 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlayBatch(NeuralNetwork* net, 
 			auto& currentPlayer = currentStates[i].currentPlayer;
 			auto& netInputIndex = currentStates[i].netBufferIndex;
 			auto& trainingData = currentStates[i].trainingData;
+			auto& currentStep = currentStates[i].currentStep;
 
 			if (m_params.RESTRICT_GAME_LENGTH && (currentStep >= m_params.DRAW_AFTER_COUNT_OF_STEPS)) 
 			{
