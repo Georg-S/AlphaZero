@@ -6,14 +6,18 @@
 #include <MonteCarloTreeSearch.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
 
+#include "TestConfig.h"
+
 static ChessAdapter adap = ChessAdapter();
 static ceg::ChessEngine chessEngine = ceg::ChessEngine();
+
+#if RunTests
 
 TEST(ChessAdapter, test_conversion_to_string_and_back_doesnt_change_board_positions)
 {
 	ceg::BitBoard board = ceg::BitBoard(adap.getInitialGameState());
 	chessEngine.make_move(board, ceg::Move(1, 1, 1, 3));
-	
+
 	auto before = ceg::to_FEN_string(board, true);
 	board = ceg::BitBoard(before);
 	auto after = ceg::to_FEN_string(board, true);
@@ -51,7 +55,7 @@ TEST(ChessAdapter, test_get_next_Player_for_Player_two)
 	ASSERT_EQ(adap.getNextPlayer(player), static_cast<int>(ceg::PieceColor::WHITE));
 }
 
-TEST(ChessAdapter, test_make_move_1) 
+TEST(ChessAdapter, test_make_move_1)
 {
 	const std::string boardStr = "rnbqkbnr/pp1ppppp/8/2p5/3P4/8/PPP1PPPP/RNBQKBNR w KQkq -";
 	ceg::BitBoard board(boardStr);
@@ -92,3 +96,5 @@ TEST(ChessAdapter, test_is_game_over)
 
 	ASSERT_EQ(adap.isGameOver(boardStr), true);
 }
+
+#endif //RunTests

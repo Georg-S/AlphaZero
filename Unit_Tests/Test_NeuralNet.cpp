@@ -2,8 +2,9 @@
 #include <chrono>
 #include <NeuralNetworks/CutDownAlphaGoZeroNet.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
+#include "TestConfig.h"
 
-#if 1
+#if RunTests
 
 TEST(NeuralNet, net_returns_same_value_for_single_element_and_batch)
 {
@@ -48,4 +49,4 @@ TEST(NeuralNet, net_returns_same_value_after_save_and_load)
 	ASSERT_EQ(value1, value2);
 }
 
-#endif
+#endif RunTests

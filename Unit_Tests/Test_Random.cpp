@@ -11,12 +11,18 @@
 #include <MonteCarloTreeSearch.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
 #include <TicTacToe/TicTacToeAdapter.h>
+#include "TestConfig.h"
+
+#if RunTests
 
 TEST(RandomTest, test_get_random_element) 
 {
 	std::vector<int> vec = { 3 };
 	ASSERT_EQ(ALZ::getRandomElement(vec), 3);
 }
+
+#endif //RunTests
+
 
 /*
 TEST(RandomTest, rand)

@@ -6,6 +6,8 @@
 #include <ConnectFour/ConnectFour.h>
 #include <ConnectFour/Renderer.h>
 
+#include "TestConfig.h"
+
 using namespace cn4;
 
 static ConnectFourAdapter adap = ConnectFourAdapter();
@@ -23,6 +25,8 @@ static void renderBoard(const std::string& boardStr)
 {
 	renderBoard(Board(boardStr));
 }
+
+#if RunTests
 
 TEST(ConnectFourAdapter, test_get_player_won_draw)
 {
@@ -163,3 +167,5 @@ TEST(ConnectFourAdapter, test_conversion_to_string_and_back)
 
 	ASSERT_EQ(state, convertedState);
 }
+
+#endif //RunTests

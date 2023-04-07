@@ -2,6 +2,7 @@
 #include <TicTacToe/TicTacToeAdapter.h>
 #include <TicTacToe/Renderer.h>
 #include <string>
+#include "TestConfig.h"
 
 using namespace ttt;
 
@@ -20,6 +21,8 @@ static void renderBoard(const std::string& boardStr)
 {
 	renderBoard(Board(boardStr));
 }
+
+#if RunTests
 
 TEST(TicTacToeAdapter, test_getNextPlayer)
 {
@@ -236,3 +239,5 @@ TEST(TicTacToeAdapter, test_convert_string_to_board_and_back)
 
 	ASSERT_EQ(state, converted);
 }
+
+#endif //RunTests

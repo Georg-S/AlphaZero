@@ -6,8 +6,9 @@
 #include <thread>
 #include <vector>
 #include <MultiThreadingNeuralNetManager.h>
+#include "TestConfig.h"
 
-#if 1
+#if RunTests
 
 TEST(MonteCarloTreeSearch, test_sum_vector)
 {
@@ -131,4 +132,4 @@ TEST(MonteCarloTreeSearch, test_ttt_multi_threading_mcts)
 		thread.join();
 }
 
-#endif
+#endif //RunTests

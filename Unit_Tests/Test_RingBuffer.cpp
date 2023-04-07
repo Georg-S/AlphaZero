@@ -1,5 +1,8 @@
 #include <gtest/gtest.h>
 #include <RingBuffer.h>
+#include "TestConfig.h"
+
+#if RunTests
 
 TEST(RingBuffer, creation)
 {
@@ -60,3 +63,5 @@ TEST(RingBuffer, getSample)
 
 	ASSERT_EQ(sample.size(), 2);
 }
+
+#endif //RunTests

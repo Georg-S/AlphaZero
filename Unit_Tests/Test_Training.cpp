@@ -3,8 +3,9 @@
 #include <TicTacToe/TicTacToeAdapter.h>
 #include <AlphaZeroTraining.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
+#include "TestConfig.h"
 
-#if 1
+#if RunTests
 
 TEST(Training, test_random_action)
 {
@@ -49,4 +50,4 @@ TEST(Training, test_mult_thread_training)
 	training.selfPlayMultiThread(neuralNet, &adap);
 }
 
-#endif
+#endif //RunTests
