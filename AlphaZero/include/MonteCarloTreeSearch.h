@@ -81,6 +81,7 @@ public:
 	std::vector<float> getProbabilities(const std::string& state, float temperature = 1.0);
 	void clearAll();
 	void fillQValuesAndVisitCount(const std::string& state);
+	torch::Tensor getExpansionNeuralNetInput(Game* game, torch::DeviceType device) const;
 
 private:
 	float expandNewEncounteredState(const std::string& strState, int currentPlayer, Game* game, NeuralNetwork* net, torch::DeviceType device);

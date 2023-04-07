@@ -72,10 +72,9 @@ void MonteCarloTreeSearch::deferredExpansion(torch::Tensor valueTens, torch::Ten
 	assert(!m_backProp.empty());
 	auto expansionState = m_backProp.back().state;
 	m_visited[expansionState] = true;
-	m_probabilities[expansionState] = probabilities[0].detach().to(torch::kCPU);
+	m_probabilities[expansionState] = probabilities;
 	fillQValuesAndVisitCount(expansionState);
-	valueTens = valueTens[0][0].to(torch::kCPU);
-	float value = *(valueTens.data_ptr<float>());
+	float value = *(valueTens[0].data_ptr<float>());
 	m_backProp.pop_back();
 	backpropagateValue(value);
 }
@@ -182,6 +181,15 @@ void MonteCarloTreeSearch::fillQValuesAndVisitCount(const std::string& state)
 {
 	m_qValues[state] = std::vector<float>(m_actionCount, 0.f);
 	m_visitCount[state] = std::vector<int>(m_actionCount, 0);
+}
+
+torch::Tensor MonteCarloTreeSearch::getExpansionNeuralNetInput(Game* game, torch::DeviceType device) const
+{
+	assert(!m_backProp.empty());
+	auto& strState = m_backProp.back().state;
+	auto currentPlayer = m_backProp.back().player;
+
+	return game->convertStateToNeuralNetInput(strState, currentPlayer, device);
 }
 
 void MonteCarloTreeSearch::clearAll()

@@ -5,7 +5,6 @@
 #include <ConnectFour/ConnectFourAdapter.h>
 #include <ConnectFour/ConnectFour.h>
 #include <ConnectFour/Renderer.h>
-
 #include "TestConfig.h"
 
 using namespace cn4;

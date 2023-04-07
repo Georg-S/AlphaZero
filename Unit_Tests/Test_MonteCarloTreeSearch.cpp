@@ -2,6 +2,7 @@
 #include <MonteCarloTreeSearch.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
 #include <TicTacToe/TicTacToeAdapter.h>
+#include <Chess/ChessAdapter.h>
 #include <tuple>
 #include <thread>
 #include <vector>
@@ -89,6 +90,51 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_win
 	ASSERT_GT(probs[8], probs[7]);
 }
 
+TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_wins_with_delayed_expansion)
+{
+	std::string state = "OXOXOXX--";
+	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9);
+	DefaultNeuralNet net(2, 3, 3, 9);
+	TicTacToeAdapter adap = TicTacToeAdapter();
+	NeuralNetInputBuffer buffer = {};
+
+	bool expansionNeeded = mcts.specialSearch(state, &adap, 2, 50);
+	if (expansionNeeded)
+	{
+		buffer.addToInput(mcts.getExpansionNeuralNetInput(&adap, torch::kCPU));
+		buffer.calculateOutput(&net);
+		auto [value, probs] = buffer.getOutput(0);
+
+		while (mcts.continueSpecialSearch(state, &adap, 2, value, probs))
+		{
+			buffer.addToInput(mcts.getExpansionNeuralNetInput(&adap, torch::kCPU));
+			buffer.calculateOutput(&net);
+			auto [value, probs] = buffer.getOutput(0);
+		}
+	}
+
+	std::vector<float> probs = mcts.getProbabilities(state);
+
+	ASSERT_GT(probs[8], probs[7]);
+}
+
+#if RunLongTests
+TEST(MonteCarloTreeSearch, test_chess_one_move_wins)
+{
+	torch::DeviceType device = torch::kCUDA;
+	const std::string gameState = "8/8/8/p7/Pn6/KPp5/RR6/r6k w - - 0 1";
+	const int winningMove = chess::getIntFromMove({ 0,6,0,7 });
+	DefaultNeuralNet neuralNet = DefaultNeuralNet(14, 8, 8, 4096, device);
+	ChessAdapter adap = ChessAdapter();
+	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(adap.getActionCount());
+
+	mcts.search(100, gameState, &neuralNet, &adap, static_cast<int>(ceg::PieceColor::WHITE), device);
+	auto probabilities = mcts.getProbabilities(gameState);
+	int mctsBestMove = ALZ::getMaxElementIndex(probabilities);
+
+	ASSERT_EQ(winningMove, mctsBestMove);
+}
+#endif //RunLongTests
 
 TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_gets_draw)
 {
