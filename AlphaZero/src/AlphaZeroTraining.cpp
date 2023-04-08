@@ -221,40 +221,42 @@ namespace
 	};
 }
 
-std::vector<ReplayElement> AlphaZeroTraining::selfPlayBatch(NeuralNetwork* net, Game* game)
+std::vector<ReplayElement> AlphaZeroTraining::selfPlayBatch(NeuralNetwork* net, Game* game, int batchSize)
 {
 	std::vector<ReplayElement> resultingTrainingsData;
-	bool gameTooLong = false;
-	torch::DeviceType device = torch::kCUDA;
 	NeuralNetInputBuffer netInputBuffer = {};
-	constexpr int batchSize = 2;
 	constexpr int mctsCount = 50;
-	int finishedGamesCounter = 0;
-	auto currentStates = std::vector<GameState>(batchSize, { game->getInitialGameState(), game->getInitialPlayer(), game->getActionCount()});
+	auto currentStatesData = std::vector<GameState>(batchSize, { game->getInitialGameState(), game->getInitialPlayer(), game->getActionCount()});
+	/*
+	Use a vector of pointers to the gamedata for iterating,
+	then all of the game data can be destroyed at once.
+	This should improve the performance quite a bit
+	*/
+	auto currentStates = std::vector<GameState*>();
+	for (auto& elem : currentStatesData) 
+		currentStates.emplace_back(&elem);
 
 	while (!currentStates.empty())
 	{
+		std::cout << currentStates.back()->currentStep << std::endl;
 		netInputBuffer.calculateOutput(net);
 
 		for (size_t i = 0; i < currentStates.size(); i++)
 		{
-			auto& mcts = currentStates[i].mcts;
-			auto& currentState = currentStates[i].currentState;
-			auto& continueMcts = currentStates[i].continueMcts;
-			auto& currentPlayer = currentStates[i].currentPlayer;
-			auto& netInputIndex = currentStates[i].netBufferIndex;
-			auto& trainingData = currentStates[i].trainingData;
-			auto& currentStep = currentStates[i].currentStep;
+			auto& currentStateObj = *(currentStates[i]);
+			auto& mcts = currentStateObj.mcts;
+			auto& currentState = currentStateObj.currentState;
+			auto& continueMcts = currentStateObj.continueMcts;
+			auto& currentPlayer = currentStateObj.currentPlayer;
+			auto& netInputIndex = currentStateObj.netBufferIndex;
+			auto& trainingData = currentStateObj.trainingData;
+			auto& currentStep = currentStateObj.currentStep;
 
 			if (m_params.RESTRICT_GAME_LENGTH && (currentStep >= m_params.DRAW_AFTER_COUNT_OF_STEPS)) 
 			{
-				addResult(currentStates[i].trainingData, 0);
+				addResult(trainingData, 0);
 				if (!m_params.TRAINING_DONT_USE_DRAWS) 
-				{
-					resultingTrainingsData.insert(resultingTrainingsData.end()
-						, std::make_move_iterator(trainingData.begin())
-						, std::make_move_iterator(trainingData.end()));
-				}
+					merge(resultingTrainingsData, trainingData);
 
 				currentStates.erase(currentStates.begin() + i); // Instead of erase it is thinkable to restart the game here
 				i--;
@@ -273,7 +275,7 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlayBatch(NeuralNetwork* net, 
 
 			if (continueMcts)
 			{
-				netInputIndex = netInputBuffer.addToInput(mcts.getExpansionNeuralNetInput(game, device));
+				netInputIndex = netInputBuffer.addToInput(mcts.getExpansionNeuralNetInput(game, m_device));
 				continue;
 			}
 
@@ -293,9 +295,7 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlayBatch(NeuralNetwork* net, 
 			if (game->isGameOver(currentState)) 
 			{
 				addResult(trainingData, game->getPlayerWon(currentState));
-				resultingTrainingsData.insert(resultingTrainingsData.end()
-					, std::make_move_iterator(trainingData.begin())
-					, std::make_move_iterator(trainingData.end()));
+				merge(resultingTrainingsData, trainingData);
 				currentStates.erase(currentStates.begin() + i); // Instead of erase it is thinkable to restart the game here
 				i--;
 			}

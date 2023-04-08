@@ -18,7 +18,7 @@ namespace ALZ
 	int getRandomIndex(const std::vector<float>& probs, float sumOfProbs);
 
 	template <class T>
-	T sum(const std::vector<T>& vec) 
+	T sum(const std::vector<T>& vec)
 	{
 		auto sum = T(0);
 		for (const auto& n : vec)
@@ -39,6 +39,18 @@ namespace ALZ
 	{
 		assert(!vec.empty());
 		return std::max_element(vec.begin(), vec.end()) - vec.begin();
+	}
+
+	/*
+	Appends / Moves all elements from the source to the end of the destination Vector
+	Leaves the elements of the source vector in a valid but unspecified state
+	*/
+	template <class T>
+	void merge(std::vector<T>& destination, std::vector<T>& source)
+	{
+		destination.insert(destination.end()
+			, std::make_move_iterator(source.begin())
+			, std::make_move_iterator(source.end()));
 	}
 
 	class ScopedTimer
