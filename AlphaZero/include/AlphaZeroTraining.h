@@ -25,7 +25,7 @@ public:
 		//Training Flags
 		bool TRAINING_DONT_USE_DRAWS = false;
 		//Training Parameters
-		int GAME_BATCH_SIZE = 10;
+		int SELFPLAY_BATCH_SIZE = 10;
 		int TRAINING_ITERATIONS = 10000;
 		int MIN_REPLAY_MEMORY_SIZE = 100;
 		int SELF_PLAY_MCTS_COUNT = 100;

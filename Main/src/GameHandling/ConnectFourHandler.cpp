@@ -27,30 +27,6 @@ void ConnectFourHandler::startTwoPlayerConnectFourGame()
 	connect.gameLoop();
 }
 
-void ConnectFourHandler::traininingPerformanceTest(torch::DeviceType device)
-{
-	ConnectFourAdapter adap = ConnectFourAdapter();
-	auto neuralNet = std::make_unique<DefaultNeuralNet>(2, 7, 6, 7, device);
-	neuralNet->setToTraining();
-	AlphaZeroTraining training = AlphaZeroTraining(7, neuralNet.get(), device);
-	loadPerformanceTestParameters(training);
-
-
-	uint64_t before = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-	training.runTraining(&adap);
-	int64_t after = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-
-	std::cout << (after - before) / 1000.f << std::endl;
-}
-
-void ConnectFourHandler::loadPerformanceTestParameters(AlphaZeroTraining& connectFourZero)
-{
-	auto params = getDefaultConnectFourTrainingParameters();
-	params.TRAINING_ITERATIONS = 1;
-	params.NUM_SELF_PLAY_GAMES = 1;
-	connectFourZero.setTrainingParams(params);
-}
-
 void ConnectFourHandler::evalConnectFour(bool multiThreaded)
 {
 	constexpr int multiThreadingThreads = 10;
@@ -100,6 +76,7 @@ AlphaZeroTraining::Parameters ConnectFourHandler::getDefaultConnectFourTrainingP
 	params.TRAINING_BATCH_SIZE = 100;
 	params.SAVE_ITERATION_COUNT = 1;
 	params.RANDOM_MOVE_COUNT = 10;
+	params.SELFPLAY_BATCH_SIZE = 100;
 
 	return params;
 }
@@ -119,7 +96,8 @@ EvalResult ConnectFourHandler::evalConnectFourMultiThreaded(std::string netName,
 
 void ConnectFourHandler::setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params)
 {
-	auto trainingParams = params.getAlphaZeroParams(trainingPath);
+	auto defaultParams = getDefaultConnectFourTrainingParameters();
+	auto trainingParams = params.getAlphaZeroParams(trainingPath, defaultParams);
 	training.setTrainingParams(trainingParams);
 }
 

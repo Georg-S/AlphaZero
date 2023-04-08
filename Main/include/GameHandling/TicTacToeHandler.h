@@ -23,14 +23,12 @@ public:
 	void runTraining(const TrainingParameters& params);
 	void setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params);
 	void startTwoPlayerTicTacToeGame();
-	void traininingPerformanceTest(torch::DeviceType device);
 	void evalTicTacToe(bool multiThreaded = true);
 
 private:
 	EvalResult evalTicTacToeMultiThreaded(std::string netName, torch::DeviceType device, int threadCount);
 	void writeEvaluationResultToFile(int iteration, const EvalResult& result, std::ofstream& file);
 	AlphaZeroTraining::Parameters getDefaultTicTacToeTrainingParameters() const;
-	void loadPerformanceTestParameters(AlphaZeroTraining& ticTacToeZero);
 
 	inline static const std::string trainingPath = "NeuralNets/Training/TicTacToe";
 	inline static const std::string preTrainedPath = "NeuralNets/PreTrained/TicTacToe";

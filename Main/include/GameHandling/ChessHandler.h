@@ -20,12 +20,10 @@ public:
 	void chessAgainstMiniMaxAi(int miniMaxDepth, ceg::PieceColor playerColor);
 	void runTraining(const TrainingParameters& params);
 	static void startTwoPlayerChessGame();
-	void traininingPerformanceTest(torch::DeviceType device);
 	void setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params);
 
 private:
 	AlphaZeroTraining::Parameters getDefaultChessTrainingParameters() const;
-	void loadPerformanceTestParameters(AlphaZeroTraining& chessZero);
 
 	inline static const std::string preTrainedPath = "NeuralNets/PreTrained/Chess";
 	inline static const std::string trainingPath = "NeuralNets/Training/Chess";

@@ -39,8 +39,8 @@ void AlphaZeroTraining::selfPlayBatch(NeuralNetwork* net, Game* game)
 	int gamesToPlay = m_params.NUM_SELF_PLAY_GAMES;
 	while (gamesToPlay > 0)
 	{
-		int batchSize = m_params.GAME_BATCH_SIZE;
-		gamesToPlay -= m_params.GAME_BATCH_SIZE;
+		int batchSize = m_params.SELFPLAY_BATCH_SIZE;
+		gamesToPlay -= m_params.SELFPLAY_BATCH_SIZE;
 		if (gamesToPlay < 0)
 			batchSize += gamesToPlay;
 

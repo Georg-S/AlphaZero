@@ -18,21 +18,6 @@ void ChessHandler::startTwoPlayerChessGame()
 	chess.game_loop();
 }
 
-void ChessHandler::traininingPerformanceTest(torch::DeviceType device)
-{
-	auto chessNet = std::make_unique<DefaultNeuralNet>(14, 8, 8, 4096, device);
-	chessNet->setToTraining();
-	ChessAdapter adap = ChessAdapter();
-	AlphaZeroTraining alphaZero = AlphaZeroTraining(4096, chessNet.get(), device);
-	loadPerformanceTestParameters(alphaZero);
-
-	uint64_t before = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-	alphaZero.runTraining(&adap);
-	int64_t after = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-
-	std::cout << (after - before) / 1000.f << std::endl;
-}
-
 AlphaZeroTraining::Parameters ChessHandler::getDefaultChessTrainingParameters() const
 {
 	auto params = AlphaZeroTraining::Parameters{};
@@ -49,23 +34,15 @@ AlphaZeroTraining::Parameters ChessHandler::getDefaultChessTrainingParameters() 
 	params.TRAINING_BATCH_SIZE = 100;
 	params.SAVE_ITERATION_COUNT = 1;
 	params.RANDOM_MOVE_COUNT = 20;
+	params.SELFPLAY_BATCH_SIZE = 10;
 
 	return params;
 }
 
-void ChessHandler::loadPerformanceTestParameters(AlphaZeroTraining& chessZero)
-{
-	auto params = getDefaultChessTrainingParameters();
-	params.TRAINING_ITERATIONS = 1;
-	params.NUM_SELF_PLAY_GAMES = 1;
-	params.SELF_PLAY_MCTS_COUNT = 800;
-
-	chessZero.setTrainingParams(params);
-}
-
 void ChessHandler::setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params)
 {
-	auto trainingParams = params.getAlphaZeroParams(trainingPath);
+	auto defaultParams = getDefaultChessTrainingParameters();
+	auto trainingParams = params.getAlphaZeroParams(trainingPath, defaultParams);
 	training.setTrainingParams(trainingParams);
 }
 

@@ -16,23 +16,6 @@ void TicTacToeHandler::startTwoPlayerTicTacToeGame()
 	ttt.gameLoop();
 }
 
-void TicTacToeHandler::traininingPerformanceTest(torch::DeviceType device)
-{
-	TicTacToeAdapter adap = TicTacToeAdapter();
-	auto neuralNet = std::make_unique<DefaultNeuralNet>(2, 3, 3, 9, device);
-	neuralNet->setToTraining();
-	AlphaZeroTraining training = AlphaZeroTraining(9, neuralNet.get(), device);
-
-	loadPerformanceTestParameters(training);
-
-	uint64_t before = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-	training.runTraining(&adap);
-	int64_t after = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-
-	float difference = (after - before) / 1000.F;
-	std::cout << "Time passed: " << difference << std::endl;
-}
-
 void TicTacToeHandler::evalTicTacToe(bool multiThreaded)
 {
 	constexpr int multiThreadingThreadCount = 10;
@@ -91,16 +74,9 @@ AlphaZeroTraining::Parameters TicTacToeHandler::getDefaultTicTacToeTrainingParam
 	params.TRAINING_BATCH_SIZE = 100;
 	params.SAVE_ITERATION_COUNT = 1;
 	params.RANDOM_MOVE_COUNT = 3;
+	params.SELFPLAY_BATCH_SIZE = 1000;
 
 	return params;
-}
-
-void TicTacToeHandler::loadPerformanceTestParameters(AlphaZeroTraining& ticTacToeZero)
-{
-	auto params = getDefaultTicTacToeTrainingParameters();
-	params.NUM_SELF_PLAY_GAMES = 20;
-	params.TRAINING_ITERATIONS = 1;
-	ticTacToeZero.setTrainingParams(params);
 }
 
 void TicTacToeHandler::runTraining(const TrainingParameters& params)
@@ -115,12 +91,13 @@ void TicTacToeHandler::runTraining(const TrainingParameters& params)
 	setTrainingParameters(training, params);
 
 	ALZ::ScopedTimer timer{};
-	training.runTraining(&adap);
+	training.runBatchTraining(&adap);
 }
 
 void TicTacToeHandler::setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params)
 {
-	auto trainingParams = params.getAlphaZeroParams(trainingPath);
+	auto defaultParams = getDefaultTicTacToeTrainingParameters();
+	auto trainingParams = params.getAlphaZeroParams(trainingPath, defaultParams);
 	training.setTrainingParams(trainingParams);
 }
 

@@ -24,10 +24,9 @@ struct TrainingParameters
 	int cpuThreads;
 	torch::DeviceType device;
 
-	AlphaZeroTraining::Parameters getAlphaZeroParams(std::string neuralNetPath) const
+	AlphaZeroTraining::Parameters getAlphaZeroParams(std::string neuralNetPath, const AlphaZeroTraining::Parameters& param = {}) const
 	{
-		auto parameters = AlphaZeroTraining::Parameters{};
-
+		auto parameters = param;
 		parameters.neuralNetPath = std::move(neuralNetPath);
 		parameters.MAX_REPLAY_MEMORY_SIZE = replayMemorySize;
 		parameters.TRAINING_DONT_USE_DRAWS = !useDraws;
