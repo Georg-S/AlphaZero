@@ -26,6 +26,7 @@ public:
 	void selfPlayMultiThreadGames(MultiThreadingNeuralNetManager* threadManager, Ai* miniMaxAi,
 		Game* game, EvalResult* outResult);
 	int runGameMultiThreaded(MultiThreadingNeuralNetManager* threadManager, Ai* minMaxAi, Game* game, int neuralNetColor);
+	EvalResult eval(NeuralNetwork* net, Ai* miniMaxAi, Game* game, int batchSize, EvalResult& outEval, int mctsCount, int numberEvalGames);
 
 private:
 	std::mutex m_mut;
