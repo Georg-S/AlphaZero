@@ -107,7 +107,7 @@ private:
 
 		std::string state;
 		int player;
-		int bestAction;
+		int bestAction = -1;
 	};
 	std::vector<BackPropData> m_backProp;
 };

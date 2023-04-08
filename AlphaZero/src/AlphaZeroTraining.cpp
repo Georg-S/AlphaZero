@@ -22,6 +22,33 @@ void AlphaZeroTraining::runTraining(Game* game)
 	}
 }
 
+void AlphaZeroTraining::runBatchTraining(Game* game)
+{
+	m_neuralNet->save(m_params.neuralNetPath + "/start");
+	for (int iteration = 0; iteration < m_params.TRAINING_ITERATIONS; iteration++)
+	{
+		std::cout << "Current Iteration " << iteration << std::endl;
+		selfPlayBatch(m_neuralNet, game);
+		trainNet(m_neuralNet, game);
+		save(iteration);
+	}
+}
+
+void AlphaZeroTraining::selfPlayBatch(NeuralNetwork* net, Game* game)
+{
+	int gamesToPlay = m_params.NUM_SELF_PLAY_GAMES;
+	while (gamesToPlay > 0)
+	{
+		int batchSize = m_params.GAME_BATCH_SIZE;
+		gamesToPlay -= m_params.GAME_BATCH_SIZE;
+		if (gamesToPlay < 0)
+			batchSize += gamesToPlay;
+
+		auto resultVec = selfPlayBatch(net, game, batchSize);
+		m_replayMemory.add(std::move(resultVec));
+	}
+}
+
 void AlphaZeroTraining::selfPlayMultiThread(NeuralNetwork* net, Game* game)
 {
 	m_threadManager = std::make_unique<MultiThreadingNeuralNetManager>(m_params.NUMBER_CPU_THREADS, m_params.NUMBER_CPU_THREADS, net);

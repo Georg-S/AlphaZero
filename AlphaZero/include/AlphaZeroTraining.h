@@ -25,6 +25,7 @@ public:
 		//Training Flags
 		bool TRAINING_DONT_USE_DRAWS = false;
 		//Training Parameters
+		int GAME_BATCH_SIZE = 10;
 		int TRAINING_ITERATIONS = 10000;
 		int MIN_REPLAY_MEMORY_SIZE = 100;
 		int SELF_PLAY_MCTS_COUNT = 100;
@@ -41,7 +42,9 @@ public:
 
 	AlphaZeroTraining(int actionCount, NeuralNetwork* currentBest, torch::DeviceType = torch::kCPU);
 	void runTraining(Game* game);
+	void runBatchTraining(Game* game);
 	std::vector<ReplayElement> selfPlayBatch(NeuralNetwork* net, Game* game, int batchSize);
+	void selfPlayBatch(NeuralNetwork* net, Game* game);
 	void selfPlayMultiThread(NeuralNetwork* net, Game* game);
 	void selfPlayMultiThreadGames(NeuralNetwork* net, Game* game, MultiThreadingNeuralNetManager* threadManager);
 	std::vector<ReplayElement> selfPlayGame(NeuralNetwork* net, Game* game);
@@ -53,8 +56,6 @@ public:
 	void save(int iteration);
 	/// Sets the training parameters and creates a new replay buffer -> all elements in replay buffer get destroyed
 	void setTrainingParams(Parameters params);
-
-	std::vector<ReplayElement> selfPlayBatch(NeuralNetwork* net, Game* game) const;
 
 private:
 	RingBuffer<ReplayElement> m_replayMemory;
