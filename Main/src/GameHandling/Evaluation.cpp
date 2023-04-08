@@ -2,7 +2,7 @@
 
 Evaluation::Evaluation(torch::DeviceType device, int mctsCount)
 	: m_mctsCount(mctsCount)
-	, device(device)
+	, m_device(device)
 {
 }
 
@@ -60,14 +60,14 @@ int Evaluation::runGameMultiThreaded(MultiThreadingNeuralNetManager* threadManag
 	std::string state = game->getInitialGameState();
 	int currentPlayer = game->getInitialPlayer();
 	// One difference between single threaded and multi threaded eval
-	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(game->getActionCount());
+	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(game->getActionCount(), m_device);
 
 	while (!game->isGameOver(state))
 	{
 		int move = -1;
 		if (currentPlayer == neuralNetColor)
 		{
-			mcts.multiThreadedSearch(m_mctsCount, state, game, currentPlayer, threadManager, device);
+			mcts.multiThreadedSearch(m_mctsCount, state, game, currentPlayer, threadManager);
 			std::vector<float> probs = mcts.getProbabilities(state);
 			move = std::max_element(probs.begin(), probs.end()) - probs.begin();
 		}
@@ -88,10 +88,10 @@ namespace
 {
 	struct GameState
 	{
-		GameState(std::string currentState, int currentPlayer, int actionCount)
+		GameState(std::string currentState, int currentPlayer, int actionCount, torch::DeviceType device)
 			: currentState(currentState)
 			, currentPlayer(currentPlayer)
-			, mcts(MonteCarloTreeSearch(actionCount))
+			, mcts(MonteCarloTreeSearch(actionCount, device))
 		{
 		}
 
@@ -107,10 +107,9 @@ namespace
 
 EvalResult Evaluation::eval(NeuralNetwork* net, Ai* miniMaxAi, Game* game, int batchSize, EvalResult& outEval, int mctsCount, int numberEvalGames)
 {
-	torch::DeviceType device = torch::kCUDA;
-	NeuralNetInputBuffer netInputBuffer = {};
+	auto netInputBuffer = NeuralNetInputBuffer(m_device);
 	int playerBuf = game->getInitialPlayer();
-	auto currentStatesData = std::vector<GameState>(batchSize, { game->getInitialGameState(), game->getInitialPlayer(), game->getActionCount() });
+	auto currentStatesData = std::vector<GameState>(batchSize, { game->getInitialGameState(), game->getInitialPlayer(), game->getActionCount(), m_device });
 	for (auto& currentState : currentStatesData)
 	{
 		currentState.color = playerBuf;
@@ -164,7 +163,7 @@ EvalResult Evaluation::eval(NeuralNetwork* net, Ai* miniMaxAi, Game* game, int b
 
 				if (continueMcts)
 				{
-					netInputIndex = netInputBuffer.addToInput(mcts.getExpansionNeuralNetInput(game, device));
+					netInputIndex = netInputBuffer.addToInput(mcts.getExpansionNeuralNetInput(game, m_device));
 					continue;
 				}
 

@@ -19,9 +19,7 @@ struct EvalResult
 class Evaluation
 {
 public:
-	Evaluation() = default;
 	Evaluation(torch::DeviceType device, int mctsCount);
-
 	EvalResult evalMultiThreaded(MultiThreadingNeuralNetManager* threadManager, Ai* miniMaxAi, Game* game, int numberEvalGames = 100);
 	void selfPlayMultiThreadGames(MultiThreadingNeuralNetManager* threadManager, Ai* miniMaxAi,
 		Game* game, EvalResult* outResult);
@@ -33,7 +31,7 @@ private:
 	int m_gamesToPlay = 0;
 	int m_currentColor = 0;
 	int m_mctsCount = 50;
-	torch::DeviceType device = torch::kCUDA;
+	torch::DeviceType m_device = torch::kCPU;
 };
 
 

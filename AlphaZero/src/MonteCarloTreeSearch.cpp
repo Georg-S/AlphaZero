@@ -2,23 +2,24 @@
 
 using namespace ALZ;
 
-MonteCarloTreeSearch::MonteCarloTreeSearch(int actionCount, float cpuct)
+MonteCarloTreeSearch::MonteCarloTreeSearch(int actionCount, torch::DeviceType device, float cpuct)
 	: m_actionCount(actionCount)
 	, m_cpuct(cpuct)
+	, m_device(device)
 {
 }
 
-void MonteCarloTreeSearch::search(int count, std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device)
+void MonteCarloTreeSearch::search(int count, std::string strState, NeuralNetwork* net, Game* game, int currentPlayer)
 {
 	for (int i = 0; i < count; i++)
 	{
-		specialSearch(strState, net, game, currentPlayer, device);
+		specialSearch(strState, net, game, currentPlayer);
 		//search(strState, net, game, currentPlayer, device);
 		m_loopDetection.clear();
 	}
 }
 
-float MonteCarloTreeSearch::search(std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device)
+float MonteCarloTreeSearch::search(std::string strState, NeuralNetwork* net, Game* game, int currentPlayer)
 {
 	m_loopDetection[strState] = true;
 
@@ -26,7 +27,7 @@ float MonteCarloTreeSearch::search(std::string strState, NeuralNetwork* net, Gam
 		return -game->gameOverReward(strState, currentPlayer);
 
 	if (m_visited.find(strState) == m_visited.end())
-		return -expandNewEncounteredState(strState, currentPlayer, game, net, device);
+		return -expandNewEncounteredState(strState, currentPlayer, game, net);
 
 	int bestAction = getActionWithHighestUpperConfidenceBound(strState, currentPlayer, game);
 	std::string nextStateString = game->makeMove(strState, bestAction, currentPlayer);
@@ -35,7 +36,7 @@ float MonteCarloTreeSearch::search(std::string strState, NeuralNetwork* net, Gam
 		return 0;
 
 	int nextPlayer = game->getNextPlayer(currentPlayer);
-	float value = search(nextStateString, net, game, nextPlayer, device);
+	float value = search(nextStateString, net, game, nextPlayer);
 
 	m_qValues[strState][bestAction] = (m_visitCount[strState][bestAction] * m_qValues[strState][bestAction] + value) / (m_visitCount[strState][bestAction] + 1);
 	m_visitCount[strState][bestAction] += 1;
@@ -44,11 +45,11 @@ float MonteCarloTreeSearch::search(std::string strState, NeuralNetwork* net, Gam
 }
 
 void MonteCarloTreeSearch::multiThreadedSearch(int count, std::string strState, Game* game,
-	int currentPlayer, MultiThreadingNeuralNetManager* threadingManager, torch::DeviceType device)
+	int currentPlayer, MultiThreadingNeuralNetManager* threadingManager)
 {
 	for (int i = 0; i < count; i++)
 	{
-		multiThreadedSearch(strState, game, currentPlayer, threadingManager, device);
+		multiThreadedSearch(strState, game, currentPlayer, threadingManager);
 		m_loopDetection.clear();
 	}
 }
@@ -108,7 +109,7 @@ bool MonteCarloTreeSearch::continueSpecialSearch(const std::string& strState, Ga
 	return runMultipleSearches(strState, game, currentPlayer);
 }
 
-void MonteCarloTreeSearch::specialSearch(const std::string& strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device)
+void MonteCarloTreeSearch::specialSearch(const std::string& strState, NeuralNetwork* net, Game* game, int currentPlayer)
 {
 	m_backProp.clear();
 	bool expansionNeeded = false;
@@ -117,7 +118,7 @@ void MonteCarloTreeSearch::specialSearch(const std::string& strState, NeuralNetw
 
 	if (expansionNeeded)
 	{
-		value = expandNewEncounteredState(m_backProp.back().state, m_backProp.back().player, game, net, device);
+		value = expandNewEncounteredState(m_backProp.back().state, m_backProp.back().player, game, net);
 		m_backProp.pop_back();
 	}
 
@@ -152,7 +153,7 @@ float MonteCarloTreeSearch::searchWithoutExpansion(const std::string& strState, 
 }
 
 float MonteCarloTreeSearch::multiThreadedSearch(std::string strState, Game* game,
-	int currentPlayer, MultiThreadingNeuralNetManager* threadingManager, torch::DeviceType device)
+	int currentPlayer, MultiThreadingNeuralNetManager* threadingManager)
 {
 	m_loopDetection[strState] = true;
 
@@ -160,7 +161,7 @@ float MonteCarloTreeSearch::multiThreadedSearch(std::string strState, Game* game
 		return -game->gameOverReward(strState, currentPlayer);
 
 	if (m_visited.find(strState) == m_visited.end())
-		return -multiThreadedExpandNewState(strState, currentPlayer, game, threadingManager, device);
+		return -multiThreadedExpandNewState(strState, currentPlayer, game, threadingManager);
 
 	int bestAction = getActionWithHighestUpperConfidenceBound(strState, currentPlayer, game);
 	std::string nextStateString = game->makeMove(strState, bestAction, currentPlayer);
@@ -169,7 +170,7 @@ float MonteCarloTreeSearch::multiThreadedSearch(std::string strState, Game* game
 		return 0;
 
 	int nextPlayer = game->getNextPlayer(currentPlayer);
-	float value = multiThreadedSearch(nextStateString, game, nextPlayer, threadingManager, device);
+	float value = multiThreadedSearch(nextStateString, game, nextPlayer, threadingManager);
 
 	m_qValues[strState][bestAction] = (m_visitCount[strState][bestAction] * m_qValues[strState][bestAction] + value) / (m_visitCount[strState][bestAction] + 1);
 	m_visitCount[strState][bestAction] += 1;
@@ -213,10 +214,10 @@ std::vector<float> MonteCarloTreeSearch::getProbabilities(const std::string& sta
 	return probs;
 }
 
-float MonteCarloTreeSearch::expandNewEncounteredState(const std::string& strState, int currentPlayer, Game* game, NeuralNetwork* net, torch::DeviceType device)
+float MonteCarloTreeSearch::expandNewEncounteredState(const std::string& strState, int currentPlayer, Game* game, NeuralNetwork* net)
 {
 	m_visited[strState] = true;
-	auto input = game->convertStateToNeuralNetInput(strState, currentPlayer, device);
+	auto input = game->convertStateToNeuralNetInput(strState, currentPlayer, m_device);
 	auto [valueTens, rawProbs] = net->calculate(input);
 	m_probabilities[strState] = rawProbs[0].detach().to(torch::kCPU);
 	fillQValuesAndVisitCount(strState);
@@ -227,10 +228,10 @@ float MonteCarloTreeSearch::expandNewEncounteredState(const std::string& strStat
 	return value;
 }
 
-float MonteCarloTreeSearch::multiThreadedExpandNewState(const std::string& strState, int currentPlayer, Game* game, MultiThreadingNeuralNetManager* threadingManager, torch::DeviceType device)
+float MonteCarloTreeSearch::multiThreadedExpandNewState(const std::string& strState, int currentPlayer, Game* game, MultiThreadingNeuralNetManager* threadingManager)
 {
 	m_visited[strState] = true;
-	auto input = game->convertStateToNeuralNetInput(strState, currentPlayer, device);
+	auto input = game->convertStateToNeuralNetInput(strState, currentPlayer, m_device);
 	const int resultIndex = threadingManager->addInputThreadSafe(input);
 
 	threadingManager->handleWaitingAndWakeup();

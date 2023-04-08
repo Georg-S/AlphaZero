@@ -85,7 +85,7 @@ void AlphaZeroTraining::selfPlayMultiThreadGames(NeuralNetwork* net, Game* game,
 
 std::vector<ReplayElement> AlphaZeroTraining::selfPlayGame(NeuralNetwork* net, Game* game)
 {
-	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(m_actionCount);
+	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(m_actionCount,m_device);
 
 	std::vector<ReplayElement> trainingData;
 	std::string currentState = game->getInitialGameState();
@@ -100,7 +100,7 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlayGame(NeuralNetwork* net, G
 			gameTooLong = true;
 			break;
 		}
-		mcts.multiThreadedSearch(m_params.SELF_PLAY_MCTS_COUNT, currentState, game, currentPlayer, m_threadManager.get(), m_device);
+		mcts.multiThreadedSearch(m_params.SELF_PLAY_MCTS_COUNT, currentState, game, currentPlayer, m_threadManager.get());
 
 		std::vector<float> probs = mcts.getProbabilities(currentState);
 
@@ -231,10 +231,10 @@ namespace
 {
 	struct GameState 
 	{
-		GameState(std::string currentState, int currentPlayer, int actionCount) 
+		GameState(std::string currentState, int currentPlayer, int actionCount, torch::DeviceType device) 
 			: currentState(currentState)
 			, currentPlayer(currentPlayer)
-			, mcts(MonteCarloTreeSearch(actionCount))
+			, mcts(MonteCarloTreeSearch(actionCount, device))
 		{
 		}
 
@@ -251,9 +251,8 @@ namespace
 std::vector<ReplayElement> AlphaZeroTraining::selfPlayBatch(NeuralNetwork* net, Game* game, int batchSize)
 {
 	std::vector<ReplayElement> resultingTrainingsData;
-	NeuralNetInputBuffer netInputBuffer = {};
-	constexpr int mctsCount = 50;
-	auto currentStatesData = std::vector<GameState>(batchSize, { game->getInitialGameState(), game->getInitialPlayer(), game->getActionCount()});
+	auto netInputBuffer = NeuralNetInputBuffer(m_device);
+	auto currentStatesData = std::vector<GameState>(batchSize, { game->getInitialGameState(), game->getInitialPlayer(), game->getActionCount(), m_device});
 	/*
 	Use a vector of pointers to the gamedata for iterating,
 	then all of the game data can be destroyed at once.
@@ -292,7 +291,7 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlayBatch(NeuralNetwork* net, 
 
 			if (!continueMcts) 
 			{
-				continueMcts = mcts.specialSearch(currentState, game, currentPlayer, mctsCount);
+				continueMcts = mcts.specialSearch(currentState, game, currentPlayer, m_params.SELF_PLAY_MCTS_COUNT);
 			}
 			else 
 			{

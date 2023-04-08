@@ -11,6 +11,8 @@
 
 #if RunTests
 
+torch::DeviceType device = torch::kCPU;
+
 TEST(MonteCarloTreeSearch, test_sum_vector)
 {
 	std::vector<int> test{ 0,1,2,3,4,5,6,7,8,9 };
@@ -29,7 +31,7 @@ TEST(MonteCarloTreeSearch, test_sum_vector_0_size_vector)
 
 TEST(MonteCarloTreeSearch, test_mcts_ttt_draw_board)
 {
-	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9);
+	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9, device);
 	DefaultNeuralNet net(2, 3, 3, 9);
 	TicTacToeAdapter adap = TicTacToeAdapter();
 	int result = mcts.search("OXXXXOOOX", &net, &adap, 1);
@@ -40,7 +42,7 @@ TEST(MonteCarloTreeSearch, test_mcts_ttt_draw_board)
 
 TEST(MonteCarloTreeSearch, test_mcts_ttt_player_one_wins)
 {
-	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9);
+	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9, device);
 	DefaultNeuralNet net(2, 3, 3, 9);
 	TicTacToeAdapter adap = TicTacToeAdapter();
 	float result = mcts.search("XOXOXOOXX", &net, &adap, 1);
@@ -50,7 +52,7 @@ TEST(MonteCarloTreeSearch, test_mcts_ttt_player_one_wins)
 
 TEST(MonteCarloTreeSearch, test_mcts_ttt_player_two_wins)
 {
-	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9);
+	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9, torch::kCPU);
 	DefaultNeuralNet net(2, 3, 3, 9);
 	TicTacToeAdapter adap = TicTacToeAdapter();
 	float result = mcts.search("XXOOOXOXX", &net, &adap, 2);
@@ -61,7 +63,7 @@ TEST(MonteCarloTreeSearch, test_mcts_ttt_player_two_wins)
 TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_one_move_possible)
 {
 	std::string state = "XXOO-XOXX";
-	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9);
+	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9, device);
 	DefaultNeuralNet net(2, 3, 3, 9);
 	TicTacToeAdapter adap = TicTacToeAdapter();
 	mcts.search(4, state, &net, &adap, 2);
@@ -81,7 +83,7 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_one_move_possible)
 TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_wins)
 {
 	std::string state = "OXOXOXX--";
-	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9);
+	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9, device);
 	DefaultNeuralNet net(2, 3, 3, 9);
 	TicTacToeAdapter adap = TicTacToeAdapter();
 	mcts.search(100, state, &net, &adap, 2);
@@ -93,10 +95,10 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_win
 TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_wins_with_delayed_expansion)
 {
 	std::string state = "OXOXOXX--";
-	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9);
+	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9, device);
 	DefaultNeuralNet net(2, 3, 3, 9);
 	TicTacToeAdapter adap = TicTacToeAdapter();
-	NeuralNetInputBuffer buffer = {};
+	NeuralNetInputBuffer buffer = NeuralNetInputBuffer(device);
 
 	bool expansionNeeded = mcts.specialSearch(state, &adap, 2, 50);
 	if (expansionNeeded)
@@ -126,9 +128,9 @@ TEST(MonteCarloTreeSearch, test_chess_one_move_wins)
 	const int winningMove = chess::getIntFromMove({ 0,6,0,7 });
 	DefaultNeuralNet neuralNet = DefaultNeuralNet(14, 8, 8, 4096, device);
 	ChessAdapter adap = ChessAdapter();
-	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(adap.getActionCount());
+	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(adap.getActionCount(), device);
 
-	mcts.search(100, gameState, &neuralNet, &adap, static_cast<int>(ceg::PieceColor::WHITE), device);
+	mcts.search(100, gameState, &neuralNet, &adap, static_cast<int>(ceg::PieceColor::WHITE));
 	auto probabilities = mcts.getProbabilities(gameState);
 	int mctsBestMove = ALZ::getMaxElementIndex(probabilities);
 
@@ -139,7 +141,7 @@ TEST(MonteCarloTreeSearch, test_chess_one_move_wins)
 TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_gets_draw)
 {
 	std::string state = "OXOXXO--X";
-	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9);
+	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9, device);
 	DefaultNeuralNet net(2, 3, 3, 9);
 	TicTacToeAdapter adap = TicTacToeAdapter();
 	mcts.search(100, state, &net, &adap, 2);
@@ -152,7 +154,7 @@ void test_mcts(MultiThreadingNeuralNetManager& manager, NeuralNetwork* net)
 {
 	constexpr int actionCount = 9;
 	TicTacToeAdapter game = TicTacToeAdapter();
-	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(actionCount);
+	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(actionCount, device);
 	std::string currentState = "X-OOX-X-O";
 
 	mcts.multiThreadedSearch(100, currentState, &game, 1, &manager);

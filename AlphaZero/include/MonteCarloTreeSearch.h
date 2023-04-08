@@ -19,7 +19,7 @@
 class NeuralNetInputBuffer 
 {
 public:
-	NeuralNetInputBuffer() = default;
+	NeuralNetInputBuffer(torch::DeviceType device) : m_device(device) {}
 	NeuralNetInputBuffer(const NeuralNetInputBuffer&) = delete;
 	NeuralNetInputBuffer& operator=(const NeuralNetInputBuffer&) = delete;
 
@@ -37,6 +37,7 @@ public:
 		if (m_inputSize == 0)
 			return;
 
+		m_input = m_input.to(m_device);
 		auto rawOutput = net->calculate(m_input);
 		m_outputSize = m_inputSize;
 		m_inputSize = 0;
@@ -57,6 +58,7 @@ private:
 	torch::Tensor m_input;
 	torch::Tensor m_outputProbabilities;
 	torch::Tensor m_outputValues;
+	torch::DeviceType m_device;
 	size_t m_inputSize = 0;
 	size_t m_outputSize = 0;
 };
@@ -64,38 +66,33 @@ private:
 class MonteCarloTreeSearch
 {
 public:
-	MonteCarloTreeSearch() = default;
-	MonteCarloTreeSearch(int actionCount, float cpuct = 1.0);
-	void search(int count, std::string strState, NeuralNetwork* net, Game* game,
-		int currentPlayer, torch::DeviceType device = torch::kCPU);
-	float search(std::string strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device = torch::kCPU);
-	void multiThreadedSearch(int count, std::string strState, Game* game, int currentPlayer,
-		MultiThreadingNeuralNetManager* threadingManager, torch::DeviceType device = torch::kCPU);
+	MonteCarloTreeSearch(int actionCount, torch::DeviceType device, float cpuct = 1.0);
+	void search(int count, std::string strState, NeuralNetwork* net, Game* game, int currentPlayer);
+	float search(std::string strState, NeuralNetwork* net, Game* game, int currentPlayer);
+	void multiThreadedSearch(int count, std::string strState, Game* game, int currentPlayer, MultiThreadingNeuralNetManager* threadingManager);
 	void backpropagateValue(float value);
 	void deferredExpansion(torch::Tensor valueTens, torch::Tensor probabilities);
 	bool runMultipleSearches(const std::string& strState, Game* game, int currentPlayer);
 	bool specialSearch(const std::string& strState, Game* game, int currentPlayer, int count);
 	bool continueSpecialSearch(const std::string& strState, Game* game, int currentPlayer, torch::Tensor valueTens, torch::Tensor probabilities);
-	void specialSearch(const std::string& strState, NeuralNetwork* net, Game* game, int currentPlayer, torch::DeviceType device = torch::kCPU);
+	void specialSearch(const std::string& strState, NeuralNetwork* net, Game* game, int currentPlayer);
 	float searchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer, bool* expansionNeeded);
-	float multiThreadedSearch(std::string strState, Game* game, int currentPlayer,
-		MultiThreadingNeuralNetManager* threadingManager,
-		torch::DeviceType device = torch::kCPU);
+	float multiThreadedSearch(std::string strState, Game* game, int currentPlayer, MultiThreadingNeuralNetManager* threadingManager);
 	std::vector<float> getProbabilities(const std::string& state, float temperature = 1.0);
 	void clearAll();
 	void fillQValuesAndVisitCount(const std::string& state);
 	torch::Tensor getExpansionNeuralNetInput(Game* game, torch::DeviceType device) const;
 
 private:
-	float expandNewEncounteredState(const std::string& strState, int currentPlayer, Game* game, NeuralNetwork* net, torch::DeviceType device);
-	float multiThreadedExpandNewState(const std::string& strState, int currentPlayer, Game* game,
-		MultiThreadingNeuralNetManager* threadingManager, torch::DeviceType device);
+	float expandNewEncounteredState(const std::string& strState, int currentPlayer, Game* game, NeuralNetwork* net);
+	float multiThreadedExpandNewState(const std::string& strState, int currentPlayer, Game* game, MultiThreadingNeuralNetManager* threadingManager);
 	int getActionWithHighestUpperConfidenceBound(const std::string& strState, int currentPlayer, Game* game);
 	float calculateUpperConfidenceBound(const std::string& strState, int action);
 
 	int m_actionCount = -1;
-	float m_cpuct = -1.0;
 	int m_mctsCount = 0;
+	torch::DeviceType m_device = torch::kCPU;
+	float m_cpuct = -1.0;
 	std::map<std::string, bool> m_loopDetection;
 	std::map<std::string, bool> m_visited;
 	std::map<std::string, std::vector<int>> m_visitCount;
