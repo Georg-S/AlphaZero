@@ -22,9 +22,8 @@ public:
 	{
 		std::string neuralNetPath;
 
-		//Training Flags
-		bool TRAINING_DONT_USE_DRAWS = false;
 		//Training Parameters
+		bool TRAINING_DONT_USE_DRAWS = false;
 		int SELFPLAY_BATCH_SIZE = 10;
 		int TRAINING_ITERATIONS = 10000;
 		int MIN_REPLAY_MEMORY_SIZE = 100;

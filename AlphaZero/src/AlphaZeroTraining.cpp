@@ -248,6 +248,15 @@ namespace
 	};
 }
 
+/*
+Previously for selfplay, the games were simulated sequentially: game1 -> move1, game1 -> move2 ... game2 -> move1, game2 -> move2
+It was possible to improve the performance by running multiple games in parallel, 
+therefore collecting the data sent to the GPU and calculating multiple game states at once on the GPU.
+
+With this approach (down below), we calculate multiple games at once: game1 -> move1, game2 -> move1 ... game1 -> move2, game2 -> move2
+This has the benefit that we can collect the (neural net input) data for all games and calculate the neural net output once.
+The result is a big performance improvement, since GPUs are fast in calculating multiple data at once.
+*/
 std::vector<ReplayElement> AlphaZeroTraining::selfPlayBatch(NeuralNetwork* net, Game* game, int batchSize)
 {
 	std::vector<ReplayElement> resultingTrainingsData;
