@@ -12,7 +12,7 @@
 class MultiThreadingNeuralNetManager
 {
 public:
-	MultiThreadingNeuralNetManager(int threadCount, int activeThreads, NeuralNetwork* net);
+	MultiThreadingNeuralNetManager(int threadCount, int activeThreads, NeuralNetwork* net, torch::DeviceType device);
 	int addInputThreadSafe(torch::Tensor input);
 	std::tuple<torch::Tensor, torch::Tensor> getOutput(int index);
 	void safeDecrementActiveThreads();
@@ -31,6 +31,7 @@ private:
 	std::condition_variable m_outputCalculated;
 	std::condition_variable m_allThreadsWokenUp;
 	std::mutex m_threadingMutex;
+	torch::DeviceType m_device;
 	const int m_threadCount;
 	int m_activeThreads = 0;
 	int m_elementsAdded = 0;

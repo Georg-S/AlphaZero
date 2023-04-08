@@ -190,7 +190,7 @@ torch::Tensor MonteCarloTreeSearch::getExpansionNeuralNetInput(Game* game, torch
 	auto& strState = m_backProp.back().state;
 	auto currentPlayer = m_backProp.back().player;
 
-	return game->convertStateToNeuralNetInput(strState, currentPlayer, device);
+	return game->convertStateToNeuralNetInput(strState, currentPlayer);
 }
 
 void MonteCarloTreeSearch::clearAll()
@@ -217,7 +217,7 @@ std::vector<float> MonteCarloTreeSearch::getProbabilities(const std::string& sta
 float MonteCarloTreeSearch::expandNewEncounteredState(const std::string& strState, int currentPlayer, Game* game, NeuralNetwork* net)
 {
 	m_visited[strState] = true;
-	auto input = game->convertStateToNeuralNetInput(strState, currentPlayer, m_device);
+	auto input = game->convertStateToNeuralNetInput(strState, currentPlayer).to(m_device);
 	auto [valueTens, rawProbs] = net->calculate(input);
 	m_probabilities[strState] = rawProbs[0].detach().to(torch::kCPU);
 	fillQValuesAndVisitCount(strState);
@@ -231,7 +231,7 @@ float MonteCarloTreeSearch::expandNewEncounteredState(const std::string& strStat
 float MonteCarloTreeSearch::multiThreadedExpandNewState(const std::string& strState, int currentPlayer, Game* game, MultiThreadingNeuralNetManager* threadingManager)
 {
 	m_visited[strState] = true;
-	auto input = game->convertStateToNeuralNetInput(strState, currentPlayer, m_device);
+	auto input = game->convertStateToNeuralNetInput(strState, currentPlayer);
 	const int resultIndex = threadingManager->addInputThreadSafe(input);
 
 	threadingManager->handleWaitingAndWakeup();

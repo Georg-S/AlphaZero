@@ -13,7 +13,7 @@ public:
 	int getInitialPlayer() override;
 	int getPlayerWon(const std::string& state) override;
 	std::string getInitialGameState() override;
-	torch::Tensor convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Device device = torch::kCPU) override;
+	torch::Tensor convertStateToNeuralNetInput(const std::string& state, int currentPlayer) override;
 	std::vector<int> getAllPossibleMoves(const std::string& state, int currentPlayer) override;
 	int getNextPlayer(int currentPlayer) override;
 	int gameOverReward(const std::string& state, int currentPlayer) override;

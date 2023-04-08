@@ -1,10 +1,11 @@
 #include "MultiThreadingNeuralNetManager.h"
 
-MultiThreadingNeuralNetManager::MultiThreadingNeuralNetManager(int threadCount, int activeThreads, NeuralNetwork* net)
+MultiThreadingNeuralNetManager::MultiThreadingNeuralNetManager(int threadCount, int activeThreads, NeuralNetwork* net, torch::DeviceType device)
 	: m_net(net)
 	, m_threadCount(threadCount)
 	, m_activeThreads(activeThreads)
 	, m_elementsAdded(0)
+	, m_device(device)
 {
 }
 
@@ -74,6 +75,7 @@ int MultiThreadingNeuralNetManager::getThreadCount() const
 
 void MultiThreadingNeuralNetManager::calculateOutput()
 {
+	m_inputBuffer = m_inputBuffer.to(m_device);
 	m_output = m_net->calculate(m_inputBuffer);
 }
 

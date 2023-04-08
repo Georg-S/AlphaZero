@@ -20,7 +20,7 @@ public:
 	int getPlayerWon(const std::string& state) override;
 	int getNextPlayer(int currentPlayer) override;
 	std::string makeMove(const std::string& state, int move, int currentPlayer) override;
-	torch::Tensor convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Device device = torch::kCPU) override;
+	torch::Tensor convertStateToNeuralNetInput(const std::string& state, int currentPlayer) override;
 	bool isGameOver(const std::string& state) override;
 	int gameOverReward(const std::string& state, int currentPlayer) override;
 	int getActionCount() const override;

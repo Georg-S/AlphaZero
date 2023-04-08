@@ -112,8 +112,7 @@ static void setPiecesInTensor(const ceg::Pieces& pieces, uint64_t en_passant, at
 	convertPiecesToTensor(en_passant, destination[startIndex + 6]);
 }
 
-torch::Tensor ChessAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer,
-	torch::Device device)
+torch::Tensor ChessAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer)
 {
 	constexpr int perPlayerSize = 7;
 	ceg::BitBoard board(state);
@@ -130,8 +129,6 @@ torch::Tensor ChessAdapter::convertStateToNeuralNetInput(const std::string& stat
 		setPiecesInTensor(board.black_pieces, board.en_passant_mask, result[0], 0);
 		setPiecesInTensor(board.white_pieces, 0LL, result[0], perPlayerSize);
 	}
-
-	result = result.to(device);
 
 	return result;
 }

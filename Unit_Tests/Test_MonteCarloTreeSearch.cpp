@@ -171,7 +171,7 @@ TEST(MonteCarloTreeSearch, test_ttt_multi_threading_mcts)
 	constexpr int actionCount = 9;
 	std::vector<std::thread> threadPool;
 	DefaultNeuralNet net(2, 3, 3, actionCount);
-	MultiThreadingNeuralNetManager manager(threadCount, threadCount, &net);
+	MultiThreadingNeuralNetManager manager(threadCount, threadCount, &net, torch::kCPU);
 
 	for (int i = 0; i < threadCount; i++)
 		threadPool.push_back(std::thread(test_mcts, std::ref(manager), &net));

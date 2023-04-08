@@ -20,7 +20,7 @@ std::vector<int> TicTacToeAdapter::getAllPossibleMoves(const std::string& state,
 	return ttt::getAllPossibleMoves<int>(board);
 }
 
-torch::Tensor TicTacToeAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Device device)
+torch::Tensor TicTacToeAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer)
 {
 	Board board = Board(state);
 	PlayerColor playercolor = PlayerColor(currentPlayer);
@@ -37,7 +37,6 @@ torch::Tensor TicTacToeAdapter::convertStateToNeuralNetInput(const std::string& 
 				neuralInput[0][1][x][y] = 1;
 		}
 	}
-	neuralInput = neuralInput.to(device);
 
 	return neuralInput;
 }

@@ -63,7 +63,7 @@ std::vector<int> ConnectFourAdapter::getAllPossibleMoves(const std::string& stat
 	return cn4::getAllPossibleMoves(board);
 }
 
-torch::Tensor ConnectFourAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Device device)
+torch::Tensor ConnectFourAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer)
 {
 	Board board = Board(state);
 	PlayerColor playerColor = PlayerColor(currentPlayer);
@@ -80,7 +80,6 @@ torch::Tensor ConnectFourAdapter::convertStateToNeuralNetInput(const std::string
 				neuralInput[0][1][x][y] = 1;
 		}
 	}
-	neuralInput = neuralInput.to(device);
 
 	return neuralInput;
 }
