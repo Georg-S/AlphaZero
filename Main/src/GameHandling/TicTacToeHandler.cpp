@@ -43,11 +43,11 @@ void TicTacToeHandler::evalTicTacToe(bool multiThreaded)
 EvalResult TicTacToeHandler::evalTicTacToeMultiThreaded(std::string netName, torch::DeviceType device, int threadCount)
 {
 	TicTacToeAdapter adap = TicTacToeAdapter();
-	Evaluation evaluation = Evaluation(torch::kCUDA, evalMCTSCount);
+	Evaluation evaluation = Evaluation(device, evalMCTSCount);
 
 	auto toEval = std::make_unique<DefaultNeuralNet>(2, 3, 3, 9, netName, device);
 	toEval->setToEval();
-	MultiThreadingNeuralNetManager threadManager = MultiThreadingNeuralNetManager(threadCount, threadCount, toEval.get());
+	MultiThreadingNeuralNetManager threadManager = MultiThreadingNeuralNetManager(threadCount, threadCount, toEval.get(), device);
 	ttt::MiniMaxAi minimaxAi = ttt::MiniMaxAi();
 	EvalResult result = evaluation.evalMultiThreaded(&threadManager, &minimaxAi, &adap);
 

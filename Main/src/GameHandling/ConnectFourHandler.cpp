@@ -83,10 +83,10 @@ AlphaZeroTraining::Parameters ConnectFourHandler::getDefaultConnectFourTrainingP
 
 EvalResult ConnectFourHandler::evalConnectFourMultiThreaded(std::string netName, int miniMaxDepth, torch::DeviceType device, int threadCount)
 {
-	Evaluation evaluation = Evaluation(torch::kCUDA, evalMCTSCount);
+	Evaluation evaluation = Evaluation(device, evalMCTSCount);
 	auto toEval = std::make_unique<DefaultNeuralNet>(2, 7, 6, 7, netName, device);
 	toEval->setToEval();
-	MultiThreadingNeuralNetManager threadManager = MultiThreadingNeuralNetManager(threadCount, threadCount, toEval.get());
+	MultiThreadingNeuralNetManager threadManager = MultiThreadingNeuralNetManager(threadCount, threadCount, toEval.get(), device);
 	cn4::NegaMaxAi miniMaxAi = cn4::NegaMaxAi(miniMaxDepth);
 	ConnectFourAdapter adap = ConnectFourAdapter();
 	EvalResult result = evaluation.evalMultiThreaded(&threadManager, &miniMaxAi, &adap);
