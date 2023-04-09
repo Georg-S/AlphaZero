@@ -17,6 +17,9 @@ public:
 	virtual void training(torch::Tensor& val, torch::Tensor& probs, torch::Tensor& probsTarget, torch::Tensor& valueTarget) = 0;
 	virtual void setLearningRate(float learningRate) = 0;
 	virtual void copyNetFrom(NeuralNetwork* copySource) = 0;
+	virtual void setToEval() = 0;
+	virtual void setToTraining() = 0;
+	virtual std::unique_ptr<NeuralNetwork> deepCopy() const = 0;
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_NEURALNETWORK_H

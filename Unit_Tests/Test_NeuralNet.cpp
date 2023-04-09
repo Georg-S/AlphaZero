@@ -49,4 +49,23 @@ TEST(NeuralNet, net_returns_same_value_after_save_and_load)
 	ASSERT_EQ(value1, value2);
 }
 
+TEST(NeuralNet, net_and_deepcopy_returns_the_same_value)
+{
+	torch::Tensor input = torch::rand({ 1,1,3,3 });
+
+	DefaultNeuralNet net = DefaultNeuralNet(1, 3, 3, 9);
+	net.setToEval();
+	auto result = net.calculate(input);
+	torch::Tensor resultTens = std::get<1>(result);
+	float value1 = *(resultTens[0][0].data_ptr<float>());
+
+	auto deepCopy = net.deepCopy();
+	deepCopy->setToEval();
+	auto result2 = deepCopy->calculate(input);
+	torch::Tensor resultTens2 = std::get<1>(result2);
+	float value2 = *(resultTens2[0][0].data_ptr<float>());
+
+	ASSERT_EQ(value1, value2);
+}
+
 #endif RunTests
