@@ -22,6 +22,7 @@ void initRNGS()
 
 int main(int argc, char* argv[])
 {
+	QLocale::setDefault(QLocale(QLocale::English));
 	QApplication app(argc, argv);
 	MainWindow w;
 	w.show();
