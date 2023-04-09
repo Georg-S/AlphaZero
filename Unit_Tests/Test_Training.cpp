@@ -34,8 +34,6 @@
 //	trainingParams.SELFPLAY_BATCH_SIZE = 1000;
 //	training.setTrainingParams(trainingParams);
 //
-//	training.runBatchTraining(&adap);
-//	training.selfPlayBatch(&neuralNet, &adap, 1000);
 //}
 
 #if RunTests
@@ -58,6 +56,7 @@ TEST(Training, test_random_action)
 
 TEST(Training, test_mult_thread_training)
 {
+	// TODO adjust with new multi threading
 	srand(time(NULL));
 	torch::DeviceType device = torch::kCUDA;
 	TicTacToeAdapter adap = TicTacToeAdapter();
@@ -80,7 +79,6 @@ TEST(Training, test_mult_thread_training)
 	trainingParams.NUMBER_CPU_THREADS = 10;
 	training.setTrainingParams(trainingParams);
 
-	training.selfPlayMultiThread(&neuralNet, &adap);
 }
 
 #endif //RunTests

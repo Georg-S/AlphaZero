@@ -49,7 +49,8 @@ EvalResult TicTacToeHandler::evalTicTacToeMultiThreaded(std::string netName, tor
 	toEval->setToEval();
 	MultiThreadingNeuralNetManager threadManager = MultiThreadingNeuralNetManager(threadCount, threadCount, toEval.get(), device);
 	ttt::MiniMaxAi minimaxAi = ttt::MiniMaxAi();
-	EvalResult result = evaluation.evalMultiThreaded(&threadManager, &minimaxAi, &adap);
+	EvalResult result = {};
+	evaluation.eval(toEval.get(), &minimaxAi, &adap,  100, result, 100);
 
 	return result;
 }
@@ -91,7 +92,7 @@ void TicTacToeHandler::runTraining(const TrainingParameters& params)
 	setTrainingParameters(training, params);
 
 	ALZ::ScopedTimer timer{};
-	training.runBatchTraining(&adap);
+	training.runTraining(&adap);
 }
 
 void TicTacToeHandler::setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params)

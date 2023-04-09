@@ -6,84 +6,6 @@ Evaluation::Evaluation(torch::DeviceType device, int mctsCount)
 {
 }
 
-EvalResult Evaluation::evalMultiThreaded(MultiThreadingNeuralNetManager* threadManager, Ai* miniMaxAi, Game* game, int numberEvalGames)
-{
-	std::vector<std::thread> threadPool;
-	EvalResult result;
-
-	m_currentColor = game->getInitialPlayer();
-	m_gamesToPlay = numberEvalGames;
-
-	for (int i = 0; i < threadManager->getThreadCount(); i++)
-		threadPool.push_back(std::thread(&Evaluation::selfPlayMultiThreadGames, this, threadManager, miniMaxAi, game, &result));
-
-	for (auto& thread : threadPool)
-		thread.join();
-
-	return result;
-}
-
-void Evaluation::selfPlayMultiThreadGames(MultiThreadingNeuralNetManager* threadManager, Ai* miniMaxAi, Game* game,
-	EvalResult* outResult)
-{
-	int myColor = 0;
-	while (true)
-	{
-		m_mut.lock();
-		if (m_gamesToPlay == 0)
-		{
-			threadManager->safeDecrementActiveThreads();
-			m_mut.unlock();
-			return;
-		}
-
-		myColor = m_currentColor;
-		m_currentColor = game->getNextPlayer(m_currentColor);
-		m_gamesToPlay--;
-		m_mut.unlock();
-
-		int winner = runGameMultiThreaded(threadManager, miniMaxAi, game, myColor);
-
-		m_mut.lock();
-		if (winner == 0)
-			outResult->draws++;
-		else if (winner == myColor)
-			outResult->wins++;
-		else
-			outResult->losses++;
-		m_mut.unlock();
-	}
-}
-
-int Evaluation::runGameMultiThreaded(MultiThreadingNeuralNetManager* threadManager, Ai* minMaxAi, Game* game, int neuralNetColor)
-{
-	std::string state = game->getInitialGameState();
-	int currentPlayer = game->getInitialPlayer();
-	// One difference between single threaded and multi threaded eval
-	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(game->getActionCount(), m_device);
-
-	while (!game->isGameOver(state))
-	{
-		int move = -1;
-		if (currentPlayer == neuralNetColor)
-		{
-			mcts.multiThreadedSearch(m_mctsCount, state, game, currentPlayer, threadManager);
-			std::vector<float> probs = mcts.getProbabilities(state);
-			move = std::max_element(probs.begin(), probs.end()) - probs.begin();
-		}
-		else
-		{
-			m_mut.lock();
-			move = minMaxAi->getMove(state, currentPlayer);
-			m_mut.unlock();
-		}
-		state = game->makeMove(state, move, currentPlayer);
-		currentPlayer = game->getNextPlayer(currentPlayer);
-	}
-
-	return game->getPlayerWon(state);
-}
-
 namespace
 {
 	struct GameState
@@ -105,7 +27,7 @@ namespace
 	};
 }
 
-EvalResult Evaluation::eval(NeuralNetwork* net, Ai* miniMaxAi, Game* game, int batchSize, EvalResult& outEval, int mctsCount, int numberEvalGames)
+EvalResult Evaluation::eval(NeuralNetwork* net, Ai* miniMaxAi, Game* game, int batchSize, EvalResult& outEval, int numberEvalGames)
 {
 	auto netInputBuffer = NeuralNetInputBuffer(m_device);
 	int playerBuf = game->getInitialPlayer();
@@ -153,17 +75,17 @@ EvalResult Evaluation::eval(NeuralNetwork* net, Ai* miniMaxAi, Game* game, int b
 
 				if (!continueMcts)
 				{
-					continueMcts = mcts.specialSearch(currentState, game, currentPlayer, mctsCount);
+					continueMcts = mcts.startSearchWithoutExpansion(currentState, game, currentPlayer, m_mctsCount);
 				}
 				else
 				{
 					auto [valueTens, probTens] = netInputBuffer.getOutput(netInputIndex);
-					continueMcts = mcts.continueSpecialSearch(currentState, game, currentPlayer, valueTens, probTens);
+					continueMcts = mcts.expandAndContinueSearchWithoutExpansion(currentState, game, currentPlayer, valueTens, probTens);
 				}
 
 				if (continueMcts)
 				{
-					netInputIndex = netInputBuffer.addToInput(mcts.getExpansionNeuralNetInput(game, m_device));
+					netInputIndex = netInputBuffer.addToInput(mcts.getExpansionNeuralNetInput(game));
 					continue;
 				}
 

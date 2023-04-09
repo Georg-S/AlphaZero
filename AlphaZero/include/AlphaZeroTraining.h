@@ -41,22 +41,19 @@ public:
 
 	AlphaZeroTraining(int actionCount, NeuralNetwork* currentBest, torch::DeviceType = torch::kCPU);
 	void runTraining(Game* game);
-	void runBatchTraining(Game* game);
-	std::vector<ReplayElement> selfPlayBatch(NeuralNetwork* net, Game* game, int batchSize);
-	void selfPlayBatch(NeuralNetwork* net, Game* game);
-	void selfPlayMultiThread(NeuralNetwork* net, Game* game);
-	void selfPlayMultiThreadGames(NeuralNetwork* net, Game* game, MultiThreadingNeuralNetManager* threadManager);
-	std::vector<ReplayElement> selfPlayGame(NeuralNetwork* net, Game* game);
+	// Sets the training parameters and creates a new replay buffer -> all elements in replay buffer get destroyed
+	void setTrainingParams(Parameters params);
+
+private:
+	void selfPlay(NeuralNetwork* net, Game* game);
+	std::vector<ReplayElement> selfPlay(NeuralNetwork* net, Game* game, int batchSize);
 	void addResult(std::vector<ReplayElement>& elements, int winner);
 	void trainNet(NeuralNetwork* net, Game* game);
 	torch::Tensor convertSampleToNeuralInput(const std::vector<ReplayElement>& sample, Game* game);
 	torch::Tensor convertToValueTarget(const std::vector<ReplayElement>& sample);
 	torch::Tensor convertToProbsTarget(const std::vector<ReplayElement>& sample);
 	void save(int iteration);
-	/// Sets the training parameters and creates a new replay buffer -> all elements in replay buffer get destroyed
-	void setTrainingParams(Parameters params);
 
-private:
 	RingBuffer<ReplayElement> m_replayMemory;
 	std::unique_ptr<MultiThreadingNeuralNetManager> m_threadManager;
 	NeuralNetwork* m_neuralNet;
@@ -66,6 +63,5 @@ private:
 	std::mutex m_mut;
 	Parameters m_params;
 };
-
 
 #endif //DEEPREINFORCEMENTLEARNING_ALPHAZEROTRAINING_H

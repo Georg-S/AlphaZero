@@ -68,26 +68,21 @@ class MonteCarloTreeSearch
 public:
 	MonteCarloTreeSearch(int actionCount, torch::DeviceType device, float cpuct = 1.0);
 	void search(int count, std::string strState, NeuralNetwork* net, Game* game, int currentPlayer);
-	float search(std::string strState, NeuralNetwork* net, Game* game, int currentPlayer);
-	void multiThreadedSearch(int count, std::string strState, Game* game, int currentPlayer, MultiThreadingNeuralNetManager* threadingManager);
-	void backpropagateValue(float value);
-	void deferredExpansion(torch::Tensor valueTens, torch::Tensor probabilities);
-	bool runMultipleSearches(const std::string& strState, Game* game, int currentPlayer);
-	bool specialSearch(const std::string& strState, Game* game, int currentPlayer, int count);
-	bool continueSpecialSearch(const std::string& strState, Game* game, int currentPlayer, torch::Tensor valueTens, torch::Tensor probabilities);
-	void specialSearch(const std::string& strState, NeuralNetwork* net, Game* game, int currentPlayer);
-	float searchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer, bool* expansionNeeded);
-	float multiThreadedSearch(std::string strState, Game* game, int currentPlayer, MultiThreadingNeuralNetManager* threadingManager);
+	float search(const std::string& strState, NeuralNetwork* net, Game* game, int currentPlayer);
+	bool startSearchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer, int count);
+	bool expandAndContinueSearchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer, torch::Tensor valueTens, torch::Tensor probabilities);
 	std::vector<float> getProbabilities(const std::string& state, float temperature = 1.0);
-	void clearAll();
-	void fillQValuesAndVisitCount(const std::string& state);
-	torch::Tensor getExpansionNeuralNetInput(Game* game, torch::DeviceType device) const;
+	torch::Tensor getExpansionNeuralNetInput(Game* game) const;
 
 private:
+	float searchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer, bool* expansionNeeded);
+	bool runMultipleSearches(const std::string& strState, Game* game, int currentPlayer);
+	void backpropagateValue(float value);
+	void deferredExpansion(torch::Tensor valueTens, torch::Tensor probabilities);
 	float expandNewEncounteredState(const std::string& strState, int currentPlayer, Game* game, NeuralNetwork* net);
-	float multiThreadedExpandNewState(const std::string& strState, int currentPlayer, Game* game, MultiThreadingNeuralNetManager* threadingManager);
 	int getActionWithHighestUpperConfidenceBound(const std::string& strState, int currentPlayer, Game* game);
 	float calculateUpperConfidenceBound(const std::string& strState, int action);
+	void fillQValuesAndVisitCount(const std::string& state);
 
 	int m_actionCount = -1;
 	int m_mctsCount = 0;

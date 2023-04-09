@@ -100,16 +100,16 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_win
 	TicTacToeAdapter adap = TicTacToeAdapter();
 	NeuralNetInputBuffer buffer = NeuralNetInputBuffer(device);
 
-	bool expansionNeeded = mcts.specialSearch(state, &adap, 2, 50);
+	bool expansionNeeded = mcts.startSearchWithoutExpansion(state, &adap, 2, 50);
 	if (expansionNeeded)
 	{
-		buffer.addToInput(mcts.getExpansionNeuralNetInput(&adap, torch::kCPU));
+		buffer.addToInput(mcts.getExpansionNeuralNetInput(&adap));
 		buffer.calculateOutput(&net);
 		auto [value, probs] = buffer.getOutput(0);
 
-		while (mcts.continueSpecialSearch(state, &adap, 2, value, probs))
+		while (mcts.expandAndContinueSearchWithoutExpansion(state, &adap, 2, value, probs))
 		{
-			buffer.addToInput(mcts.getExpansionNeuralNetInput(&adap, torch::kCPU));
+			buffer.addToInput(mcts.getExpansionNeuralNetInput(&adap));
 			buffer.calculateOutput(&net);
 			auto [value, probs] = buffer.getOutput(0);
 		}
@@ -148,36 +148,6 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_get
 	std::vector<float> probs = mcts.getProbabilities(state);
 
 	ASSERT_GT(probs[7], probs[6]);
-}
-
-void test_mcts(MultiThreadingNeuralNetManager& manager, NeuralNetwork* net)
-{
-	constexpr int actionCount = 9;
-	TicTacToeAdapter game = TicTacToeAdapter();
-	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(actionCount, device);
-	std::string currentState = "X-OOX-X-O";
-
-	mcts.multiThreadedSearch(100, currentState, &game, 1, &manager);
-	std::vector<float> probs = mcts.getProbabilities(currentState);
-	manager.safeDecrementActiveThreads();
-
-	ASSERT_GT(probs[5], probs[1]);
-	ASSERT_GT(probs[5], probs[7]);
-}
-
-TEST(MonteCarloTreeSearch, test_ttt_multi_threading_mcts)
-{
-	constexpr int threadCount = 2;
-	constexpr int actionCount = 9;
-	std::vector<std::thread> threadPool;
-	DefaultNeuralNet net(2, 3, 3, actionCount);
-	MultiThreadingNeuralNetManager manager(threadCount, threadCount, &net, torch::kCPU);
-
-	for (int i = 0; i < threadCount; i++)
-		threadPool.push_back(std::thread(test_mcts, std::ref(manager), &net));
-
-	for (auto& thread : threadPool)
-		thread.join();
 }
 
 #endif //RunTests

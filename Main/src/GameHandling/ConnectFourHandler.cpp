@@ -89,7 +89,8 @@ EvalResult ConnectFourHandler::evalConnectFourMultiThreaded(std::string netName,
 	MultiThreadingNeuralNetManager threadManager = MultiThreadingNeuralNetManager(threadCount, threadCount, toEval.get(), device);
 	cn4::NegaMaxAi miniMaxAi = cn4::NegaMaxAi(miniMaxDepth);
 	ConnectFourAdapter adap = ConnectFourAdapter();
-	EvalResult result = evaluation.evalMultiThreaded(&threadManager, &miniMaxAi, &adap);
+	EvalResult result = {};
+	evaluation.eval(toEval.get(), &miniMaxAi, &adap, 100, result, 100);
 
 	return result;
 }
