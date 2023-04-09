@@ -71,6 +71,7 @@ void ConnectFourTraining::initDefaultValues()
 	trainingUi->MaxGameLengthInput->setText("0");
 	trainingUi->TrainingIterationsInput->setText("40");
 	trainingUi->SelfPlayMCTSCountInput->setText("100");
+	trainingUi->SelfPlayBatchSizeInput->setText("100");
 	trainingUi->SelfPlayGamesCountInput->setText("1000");
 	trainingUi->TrainingBatchSizeInput->setText("100");
 	trainingUi->SaveIterationCountInput->setText("1");
@@ -87,6 +88,7 @@ void ConnectFourTraining::initInputValidators()
 	trainingUi->ReplayMemorySizeInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->FilterCountInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->SelfPlayMCTSCountInput->setValidator(new QIntValidator(0, INT32_MAX, this));
+	trainingUi->SelfPlayBatchSizeInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->TrainingBatchSizeInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->SaveIterationCountInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->SelfPlayGamesCountInput->setValidator(new QIntValidator(0, INT32_MAX, this));
@@ -98,7 +100,7 @@ void ConnectFourTraining::initInputValidators()
 
 TrainingParameters ConnectFourTraining::getParametersFromInput()
 {
-	TrainingParameters params;
+	TrainingParameters params = {};
 
 	torch::DeviceType device = torch::kCPU;
 	if (trainingUi->GPURadio->isChecked())
@@ -113,6 +115,7 @@ TrainingParameters ConnectFourTraining::getParametersFromInput()
 	params.replayMemorySize = trainingUi->ReplayMemorySizeInput->text().toInt();
 	params.trainingIterations = trainingUi->TrainingIterationsInput->text().toInt();
 	params.selfPlayMctsCount = trainingUi->SelfPlayMCTSCountInput->text().toInt();
+	params.selfPlayBatchSize = trainingUi->SelfPlayBatchSizeInput->text().toInt();
 	params.selfPlayGamesCount = trainingUi->SelfPlayGamesCountInput->text().toInt();
 	params.trainingBatchSize = trainingUi->TrainingBatchSizeInput->text().toInt();
 	params.saveIterationCount = trainingUi->SaveIterationCountInput->text().toInt();

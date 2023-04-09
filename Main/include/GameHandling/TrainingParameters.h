@@ -16,6 +16,7 @@ struct TrainingParameters
 	int replayMemorySize;
 	int trainingIterations;
 	int selfPlayMctsCount;
+	int selfPlayBatchSize;
 	int selfPlayGamesCount;
 	int trainingBatchSize;
 	int saveIterationCount;
@@ -34,6 +35,7 @@ struct TrainingParameters
 		parameters.DRAW_AFTER_COUNT_OF_STEPS = maxGameLength;
 		parameters.TRAINING_ITERATIONS = trainingIterations;
 		parameters.SELF_PLAY_MCTS_COUNT = selfPlayMctsCount;
+		parameters.SELFPLAY_BATCH_SIZE = selfPlayBatchSize;
 		parameters.NUM_SELF_PLAY_GAMES = selfPlayGamesCount;
 		parameters.TRAINING_BATCH_SIZE = trainingBatchSize;
 		parameters.SAVE_ITERATION_COUNT = saveIterationCount;

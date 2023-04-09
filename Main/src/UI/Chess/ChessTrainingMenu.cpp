@@ -41,6 +41,7 @@ void ChessTrainingMenu::initDefaultValues()
 	trainingUi->MaxGameLengthInput->setText("80");
 	trainingUi->TrainingIterationsInput->setText("40");
 	trainingUi->SelfPlayMCTSCountInput->setText("200");
+	trainingUi->SelfPlayBatchSizeInput->setText("10");
 	trainingUi->SelfPlayGamesCountInput->setText("250");
 	trainingUi->TrainingBatchSizeInput->setText("100");
 	trainingUi->SaveIterationCountInput->setText("1");
@@ -59,6 +60,7 @@ void ChessTrainingMenu::initInputValidators()
 	trainingUi->ReplayMemorySizeInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->FilterCountInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->SelfPlayMCTSCountInput->setValidator(new QIntValidator(0, INT32_MAX, this));
+	trainingUi->SelfPlayBatchSizeInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->TrainingBatchSizeInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->SaveIterationCountInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->SelfPlayGamesCountInput->setValidator(new QIntValidator(0, INT32_MAX, this));
@@ -85,6 +87,7 @@ TrainingParameters ChessTrainingMenu::getParametersFromInput()
 	params.replayMemorySize = trainingUi->ReplayMemorySizeInput->text().toInt();
 	params.trainingIterations = trainingUi->TrainingIterationsInput->text().toInt();
 	params.selfPlayMctsCount = trainingUi->SelfPlayMCTSCountInput->text().toInt();
+	params.selfPlayBatchSize = trainingUi->SelfPlayBatchSizeInput->text().toInt();
 	params.selfPlayGamesCount = trainingUi->SelfPlayGamesCountInput->text().toInt();
 	params.trainingBatchSize = trainingUi->TrainingBatchSizeInput->text().toInt();
 	params.saveIterationCount = trainingUi->SaveIterationCountInput->text().toInt();
