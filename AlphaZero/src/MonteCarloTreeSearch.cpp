@@ -84,13 +84,18 @@ float MonteCarloTreeSearch::searchWithoutExpansion(const std::string& strState, 
 		return 0;
 	}
 
-	m_loopDetection[strState] = true;
+	auto stateStrPtr = &(*m_visited.find(strState));
+	m_loopDetection.emplace(stateStrPtr);
 	int bestAction = getActionWithHighestUpperConfidenceBound(strState, currentPlayer, game);
 	std::string nextStateString = game->makeMove(strState, bestAction, currentPlayer);
 	m_backProp.back().bestAction = bestAction;
 
-	if (m_loopDetection.find(nextStateString) != m_loopDetection.end())
-		return 0;
+	auto nextStateItr = m_visited.find(nextStateString);
+	if (nextStateItr != m_visited.end()) 
+	{
+		if (m_loopDetection.find(&(*nextStateItr)) != m_loopDetection.end())
+			return 0;
+	}
 
 	int nextPlayer = game->getNextPlayer(currentPlayer);
 
