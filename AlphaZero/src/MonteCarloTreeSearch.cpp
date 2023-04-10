@@ -53,13 +53,13 @@ bool MonteCarloTreeSearch::expandAndContinueSearchWithoutExpansion(const std::st
 std::vector<float> MonteCarloTreeSearch::getProbabilities(const std::string& state, float temperature)
 {
 	assert(m_visited.find(state) != m_visited.end());
-	auto strPtr = &(*m_visited.find(state));
+	auto statePtr = &(*m_visited.find(state));
 	std::vector<float> probs;
 	probs.reserve(m_actionCount);
-	int countSum = sum(m_visitCount[strPtr]);
+	int countSum = sum(m_visitCount[statePtr]);
 
 	for (int i = 0; i < m_actionCount; i++)
-		probs.emplace_back(((float)pow(m_visitCount[strPtr][i], 1.f / temperature)) / countSum);
+		probs.emplace_back(((float)pow(m_visitCount[statePtr][i], 1.f / temperature)) / countSum);
 
 	return probs;
 }
@@ -86,9 +86,9 @@ float MonteCarloTreeSearch::searchWithoutExpansion(const std::string& strState, 
 		return 0;
 	}
 
-	auto stateStrPtr = &(*m_visited.find(strState));
-	m_loopDetection.emplace(stateStrPtr);
-	int bestAction = getActionWithHighestUpperConfidenceBound(strState, currentPlayer, game);
+	auto statePtr = &(*m_visited.find(strState));
+	m_loopDetection.emplace(statePtr);
+	int bestAction = getActionWithHighestUpperConfidenceBound(statePtr, currentPlayer, game);
 	std::string nextStateString = game->makeMove(strState, bestAction, currentPlayer);
 	m_backProp.back().bestAction = bestAction;
 
@@ -126,10 +126,10 @@ void MonteCarloTreeSearch::backpropagateValue(float value)
 		value = -value;
 		auto& backProp = m_backProp.back();
 		auto& state = backProp.state;
-		auto strPtr = &(*m_visited.find(state));
+		auto statePtr = &(*m_visited.find(state));
 		auto bestAction = backProp.bestAction;
-		m_qValues[state][bestAction] = (m_visitCount[strPtr][bestAction] * m_qValues[state][bestAction] + value) / (m_visitCount[strPtr][bestAction] + 1);
-		m_visitCount[strPtr][bestAction] += 1;
+		m_qValues[statePtr][bestAction] = (m_visitCount[statePtr][bestAction] * m_qValues[statePtr][bestAction] + value) / (m_visitCount[statePtr][bestAction] + 1);
+		m_visitCount[statePtr][bestAction] += 1;
 		m_backProp.pop_back();
 	}
 }
@@ -138,9 +138,10 @@ void MonteCarloTreeSearch::deferredExpansion(torch::Tensor valueTens, torch::Ten
 {
 	assert(!m_backProp.empty());
 	auto expansionState = m_backProp.back().state;
-	m_visited.emplace(expansionState);
-	m_probabilities[expansionState] = probabilities;
-	fillQValuesAndVisitCount(expansionState);
+	auto [iter, flag] = m_visited.emplace(expansionState);
+	auto statePtr = &(*iter);
+	m_probabilities[statePtr] = probabilities;
+	fillQValuesAndVisitCount(statePtr);
 	float value = *(valueTens[0].data_ptr<float>());
 	m_backProp.pop_back();
 	backpropagateValue(value);
@@ -148,11 +149,12 @@ void MonteCarloTreeSearch::deferredExpansion(torch::Tensor valueTens, torch::Ten
 
 float MonteCarloTreeSearch::expandNewEncounteredState(const std::string& strState, int currentPlayer, Game* game, NeuralNetwork* net)
 {
-	m_visited.emplace(strState);
+	auto [iter, flag] = m_visited.emplace(strState);
+	auto statePtr = &(*iter);
 	auto input = game->convertStateToNeuralNetInput(strState, currentPlayer).to(m_device);
 	auto [valueTens, rawProbs] = net->calculate(input);
-	m_probabilities[strState] = rawProbs[0].detach().to(torch::kCPU);
-	fillQValuesAndVisitCount(strState);
+	m_probabilities[statePtr] = rawProbs[0].detach().to(torch::kCPU);
+	fillQValuesAndVisitCount(statePtr);
 
 	valueTens = valueTens[0][0].to(torch::kCPU);
 	float value = *(valueTens.data_ptr<float>());
@@ -160,15 +162,15 @@ float MonteCarloTreeSearch::expandNewEncounteredState(const std::string& strStat
 	return value;
 }
 
-int MonteCarloTreeSearch::getActionWithHighestUpperConfidenceBound(const std::string& strState, int currentPlayer, Game* game)
+int MonteCarloTreeSearch::getActionWithHighestUpperConfidenceBound(const std::string* statePtr, int currentPlayer, Game* game)
 {
 	float maxUtility = std::numeric_limits<float>::lowest();
 	int bestAction = -1;
-	auto possibleMoves = game->getAllPossibleMoves(strState, currentPlayer);
+	auto possibleMoves = game->getAllPossibleMoves(*statePtr, currentPlayer);
 
 	for (auto action : possibleMoves)
 	{
-		float utility = calculateUpperConfidenceBound(strState, action);
+		float utility = calculateUpperConfidenceBound(statePtr, action);
 
 		if (utility > maxUtility)
 		{
@@ -180,18 +182,16 @@ int MonteCarloTreeSearch::getActionWithHighestUpperConfidenceBound(const std::st
 	return bestAction;
 }
 
-float MonteCarloTreeSearch::calculateUpperConfidenceBound(const std::string& strState, int action)
+float MonteCarloTreeSearch::calculateUpperConfidenceBound(const std::string* statePtr, int action)
 {
-	auto strPtr = &(*m_visited.find(strState));
-	float probability = *(m_probabilities[strState][action].data_ptr<float>());
-	float buf = sqrt(sum(m_visitCount[strPtr])) / (1 + m_visitCount[strPtr][action]);
+	float probability = *(m_probabilities[statePtr][action].data_ptr<float>());
+	float buf = sqrt(sum(m_visitCount[statePtr])) / (1 + m_visitCount[statePtr][action]);
 
-	return m_qValues[strState][action] + m_cpuct * probability * buf;
+	return m_qValues[statePtr][action] + m_cpuct * probability * buf;
 }
 
-void MonteCarloTreeSearch::fillQValuesAndVisitCount(const std::string& state)
+void MonteCarloTreeSearch::fillQValuesAndVisitCount(const std::string* statePtr)
 {
-	auto strPtr = &(*m_visited.find(state));
-	m_qValues[state] = std::vector<float>(m_actionCount, 0.f);
-	m_visitCount[strPtr] = std::vector<int>(m_actionCount, 0);
+	m_qValues[statePtr] = std::vector<float>(m_actionCount, 0.f);
+	m_visitCount[statePtr] = std::vector<int>(m_actionCount, 0);
 }
