@@ -31,6 +31,7 @@ void AlphaZeroTraining::setTrainingParams(Parameters params)
 void AlphaZeroTraining::selfPlay(NeuralNetwork* net, Game* game)
 {
 	m_gamesToPlay = m_params.NUM_SELF_PLAY_GAMES;
+	net->setToEval();
 
 	std::vector<std::thread> threadPool;
 	for (size_t i = 0; i < m_params.NUMBER_CPU_THREADS; i++)
@@ -196,6 +197,7 @@ void AlphaZeroTraining::addResult(std::vector<ReplayElement>& elements, int winn
 
 void AlphaZeroTraining::trainNet(NeuralNetwork* net, Game* game)
 {
+	net->setToTraining();
 	std::cout << "Current Replay Memory Size " << m_replayMemory.size() << std::endl;
 	if (m_replayMemory.size() < m_params.MIN_REPLAY_MEMORY_SIZE)
 		return;
