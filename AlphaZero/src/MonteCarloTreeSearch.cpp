@@ -73,8 +73,6 @@ torch::Tensor MonteCarloTreeSearch::getExpansionNeuralNetInput(Game* game) const
 
 float MonteCarloTreeSearch::searchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer, bool* expansionNeeded)
 {
-	m_loopDetection[strState] = true;
-
 	if (game->isGameOver(strState))
 		return game->gameOverReward(strState, currentPlayer);
 
@@ -86,6 +84,7 @@ float MonteCarloTreeSearch::searchWithoutExpansion(const std::string& strState, 
 		return 0;
 	}
 
+	m_loopDetection[strState] = true;
 	int bestAction = getActionWithHighestUpperConfidenceBound(strState, currentPlayer, game);
 	std::string nextStateString = game->makeMove(strState, bestAction, currentPlayer);
 	m_backProp.back().bestAction = bestAction;
@@ -131,7 +130,7 @@ void MonteCarloTreeSearch::deferredExpansion(torch::Tensor valueTens, torch::Ten
 {
 	assert(!m_backProp.empty());
 	auto expansionState = m_backProp.back().state;
-	m_visited[expansionState] = true;
+	m_visited.emplace(expansionState);
 	m_probabilities[expansionState] = probabilities;
 	fillQValuesAndVisitCount(expansionState);
 	float value = *(valueTens[0].data_ptr<float>());
@@ -141,7 +140,7 @@ void MonteCarloTreeSearch::deferredExpansion(torch::Tensor valueTens, torch::Ten
 
 float MonteCarloTreeSearch::expandNewEncounteredState(const std::string& strState, int currentPlayer, Game* game, NeuralNetwork* net)
 {
-	m_visited[strState] = true;
+	m_visited.emplace(strState);
 	auto input = game->convertStateToNeuralNetInput(strState, currentPlayer).to(m_device);
 	auto [valueTens, rawProbs] = net->calculate(input);
 	m_probabilities[strState] = rawProbs[0].detach().to(torch::kCPU);

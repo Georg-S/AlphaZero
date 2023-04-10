@@ -88,8 +88,8 @@ private:
 	int m_mctsCount = 0;
 	torch::DeviceType m_device = torch::kCPU;
 	float m_cpuct = -1.0;
+	std::set<std::string> m_visited;
 	std::map<std::string, bool> m_loopDetection;
-	std::map<std::string, bool> m_visited;
 	std::map<std::string, std::vector<int>> m_visitCount;
 	std::map<std::string, std::vector<float>> m_qValues;
 	std::map<std::string, torch::Tensor> m_probabilities;
