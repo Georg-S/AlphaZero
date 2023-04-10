@@ -102,6 +102,7 @@ std::unique_ptr<NeuralNetwork> DefaultNeuralNet::deepCopy() const
 
 	CutDownAlphaGoZeroNet cloned = CutDownAlphaGoZeroNet(m_numPlanes, m_width, m_height, m_numOutputs);
 	cloned->load(inpArchive);
+	cloned->to(m_device);
 
 	return std::make_unique<DefaultNeuralNet>(std::move(cloned), m_device);
 }

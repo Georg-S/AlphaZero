@@ -30,16 +30,38 @@ void AlphaZeroTraining::setTrainingParams(Parameters params)
 
 void AlphaZeroTraining::selfPlay(NeuralNetwork* net, Game* game)
 {
-	int gamesToPlay = m_params.NUM_SELF_PLAY_GAMES;
-	while (gamesToPlay > 0)
+	m_gamesToPlay = m_params.NUM_SELF_PLAY_GAMES;
+
+	std::vector<std::thread> threadPool;
+	for (size_t i = 0; i < m_params.NUMBER_CPU_THREADS; i++)
+		threadPool.push_back(std::thread(&AlphaZeroTraining::selfPlayBuf, this, net, game));
+
+	for (auto& thread : threadPool)
+		thread.join();
+}
+
+void AlphaZeroTraining::selfPlayBuf(NeuralNetwork* net, Game* game)
+{
+	int batchSize = 0;
+
+	while (true)
 	{
-		int batchSize = m_params.SELFPLAY_BATCH_SIZE;
-		gamesToPlay -= m_params.SELFPLAY_BATCH_SIZE;
-		if (gamesToPlay < 0)
-			batchSize += gamesToPlay;
+		{
+			std::scoped_lock(m_mut);
+			if (m_gamesToPlay <= 0) 
+				return;
+
+			batchSize = m_params.SELFPLAY_BATCH_SIZE;
+			m_gamesToPlay -= m_params.SELFPLAY_BATCH_SIZE;
+			if (m_gamesToPlay < 0)
+				batchSize += m_gamesToPlay;
+		}
 
 		auto resultVec = selfPlay(net, game, batchSize);
+
+		std::scoped_lock(m_mut);
 		m_replayMemory.add(std::move(resultVec));
+		std::cout << m_gamesToPlay << std::endl;
 	}
 }
 
@@ -75,6 +97,7 @@ The result is a big performance improvement, since GPUs are fast in calculating 
 */
 std::vector<ReplayElement> AlphaZeroTraining::selfPlay(NeuralNetwork* net, Game* game, int batchSize)
 {
+	assert(batchSize != 0);
 	std::vector<ReplayElement> resultingTrainingsData;
 	auto netInputBuffer = NeuralNetInputBuffer(m_device);
 	auto currentStatesData = std::vector<GameState>(batchSize, { game->getInitialGameState(), game->getInitialPlayer(), game->getActionCount(), m_device});
@@ -89,8 +112,9 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlay(NeuralNetwork* net, Game*
 
 	while (!currentStates.empty())
 	{
-		std::cout << currentStates.back()->currentStep << std::endl;
+		m_mut.lock();
 		netInputBuffer.calculateOutput(net);
+		m_mut.unlock();
 
 		for (size_t i = 0; i < currentStates.size(); i++)
 		{

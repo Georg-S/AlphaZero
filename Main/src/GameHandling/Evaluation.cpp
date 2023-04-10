@@ -27,7 +27,7 @@ namespace
 	};
 }
 
-EvalResult Evaluation::eval(NeuralNetwork* net, Ai* miniMaxAi, Game* game, int batchSize, EvalResult& outEval, int numberEvalGames)
+void Evaluation::eval(NeuralNetwork* net, Ai* miniMaxAi, Game* game, int batchSize, EvalResult& outEval, int numberEvalGames)
 {
 	auto netInputBuffer = NeuralNetInputBuffer(m_device);
 	int playerBuf = game->getInitialPlayer();

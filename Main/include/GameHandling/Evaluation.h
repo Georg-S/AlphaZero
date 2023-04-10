@@ -20,7 +20,7 @@ class Evaluation
 {
 public:
 	Evaluation(torch::DeviceType device, int mctsCount);
-	EvalResult eval(NeuralNetwork* net, Ai* miniMaxAi, Game* game, int batchSize, EvalResult& outEval, int numberEvalGames);
+	void eval(NeuralNetwork* net, Ai* miniMaxAi, Game* game, int batchSize, EvalResult& outEval, int numberEvalGames);
 
 private:
 	std::mutex m_mut;

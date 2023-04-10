@@ -29,7 +29,6 @@ public:
 	std::unique_ptr<NeuralNetwork> deepCopy() const override;
 
 private:
-
 	CutDownAlphaGoZeroNet m_net = nullptr;
 	float m_learningRate = 0.01;
 	int64_t m_numPlanes;
