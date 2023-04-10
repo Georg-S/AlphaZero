@@ -90,7 +90,7 @@ private:
 	float m_cpuct = -1.0;
 	std::set<std::string> m_visited;
 	std::set<const std::string*> m_loopDetection;
-	std::map<std::string, std::vector<int>> m_visitCount;
+	std::map<const std::string*, std::vector<int>> m_visitCount;
 	std::map<std::string, std::vector<float>> m_qValues;
 	std::map<std::string, torch::Tensor> m_probabilities;
 	struct BackPropData 

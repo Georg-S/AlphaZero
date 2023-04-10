@@ -52,12 +52,14 @@ bool MonteCarloTreeSearch::expandAndContinueSearchWithoutExpansion(const std::st
 
 std::vector<float> MonteCarloTreeSearch::getProbabilities(const std::string& state, float temperature)
 {
+	assert(m_visited.find(state) != m_visited.end());
+	auto strPtr = &(*m_visited.find(state));
 	std::vector<float> probs;
 	probs.reserve(m_actionCount);
-	int countSum = sum(m_visitCount[state]);
+	int countSum = sum(m_visitCount[strPtr]);
 
 	for (int i = 0; i < m_actionCount; i++)
-		probs.emplace_back(((float)pow(m_visitCount[state][i], 1.f / temperature)) / countSum);
+		probs.emplace_back(((float)pow(m_visitCount[strPtr][i], 1.f / temperature)) / countSum);
 
 	return probs;
 }
@@ -124,9 +126,10 @@ void MonteCarloTreeSearch::backpropagateValue(float value)
 		value = -value;
 		auto& backProp = m_backProp.back();
 		auto& state = backProp.state;
+		auto strPtr = &(*m_visited.find(state));
 		auto bestAction = backProp.bestAction;
-		m_qValues[state][bestAction] = (m_visitCount[state][bestAction] * m_qValues[state][bestAction] + value) / (m_visitCount[state][bestAction] + 1);
-		m_visitCount[state][bestAction] += 1;
+		m_qValues[state][bestAction] = (m_visitCount[strPtr][bestAction] * m_qValues[state][bestAction] + value) / (m_visitCount[strPtr][bestAction] + 1);
+		m_visitCount[strPtr][bestAction] += 1;
 		m_backProp.pop_back();
 	}
 }
@@ -179,14 +182,16 @@ int MonteCarloTreeSearch::getActionWithHighestUpperConfidenceBound(const std::st
 
 float MonteCarloTreeSearch::calculateUpperConfidenceBound(const std::string& strState, int action)
 {
+	auto strPtr = &(*m_visited.find(strState));
 	float probability = *(m_probabilities[strState][action].data_ptr<float>());
-	float buf = sqrt(sum(m_visitCount[strState])) / (1 + m_visitCount[strState][action]);
+	float buf = sqrt(sum(m_visitCount[strPtr])) / (1 + m_visitCount[strPtr][action]);
 
 	return m_qValues[strState][action] + m_cpuct * probability * buf;
 }
 
 void MonteCarloTreeSearch::fillQValuesAndVisitCount(const std::string& state)
 {
+	auto strPtr = &(*m_visited.find(state));
 	m_qValues[state] = std::vector<float>(m_actionCount, 0.f);
-	m_visitCount[state] = std::vector<int>(m_actionCount, 0);
+	m_visitCount[strPtr] = std::vector<int>(m_actionCount, 0);
 }
