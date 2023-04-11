@@ -6,6 +6,7 @@
 #include <thread>
 #include <cassert>
 #include <algorithm>
+#include <map>
 
 namespace ALZ
 {
@@ -23,6 +24,26 @@ namespace ALZ
 		auto sum = T(0);
 		for (const auto& n : vec)
 			sum += n;
+
+		return sum;
+	}
+
+	template <class T, class V>
+	T sumKey(const std::map<T, V>& map)
+	{
+		auto sum = T(0);
+		for (const auto [key, val] : map)
+			sum += key;
+
+		return sum;
+	}
+
+	template <class T, class V>
+	V sumValue(const std::map<T, V>& map)
+	{
+		auto sum = V(0);
+		for (const auto [key, val] : map)
+			sum += val;
 
 		return sum;
 	}

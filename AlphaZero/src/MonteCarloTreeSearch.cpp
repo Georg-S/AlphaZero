@@ -56,10 +56,15 @@ std::vector<float> MonteCarloTreeSearch::getProbabilities(const std::string& sta
 	auto statePtr = &(*m_visited.find(state));
 	std::vector<float> probs;
 	probs.reserve(m_actionCount);
-	int countSum = sum(m_visitCount[statePtr]);
+	int countSum = sumValue(m_visitCount[statePtr]);
 
-	for (int i = 0; i < m_actionCount; i++)
-		probs.emplace_back(((float)pow(m_visitCount[statePtr][i], 1.f / temperature)) / countSum);
+	for (size_t i = 0; i < m_actionCount; i++) 
+	{
+		if (m_visitCount[statePtr].find(i) == m_visitCount[statePtr].end())
+			probs.emplace_back(0);
+		else 
+			probs.emplace_back(static_cast<float>(pow(m_visitCount[statePtr][i], 1.f / temperature)) / countSum);
+	}
 
 	return probs;
 }
@@ -145,7 +150,6 @@ void MonteCarloTreeSearch::deferredExpansion(torch::Tensor valueTens, torch::Ten
 	for (const auto& move : game->getAllPossibleMoves(*statePtr, expansionPlayer))
 		m_probabilities[statePtr].emplace_back(move, *(probabilities[move].data_ptr<float>()));
 
-	fillQValuesAndVisitCount(statePtr);
 	float value = *(valueTens[0].data_ptr<float>());
 	m_backProp.pop_back();
 	backpropagateValue(value);
@@ -161,8 +165,6 @@ float MonteCarloTreeSearch::expandNewEncounteredState(const std::string& strStat
 	auto probs = rawProbs[0].detach().to(torch::kCPU);
 	for (const auto& move : game->getAllPossibleMoves(strState, currentPlayer)) 
 		m_probabilities[statePtr].emplace_back(move, *(probs[move].data_ptr<float>()));
-
-	fillQValuesAndVisitCount(statePtr);
 
 	valueTens = valueTens[0][0].to(torch::kCPU);
 	float value = *(valueTens.data_ptr<float>());
@@ -191,13 +193,7 @@ int MonteCarloTreeSearch::getActionWithHighestUpperConfidenceBound(const std::st
 
 float MonteCarloTreeSearch::calculateUpperConfidenceBound(const std::string* statePtr, int action, float probability)
 {
-	float buf = sqrt(sum(m_visitCount[statePtr])) / (1 + m_visitCount[statePtr][action]);
+	float buf = sqrt(sumValue(m_visitCount[statePtr])) / (1 + m_visitCount[statePtr][action]);
 
 	return m_qValues[statePtr][action] + m_cpuct * probability * buf;
-}
-
-void MonteCarloTreeSearch::fillQValuesAndVisitCount(const std::string* statePtr)
-{
-	m_qValues[statePtr] = std::vector<float>(m_actionCount, 0.f);
-	m_visitCount[statePtr] = std::vector<int>(m_actionCount, 0);
 }

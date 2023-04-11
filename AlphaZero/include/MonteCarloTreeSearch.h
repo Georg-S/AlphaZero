@@ -82,7 +82,6 @@ private:
 	float expandNewEncounteredState(const std::string& strState, int currentPlayer, Game* game, NeuralNetwork* net);
 	int getActionWithHighestUpperConfidenceBound(const std::string* statePtr, int currentPlayer, Game* game);
 	float calculateUpperConfidenceBound(const std::string* statePtr, int action, float probability);
-	void fillQValuesAndVisitCount(const std::string* statePtr);
 
 	int m_actionCount = -1;
 	int m_mctsCount = 0;
@@ -90,8 +89,8 @@ private:
 	float m_cpuct = -1.0;
 	std::set<std::string> m_visited;
 	std::set<const std::string*> m_loopDetection;
-	std::map<const std::string*, std::vector<int>> m_visitCount;
-	std::map<const std::string*, std::vector<float>> m_qValues;
+	std::map<const std::string*, std::map<int,int>> m_visitCount;
+	std::map<const std::string*, std::map<int,float>> m_qValues;
 	std::map<const std::string*, std::vector<std::pair<int, float>>> m_probabilities;
 	struct BackPropData 
 	{
