@@ -78,10 +78,10 @@ private:
 	float searchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer, bool* expansionNeeded);
 	bool runMultipleSearches(const std::string& strState, Game* game, int currentPlayer);
 	void backpropagateValue(float value);
-	void deferredExpansion(torch::Tensor valueTens, torch::Tensor probabilities);
+	void deferredExpansion(torch::Tensor valueTens, torch::Tensor probabilities, Game* game);
 	float expandNewEncounteredState(const std::string& strState, int currentPlayer, Game* game, NeuralNetwork* net);
 	int getActionWithHighestUpperConfidenceBound(const std::string* statePtr, int currentPlayer, Game* game);
-	float calculateUpperConfidenceBound(const std::string* statePtr, int action);
+	float calculateUpperConfidenceBound(const std::string* statePtr, int action, float probability);
 	void fillQValuesAndVisitCount(const std::string* statePtr);
 
 	int m_actionCount = -1;
@@ -92,7 +92,7 @@ private:
 	std::set<const std::string*> m_loopDetection;
 	std::map<const std::string*, std::vector<int>> m_visitCount;
 	std::map<const std::string*, std::vector<float>> m_qValues;
-	std::map<const std::string*, torch::Tensor> m_probabilities;
+	std::map<const std::string*, std::vector<std::pair<int, float>>> m_probabilities;
 	struct BackPropData 
 	{
 		BackPropData(std::string state, int player) : state(std::move(state)), player(player) {};
