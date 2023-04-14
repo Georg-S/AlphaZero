@@ -89,6 +89,11 @@ private:
 	float m_cpuct = -1.0;
 	std::set<std::string> m_visited; // Only save the actual state string in this set -> this saves us some space
 	std::set<const std::string*> m_loopDetection;
+	/*
+	m_visitCountSum is not needed if we sum up the map in m_visitCount,
+	however having a separate map for this is better performance wise
+	*/
+	std::map<const std::string*, int> m_visitCountSum; 
 	std::map<const std::string*, std::map<int,int>> m_visitCount;
 	std::map<const std::string*, std::map<int,float>> m_qValues;
 	std::map<const std::string*, std::vector<std::pair<int, float>>> m_probabilities;

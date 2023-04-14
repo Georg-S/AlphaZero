@@ -53,10 +53,10 @@ bool MonteCarloTreeSearch::expandAndContinueSearchWithoutExpansion(const std::st
 std::vector<float> MonteCarloTreeSearch::getProbabilities(const std::string& state, float temperature)
 {
 	assert(m_visited.find(state) != m_visited.end());
-	auto statePtr = &(*m_visited.find(state));
+	const auto statePtr = &(*m_visited.find(state));
+	const int countSum = m_visitCountSum[statePtr];
 	std::vector<float> probs;
 	probs.reserve(m_actionCount);
-	int countSum = sumValue(m_visitCount[statePtr]);
 
 	for (size_t i = 0; i < m_actionCount; i++)
 	{
@@ -136,6 +136,7 @@ void MonteCarloTreeSearch::backpropagateValue(float value)
 		auto bestAction = backProp.bestAction;
 		m_qValues[statePtr][bestAction] = (m_visitCount[statePtr][bestAction] * m_qValues[statePtr][bestAction] + value) / (m_visitCount[statePtr][bestAction] + 1);
 		m_visitCount[statePtr][bestAction] += 1;
+		m_visitCountSum[statePtr]+=1;
 		m_backProp.pop_back();
 	}
 }
@@ -194,7 +195,7 @@ int MonteCarloTreeSearch::getActionWithHighestUpperConfidenceBound(const std::st
 
 float MonteCarloTreeSearch::calculateUpperConfidenceBound(const std::string* statePtr, int action, float probability)
 {
-	float buf = sqrt(sumValue(m_visitCount[statePtr])) / (1 + m_visitCount[statePtr][action]);
+	const float buf = sqrt(m_visitCountSum[statePtr]) / (1 + m_visitCount[statePtr][action]);
 
 	return m_qValues[statePtr][action] + m_cpuct * probability * buf;
 }
