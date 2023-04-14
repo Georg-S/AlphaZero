@@ -35,15 +35,15 @@ void ChessTrainingMenu::on_StartTrainingButton_clicked()
 
 void ChessTrainingMenu::initDefaultValues()
 {
-	trainingUi->ReplayMemorySizeInput->setText("200000");
+	trainingUi->ReplayMemorySizeInput->setText("400000");
 	trainingUi->UseDrawsYesRadio->setChecked(true);
 	trainingUi->RestrictGameLengthYesRadio->setChecked(true);
 	trainingUi->MaxGameLengthInput->setText("80");
-	trainingUi->TrainingIterationsInput->setText("40");
-	trainingUi->SelfPlayMCTSCountInput->setText("200");
+	trainingUi->TrainingIterationsInput->setText("1");
+	trainingUi->SelfPlayMCTSCountInput->setText("800");
 	trainingUi->SelfPlayBatchSizeInput->setText("10");
-	trainingUi->SelfPlayGamesCountInput->setText("250");
-	trainingUi->TrainingBatchSizeInput->setText("100");
+	trainingUi->SelfPlayGamesCountInput->setText("10");
+	trainingUi->TrainingBatchSizeInput->setText("4000");
 	trainingUi->SaveIterationCountInput->setText("1");
 	trainingUi->RandomizedMoveCountInput->setText("20");
 	trainingUi->LearningRateInput->setText("0.01");
