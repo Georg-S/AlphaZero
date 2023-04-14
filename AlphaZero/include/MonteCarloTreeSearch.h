@@ -67,7 +67,7 @@ class MonteCarloTreeSearch
 {
 public:
 	MonteCarloTreeSearch(int actionCount, torch::DeviceType device, float cpuct = 1.0);
-	void search(int count, std::string strState, NeuralNetwork* net, Game* game, int currentPlayer);
+	void search(int count, const std::string& strState, NeuralNetwork* net, Game* game, int currentPlayer);
 	float search(const std::string& strState, NeuralNetwork* net, Game* game, int currentPlayer);
 	bool startSearchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer, int count);
 	bool expandAndContinueSearchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer, torch::Tensor valueTens, torch::Tensor probabilities);
@@ -75,7 +75,7 @@ public:
 	torch::Tensor getExpansionNeuralNetInput(Game* game) const;
 
 private:
-	float searchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer, bool* expansionNeeded);
+	float searchWithoutExpansion(std::string strState, Game* game, int currentPlayer, bool* expansionNeeded);
 	bool runMultipleSearches(const std::string& strState, Game* game, int currentPlayer);
 	void backpropagateValue(float value);
 	void deferredExpansion(torch::Tensor valueTens, torch::Tensor probabilities, Game* game);
@@ -87,7 +87,7 @@ private:
 	int m_mctsCount = 0;
 	torch::DeviceType m_device = torch::kCPU;
 	float m_cpuct = -1.0;
-	std::set<std::string> m_visited;
+	std::set<std::string> m_visited; // Only save the actual state string in this set -> this saves us some space
 	std::set<const std::string*> m_loopDetection;
 	std::map<const std::string*, std::map<int,int>> m_visitCount;
 	std::map<const std::string*, std::map<int,float>> m_qValues;

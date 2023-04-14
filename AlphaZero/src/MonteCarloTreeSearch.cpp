@@ -9,7 +9,7 @@ MonteCarloTreeSearch::MonteCarloTreeSearch(int actionCount, torch::DeviceType de
 {
 }
 
-void MonteCarloTreeSearch::search(int count, std::string strState, NeuralNetwork* net, Game* game, int currentPlayer)
+void MonteCarloTreeSearch::search(int count, const std::string& strState, NeuralNetwork* net, Game* game, int currentPlayer)
 {
 	for (int i = 0; i < count; i++)
 	{
@@ -58,11 +58,11 @@ std::vector<float> MonteCarloTreeSearch::getProbabilities(const std::string& sta
 	probs.reserve(m_actionCount);
 	int countSum = sumValue(m_visitCount[statePtr]);
 
-	for (size_t i = 0; i < m_actionCount; i++) 
+	for (size_t i = 0; i < m_actionCount; i++)
 	{
 		if (m_visitCount[statePtr].find(i) == m_visitCount[statePtr].end())
 			probs.emplace_back(0);
-		else 
+		else
 			probs.emplace_back(static_cast<float>(pow(m_visitCount[statePtr][i], 1.f / temperature)) / countSum);
 	}
 
@@ -78,35 +78,36 @@ torch::Tensor MonteCarloTreeSearch::getExpansionNeuralNetInput(Game* game) const
 	return game->convertStateToNeuralNetInput(strState, currentPlayer);
 }
 
-float MonteCarloTreeSearch::searchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer, bool* expansionNeeded)
+float MonteCarloTreeSearch::searchWithoutExpansion(std::string strState, Game* game, int currentPlayer, bool* expansionNeeded)
 {
-	if (game->isGameOver(strState))
-		return game->gameOverReward(strState, currentPlayer);
-
-	m_backProp.emplace_back(strState, currentPlayer);
-
-	if (m_visited.find(strState) == m_visited.end())
+	while (true) // Iterate until we reach a "leaf state" (a state not yet expanded or a game over state)
 	{
-		*expansionNeeded = true;
-		return 0;
-	}
+		if (game->isGameOver(strState))
+			return game->gameOverReward(strState, currentPlayer);
 
-	auto statePtr = &(*m_visited.find(strState));
-	m_loopDetection.emplace(statePtr);
-	int bestAction = getActionWithHighestUpperConfidenceBound(statePtr, currentPlayer, game);
-	std::string nextStateString = game->makeMove(strState, bestAction, currentPlayer);
-	m_backProp.back().bestAction = bestAction;
+		m_backProp.emplace_back(std::move(strState), currentPlayer);
+		const auto& currentStateStr(m_backProp.back().state);
 
-	auto nextStateItr = m_visited.find(nextStateString);
-	if (nextStateItr != m_visited.end()) 
-	{
-		if (m_loopDetection.find(&(*nextStateItr)) != m_loopDetection.end())
+		if (m_visited.find(currentStateStr) == m_visited.end())
+		{
+			*expansionNeeded = true;
 			return 0;
+		}
+
+		auto statePtr = &(*m_visited.find(currentStateStr));
+		m_loopDetection.emplace(statePtr);
+		int bestAction = getActionWithHighestUpperConfidenceBound(statePtr, currentPlayer, game);
+		strState = game->makeMove(currentStateStr, bestAction, currentPlayer);
+		m_backProp.back().bestAction = bestAction;
+
+		auto nextStateItr = m_visited.find(strState);
+		if (nextStateItr != m_visited.end())
+		{
+			if (m_loopDetection.find(&(*nextStateItr)) != m_loopDetection.end())
+				return 0;
+		}
+		currentPlayer = game->getNextPlayer(currentPlayer);
 	}
-
-	int nextPlayer = game->getNextPlayer(currentPlayer);
-
-	return searchWithoutExpansion(nextStateString, game, nextPlayer, expansionNeeded);
 }
 
 bool MonteCarloTreeSearch::runMultipleSearches(const std::string& strState, Game* game, int currentPlayer)
@@ -163,7 +164,7 @@ float MonteCarloTreeSearch::expandNewEncounteredState(const std::string& strStat
 	auto [valueTens, rawProbs] = net->calculate(input);
 
 	auto probs = rawProbs[0].detach().to(torch::kCPU);
-	for (const auto& move : game->getAllPossibleMoves(strState, currentPlayer)) 
+	for (const auto& move : game->getAllPossibleMoves(strState, currentPlayer))
 		m_probabilities[statePtr].emplace_back(move, *(probs[move].data_ptr<float>()));
 
 	valueTens = valueTens[0][0].to(torch::kCPU);
@@ -177,7 +178,7 @@ int MonteCarloTreeSearch::getActionWithHighestUpperConfidenceBound(const std::st
 	float maxUtility = std::numeric_limits<float>::lowest();
 	int bestAction = -1;
 
-	for (const auto&[action, probability] : m_probabilities[statePtr])
+	for (const auto& [action, probability] : m_probabilities[statePtr])
 	{
 		float utility = calculateUpperConfidenceBound(statePtr, action, probability);
 
