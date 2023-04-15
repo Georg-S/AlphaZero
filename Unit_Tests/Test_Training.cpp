@@ -56,8 +56,6 @@ TEST(Training, test_random_action)
 
 TEST(Training, test_mult_thread_training)
 {
-	// TODO adjust with new multi threading
-	srand(time(NULL));
 	torch::DeviceType device = torch::kCUDA;
 	TicTacToeAdapter adap = TicTacToeAdapter();
 
@@ -68,17 +66,19 @@ TEST(Training, test_mult_thread_training)
 	trainingParams.TRAINING_DONT_USE_DRAWS = false;
 	trainingParams.RESTRICT_GAME_LENGTH = false;
 	trainingParams.DRAW_AFTER_COUNT_OF_STEPS = 50;
-	trainingParams.TRAINING_ITERATIONS = 100;
+	trainingParams.TRAINING_ITERATIONS = 10;
 	trainingParams.MAX_REPLAY_MEMORY_SIZE = 40000;
 	trainingParams.MIN_REPLAY_MEMORY_SIZE = 100;
 	trainingParams.SELF_PLAY_MCTS_COUNT = 50;
 	trainingParams.NUM_SELF_PLAY_GAMES = 10;
+	trainingParams.SELFPLAY_BATCH_SIZE = 1;
 	trainingParams.TRAINING_BATCH_SIZE = 100;
 	trainingParams.SAVE_ITERATION_COUNT = 1;
 	trainingParams.RANDOM_MOVE_COUNT = 3;
 	trainingParams.NUMBER_CPU_THREADS = 10;
 	training.setTrainingParams(trainingParams);
 
+	//training.runTraining(&adap);
 }
 
 #endif //RunTests

@@ -15,6 +15,7 @@ void AlphaZeroTraining::runTraining(Game* game)
 	m_neuralNet->save(m_params.neuralNetPath + "/start");
 	for (int iteration = 0; iteration < m_params.TRAINING_ITERATIONS; iteration++)
 	{
+		ScopedTimer timer = ScopedTimer("Iteration took: ");
 		std::cout << "Current Iteration " << iteration << std::endl;
 		selfPlay(m_neuralNet, game);
 		trainNet(m_neuralNet, game);
@@ -202,19 +203,44 @@ void AlphaZeroTraining::trainNet(NeuralNetwork* net, Game* game)
 	if (m_replayMemory.size() < m_params.MIN_REPLAY_MEMORY_SIZE)
 		return;
 
-	int batchIndex = 0;
-	while (batchIndex < (m_replayMemory.size() / m_params.TRAINING_BATCH_SIZE))
-	{
-		std::vector<ReplayElement> batch = m_replayMemory.getRandomSample(m_params.TRAINING_BATCH_SIZE);
+	m_trainingBatchIndex = 0;
 
+	std::vector<std::thread> threadPool;
+	for (size_t i = 0; i < m_params.NUMBER_CPU_THREADS; i++)
+		threadPool.push_back(std::thread(&AlphaZeroTraining::trainNetMultiThreaded, this, net, game));
+
+	for (auto& thread : threadPool)
+		thread.join();
+}
+
+// Only the generation of the neural net input and the target values is multi-threaded
+void AlphaZeroTraining::trainNetMultiThreaded(NeuralNetwork* net, Game* game)
+{
+	while (true)
+	{
+		{
+			std::scoped_lock lock(m_mut);
+
+			if (m_trainingBatchIndex >= (m_replayMemory.size() / m_params.TRAINING_BATCH_SIZE)) 
+				return;
+
+			m_trainingBatchIndex++;
+		}
+
+		std::vector<ReplayElement> batch = m_replayMemory.getRandomSample(m_params.TRAINING_BATCH_SIZE);
 		torch::Tensor neuralInput = convertSampleToNeuralInput(batch, game);
 		torch::Tensor valueTarget = convertToValueTarget(batch);
 		torch::Tensor probsTarget = convertToProbsTarget(batch);
-		auto [valueTensor, probsTensor] = net->calculate(neuralInput);
+		
+		{
+			std::scoped_lock lock(m_mut);
 
-		net->training(valueTensor, probsTensor, probsTarget, valueTarget);
-
-		batchIndex++;
+			neuralInput = neuralInput.to(m_device);
+			valueTarget = valueTarget.to(m_device);
+			probsTarget = probsTarget.to(m_device);
+			auto [valueTensor, probsTensor] = net->calculate(neuralInput);
+			net->training(valueTensor, probsTensor, probsTarget, valueTarget);
+		}
 	}
 }
 
@@ -237,7 +263,6 @@ torch::Tensor AlphaZeroTraining::convertSampleToNeuralInput(const std::vector<Re
 		}
 		neuralInput[i] = converted[0];
 	}
-	neuralInput = neuralInput.to(m_device);
 
 	return neuralInput;
 }
@@ -249,8 +274,6 @@ torch::Tensor AlphaZeroTraining::convertToValueTarget(const std::vector<ReplayEl
 
 	for (int i = 0; i < sampleSize; i++)
 		valueTarget[i][0] = sample[i].result;
-
-	valueTarget = valueTarget.to(m_device);
 
 	return valueTarget;
 }
@@ -267,7 +290,6 @@ torch::Tensor AlphaZeroTraining::convertToProbsTarget(const std::vector<ReplayEl
 			probsTarget[x][y] = sample[x].mctsProbabilities[y];
 		}
 	}
-	probsTarget = probsTarget.to(m_device);
 
 	return probsTarget;
 }

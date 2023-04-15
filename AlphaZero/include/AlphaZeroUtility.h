@@ -1,6 +1,7 @@
 #ifndef DEEPREINFORCEMENTLEARNING_ALZ_UTILITY_H
 #define DEEPREINFORCEMENTLEARNING_ALZ_UTILITY_H
 
+#include <string>
 #include <random>
 #include <iostream>
 #include <thread>
@@ -81,6 +82,13 @@ namespace ALZ
 		{
 			m_startTime = getCurrentTime();
 		}
+
+		ScopedTimer(std::string headerMessage) 
+			: m_headerMessage(std::move(headerMessage))
+		{
+			m_startTime = getCurrentTime();
+		}
+
 		~ScopedTimer()
 		{
 			auto endTime = getCurrentTime();
@@ -95,7 +103,11 @@ namespace ALZ
 			auto displayedMinutes = minutes % 60;
 			auto displayedHours = hours;
 
-			std::cout << "Time passed: ";
+			if (m_headerMessage.empty())
+				std::cout << "Time passed: ";
+			else
+				std::cout << m_headerMessage;
+
 			if (displayedHours > 0)
 				std::cout << displayedHours << " hours, ";
 			if (displayedMinutes > 0)
@@ -107,6 +119,7 @@ namespace ALZ
 		}
 	private:
 		long long m_startTime;
+		std::string m_headerMessage;
 	};
 }
 

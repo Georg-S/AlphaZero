@@ -1,6 +1,5 @@
 #include "AlphaZeroUtility.h"
 
-//TODO is this good and valid?
 static std::mt19937 createRNG()
 {
 	auto id = std::this_thread::get_id();
@@ -12,7 +11,6 @@ static std::mt19937 createRNG()
 	return std::mt19937(seed);
 }
 
-//TODO is this good and valid?
 thread_local std::mt19937 generator = createRNG();
 
 long long ALZ::getCurrentTime()

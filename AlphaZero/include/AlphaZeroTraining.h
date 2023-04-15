@@ -50,6 +50,7 @@ private:
 	std::vector<ReplayElement> selfPlay(NeuralNetwork* net, Game* game, int batchSize);
 	void addResult(std::vector<ReplayElement>& elements, int winner);
 	void trainNet(NeuralNetwork* net, Game* game);
+	void trainNetMultiThreaded(NeuralNetwork* net, Game* game);
 	torch::Tensor convertSampleToNeuralInput(const std::vector<ReplayElement>& sample, Game* game);
 	torch::Tensor convertToValueTarget(const std::vector<ReplayElement>& sample);
 	torch::Tensor convertToProbsTarget(const std::vector<ReplayElement>& sample);
@@ -60,6 +61,7 @@ private:
 	int m_actionCount = -1;
 	torch::DeviceType m_device;
 	int m_gamesToPlay = 0;
+	size_t m_trainingBatchIndex = 0;
 	std::mutex m_mut;
 	Parameters m_params;
 };
