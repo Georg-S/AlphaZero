@@ -49,7 +49,7 @@ void AlphaZeroTraining::selfPlayBuf(NeuralNetwork* net, Game* game)
 	while (true)
 	{
 		{
-			std::scoped_lock(m_mut);
+			std::scoped_lock lock(m_mut);
 			if (m_gamesToPlay <= 0) 
 				return;
 
@@ -61,7 +61,7 @@ void AlphaZeroTraining::selfPlayBuf(NeuralNetwork* net, Game* game)
 
 		auto resultVec = selfPlay(net, game, batchSize);
 
-		std::scoped_lock(m_mut);
+		std::scoped_lock lock(m_mut);
 		m_replayMemory.add(std::move(resultVec));
 		std::cout << m_gamesToPlay << std::endl;
 	}
