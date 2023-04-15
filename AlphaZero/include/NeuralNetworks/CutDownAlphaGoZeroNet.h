@@ -27,6 +27,11 @@ struct CutDownAlphaGoZeroNetImpl : public torch::nn::Module
 		resBlock3 = register_module("resBlock3", ResidualBlock(numFilters, numFilters, numFilters));
 		resBlock4 = register_module("resBlock4", ResidualBlock(numFilters, numFilters, numFilters));
 		resBlock5 = register_module("resBlock5", ResidualBlock(numFilters, numFilters, numFilters));
+		resBlock6 = register_module("resBlock6", ResidualBlock(numFilters, numFilters, numFilters));
+		resBlock7 = register_module("resBlock7", ResidualBlock(numFilters, numFilters, numFilters));
+		resBlock8 = register_module("resBlock8", ResidualBlock(numFilters, numFilters, numFilters));
+		resBlock9 = register_module("resBlock9", ResidualBlock(numFilters, numFilters, numFilters));
+		resBlock10 = register_module("resBlock10", ResidualBlock(numFilters, numFilters, numFilters));
 
 		valueHead = register_module("valueHead", ValueHead(numFilters, valueFilters, width, height));
 		policyHead = register_module("policyHead", PolicyHead(numFilters, policyFilters, width, height, numOutputs));
@@ -37,7 +42,9 @@ struct CutDownAlphaGoZeroNetImpl : public torch::nn::Module
 		auto buf = convBlock(input);
 		buf = resBlock2(resBlock1(buf));
 		buf = resBlock4(resBlock3(buf));
-		buf = resBlock5(buf);
+		buf = resBlock6(resBlock5(buf));
+		buf = resBlock8(resBlock7(buf));
+		buf = resBlock10(resBlock9(buf));
 
 		auto value = valueHead(buf);
 		auto policy = policyHead(buf);
@@ -51,6 +58,11 @@ struct CutDownAlphaGoZeroNetImpl : public torch::nn::Module
 	ResidualBlock resBlock3 = nullptr;
 	ResidualBlock resBlock4 = nullptr;
 	ResidualBlock resBlock5 = nullptr;
+	ResidualBlock resBlock6 = nullptr;
+	ResidualBlock resBlock7 = nullptr;
+	ResidualBlock resBlock8 = nullptr;
+	ResidualBlock resBlock9 = nullptr;
+	ResidualBlock resBlock10 = nullptr;
 
 	ValueHead valueHead = nullptr;
 	PolicyHead policyHead = nullptr;
