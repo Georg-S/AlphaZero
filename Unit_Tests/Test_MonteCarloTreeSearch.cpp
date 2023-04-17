@@ -13,6 +13,15 @@
 
 torch::DeviceType device = torch::kCPU;
 
+std::vector<float> getAllActionProbabilities(const std::vector<std::pair<int,float>>& probab, size_t actionCount) 
+{
+	auto probs = std::vector<float>(actionCount, 0.f);
+	for (const auto& [action, prob] : probab) 
+		probs[action] = prob;
+
+	return probs;
+}
+
 TEST(MonteCarloTreeSearch, test_sum_vector)
 {
 	std::vector<int> test{ 0,1,2,3,4,5,6,7,8,9 };
@@ -67,7 +76,7 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_one_move_possible)
 	DefaultNeuralNet net(2, 3, 3, 9);
 	TicTacToeAdapter adap = TicTacToeAdapter();
 	mcts.search(4, state, &net, &adap, 2);
-	std::vector<float> probs = mcts.getProbabilities(state);
+	std::vector<float> probs = getAllActionProbabilities(mcts.getProbabilities(state), adap.getActionCount());
 
 	ASSERT_FLOAT_EQ(probs[0], 0);
 	ASSERT_FLOAT_EQ(probs[1], 0);
@@ -87,7 +96,7 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_win
 	DefaultNeuralNet net(2, 3, 3, 9);
 	TicTacToeAdapter adap = TicTacToeAdapter();
 	mcts.search(100, state, &net, &adap, 2);
-	std::vector<float> probs = mcts.getProbabilities(state);
+	std::vector<float> probs = getAllActionProbabilities(mcts.getProbabilities(state), adap.getActionCount());
 
 	ASSERT_GT(probs[8], probs[7]);
 }
@@ -115,7 +124,7 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_win
 		}
 	}
 
-	std::vector<float> probs = mcts.getProbabilities(state);
+	std::vector<float> probs = getAllActionProbabilities(mcts.getProbabilities(state), adap.getActionCount());
 
 	ASSERT_GT(probs[8], probs[7]);
 }
@@ -132,7 +141,7 @@ TEST(MonteCarloTreeSearch, test_chess_one_move_wins)
 
 	mcts.search(100, gameState, &neuralNet, &adap, static_cast<int>(ceg::PieceColor::WHITE));
 	auto probabilities = mcts.getProbabilities(gameState);
-	int mctsBestMove = ALZ::getMaxElementIndex(probabilities);
+	int mctsBestMove = ALZ::getBestAction(probabilities);
 
 	ASSERT_EQ(winningMove, mctsBestMove);
 }
@@ -145,7 +154,7 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_get
 	DefaultNeuralNet net(2, 3, 3, 9);
 	TicTacToeAdapter adap = TicTacToeAdapter();
 	mcts.search(100, state, &net, &adap, 2);
-	std::vector<float> probs = mcts.getProbabilities(state);
+	std::vector<float> probs = getAllActionProbabilities(mcts.getProbabilities(state), adap.getActionCount());
 
 	ASSERT_GT(probs[7], probs[6]);
 }

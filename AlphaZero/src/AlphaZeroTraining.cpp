@@ -156,13 +156,13 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlay(NeuralNetwork* net, Game*
 				continue;
 			}
 
-			std::vector<float> probs = mcts.getProbabilities(currentState);
+			auto probs = mcts.getProbabilities(currentState);
 
 			int action;
 			if (currentStep < m_params.RANDOM_MOVE_COUNT)
-				action = getRandomIndex(probs, 1.0);
+				action = getRandomAction(probs);
 			else
-				action = getMaxElementIndex(probs);
+				action = getBestAction(probs);
 
 			trainingData.emplace_back(currentState, currentPlayer, std::move(probs), -1);
 			currentState = game->makeMove(currentState, action, currentPlayer);
@@ -285,10 +285,8 @@ torch::Tensor AlphaZeroTraining::convertToProbsTarget(const std::vector<ReplayEl
 
 	for (int x = 0; x < sampleSize; x++)
 	{
-		for (int y = 0; y < m_actionCount; y++)
-		{
-			probsTarget[x][y] = sample[x].mctsProbabilities[y];
-		}
+		for (const auto& [action, prob] : sample[x].mctsProbabilities)
+			probsTarget[x][action] = prob;
 	}
 
 	return probsTarget;

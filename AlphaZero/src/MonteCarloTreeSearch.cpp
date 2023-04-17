@@ -50,20 +50,18 @@ bool MonteCarloTreeSearch::expandAndContinueSearchWithoutExpansion(const std::st
 	return runMultipleSearches(strState, game, currentPlayer);
 }
 
-std::vector<float> MonteCarloTreeSearch::getProbabilities(const std::string& state, float temperature)
+std::vector<std::pair<int, float>> MonteCarloTreeSearch::getProbabilities(const std::string& state, float temperature)
 {
 	assert(m_visited.find(state) != m_visited.end());
 	const auto statePtr = &(*m_visited.find(state));
 	const int countSum = m_visitCountSum[statePtr];
-	std::vector<float> probs;
-	probs.reserve(m_actionCount);
+	std::vector<std::pair<int,float>> probs;
+	probs.reserve(m_probabilities[statePtr].size());
 
-	for (size_t i = 0; i < m_actionCount; i++)
+	for (size_t i = 0; i < m_actionCount; i++) 
 	{
-		if (m_visitCount[statePtr].find(i) == m_visitCount[statePtr].end())
-			probs.emplace_back(0);
-		else
-			probs.emplace_back(static_cast<float>(pow(m_visitCount[statePtr][i], 1.f / temperature)) / countSum);
+		const float probability = static_cast<float>(pow(m_visitCount[statePtr][i], 1.f / temperature)) / countSum;
+		probs.emplace_back(i, probability);
 	}
 
 	return probs;

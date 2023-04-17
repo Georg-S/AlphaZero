@@ -42,12 +42,12 @@ TEST(Training, test_random_action)
 {
 	srand(time(NULL));
 	const int amount = 1000000;
-	std::vector<float> test{ 0.f, 0.2f, 0.1f, 0.5, 0.1, 0.1, 0.0, 0.0, 0.0 };
+	std::vector<std::pair<int, float>> test{ {0, 0.f}, {1, 0.2f}, {2, 0.1f}, {3, 0.5}, {4, 0.1}, {5, 0.1}, {6, 0.0}, {7, 0.0}, {8, 0.0} };
 	std::vector<int> results = std::vector<int>(9, 0);
 
 	for (int i = 0; i < amount; i++)
 	{
-		int buf = ALZ::getRandomIndex(test, 1.0);
+		int buf = ALZ::getRandomAction(test);
 		results[buf] += 1;
 	}
 

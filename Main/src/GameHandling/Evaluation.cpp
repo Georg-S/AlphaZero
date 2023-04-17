@@ -89,8 +89,8 @@ void Evaluation::eval(NeuralNetwork* net, Ai* miniMaxAi, Game* game, int batchSi
 					continue;
 				}
 
-				std::vector<float> probs = mcts.getProbabilities(currentState);
-				move = ALZ::getMaxElementIndex(probs);
+				auto probs = mcts.getProbabilities(currentState);
+				move = ALZ::getBestAction(probs);
 			}
 
 			currentState = game->makeMove(currentState, move, currentPlayer);
