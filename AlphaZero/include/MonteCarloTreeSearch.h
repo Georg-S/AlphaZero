@@ -16,14 +16,57 @@
 #include "Game.h"
 #include "NeuralNetworks/NeuralNetwork.h"
 
-class NeuralNetInputBuffer 
+class MonteCarloTreeSearchCache
 {
 public:
-	NeuralNetInputBuffer(torch::DeviceType device) : m_device(device) {}
-	NeuralNetInputBuffer(const NeuralNetInputBuffer&) = delete;
-	NeuralNetInputBuffer& operator=(const NeuralNetInputBuffer&) = delete;
+	friend class MonteCarloTreeSearch;
 
-	int addToInput(torch::Tensor inputTensor) 
+	struct ExpansionData 
+	{
+		std::string state;
+		int currentPlayer;
+
+		friend bool operator<(const ExpansionData& lhs, const ExpansionData& rhs) 
+		{
+			return lhs.state < rhs.state;
+		}
+	};
+
+	MonteCarloTreeSearchCache(torch::DeviceType device, Game* game) : m_device(device), m_game(game) {}
+	MonteCarloTreeSearchCache(const MonteCarloTreeSearchCache&) = delete;
+	MonteCarloTreeSearchCache& operator=(const MonteCarloTreeSearchCache&) = delete;
+
+	void addToExpansion(const ExpansionData& data)
+	{
+		toExpand.insert(data);
+	}
+
+	void expand(NeuralNetwork* net)
+	{
+		for (const auto& state : toExpand) 
+			addToInput(m_game->convertStateToNeuralNetInput(state.state, state.currentPlayer));
+
+		toExpand.clear();
+
+		calculateOutput(net);
+
+		size_t counter = 0;
+		for (auto& state : toExpand) 
+		{
+			auto [iterator, flag] = encountered.emplace(std::move(state.state));
+			auto statePtr = &(*iterator);
+
+			auto [val, probs] = getOutput(counter++);
+
+			m_values[statePtr] = *(val[0].data_ptr<float>());
+
+			for (const auto& move : m_game->getAllPossibleMoves(state.state, state.currentPlayer))
+				m_probabilities[statePtr].emplace_back(move, *(probs[move].data_ptr<float>()));
+		}
+	}
+
+private:
+	int addToInput(torch::Tensor inputTensor)
 	{
 		if (m_input.numel() == 0)
 			m_input = inputTensor;
@@ -47,30 +90,34 @@ public:
 		m_outputProbabilities = std::get<1>(rawOutput).detach().to(torch::kCPU);
 	}
 
-	std::pair<torch::Tensor,torch::Tensor> getOutput(size_t index)
+	std::pair<torch::Tensor, torch::Tensor> getOutput(size_t index)
 	{
 		assert(index < m_outputSize);
 
 		return { m_outputValues[index], m_outputProbabilities[index] };
 	}
 
-private:
 	torch::Tensor m_input;
 	torch::Tensor m_outputProbabilities;
 	torch::Tensor m_outputValues;
 	torch::DeviceType m_device;
 	size_t m_inputSize = 0;
 	size_t m_outputSize = 0;
+	std::set<std::string> encountered; // Only save the actual state string in this set -> this saves us some space
+	std::map<const std::string*, std::vector<std::pair<int, float>>> m_probabilities;
+	std::map<const std::string*, float> m_values;
+	std::set<ExpansionData> toExpand;
+	Game* m_game;
 };
 
 class MonteCarloTreeSearch
 {
 public:
-	MonteCarloTreeSearch(int actionCount, torch::DeviceType device, float cpuct = 1.0);
+	MonteCarloTreeSearch(int actionCount, torch::DeviceType device, Game* game, MonteCarloTreeSearchCache* cache = nullptr, float cpuct = 1.0);
 	void search(int count, const std::string& strState, NeuralNetwork* net, Game* game, int currentPlayer);
 	float search(const std::string& strState, NeuralNetwork* net, Game* game, int currentPlayer);
 	bool startSearchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer, int count);
-	bool expandAndContinueSearchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer, torch::Tensor valueTens, torch::Tensor probabilities);
+	bool expandAndContinueSearchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer);
 	std::vector<std::pair<int,float>> getProbabilities(const std::string& state, float temperature = 1.0);
 	torch::Tensor getExpansionNeuralNetInput(Game* game) const;
 	void printMemsize() const;
@@ -79,7 +126,7 @@ private:
 	float searchWithoutExpansion(std::string strState, Game* game, int currentPlayer, bool* expansionNeeded);
 	bool runMultipleSearches(const std::string& strState, Game* game, int currentPlayer);
 	void backpropagateValue(float value);
-	void deferredExpansion(torch::Tensor valueTens, torch::Tensor probabilities, Game* game);
+	void deferredExpansion(Game* game);
 	float expandNewEncounteredState(const std::string& strState, int currentPlayer, Game* game, NeuralNetwork* net);
 	int getActionWithHighestUpperConfidenceBound(const std::string* statePtr, int currentPlayer, Game* game);
 	float calculateUpperConfidenceBound(const std::string* statePtr, int action, float probability);
@@ -88,8 +135,10 @@ private:
 	int m_mctsCount = 0;
 	torch::DeviceType m_device = torch::kCPU;
 	float m_cpuct = -1.0;
-	std::set<std::string> m_visited; // Only save the actual state string in this set -> this saves us some space
+	MonteCarloTreeSearchCache* m_cache;
+	Game* m_game = nullptr;
 	std::set<const std::string*> m_loopDetection;
+	std::set<const std::string*> m_visited;
 	/*
 	m_visitCountSum is not needed if we sum up the map in m_visitCount,
 	however having a separate map for this is better performance wise
@@ -97,7 +146,6 @@ private:
 	std::map<const std::string*, int> m_visitCountSum; 
 	std::map<const std::string*, std::map<int,int>> m_visitCount;
 	std::map<const std::string*, std::map<int,float>> m_qValues;
-	std::map<const std::string*, std::vector<std::pair<int, float>>> m_probabilities;
 	struct BackPropData 
 	{
 		BackPropData(std::string state, int player) : state(std::move(state)), player(player) {};

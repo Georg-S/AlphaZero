@@ -7,7 +7,7 @@ NeuralNetAi::NeuralNetAi(NeuralNetwork* net, Game* game, int actionCount, int mc
 	m_mctsCount(mctsCount),
 	m_device(device),
 	m_probabilistic(probabilistic),
-	m_mcts(actionCount, device)
+	m_mcts(actionCount, device, game)
 {
 }
 

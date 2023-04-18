@@ -2,11 +2,16 @@
 
 using namespace ALZ;
 
-MonteCarloTreeSearch::MonteCarloTreeSearch(int actionCount, torch::DeviceType device, float cpuct)
+MonteCarloTreeSearch::MonteCarloTreeSearch(int actionCount, torch::DeviceType device, Game* game, MonteCarloTreeSearchCache* cache, float cpuct)
 	: m_actionCount(actionCount)
 	, m_cpuct(cpuct)
 	, m_device(device)
+	, m_game(game)
 {
+	if (!cache)
+		m_cache = new MonteCarloTreeSearchCache(device, m_game);
+	else
+		m_cache = cache;
 }
 
 void MonteCarloTreeSearch::search(int count, const std::string& strState, NeuralNetwork* net, Game* game, int currentPlayer)
@@ -43,22 +48,23 @@ bool MonteCarloTreeSearch::startSearchWithoutExpansion(const std::string& strSta
 	return runMultipleSearches(strState, game, currentPlayer);
 }
 
-bool MonteCarloTreeSearch::expandAndContinueSearchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer, torch::Tensor valueTens, torch::Tensor probabilities)
+bool MonteCarloTreeSearch::expandAndContinueSearchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer)
 {
-	deferredExpansion(valueTens, probabilities, game);
+	deferredExpansion(game);
 
 	return runMultipleSearches(strState, game, currentPlayer);
 }
 
 std::vector<std::pair<int, float>> MonteCarloTreeSearch::getProbabilities(const std::string& state, float temperature)
 {
-	assert(m_visited.find(state) != m_visited.end());
-	const auto statePtr = &(*m_visited.find(state));
-	const int countSum = m_visitCountSum[statePtr];
-	std::vector<std::pair<int,float>> probs;
-	probs.reserve(m_probabilities[statePtr].size());
+	const auto statePtr = &(*m_cache->encountered.find(state));
+	assert(m_visited.find(statePtr) != m_visited.end());
 
-	for (size_t i = 0; i < m_actionCount; i++) 
+	const int countSum = m_visitCountSum[statePtr];
+	std::vector<std::pair<int, float>> probs;
+	probs.reserve(m_cache->m_probabilities[statePtr].size());
+
+	for (size_t i = 0; i < m_actionCount; i++)
 	{
 		const float probability = static_cast<float>(pow(m_visitCount[statePtr][i], 1.f / temperature)) / countSum;
 		probs.emplace_back(i, probability);
@@ -78,15 +84,15 @@ torch::Tensor MonteCarloTreeSearch::getExpansionNeuralNetInput(Game* game) const
 
 void MonteCarloTreeSearch::printMemsize() const
 {
-	std::cout << std::endl;
-	std::cout << "Memory Usage:" << std::endl;
-	std::cout << "m_visited: " << memSize(m_visited) << std::endl;
-	std::cout << "m_visitCountSum: " << memSize(m_visitCountSum) << std::endl;
-	std::cout << "m_visitCount: " << memSize(m_visitCount) << std::endl;
-	std::cout << "m_qValues: " << memSize(m_qValues) << std::endl;
-	std::cout << "m_probabilities: " << memSize(m_probabilities) << std::endl;
-	std::cout << "Total: " << memSize(m_visited) + memSize(m_visitCountSum) + memSize(m_visitCount) + memSize(m_qValues) + memSize(m_probabilities) << std::endl;
-	std::cout << std::endl << std::endl;
+	//std::cout << std::endl;
+	//std::cout << "Memory Usage:" << std::endl;
+	//std::cout << "m_visited: " << memSize(m_visited) << std::endl;
+	//std::cout << "m_visitCountSum: " << memSize(m_visitCountSum) << std::endl;
+	//std::cout << "m_visitCount: " << memSize(m_visitCount) << std::endl;
+	//std::cout << "m_qValues: " << memSize(m_qValues) << std::endl;
+	//std::cout << "m_probabilities: " << memSize(m_probabilities) << std::endl;
+	//std::cout << "Total: " << memSize(m_visited) + memSize(m_visitCountSum) + memSize(m_visitCount) + memSize(m_qValues) + memSize(m_probabilities) << std::endl;
+	//std::cout << std::endl << std::endl;
 }
 
 float MonteCarloTreeSearch::searchWithoutExpansion(std::string strState, Game* game, int currentPlayer, bool* expansionNeeded)
@@ -99,20 +105,28 @@ float MonteCarloTreeSearch::searchWithoutExpansion(std::string strState, Game* g
 		m_backProp.emplace_back(std::move(strState), currentPlayer);
 		const auto& currentStateStr(m_backProp.back().state);
 
-		if (m_visited.find(currentStateStr) == m_visited.end())
+		if (m_cache->encountered.find(currentStateStr) == m_cache->encountered.end())
+		{
+			m_cache->addToExpansion({ currentStateStr, currentPlayer });
+			*expansionNeeded = true;
+			return 0;
+		}
+
+		auto statePtr = &(*m_cache->encountered.find(currentStateStr));
+
+		if (m_visited.find(statePtr) == m_visited.end())
 		{
 			*expansionNeeded = true;
 			return 0;
 		}
 
-		auto statePtr = &(*m_visited.find(currentStateStr));
 		m_loopDetection.emplace(statePtr);
 		int bestAction = getActionWithHighestUpperConfidenceBound(statePtr, currentPlayer, game);
-		strState = game->makeMove(currentStateStr, bestAction, currentPlayer);
 		m_backProp.back().bestAction = bestAction;
+		strState = game->makeMove(currentStateStr, bestAction, currentPlayer);
 
-		auto nextStateItr = m_visited.find(strState);
-		if (nextStateItr != m_visited.end())
+		auto nextStateItr = m_cache->encountered.find(strState);
+		if (nextStateItr != m_cache->encountered.end())
 		{
 			if (m_loopDetection.find(&(*nextStateItr)) != m_loopDetection.end())
 				return 0;
@@ -143,46 +157,36 @@ void MonteCarloTreeSearch::backpropagateValue(float value)
 		value = -value;
 		auto& backProp = m_backProp.back();
 		auto& state = backProp.state;
-		auto statePtr = &(*m_visited.find(state));
+		auto statePtr = &(*m_cache->encountered.find(state));
 		auto bestAction = backProp.bestAction;
 		m_qValues[statePtr][bestAction] = (m_visitCount[statePtr][bestAction] * m_qValues[statePtr][bestAction] + value) / (m_visitCount[statePtr][bestAction] + 1);
 		m_visitCount[statePtr][bestAction] += 1;
-		m_visitCountSum[statePtr]+=1;
+		m_visitCountSum[statePtr] += 1;
 		m_backProp.pop_back();
 	}
 }
 
-void MonteCarloTreeSearch::deferredExpansion(torch::Tensor valueTens, torch::Tensor probabilities, Game* game)
+void MonteCarloTreeSearch::deferredExpansion(Game* game)
 {
 	assert(!m_backProp.empty());
 	auto& expansionStateStr = m_backProp.back().state;
-	auto expansionPlayer = m_backProp.back().player;
-	auto [iter, flag] = m_visited.emplace(std::move(expansionStateStr));
-	auto statePtr = &(*iter);
+	auto statePtr = &(*m_cache->encountered.find(expansionStateStr));
+	m_visited.emplace(statePtr);
 
-	for (const auto& move : game->getAllPossibleMoves(*statePtr, expansionPlayer))
-		m_probabilities[statePtr].emplace_back(move, *(probabilities[move].data_ptr<float>()));
-
-	float value = *(valueTens[0].data_ptr<float>());
+	float value = m_cache->m_values[statePtr];
 	m_backProp.pop_back();
 	backpropagateValue(value);
 }
 
 float MonteCarloTreeSearch::expandNewEncounteredState(const std::string& strState, int currentPlayer, Game* game, NeuralNetwork* net)
 {
-	auto [iter, flag] = m_visited.emplace(strState);
-	auto statePtr = &(*iter);
-	auto input = game->convertStateToNeuralNetInput(strState, currentPlayer).to(m_device);
-	auto [valueTens, rawProbs] = net->calculate(input);
+	m_cache->addToExpansion({ strState , currentPlayer });
+	m_cache->expand(net);
 
-	auto probs = rawProbs[0].detach().to(torch::kCPU);
-	for (const auto& move : game->getAllPossibleMoves(strState, currentPlayer))
-		m_probabilities[statePtr].emplace_back(move, *(probs[move].data_ptr<float>()));
+	auto statePtr = &(*m_cache->encountered.find(strState));
+	m_visited.emplace(statePtr);
 
-	valueTens = valueTens[0][0].to(torch::kCPU);
-	float value = *(valueTens.data_ptr<float>());
-
-	return value;
+	return m_cache->m_values[statePtr];
 }
 
 int MonteCarloTreeSearch::getActionWithHighestUpperConfidenceBound(const std::string* statePtr, int currentPlayer, Game* game)
@@ -190,7 +194,7 @@ int MonteCarloTreeSearch::getActionWithHighestUpperConfidenceBound(const std::st
 	float maxUtility = std::numeric_limits<float>::lowest();
 	int bestAction = -1;
 
-	for (const auto& [action, probability] : m_probabilities[statePtr])
+	for (const auto& [action, probability] : m_cache->m_probabilities[statePtr])
 	{
 		float utility = calculateUpperConfidenceBound(statePtr, action, probability);
 

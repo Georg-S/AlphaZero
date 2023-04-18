@@ -10,10 +10,10 @@ namespace
 {
 	struct GameState
 	{
-		GameState(std::string currentState, int currentPlayer, int actionCount, torch::DeviceType device)
+		GameState(std::string currentState, int currentPlayer, int actionCount, torch::DeviceType device, Game* game)
 			: currentState(currentState)
 			, currentPlayer(currentPlayer)
-			, mcts(MonteCarloTreeSearch(actionCount, device))
+			, mcts(MonteCarloTreeSearch(actionCount, device, game))
 		{
 		}
 
@@ -29,9 +29,9 @@ namespace
 
 void Evaluation::eval(NeuralNetwork* net, Ai* miniMaxAi, Game* game, int batchSize, EvalResult& outEval, int numberEvalGames)
 {
-	auto netInputBuffer = NeuralNetInputBuffer(m_device);
+	auto netInputBuffer = MonteCarloTreeSearchCache(m_device, game);
 	int playerBuf = game->getInitialPlayer();
-	auto currentStatesData = std::vector<GameState>(batchSize, { game->getInitialGameState(), game->getInitialPlayer(), game->getActionCount(), m_device });
+	auto currentStatesData = std::vector<GameState>(batchSize, { game->getInitialGameState(), game->getInitialPlayer(), game->getActionCount(), m_device, game });
 	for (auto& currentState : currentStatesData)
 	{
 		currentState.color = playerBuf;
@@ -49,8 +49,7 @@ void Evaluation::eval(NeuralNetwork* net, Ai* miniMaxAi, Game* game, int batchSi
 
 	while (!currentStates.empty())
 	{
-		//std::cout << currentStates.back()->currentStep << std::endl;
-		netInputBuffer.calculateOutput(net);
+		netInputBuffer.expand(net);
 
 		for (size_t i = 0; i < currentStates.size(); i++)
 		{
@@ -74,20 +73,12 @@ void Evaluation::eval(NeuralNetwork* net, Ai* miniMaxAi, Game* game, int batchSi
 				// Maybe add game too long here? But currently not needed for Tic-Tac-Toe and Connect-Four
 
 				if (!continueMcts)
-				{
 					continueMcts = mcts.startSearchWithoutExpansion(currentState, game, currentPlayer, m_mctsCount);
-				}
 				else
-				{
-					auto [valueTens, probTens] = netInputBuffer.getOutput(netInputIndex);
-					continueMcts = mcts.expandAndContinueSearchWithoutExpansion(currentState, game, currentPlayer, valueTens, probTens);
-				}
+					continueMcts = mcts.expandAndContinueSearchWithoutExpansion(currentState, game, currentPlayer);
 
 				if (continueMcts)
-				{
-					netInputIndex = netInputBuffer.addToInput(mcts.getExpansionNeuralNetInput(game));
 					continue;
-				}
 
 				auto probs = mcts.getProbabilities(currentState);
 				move = ALZ::getBestAction(probs);

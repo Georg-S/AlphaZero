@@ -71,10 +71,10 @@ namespace
 {
 	struct GameState 
 	{
-		GameState(std::string currentState, int currentPlayer, int actionCount, torch::DeviceType device) 
+		GameState(std::string currentState, int currentPlayer, int actionCount, torch::DeviceType device, Game* game, MonteCarloTreeSearchCache* cache)
 			: currentState(currentState)
 			, currentPlayer(currentPlayer)
-			, mcts(MonteCarloTreeSearch(actionCount, device))
+			, mcts(MonteCarloTreeSearch(actionCount, device, game, cache))
 		{
 		}
 
@@ -101,8 +101,8 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlay(NeuralNetwork* net, Game*
 {
 	assert(batchSize != 0);
 	std::vector<ReplayElement> resultingTrainingsData;
-	auto netInputBuffer = NeuralNetInputBuffer(m_device);
-	auto currentStatesData = std::vector<GameState>(batchSize, { game->getInitialGameState(), game->getInitialPlayer(), game->getActionCount(), m_device});
+	auto netInputBuffer = MonteCarloTreeSearchCache(m_device, game);
+	auto currentStatesData = std::vector<GameState>(batchSize, { game->getInitialGameState(), game->getInitialPlayer(), game->getActionCount(), m_device, game, &netInputBuffer});
 	/*
 	Use a vector of pointers to the gamedata for iterating,
 	then all of the game data can be destroyed at once.
@@ -115,7 +115,7 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlay(NeuralNetwork* net, Game*
 	while (!currentStates.empty())
 	{
 		m_mut.lock();
-		netInputBuffer.calculateOutput(net);
+		netInputBuffer.expand(net);
 		m_mut.unlock();
 
 		for (size_t i = 0; i < currentStates.size(); i++)
@@ -141,20 +141,12 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlay(NeuralNetwork* net, Game*
 			}
 
 			if (!continueMcts) 
-			{
 				continueMcts = mcts.startSearchWithoutExpansion(currentState, game, currentPlayer, m_params.SELF_PLAY_MCTS_COUNT);
-			}
 			else 
-			{
-				auto [valueTens, probTens] = netInputBuffer.getOutput(netInputIndex);
-				continueMcts = mcts.expandAndContinueSearchWithoutExpansion(currentState, game, currentPlayer, valueTens, probTens);
-			}
+				continueMcts = mcts.expandAndContinueSearchWithoutExpansion(currentState, game, currentPlayer);
 
 			if (continueMcts)
-			{
-				netInputIndex = netInputBuffer.addToInput(mcts.getExpansionNeuralNetInput(game));
 				continue;
-			}
 
 			auto probs = mcts.getProbabilities(currentState);
 
