@@ -76,6 +76,19 @@ torch::Tensor MonteCarloTreeSearch::getExpansionNeuralNetInput(Game* game) const
 	return game->convertStateToNeuralNetInput(strState, currentPlayer);
 }
 
+void MonteCarloTreeSearch::printMemsize() const
+{
+	std::cout << std::endl;
+	std::cout << "Memory Usage:" << std::endl;
+	std::cout << "m_visited: " << memSize(m_visited) << std::endl;
+	std::cout << "m_visitCountSum: " << memSize(m_visitCountSum) << std::endl;
+	std::cout << "m_visitCount: " << memSize(m_visitCount) << std::endl;
+	std::cout << "m_qValues: " << memSize(m_qValues) << std::endl;
+	std::cout << "m_probabilities: " << memSize(m_probabilities) << std::endl;
+	std::cout << "Total: " << memSize(m_visited) + memSize(m_visitCountSum) + memSize(m_visitCount) + memSize(m_qValues) + memSize(m_probabilities) << std::endl;
+	std::cout << std::endl << std::endl;
+}
+
 float MonteCarloTreeSearch::searchWithoutExpansion(std::string strState, Game* game, int currentPlayer, bool* expansionNeeded)
 {
 	while (true) // Iterate until we reach a "leaf state" (a state not yet expanded or a game over state)

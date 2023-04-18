@@ -73,6 +73,7 @@ public:
 	bool expandAndContinueSearchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer, torch::Tensor valueTens, torch::Tensor probabilities);
 	std::vector<std::pair<int,float>> getProbabilities(const std::string& state, float temperature = 1.0);
 	torch::Tensor getExpansionNeuralNetInput(Game* game) const;
+	void printMemsize() const;
 
 private:
 	float searchWithoutExpansion(std::string strState, Game* game, int currentPlayer, bool* expansionNeeded);

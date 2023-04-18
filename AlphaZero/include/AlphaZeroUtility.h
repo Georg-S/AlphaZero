@@ -4,6 +4,8 @@
 #include <string>
 #include <random>
 #include <iostream>
+#include <set>
+#include <map>
 #include <thread>
 #include <cassert>
 #include <algorithm>
@@ -67,6 +69,55 @@ namespace ALZ
 		destination.insert(destination.end()
 			, std::make_move_iterator(source.begin())
 			, std::make_move_iterator(source.end()));
+	}
+
+	template <class T>
+	long long memSize(const T& type) 
+	{
+		return sizeof(T);
+	}
+
+	template <class T>
+	long long memSize(const std::vector<T>& vec) 
+	{
+		long long size = sizeof(vec);
+		for (const auto& elem : vec) 
+			size += memSize(elem);
+
+		return size;
+	}
+
+	template <class T>
+	long long memSize(const std::set<T>& set)
+	{
+		long long size = sizeof(set);
+		for (const auto& elem : set)
+			size += memSize(elem);
+
+		return size;
+	}
+
+	template <class T>
+	long long memSize(const std::string& str)
+	{
+		long long size = sizeof(std::string);
+		for (char c: str)
+			size += memSize(c);
+
+		return size;
+	}
+
+	template <class T, class Y>
+	long long memSize(const std::map<T,Y>& map)
+	{
+		long long size = sizeof(std::map<T, Y>);
+		for (const auto& [key, value] : map) 
+		{
+			size += memSize(key);
+			size += memSize(value);
+		}
+
+		return size;
 	}
 
 	class ScopedTimer
