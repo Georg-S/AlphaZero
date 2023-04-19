@@ -114,6 +114,7 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlay(NeuralNetwork* net, Game*
 
 	while (!currentStates.empty())
 	{
+		netInputBuffer.convertToNeuralInput();
 		m_mut.lock();
 		netInputBuffer.expand(net);
 		m_mut.unlock();

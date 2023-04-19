@@ -180,6 +180,7 @@ void MonteCarloTreeSearch::deferredExpansion(Game* game)
 float MonteCarloTreeSearch::expandNewEncounteredState(const std::string& strState, int currentPlayer, Game* game, NeuralNetwork* net)
 {
 	m_cache->addToExpansion({ strState , currentPlayer });
+	m_cache->convertToNeuralInput();
 	m_cache->expand(net);
 
 	auto statePtr = &(*m_cache->encountered.find(strState));

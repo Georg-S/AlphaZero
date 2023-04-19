@@ -108,10 +108,14 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_win
 	bool expansionNeeded = mcts.startSearchWithoutExpansion(state, &tttAdap, 2, 50);
 	if (expansionNeeded)
 	{
+		buffer.convertToNeuralInput();
 		buffer.expand(&net);
 
-		while (mcts.expandAndContinueSearchWithoutExpansion(state, &tttAdap, 2))
+		while (mcts.expandAndContinueSearchWithoutExpansion(state, &tttAdap, 2)) 
+		{
+			buffer.convertToNeuralInput();
 			buffer.expand(&net);
+		}
 	}
 
 	std::vector<float> probs = getAllActionProbabilities(mcts.getProbabilities(state), tttAdap.getActionCount());

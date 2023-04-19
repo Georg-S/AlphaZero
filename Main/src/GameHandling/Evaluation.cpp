@@ -49,6 +49,7 @@ void Evaluation::eval(NeuralNetwork* net, Ai* miniMaxAi, Game* game, int batchSi
 
 	while (!currentStates.empty())
 	{
+		netInputBuffer.convertToNeuralInput();
 		netInputBuffer.expand(net);
 
 		for (size_t i = 0; i < currentStates.size(); i++)

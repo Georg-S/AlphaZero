@@ -41,11 +41,14 @@ public:
 		toExpand.insert(data);
 	}
 
-	void expand(NeuralNetwork* net)
+	void convertToNeuralInput() 
 	{
-		for (const auto& state : toExpand) 
+		for (const auto& state : toExpand)
 			addToInput(m_game->convertStateToNeuralNetInput(state.state, state.currentPlayer));
+	}
 
+	void expand(NeuralNetwork* net) // convertToNeuralInput must be called before calling this
+	{
 		calculateOutput(net);
 
 		size_t counter = 0;
