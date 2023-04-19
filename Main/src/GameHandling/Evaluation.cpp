@@ -10,10 +10,10 @@ namespace
 {
 	struct GameState
 	{
-		GameState(std::string currentState, int currentPlayer, int actionCount, torch::DeviceType device, Game* game)
+		GameState(std::string currentState, int currentPlayer, int actionCount, torch::DeviceType device, Game* game, MonteCarloTreeSearchCache* cache)
 			: currentState(currentState)
 			, currentPlayer(currentPlayer)
-			, mcts(MonteCarloTreeSearch(actionCount, device, game))
+			, mcts(MonteCarloTreeSearch(actionCount, device, game, cache))
 		{
 		}
 
@@ -31,7 +31,7 @@ void Evaluation::eval(NeuralNetwork* net, Ai* miniMaxAi, Game* game, int batchSi
 {
 	auto netInputBuffer = MonteCarloTreeSearchCache(m_device, game);
 	int playerBuf = game->getInitialPlayer();
-	auto currentStatesData = std::vector<GameState>(batchSize, { game->getInitialGameState(), game->getInitialPlayer(), game->getActionCount(), m_device, game });
+	auto currentStatesData = std::vector<GameState>(batchSize, { game->getInitialGameState(), game->getInitialPlayer(), game->getActionCount(), m_device, game, &netInputBuffer });
 	for (auto& currentState : currentStatesData)
 	{
 		currentState.color = playerBuf;
