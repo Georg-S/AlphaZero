@@ -52,9 +52,9 @@ public:
 		calculateOutput(net);
 
 		size_t counter = 0;
-		for (auto& state : toExpand) 
+		for (const auto& state : toExpand)
 		{
-			auto [iterator, flag] = encountered.emplace(std::move(state.state));
+			auto [iterator, flag] = encountered.emplace(state.state);
 			auto statePtr = &(*iterator);
 
 			auto [val, probs] = getOutput(counter++);
