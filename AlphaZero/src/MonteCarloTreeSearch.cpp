@@ -64,10 +64,10 @@ std::vector<std::pair<int, float>> MonteCarloTreeSearch::getProbabilities(const 
 	std::vector<std::pair<int, float>> probs;
 	probs.reserve(m_cache->m_probabilities[statePtr].size());
 
-	for (size_t i = 0; i < m_actionCount; i++)
+	for (const auto& [action, visitCount]  : m_visitCount[statePtr]) 
 	{
-		const float probability = static_cast<float>(pow(m_visitCount[statePtr][i], 1.f / temperature)) / countSum;
-		probs.emplace_back(i, probability);
+		const float probability = static_cast<float>(pow(visitCount, 1.f / temperature)) / countSum;
+		probs.emplace_back(action, probability);
 	}
 
 	return probs;
