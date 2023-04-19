@@ -119,7 +119,6 @@ float MonteCarloTreeSearch::searchWithoutExpansion(std::string strState, Game* g
 			*expansionNeeded = true;
 			return 0;
 		}
-
 		m_loopDetection.emplace(statePtr);
 		int bestAction = getActionWithHighestUpperConfidenceBound(statePtr, currentPlayer, game);
 		m_backProp.back().bestAction = bestAction;

@@ -46,8 +46,6 @@ public:
 		for (const auto& state : toExpand) 
 			addToInput(m_game->convertStateToNeuralNetInput(state.state, state.currentPlayer));
 
-		toExpand.clear();
-
 		calculateOutput(net);
 
 		size_t counter = 0;
@@ -63,6 +61,7 @@ public:
 			for (const auto& move : m_game->getAllPossibleMoves(state.state, state.currentPlayer))
 				m_probabilities[statePtr].emplace_back(move, *(probs[move].data_ptr<float>()));
 		}
+		toExpand.clear();
 	}
 
 private:
