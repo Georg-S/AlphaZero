@@ -12,8 +12,10 @@ AlphaZeroTraining::AlphaZeroTraining(int actionCount, NeuralNetwork* currentBest
 
 void AlphaZeroTraining::runTraining(Game* game)
 {
-	m_neuralNet->save(m_params.neuralNetPath + "/start");
-	for (int iteration = 0; iteration < m_params.TRAINING_ITERATIONS; iteration++)
+	if (m_params.CURRENT_ITERATION == 0)
+		m_neuralNet->save(m_params.neuralNetPath + "/start");
+
+	for (size_t iteration = m_params.CURRENT_ITERATION; iteration < (m_params.CURRENT_ITERATION + m_params.TRAINING_ITERATIONS); iteration++)
 	{
 		ScopedTimer timer = ScopedTimer("Iteration took: ");
 		std::cout << "Current Iteration " << iteration << std::endl;

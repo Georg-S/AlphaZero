@@ -39,22 +39,58 @@ AlphaZeroTraining::Parameters ChessHandler::getDefaultChessTrainingParameters() 
 	return params;
 }
 
-void ChessHandler::setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params)
+void ChessHandler::setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params, int currentIteration)
 {
 	auto defaultParams = getDefaultChessTrainingParameters();
 	auto trainingParams = params.getAlphaZeroParams(trainingPath, defaultParams);
+	trainingParams.CURRENT_ITERATION = currentIteration;
 	training.setTrainingParams(trainingParams);
+}
+
+static std::pair<std::string, int> getHighestExistingNetAndIteration(const std::string& path) 
+{
+	std::string res = "";
+	int highestExistingNet = -1;
+	std::smatch baseMatch;
+	for (const auto& entry : std::filesystem::directory_iterator(path)) 
+	{
+		std::cout << entry.path() << std::endl;
+		auto pathString = entry.path().string();
+		if (std::regex_search(pathString, baseMatch, std::regex("\\d+")))
+		{
+			int iteration = std::stoi(baseMatch[0]);
+			if (iteration > highestExistingNet) 
+			{
+				res = pathString;
+				highestExistingNet = iteration;
+			}
+		}
+	}
+
+	return { res, highestExistingNet };
 }
 
 void ChessHandler::runTraining(const TrainingParameters& params)
 {
 	ChessAdapter adap = ChessAdapter();
 	torch::DeviceType device = params.device;
-	auto neuralNet = std::make_unique<DefaultNeuralNet>(14, 8, 8, 4096, device);
+	std::unique_ptr<DefaultNeuralNet> neuralNet = nullptr;
+	const auto [netName, highestIteration] = getHighestExistingNetAndIteration(trainingPath);
+	if (highestIteration == -1)
+	{
+		neuralNet = std::make_unique<DefaultNeuralNet>(14, 8, 8, 4096, device);
+	}
+	else 
+	{
+		std::cout << "Continue training with net: " << netName << std::endl;
+		neuralNet = std::make_unique<DefaultNeuralNet>(14, 8, 8, 4096, netName, device);
+	}
+	int currentIteration = highestIteration + 1;
+
 	neuralNet->setLearningRate(params.learningRate);
 	neuralNet->setToTraining();
 	AlphaZeroTraining training = AlphaZeroTraining(4096, neuralNet.get(), device);
-	setTrainingParameters(training, params);
+	setTrainingParameters(training, params, currentIteration);
 
 	ALZ::ScopedTimer timer{};
 	training.runTraining(&adap);

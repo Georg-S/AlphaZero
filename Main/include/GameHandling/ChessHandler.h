@@ -2,6 +2,8 @@
 #define DEEPREINFORCEMENTLEARNING_CHESSHANDLER_H
 
 #include <chrono>
+#include <regex>
+#include <filesystem>
 #include <AlphaZeroTraining.h>
 #include <Chess/ChessAiAdapter.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
@@ -20,7 +22,7 @@ public:
 	void chessAgainstMiniMaxAi(int miniMaxDepth, ceg::PieceColor playerColor);
 	void runTraining(const TrainingParameters& params);
 	static void startTwoPlayerChessGame();
-	void setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params);
+	void setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params, int currentIteration);
 
 private:
 	AlphaZeroTraining::Parameters getDefaultChessTrainingParameters() const;
