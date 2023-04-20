@@ -95,6 +95,11 @@ void MonteCarloTreeSearch::printMemsize() const
 	//std::cout << std::endl << std::endl;
 }
 
+long long MonteCarloTreeSearch::getMemSize() const
+{
+	return memSize(m_loopDetection) + memSize(m_visited) + memSize(m_visitCountSum) + memSize(m_visitCount) + memSize(m_qValues);
+}
+
 float MonteCarloTreeSearch::searchWithoutExpansion(std::string strState, Game* game, int currentPlayer, bool* expansionNeeded)
 {
 	while (true) // Iterate until we reach a "leaf state" (a state not yet expanded or a game over state)
@@ -213,4 +218,13 @@ float MonteCarloTreeSearch::calculateUpperConfidenceBound(const std::string* sta
 	const float buf = sqrt(m_visitCountSum[statePtr]) / (1 + m_visitCount[statePtr][action]);
 
 	return m_qValues[statePtr][action] + m_cpuct * probability * buf;
+}
+
+long long MonteCarloTreeSearchCache::printMemsize() const
+{
+	std::cout << "Encountered states: " << memSize(encountered) << std::endl;
+	std::cout << "Probabilities: " << memSize(m_probabilities) << std::endl;
+	std::cout << "Values: " << memSize(m_values) << std::endl;
+
+	return memSize(encountered) + memSize(m_probabilities) + memSize(m_values);
 }

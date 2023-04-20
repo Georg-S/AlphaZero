@@ -67,6 +67,8 @@ public:
 		toExpand.clear();
 	}
 
+	long long printMemsize() const;
+
 private:
 	int addToInput(torch::Tensor inputTensor)
 	{
@@ -123,6 +125,7 @@ public:
 	std::vector<std::pair<int,float>> getProbabilities(const std::string& state, float temperature = 1.0);
 	torch::Tensor getExpansionNeuralNetInput(Game* game) const;
 	void printMemsize() const;
+	long long getMemSize() const;
 
 private:
 	float searchWithoutExpansion(std::string strState, Game* game, int currentPlayer, bool* expansionNeeded);

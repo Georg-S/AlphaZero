@@ -174,6 +174,18 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlay(NeuralNetwork* net, Game*
 		}
 	}
 
+	std::scoped_lock lock(m_mut);
+	long long mctsMemory = 0;
+	for (const auto& elem : currentStatesData) 
+		mctsMemory += elem.mcts.getMemSize();
+
+	std::cout << "Memory Usage:" << std::endl;
+	std::cout << "This batch MCTS: " << mctsMemory << std::endl;
+	auto batchCacheTotal = netInputBuffer.printMemsize();
+	std::cout << "This batch cache total: " << batchCacheTotal << std::endl;
+	std::cout << "Current trainingsdata: " << memSize(resultingTrainingsData) << std::endl << std::endl;
+	//std::cout << "Whole trainingsdata: " << m_replayMemory.memSize() << std::endl;
+
 	return resultingTrainingsData;
 }
 
