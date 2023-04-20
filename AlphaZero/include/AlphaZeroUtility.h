@@ -10,6 +10,7 @@
 #include <cassert>
 #include <algorithm>
 #include <map>
+#include <climits>
 
 namespace ALZ
 {
