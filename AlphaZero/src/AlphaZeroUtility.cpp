@@ -48,7 +48,10 @@ std::mt19937& ALZ::getRNG()
 int ALZ::getRandomAction(const std::vector<std::pair<int, float>>& probs)
 {
 	assert(!probs.empty());
-	constexpr float sumOfProbs = 1.0;
+	float sumOfProbs = 0.0;
+	for (const auto& [action, prob] : probs)
+		sumOfProbs += prob;
+
 	double randomNum = getRandomNumber(0.0, sumOfProbs);
 
 	double accumulate = 0.f;
