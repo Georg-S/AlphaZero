@@ -2,6 +2,73 @@
 
 using namespace ALZ;
 
+void MonteCarloTreeSearchCache::addToExpansion(const ExpansionData& data)
+{
+	toExpand.insert(data);
+}
+
+void MonteCarloTreeSearchCache::convertToNeuralInput()
+{
+	for (const auto& state : toExpand)
+		addToInput(m_game->convertStateToNeuralNetInput(state.state, state.currentPlayer));
+}
+
+void MonteCarloTreeSearchCache::expand(NeuralNetwork* net)
+{
+	calculateOutput(net);
+
+	size_t counter = 0;
+	for (const auto& state : toExpand)
+	{
+		auto [iterator, flag] = encountered.emplace(state.state);
+		auto statePtr = &(*iterator);
+
+		auto [val, probs] = getOutput(counter++);
+
+		m_values[statePtr] = *(val[0].data_ptr<float>());
+
+		for (const auto& move : m_game->getAllPossibleMoves(state.state, state.currentPlayer))
+			m_probabilities[statePtr].emplace_back(move, *(probs[move].data_ptr<float>()));
+	}
+	toExpand.clear();
+}
+
+long long MonteCarloTreeSearchCache::getMemSize() const
+{
+	return memSize(encountered) + memSize(m_probabilities) + memSize(m_values);
+}
+
+int MonteCarloTreeSearchCache::addToInput(torch::Tensor inputTensor)
+{
+	if (m_input.numel() == 0)
+		m_input = inputTensor;
+	else
+		m_input = torch::cat({ m_input, inputTensor }, 0);
+	return m_inputSize++;
+}
+
+void MonteCarloTreeSearchCache::calculateOutput(NeuralNetwork* net)
+{
+	if (m_inputSize == 0)
+		return;
+
+	m_input = m_input.to(m_device);
+	auto rawOutput = net->calculate(m_input);
+	m_outputSize = m_inputSize;
+	m_inputSize = 0;
+	m_input = torch::Tensor{};
+
+	m_outputValues = std::get<0>(rawOutput).detach().to(torch::kCPU);
+	m_outputProbabilities = std::get<1>(rawOutput).detach().to(torch::kCPU);
+}
+
+std::pair<torch::Tensor, torch::Tensor> MonteCarloTreeSearchCache::getOutput(size_t index)
+{
+	assert(index < m_outputSize);
+
+	return { m_outputValues[index], m_outputProbabilities[index] };
+}
+
 MonteCarloTreeSearch::MonteCarloTreeSearch(int actionCount, torch::DeviceType device, Game* game, MonteCarloTreeSearchCache* cache, float cpuct)
 	: m_actionCount(actionCount)
 	, m_cpuct(cpuct)
@@ -80,19 +147,6 @@ torch::Tensor MonteCarloTreeSearch::getExpansionNeuralNetInput(Game* game) const
 	auto currentPlayer = m_backProp.back().player;
 
 	return game->convertStateToNeuralNetInput(strState, currentPlayer);
-}
-
-void MonteCarloTreeSearch::printMemsize() const
-{
-	//std::cout << std::endl;
-	//std::cout << "Memory Usage:" << std::endl;
-	//std::cout << "m_visited: " << memSize(m_visited) << std::endl;
-	//std::cout << "m_visitCountSum: " << memSize(m_visitCountSum) << std::endl;
-	//std::cout << "m_visitCount: " << memSize(m_visitCount) << std::endl;
-	//std::cout << "m_qValues: " << memSize(m_qValues) << std::endl;
-	//std::cout << "m_probabilities: " << memSize(m_probabilities) << std::endl;
-	//std::cout << "Total: " << memSize(m_visited) + memSize(m_visitCountSum) + memSize(m_visitCount) + memSize(m_qValues) + memSize(m_probabilities) << std::endl;
-	//std::cout << std::endl << std::endl;
 }
 
 long long MonteCarloTreeSearch::getMemSize() const
@@ -218,13 +272,4 @@ float MonteCarloTreeSearch::calculateUpperConfidenceBound(const std::string* sta
 	const float buf = sqrt(m_visitCountSum[statePtr]) / (1 + m_visitCount[statePtr][action]);
 
 	return m_qValues[statePtr][action] + m_cpuct * probability * buf;
-}
-
-long long MonteCarloTreeSearchCache::printMemsize() const
-{
-	std::cout << "Encountered states: " << memSize(encountered) << std::endl;
-	std::cout << "Probabilities: " << memSize(m_probabilities) << std::endl;
-	std::cout << "Values: " << memSize(m_values) << std::endl;
-
-	return memSize(encountered) + memSize(m_probabilities) + memSize(m_values);
 }

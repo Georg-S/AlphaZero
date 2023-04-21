@@ -174,19 +174,25 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlay(NeuralNetwork* net, Game*
 		}
 	}
 
-	std::scoped_lock lock(m_mut);
+	auto batchCacheTotal = netInputBuffer.getMemSize();
 	long long mctsMemory = 0;
-	for (const auto& elem : currentStatesData) 
+	for (const auto& elem : currentStatesData)
 		mctsMemory += elem.mcts.getMemSize();
 
-	std::cout << "Memory Usage:" << std::endl;
-	std::cout << "This batch MCTS: " << mctsMemory << std::endl;
-	auto batchCacheTotal = netInputBuffer.printMemsize();
-	std::cout << "This batch cache total: " << batchCacheTotal << std::endl;
-	std::cout << "Current trainingsdata: " << memSize(resultingTrainingsData) << std::endl << std::endl;
-	//std::cout << "Whole trainingsdata: " << m_replayMemory.memSize() << std::endl;
+	std::scoped_lock lock(m_mut);
+	long long totalTrainingSize = m_replayMemory.memSize() + memSize(resultingTrainingsData);
+	printMemoryUsage(batchCacheTotal, mctsMemory, totalTrainingSize);
 
 	return resultingTrainingsData;
+}
+
+void AlphaZeroTraining::printMemoryUsage(long long cacheMemSize, long long mctsMemsize, long long trainingsDataTotalSize) const
+{
+	std::cout << "Memory Usage in MB:" << std::endl;
+	std::cout << "This batch MCTS: " << mctsMemsize / MegaByte << std::endl;
+	std::cout << "This batch cache total: " << cacheMemSize / MegaByte << std::endl;
+	std::cout << "Whole trainingsdata: " << trainingsDataTotalSize / MegaByte << std::endl;
+	std::cout << "Total memsize (this batch + trainingsdata): " << (trainingsDataTotalSize + cacheMemSize + mctsMemsize) / MegaByte << std::endl << std::endl;
 }
 
 void AlphaZeroTraining::addResult(std::vector<ReplayElement>& elements, int winner)

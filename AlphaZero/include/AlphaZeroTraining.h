@@ -49,6 +49,7 @@ private:
 	void selfPlay(NeuralNetwork* net, Game* game);
 	void selfPlayBuf(NeuralNetwork* net, Game* game);
 	std::vector<ReplayElement> selfPlay(NeuralNetwork* net, Game* game, int batchSize);
+	void printMemoryUsage(long long cacheMemSize, long long mctsMemsize, long long trainingsDataTotalSize) const;
 	void addResult(std::vector<ReplayElement>& elements, int winner);
 	void trainNet(NeuralNetwork* net, Game* game);
 	void trainNetMultiThreaded(NeuralNetwork* net, Game* game);

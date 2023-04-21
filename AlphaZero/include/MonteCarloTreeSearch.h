@@ -36,70 +36,15 @@ public:
 	MonteCarloTreeSearchCache(const MonteCarloTreeSearchCache&) = delete;
 	MonteCarloTreeSearchCache& operator=(const MonteCarloTreeSearchCache&) = delete;
 
-	void addToExpansion(const ExpansionData& data)
-	{
-		toExpand.insert(data);
-	}
-
-	void convertToNeuralInput()
-	{
-		for (const auto& state : toExpand)
-			addToInput(m_game->convertStateToNeuralNetInput(state.state, state.currentPlayer));
-	}
-
-	void expand(NeuralNetwork* net) // convertToNeuralInput must be called before calling this
-	{
-		calculateOutput(net);
-
-		size_t counter = 0;
-		for (const auto& state : toExpand)
-		{
-			auto [iterator, flag] = encountered.emplace(state.state);
-			auto statePtr = &(*iterator);
-
-			auto [val, probs] = getOutput(counter++);
-
-			m_values[statePtr] = *(val[0].data_ptr<float>());
-
-			for (const auto& move : m_game->getAllPossibleMoves(state.state, state.currentPlayer))
-				m_probabilities[statePtr].emplace_back(move, *(probs[move].data_ptr<float>()));
-		}
-		toExpand.clear();
-	}
-
-	long long printMemsize() const;
+	void addToExpansion(const ExpansionData& data);
+	void convertToNeuralInput();
+	void expand(NeuralNetwork* net); // convertToNeuralInput must be called before calling this
+	long long getMemSize() const;
 
 private:
-	int addToInput(torch::Tensor inputTensor)
-	{
-		if (m_input.numel() == 0)
-			m_input = inputTensor;
-		else
-			m_input = torch::cat({ m_input, inputTensor }, 0);
-		return m_inputSize++;
-	}
-
-	void calculateOutput(NeuralNetwork* net)
-	{
-		if (m_inputSize == 0)
-			return;
-
-		m_input = m_input.to(m_device);
-		auto rawOutput = net->calculate(m_input);
-		m_outputSize = m_inputSize;
-		m_inputSize = 0;
-		m_input = torch::Tensor{};
-
-		m_outputValues = std::get<0>(rawOutput).detach().to(torch::kCPU);
-		m_outputProbabilities = std::get<1>(rawOutput).detach().to(torch::kCPU);
-	}
-
-	std::pair<torch::Tensor, torch::Tensor> getOutput(size_t index)
-	{
-		assert(index < m_outputSize);
-
-		return { m_outputValues[index], m_outputProbabilities[index] };
-	}
+	int addToInput(torch::Tensor inputTensor);
+	void calculateOutput(NeuralNetwork* net);
+	std::pair<torch::Tensor, torch::Tensor> getOutput(size_t index);
 
 	torch::Tensor m_input;
 	torch::Tensor m_outputProbabilities;
@@ -124,7 +69,6 @@ public:
 	bool expandAndContinueSearchWithoutExpansion(const std::string& strState, int currentPlayer);
 	std::vector<std::pair<int, float>> getProbabilities(const std::string& state, float temperature = 1.0);
 	torch::Tensor getExpansionNeuralNetInput(Game* game) const;
-	void printMemsize() const;
 	long long getMemSize() const;
 
 private:

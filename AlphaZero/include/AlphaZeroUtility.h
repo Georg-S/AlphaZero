@@ -72,6 +72,8 @@ namespace ALZ
 			, std::make_move_iterator(source.end()));
 	}
 
+	static constexpr double GigaByte = 1000000000;
+	static constexpr double MegaByte = 1000000;
 	template <class T>
 	long long memSize(const T& type) 
 	{

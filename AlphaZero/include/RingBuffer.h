@@ -80,6 +80,15 @@ public:
 		return destination;
 	}
 
+	double memSize() const 
+	{
+		double result = 0;
+		for (const auto& elem : m_data)
+			result += ALZ::memSize(m_data);
+
+		return result / ALZ::GigaByte;
+	}
+
 private:
 	int m_maxSize = 0;
 	int m_currentIndex = 0;
