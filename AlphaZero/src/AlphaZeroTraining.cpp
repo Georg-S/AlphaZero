@@ -144,9 +144,9 @@ std::vector<ReplayElement> AlphaZeroTraining::selfPlay(NeuralNetwork* net, Game*
 			}
 
 			if (!continueMcts) 
-				continueMcts = mcts.startSearchWithoutExpansion(currentState, game, currentPlayer, m_params.SELF_PLAY_MCTS_COUNT);
+				continueMcts = mcts.startSearchWithoutExpansion(currentState, currentPlayer, m_params.SELF_PLAY_MCTS_COUNT);
 			else 
-				continueMcts = mcts.expandAndContinueSearchWithoutExpansion(currentState, game, currentPlayer);
+				continueMcts = mcts.expandAndContinueSearchWithoutExpansion(currentState, currentPlayer);
 
 			if (continueMcts)
 				continue;

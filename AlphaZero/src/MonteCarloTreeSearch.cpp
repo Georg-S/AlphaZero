@@ -14,25 +14,25 @@ MonteCarloTreeSearch::MonteCarloTreeSearch(int actionCount, torch::DeviceType de
 		m_cache = cache;
 }
 
-void MonteCarloTreeSearch::search(int count, const std::string& strState, NeuralNetwork* net, Game* game, int currentPlayer)
+void MonteCarloTreeSearch::search(int count, const std::string& strState, NeuralNetwork* net, int currentPlayer)
 {
 	for (int i = 0; i < count; i++)
 	{
-		search(strState, net, game, currentPlayer);
+		search(strState, net, currentPlayer);
 		m_loopDetection.clear();
 	}
 }
 
-float MonteCarloTreeSearch::search(const std::string& strState, NeuralNetwork* net, Game* game, int currentPlayer)
+float MonteCarloTreeSearch::search(const std::string& strState, NeuralNetwork* net, int currentPlayer)
 {
 	m_backProp.clear();
 	bool expansionNeeded = false;
-	float value = searchWithoutExpansion(strState, game, currentPlayer, &expansionNeeded);
+	float value = searchWithoutExpansion(strState, currentPlayer, &expansionNeeded);
 	assert(!m_backProp.empty());
 
 	if (expansionNeeded)
 	{
-		value = expandNewEncounteredState(m_backProp.back().state, m_backProp.back().player, game, net);
+		value = expandNewEncounteredState(m_backProp.back().state, m_backProp.back().player, net);
 		m_backProp.pop_back();
 	}
 
@@ -41,18 +41,18 @@ float MonteCarloTreeSearch::search(const std::string& strState, NeuralNetwork* n
 	return -value;
 }
 
-bool MonteCarloTreeSearch::startSearchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer, int count)
+bool MonteCarloTreeSearch::startSearchWithoutExpansion(const std::string& strState, int currentPlayer, int count)
 {
 	m_mctsCount = count;
 
-	return runMultipleSearches(strState, game, currentPlayer);
+	return runMultipleSearches(strState, currentPlayer);
 }
 
-bool MonteCarloTreeSearch::expandAndContinueSearchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer)
+bool MonteCarloTreeSearch::expandAndContinueSearchWithoutExpansion(const std::string& strState, int currentPlayer)
 {
-	deferredExpansion(game);
+	deferredExpansion();
 
-	return runMultipleSearches(strState, game, currentPlayer);
+	return runMultipleSearches(strState, currentPlayer);
 }
 
 std::vector<std::pair<int, float>> MonteCarloTreeSearch::getProbabilities(const std::string& state, float temperature)
@@ -64,7 +64,7 @@ std::vector<std::pair<int, float>> MonteCarloTreeSearch::getProbabilities(const 
 	std::vector<std::pair<int, float>> probs;
 	probs.reserve(m_cache->m_probabilities[statePtr].size());
 
-	for (const auto& [action, visitCount]  : m_visitCount[statePtr]) 
+	for (const auto& [action, visitCount] : m_visitCount[statePtr])
 	{
 		const float probability = static_cast<float>(pow(visitCount, 1.f / temperature)) / countSum;
 		probs.emplace_back(action, probability);
@@ -100,12 +100,12 @@ long long MonteCarloTreeSearch::getMemSize() const
 	return memSize(m_loopDetection) + memSize(m_visited) + memSize(m_visitCountSum) + memSize(m_visitCount) + memSize(m_qValues);
 }
 
-float MonteCarloTreeSearch::searchWithoutExpansion(std::string strState, Game* game, int currentPlayer, bool* expansionNeeded)
+float MonteCarloTreeSearch::searchWithoutExpansion(std::string strState, int currentPlayer, bool* expansionNeeded)
 {
 	while (true) // Iterate until we reach a "leaf state" (a state not yet expanded or a game over state)
 	{
-		if (game->isGameOver(strState))
-			return game->gameOverReward(strState, currentPlayer);
+		if (m_game->isGameOver(strState))
+			return m_game->gameOverReward(strState, currentPlayer);
 
 		m_backProp.emplace_back(std::move(strState), currentPlayer);
 		const auto& currentStateStr(m_backProp.back().state);
@@ -125,9 +125,9 @@ float MonteCarloTreeSearch::searchWithoutExpansion(std::string strState, Game* g
 			return 0;
 		}
 		m_loopDetection.emplace(statePtr);
-		int bestAction = getActionWithHighestUpperConfidenceBound(statePtr, currentPlayer, game);
+		int bestAction = getActionWithHighestUpperConfidenceBound(statePtr, currentPlayer);
 		m_backProp.back().bestAction = bestAction;
-		strState = game->makeMove(currentStateStr, bestAction, currentPlayer);
+		strState = m_game->makeMove(currentStateStr, bestAction, currentPlayer);
 
 		auto nextStateItr = m_cache->encountered.find(strState);
 		if (nextStateItr != m_cache->encountered.end())
@@ -135,17 +135,17 @@ float MonteCarloTreeSearch::searchWithoutExpansion(std::string strState, Game* g
 			if (m_loopDetection.find(&(*nextStateItr)) != m_loopDetection.end())
 				return 0;
 		}
-		currentPlayer = game->getNextPlayer(currentPlayer);
+		currentPlayer = m_game->getNextPlayer(currentPlayer);
 	}
 }
 
-bool MonteCarloTreeSearch::runMultipleSearches(const std::string& strState, Game* game, int currentPlayer)
+bool MonteCarloTreeSearch::runMultipleSearches(const std::string& strState, int currentPlayer)
 {
 	bool expansionNeeded = false;
 	while (m_mctsCount--)
 	{
 		m_loopDetection.clear();
-		float value = searchWithoutExpansion(strState, game, currentPlayer, &expansionNeeded);
+		float value = searchWithoutExpansion(strState, currentPlayer, &expansionNeeded);
 		if (expansionNeeded)
 			return true;
 		else
@@ -170,7 +170,7 @@ void MonteCarloTreeSearch::backpropagateValue(float value)
 	}
 }
 
-void MonteCarloTreeSearch::deferredExpansion(Game* game)
+void MonteCarloTreeSearch::deferredExpansion()
 {
 	assert(!m_backProp.empty());
 	auto& expansionStateStr = m_backProp.back().state;
@@ -182,7 +182,7 @@ void MonteCarloTreeSearch::deferredExpansion(Game* game)
 	backpropagateValue(value);
 }
 
-float MonteCarloTreeSearch::expandNewEncounteredState(const std::string& strState, int currentPlayer, Game* game, NeuralNetwork* net)
+float MonteCarloTreeSearch::expandNewEncounteredState(const std::string& strState, int currentPlayer, NeuralNetwork* net)
 {
 	m_cache->addToExpansion({ strState , currentPlayer });
 	m_cache->convertToNeuralInput();
@@ -194,7 +194,7 @@ float MonteCarloTreeSearch::expandNewEncounteredState(const std::string& strStat
 	return m_cache->m_values[statePtr];
 }
 
-int MonteCarloTreeSearch::getActionWithHighestUpperConfidenceBound(const std::string* statePtr, int currentPlayer, Game* game)
+int MonteCarloTreeSearch::getActionWithHighestUpperConfidenceBound(const std::string* statePtr, int currentPlayer)
 {
 	float maxUtility = std::numeric_limits<float>::lowest();
 	int bestAction = -1;

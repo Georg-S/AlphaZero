@@ -21,12 +21,12 @@ class MonteCarloTreeSearchCache
 public:
 	friend class MonteCarloTreeSearch;
 
-	struct ExpansionData 
+	struct ExpansionData
 	{
 		std::string state;
 		int currentPlayer;
 
-		friend bool operator<(const ExpansionData& lhs, const ExpansionData& rhs) 
+		friend bool operator<(const ExpansionData& lhs, const ExpansionData& rhs)
 		{
 			return lhs.state < rhs.state;
 		}
@@ -41,7 +41,7 @@ public:
 		toExpand.insert(data);
 	}
 
-	void convertToNeuralInput() 
+	void convertToNeuralInput()
 	{
 		for (const auto& state : toExpand)
 			addToInput(m_game->convertStateToNeuralNetInput(state.state, state.currentPlayer));
@@ -118,22 +118,22 @@ class MonteCarloTreeSearch
 {
 public:
 	MonteCarloTreeSearch(int actionCount, torch::DeviceType device, Game* game, MonteCarloTreeSearchCache* cache = nullptr, float cpuct = 1.0);
-	void search(int count, const std::string& strState, NeuralNetwork* net, Game* game, int currentPlayer);
-	float search(const std::string& strState, NeuralNetwork* net, Game* game, int currentPlayer);
-	bool startSearchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer, int count);
-	bool expandAndContinueSearchWithoutExpansion(const std::string& strState, Game* game, int currentPlayer);
-	std::vector<std::pair<int,float>> getProbabilities(const std::string& state, float temperature = 1.0);
+	void search(int count, const std::string& strState, NeuralNetwork* net, int currentPlayer);
+	float search(const std::string& strState, NeuralNetwork* net, int currentPlayer);
+	bool startSearchWithoutExpansion(const std::string& strState, int currentPlayer, int count);
+	bool expandAndContinueSearchWithoutExpansion(const std::string& strState, int currentPlayer);
+	std::vector<std::pair<int, float>> getProbabilities(const std::string& state, float temperature = 1.0);
 	torch::Tensor getExpansionNeuralNetInput(Game* game) const;
 	void printMemsize() const;
 	long long getMemSize() const;
 
 private:
-	float searchWithoutExpansion(std::string strState, Game* game, int currentPlayer, bool* expansionNeeded);
-	bool runMultipleSearches(const std::string& strState, Game* game, int currentPlayer);
+	float searchWithoutExpansion(std::string strState, int currentPlayer, bool* expansionNeeded);
+	bool runMultipleSearches(const std::string& strState, int currentPlayer);
 	void backpropagateValue(float value);
-	void deferredExpansion(Game* game);
-	float expandNewEncounteredState(const std::string& strState, int currentPlayer, Game* game, NeuralNetwork* net);
-	int getActionWithHighestUpperConfidenceBound(const std::string* statePtr, int currentPlayer, Game* game);
+	void deferredExpansion();
+	float expandNewEncounteredState(const std::string& strState, int currentPlayer, NeuralNetwork* net);
+	int getActionWithHighestUpperConfidenceBound(const std::string* statePtr, int currentPlayer);
 	float calculateUpperConfidenceBound(const std::string* statePtr, int action, float probability);
 
 	int m_actionCount = -1;
@@ -148,10 +148,10 @@ private:
 	m_visitCountSum is not needed if we sum up the map in m_visitCount,
 	however having a separate map for this is better performance wise
 	*/
-	std::map<const std::string*, int> m_visitCountSum; 
-	std::map<const std::string*, std::map<int,int>> m_visitCount;
-	std::map<const std::string*, std::map<int,float>> m_qValues;
-	struct BackPropData 
+	std::map<const std::string*, int> m_visitCountSum;
+	std::map<const std::string*, std::map<int, int>> m_visitCount;
+	std::map<const std::string*, std::map<int, float>> m_qValues;
+	struct BackPropData
 	{
 		BackPropData(std::string state, int player) : state(std::move(state)), player(player) {};
 

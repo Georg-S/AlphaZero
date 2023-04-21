@@ -13,7 +13,7 @@ NeuralNetAi::NeuralNetAi(NeuralNetwork* net, Game* game, int actionCount, int mc
 
 int NeuralNetAi::getMove(const std::string& state, int color)
 {
-	m_mcts.search(m_mctsCount, state, m_net, m_game, color);
+	m_mcts.search(m_mctsCount, state, m_net, color);
 	auto probs = m_mcts.getProbabilities(state);
 
 	if (m_probabilistic)

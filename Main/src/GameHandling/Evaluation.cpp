@@ -74,9 +74,9 @@ void Evaluation::eval(NeuralNetwork* net, Ai* miniMaxAi, Game* game, int batchSi
 				// Maybe add game too long here? But currently not needed for Tic-Tac-Toe and Connect-Four
 
 				if (!continueMcts)
-					continueMcts = mcts.startSearchWithoutExpansion(currentState, game, currentPlayer, m_mctsCount);
+					continueMcts = mcts.startSearchWithoutExpansion(currentState, currentPlayer, m_mctsCount);
 				else
-					continueMcts = mcts.expandAndContinueSearchWithoutExpansion(currentState, game, currentPlayer);
+					continueMcts = mcts.expandAndContinueSearchWithoutExpansion(currentState, currentPlayer);
 
 				if (continueMcts)
 					continue;

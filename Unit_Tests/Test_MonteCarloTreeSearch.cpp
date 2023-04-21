@@ -44,7 +44,7 @@ TEST(MonteCarloTreeSearch, test_mcts_ttt_draw_board)
 {
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9, device, &tttAdap);
 	DefaultNeuralNet net(2, 3, 3, 9);
-	int result = mcts.search("OXXXXOOOX", &net, &tttAdap, 1);
+	int result = mcts.search("OXXXXOOOX", &net, 1);
 
 	ASSERT_EQ(result, 0);
 }
@@ -54,7 +54,7 @@ TEST(MonteCarloTreeSearch, test_mcts_ttt_player_one_wins)
 {
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9, device, &tttAdap);
 	DefaultNeuralNet net(2, 3, 3, 9);
-	float result = mcts.search("XOXOXOOXX", &net, &tttAdap, 1);
+	float result = mcts.search("XOXOXOOXX", &net, 1);
 
 	ASSERT_FLOAT_EQ(result, -1);
 }
@@ -63,7 +63,7 @@ TEST(MonteCarloTreeSearch, test_mcts_ttt_player_two_wins)
 {
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9, torch::kCPU, &tttAdap);
 	DefaultNeuralNet net(2, 3, 3, 9);
-	float result = mcts.search("XXOOOXOXX", &net, &tttAdap, 2);
+	float result = mcts.search("XXOOOXOXX", &net, 2);
 
 	ASSERT_FLOAT_EQ(result, -1);
 }
@@ -73,7 +73,7 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_one_move_possible)
 	std::string state = "XXOO-XOXX";
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9, device, &tttAdap);
 	DefaultNeuralNet net(2, 3, 3, 9);
-	mcts.search(4, state, &net, &tttAdap, 2);
+	mcts.search(4, state, &net, 2);
 	std::vector<float> probs = getAllActionProbabilities(mcts.getProbabilities(state), tttAdap.getActionCount());
 
 	ASSERT_FLOAT_EQ(probs[0], 0);
@@ -92,7 +92,7 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_win
 	std::string state = "OXOXOXX--";
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9, device, &tttAdap);
 	DefaultNeuralNet net(2, 3, 3, 9);
-	mcts.search(100, state, &net, &tttAdap, 2);
+	mcts.search(100, state, &net, 2);
 	std::vector<float> probs = getAllActionProbabilities(mcts.getProbabilities(state), tttAdap.getActionCount());
 
 	ASSERT_GT(probs[8], probs[7]);
@@ -105,13 +105,13 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_win
 	MonteCarloTreeSearchCache buffer = MonteCarloTreeSearchCache(device, &tttAdap);
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9, device, &tttAdap, &buffer);
 
-	bool expansionNeeded = mcts.startSearchWithoutExpansion(state, &tttAdap, 2, 50);
+	bool expansionNeeded = mcts.startSearchWithoutExpansion(state, 2, 50);
 	if (expansionNeeded)
 	{
 		buffer.convertToNeuralInput();
 		buffer.expand(&net);
 
-		while (mcts.expandAndContinueSearchWithoutExpansion(state, &tttAdap, 2)) 
+		while (mcts.expandAndContinueSearchWithoutExpansion(state, 2)) 
 		{
 			buffer.convertToNeuralInput();
 			buffer.expand(&net);
@@ -132,7 +132,7 @@ TEST(MonteCarloTreeSearch, test_chess_one_move_wins)
 	DefaultNeuralNet neuralNet = DefaultNeuralNet(14, 8, 8, 4096, device);
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(chessAdap.getActionCount(), device, &chessAdap);
 
-	mcts.search(100, gameState, &neuralNet, &chessAdap, static_cast<int>(ceg::PieceColor::WHITE));
+	mcts.search(100, gameState, &neuralNet, static_cast<int>(ceg::PieceColor::WHITE));
 	auto probabilities = mcts.getProbabilities(gameState);
 	int mctsBestMove = ALZ::getBestAction(probabilities);
 
@@ -145,7 +145,7 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_get
 	std::string state = "OXOXXO--X";
 	MonteCarloTreeSearch mcts = MonteCarloTreeSearch(9, device, &tttAdap);
 	DefaultNeuralNet net(2, 3, 3, 9);
-	mcts.search(100, state, &net, &tttAdap, 2);
+	mcts.search(100, state, &net, 2);
 	std::vector<float> probs = getAllActionProbabilities(mcts.getProbabilities(state), tttAdap.getActionCount());
 
 	ASSERT_GT(probs[7], probs[6]);
