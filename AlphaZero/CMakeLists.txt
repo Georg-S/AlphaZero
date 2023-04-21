@@ -35,14 +35,19 @@ source_group("\\NeuralNetwork" FILES ${NeuralNetworkFiles})
 source_group("\\AlphaZero" FILES ${AlphaZeroFiles})
 source_group("\\NeuralNetwork\\Components" FILES ${NeuralNetworkComponentsFiles})
 
+if (MSVC)
+	set(BOOST_ROOT $ENV{BOOST_ROOT})
+endif (MSVC)
+
+find_package(Boost REQUIRED ${BOOST_MIN_VERSION})
 
 add_library(AlphaZero STATIC 
 	${AlphaZeroFiles} 
 	${NeuralNetworkFiles}
 	${NeuralNetworkComponentsFiles}
 	)
-target_include_directories(AlphaZero PUBLIC "include")
-target_link_libraries(AlphaZero "${TORCH_LIBRARIES}")
+target_include_directories(AlphaZero PUBLIC "include" ${Boost_INCLUDE_DIRS})
+target_link_libraries(AlphaZero "${TORCH_LIBRARIES}" ${Boost_LIBRARIES})
 
 if (MSVC)
     target_compile_options(AlphaZero PRIVATE "/MP")

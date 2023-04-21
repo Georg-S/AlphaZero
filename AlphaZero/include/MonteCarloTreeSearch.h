@@ -7,6 +7,8 @@
 #include <limits>
 #include <utility>
 #include <mutex>
+#include <boost/container/flat_map.hpp>
+#include <boost/container/flat_set.hpp>
 // Libtorch has many warnings which clutter the output, so we ignore them
 #pragma warning(push, 0)
 #include <torch/torch.h>
@@ -40,6 +42,7 @@ public:
 	void convertToNeuralInput();
 	void expand(NeuralNetwork* net); // convertToNeuralInput must be called before calling this
 	long long getMemSize() const;
+	void clear();
 
 private:
 	int addToInput(torch::Tensor inputTensor);
@@ -87,15 +90,15 @@ private:
 	float m_cpuct = -1.0;
 	MonteCarloTreeSearchCache* m_cache;
 	Game* m_game = nullptr;
-	std::set<const std::string*> m_loopDetection;
-	std::set<const std::string*> m_visited;
+	boost::container::flat_set<const std::string*> m_loopDetection;
+	boost::container::flat_set<const std::string*> m_visited;
 	/*
 	m_visitCountSum is not needed if we sum up the map in m_visitCount,
 	however having a separate map for this is better performance wise
 	*/
-	std::map<const std::string*, int> m_visitCountSum;
-	std::map<const std::string*, std::map<int, int>> m_visitCount;
-	std::map<const std::string*, std::map<int, float>> m_qValues;
+	boost::container::flat_map<const std::string*, int> m_visitCountSum;
+	boost::container::flat_map<const std::string*, boost::container::flat_map<int, int>> m_visitCount;
+	boost::container::flat_map<const std::string*, boost::container::flat_map<int, float>> m_qValues;
 	struct BackPropData
 	{
 		BackPropData(std::string state, int player) : state(std::move(state)), player(player) {};

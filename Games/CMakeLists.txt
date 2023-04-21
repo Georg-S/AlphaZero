@@ -100,7 +100,7 @@ if (MSVC)
     target_compile_options(Games PRIVATE "/MP")
 endif (MSVC)
 
-if	(WIN32)
+if (WIN32)
 	set(SDL2_INCLUDE_DIRS $ENV{SDL2_INCLUDE})
 	set(SDL2_LIBRARIES "$ENV{SDL2_BIN}/SDL2.lib")
 	set(SDL2IMAGE_INCLUDE_DIRS $ENV{SDL2IMAGE_INCLUDE})
