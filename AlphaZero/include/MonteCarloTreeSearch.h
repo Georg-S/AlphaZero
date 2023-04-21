@@ -45,6 +45,7 @@ private:
 	int addToInput(torch::Tensor inputTensor);
 	void calculateOutput(NeuralNetwork* net);
 	std::pair<torch::Tensor, torch::Tensor> getOutput(size_t index);
+	static constexpr bool MOCK_EXPAND = true;
 
 	torch::Tensor m_input;
 	torch::Tensor m_outputProbabilities;

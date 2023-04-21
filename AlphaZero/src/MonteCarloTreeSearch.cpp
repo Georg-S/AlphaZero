@@ -9,27 +9,47 @@ void MonteCarloTreeSearchCache::addToExpansion(const ExpansionData& data)
 
 void MonteCarloTreeSearchCache::convertToNeuralInput()
 {
+	if (MOCK_EXPAND)
+		return;
 	for (const auto& state : toExpand)
 		addToInput(m_game->convertStateToNeuralNetInput(state.state, state.currentPlayer));
 }
 
 void MonteCarloTreeSearchCache::expand(NeuralNetwork* net)
 {
-	calculateOutput(net);
-
-	size_t counter = 0;
-	for (const auto& state : toExpand)
+	if (MOCK_EXPAND) 
 	{
-		auto [iterator, flag] = encountered.emplace(state.state);
-		auto statePtr = &(*iterator);
+		size_t counter = 0;
+		for (const auto& state : toExpand)
+		{
+			auto [iterator, flag] = encountered.emplace(state.state);
+			auto statePtr = &(*iterator);
 
-		auto [val, probs] = getOutput(counter++);
+			m_values[statePtr] = ALZ::getRandomNumber(-1.0, 1.0);
 
-		m_values[statePtr] = *(val[0].data_ptr<float>());
-
-		for (const auto& move : m_game->getAllPossibleMoves(state.state, state.currentPlayer))
-			m_probabilities[statePtr].emplace_back(move, *(probs[move].data_ptr<float>()));
+			for (const auto& move : m_game->getAllPossibleMoves(state.state, state.currentPlayer))
+				m_probabilities[statePtr].emplace_back(move, ALZ::getRandomNumber(0.0, 1.0));
+		}
 	}
+	else 
+	{
+		calculateOutput(net);
+
+		size_t counter = 0;
+		for (const auto& state : toExpand)
+		{
+			auto [iterator, flag] = encountered.emplace(state.state);
+			auto statePtr = &(*iterator);
+
+			auto [val, probs] = getOutput(counter++);
+
+			m_values[statePtr] = *(val[0].data_ptr<float>());
+
+			for (const auto& move : m_game->getAllPossibleMoves(state.state, state.currentPlayer))
+				m_probabilities[statePtr].emplace_back(move, *(probs[move].data_ptr<float>()));
+		}
+	}
+
 	toExpand.clear();
 }
 

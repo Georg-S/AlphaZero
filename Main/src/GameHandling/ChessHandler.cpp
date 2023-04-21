@@ -54,7 +54,6 @@ static std::pair<std::string, int> getHighestExistingNetAndIteration(const std::
 	std::smatch baseMatch;
 	for (const auto& entry : std::filesystem::directory_iterator(path)) 
 	{
-		std::cout << entry.path() << std::endl;
 		auto pathString = entry.path().string();
 		if (std::regex_search(pathString, baseMatch, std::regex("\\d+")))
 		{
