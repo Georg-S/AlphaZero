@@ -48,7 +48,6 @@ private:
 	int addToInput(torch::Tensor inputTensor);
 	void calculateOutput(NeuralNetwork* net);
 	std::pair<torch::Tensor, torch::Tensor> getOutput(size_t index);
-	static constexpr bool MOCK_EXPAND = true;
 
 	torch::Tensor m_input;
 	torch::Tensor m_outputProbabilities;
@@ -56,9 +55,9 @@ private:
 	torch::DeviceType m_device;
 	size_t m_inputSize = 0;
 	size_t m_outputSize = 0;
-	std::set<std::string> encountered; // Only save the actual state string in this set -> this saves us some space
-	std::map<const std::string*, std::vector<std::pair<int, float>>> m_probabilities;
-	std::map<const std::string*, float> m_values;
+	//std::set<std::string> encountered; 
+	std::map<std::string, std::vector<std::pair<int, float>>> m_probabilities;
+	std::map<std::string, float> m_values;
 	std::set<ExpansionData> toExpand;
 	Game* m_game;
 };
@@ -82,7 +81,8 @@ private:
 	void deferredExpansion();
 	float expandNewEncounteredState(const std::string& strState, int currentPlayer, NeuralNetwork* net);
 	int getActionWithHighestUpperConfidenceBound(const std::string* statePtr, int currentPlayer);
-	float calculateUpperConfidenceBound(const std::string* statePtr, int action, float probability);
+	float calculateUpperConfidenceBound(const std::string* statePtr, int action, float probability, unsigned int stateVisitCountSum);
+	unsigned int getVisitCountSum(const std::string* statePtr) const;
 
 	int m_actionCount = -1;
 	int m_mctsCount = 0;
@@ -90,15 +90,16 @@ private:
 	float m_cpuct = -1.0;
 	MonteCarloTreeSearchCache* m_cache;
 	Game* m_game = nullptr;
-	boost::container::flat_set<const std::string*> m_loopDetection;
-	boost::container::flat_set<const std::string*> m_visited;
+	std::set<std::string> m_visited; // Only save the actual state string in this set -> this saves us some space
 	/*
 	m_visitCountSum is not needed if we sum up the map in m_visitCount,
 	however having a separate map for this is better performance wise
 	*/
-	boost::container::flat_map<const std::string*, int> m_visitCountSum;
 	boost::container::flat_map<const std::string*, boost::container::flat_map<int, int>> m_visitCount;
 	boost::container::flat_map<const std::string*, boost::container::flat_map<int, float>> m_qValues;
+	boost::container::flat_map<const std::string*, std::vector<std::pair<int, float>>> m_probabilities;
+	boost::container::flat_set<const std::string*> m_loopDetection;
+
 	struct BackPropData
 	{
 		BackPropData(std::string state, int player) : state(std::move(state)), player(player) {};
