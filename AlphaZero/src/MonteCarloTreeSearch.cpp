@@ -3,11 +3,17 @@
 using namespace ALZ;
 
 // Used for debugging memory usage of MCTS
-static constexpr bool MOCK_EXPAND = true;
+static constexpr bool MOCK_EXPAND = false;
 
-void MonteCarloTreeSearchCache::addToExpansion(const ExpansionData& data)
+MonteCarloTreeSearchCache::MonteCarloTreeSearchCache(torch::DeviceType device, Game* game)
+	: m_device(device)
+	, m_game(game) 
 {
-	toExpand.insert(data);
+}
+
+void MonteCarloTreeSearchCache::addToExpansion(ExpansionData&& data)
+{
+	toExpand.emplace(std::move(data));
 }
 
 void MonteCarloTreeSearchCache::convertToNeuralInput()
@@ -28,9 +34,6 @@ void MonteCarloTreeSearchCache::expand(NeuralNetwork* net)
 		size_t counter = 0;
 		for (const auto& state : toExpand)
 		{
-			//auto [iterator, flag] = encountered.emplace(state.state);
-			//auto statePtr = &(*iterator);
-
 			m_values[state.state] = ALZ::getRandomNumber(-1.0, 1.0);
 
 			for (const auto& move : m_game->getAllPossibleMoves(state.state, state.currentPlayer))
@@ -57,13 +60,11 @@ void MonteCarloTreeSearchCache::expand(NeuralNetwork* net)
 
 long long MonteCarloTreeSearchCache::getMemSize() const
 {
-	//return memSize(encountered) + memSize(m_probabilities) + memSize(m_values);
-	return 0;
+	return memSize(m_probabilities) + memSize(m_values);
 }
 
 void MonteCarloTreeSearchCache::clear()
 {
-	//encountered.clear();
 	m_probabilities.clear();
 	m_input = torch::Tensor{};
 	m_outputValues = torch::Tensor{};
@@ -171,15 +172,6 @@ std::vector<std::pair<int, float>> MonteCarloTreeSearch::getProbabilities(const 
 	return probs;
 }
 
-torch::Tensor MonteCarloTreeSearch::getExpansionNeuralNetInput(Game* game) const
-{
-	assert(!m_backProp.empty());
-	auto& strState = m_backProp.back().state;
-	auto currentPlayer = m_backProp.back().player;
-
-	return game->convertStateToNeuralNetInput(strState, currentPlayer);
-}
-
 long long MonteCarloTreeSearch::getMemSize() const
 {
 	return memSize(m_loopDetection) + memSize(m_visited) + memSize(m_visitCount) + memSize(m_qValues);
@@ -245,7 +237,6 @@ void MonteCarloTreeSearch::backpropagateValue(float value)
 		auto bestAction = backProp.bestAction;
 		m_qValues[statePtr][bestAction] = (m_visitCount[statePtr][bestAction] * m_qValues[statePtr][bestAction] + value) / (m_visitCount[statePtr][bestAction] + 1);
 		m_visitCount[statePtr][bestAction] += 1;
-		//m_visitCountSum[statePtr] += 1;
 		m_backProp.pop_back();
 	}
 }

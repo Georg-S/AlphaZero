@@ -34,11 +34,11 @@ public:
 		}
 	};
 
-	MonteCarloTreeSearchCache(torch::DeviceType device, Game* game) : m_device(device), m_game(game) {}
+	MonteCarloTreeSearchCache(torch::DeviceType device, Game* game);
 	MonteCarloTreeSearchCache(const MonteCarloTreeSearchCache&) = delete;
 	MonteCarloTreeSearchCache& operator=(const MonteCarloTreeSearchCache&) = delete;
 
-	void addToExpansion(const ExpansionData& data);
+	void addToExpansion(ExpansionData&& data);
 	void convertToNeuralInput();
 	void expand(NeuralNetwork* net); // convertToNeuralInput must be called before calling this
 	long long getMemSize() const;
@@ -55,7 +55,6 @@ private:
 	torch::DeviceType m_device;
 	size_t m_inputSize = 0;
 	size_t m_outputSize = 0;
-	//std::set<std::string> encountered; 
 	std::map<std::string, std::vector<std::pair<int, float>>> m_probabilities;
 	std::map<std::string, float> m_values;
 	std::set<ExpansionData> toExpand;
@@ -71,7 +70,6 @@ public:
 	bool startSearchWithoutExpansion(const std::string& strState, int currentPlayer, int count);
 	bool expandAndContinueSearchWithoutExpansion(const std::string& strState, int currentPlayer);
 	std::vector<std::pair<int, float>> getProbabilities(const std::string& state, float temperature = 1.0);
-	torch::Tensor getExpansionNeuralNetInput(Game* game) const;
 	long long getMemSize() const;
 
 private:
@@ -91,10 +89,7 @@ private:
 	MonteCarloTreeSearchCache* m_cache;
 	Game* m_game = nullptr;
 	std::set<std::string> m_visited; // Only save the actual state string in this set -> this saves us some space
-	/*
-	m_visitCountSum is not needed if we sum up the map in m_visitCount,
-	however having a separate map for this is better performance wise
-	*/
+	// Use boost flat_map, this reduces memory consumption quite a bit
 	boost::container::flat_map<const std::string*, boost::container::flat_map<int, int>> m_visitCount;
 	boost::container::flat_map<const std::string*, boost::container::flat_map<int, float>> m_qValues;
 	boost::container::flat_map<const std::string*, std::vector<std::pair<int, float>>> m_probabilities;
