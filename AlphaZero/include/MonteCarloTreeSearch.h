@@ -53,7 +53,7 @@ private:
 	torch::Tensor m_outputProbabilities;
 	torch::Tensor m_outputValues;
 	torch::DeviceType m_device;
-	size_t m_inputSize = 0;
+	size_t m_currentInputSize = 0;
 	size_t m_maxSize = 0;
 	size_t m_outputSize = 0;
 	std::map<std::string, std::vector<std::pair<int, float>>> m_probabilities;

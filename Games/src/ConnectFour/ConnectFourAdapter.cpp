@@ -77,6 +77,7 @@ void ConnectFourAdapter::convertStateToNeuralNetInput(const std::string& state, 
 	PlayerColor playerColor = PlayerColor(currentPlayer);
 	PlayerColor otherPlayer = cn4::getNextPlayer(playerColor);
 
+	outTensor.zero_();
 	for (int x = 0; x < boardWidth; x++)
 	{
 		for (int y = 0; y < boardHeight; y++)

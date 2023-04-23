@@ -126,6 +126,8 @@ void ChessAdapter::convertStateToNeuralNetInput(const std::string& state, int cu
 	constexpr int perPlayerSize = 7;
 	ceg::BitBoard board(state);
 	ceg::PieceColor currentColor = ceg::PieceColor(currentPlayer);
+
+	outTensor.zero_();
 	if (currentColor == ceg::PieceColor::WHITE)
 	{
 		setPiecesInTensor(board.white_pieces, board.en_passant_mask, outTensor, 0);

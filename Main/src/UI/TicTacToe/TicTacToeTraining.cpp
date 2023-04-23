@@ -23,7 +23,7 @@ void TicTacToeTraining::initDefaultValues()
 	trainingUi->SelfPlayMCTSCountInput->setText("50");
 	trainingUi->SelfPlayBatchSizeInput->setText("1000");
 	trainingUi->SelfPlayGamesCountInput->setText("1000");
-	trainingUi->TrainingBatchSizeInput->setText("100");
+	trainingUi->TrainingBatchSizeInput->setText("1000");
 	trainingUi->SaveIterationCountInput->setText("1");
 	trainingUi->RandomizedMoveCountInput->setText("3");
 	trainingUi->LearningRateInput->setText("0.01");

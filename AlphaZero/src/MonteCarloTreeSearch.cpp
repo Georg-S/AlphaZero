@@ -80,7 +80,7 @@ int MonteCarloTreeSearchCache::addToInput(ExpansionData data)
 		m_input = m_game->convertStateToNeuralNetInput(data.state, data.currentPlayer);
 		m_maxSize++;
 	}
-	else if (m_inputSize >= m_maxSize)
+	else if (m_currentInputSize >= m_maxSize)
 	{
 		auto tens = m_game->convertStateToNeuralNetInput(data.state, data.currentPlayer);
 		m_input = torch::cat({ m_input, tens }, 0);
@@ -88,21 +88,21 @@ int MonteCarloTreeSearchCache::addToInput(ExpansionData data)
 	}
 	else 
 	{
-		m_game->convertStateToNeuralNetInput(data.state, data.currentPlayer, m_input[m_inputSize]);
+		m_game->convertStateToNeuralNetInput(data.state, data.currentPlayer, m_input[m_currentInputSize]);
 	}
 
-	return m_inputSize++;
+	return m_currentInputSize++;
 }
 
 void MonteCarloTreeSearchCache::calculateOutput(NeuralNetwork* net)
 {
-	if (m_inputSize == 0)
+	if (m_currentInputSize == 0)
 		return;
 
 	auto device_input = m_input.to(m_device);
 	auto rawOutput = net->calculate(device_input);
-	m_outputSize = m_inputSize;
-	m_inputSize = 0;
+	m_outputSize = m_currentInputSize;
+	m_currentInputSize = 0;
 
 	m_outputValues = std::get<0>(rawOutput).detach().to(torch::kCPU);
 	m_outputProbabilities = std::get<1>(rawOutput).detach().to(torch::kCPU);

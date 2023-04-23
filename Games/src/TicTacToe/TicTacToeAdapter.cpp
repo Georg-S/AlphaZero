@@ -34,6 +34,7 @@ void TicTacToeAdapter::convertStateToNeuralNetInput(const std::string& state, in
 	PlayerColor playercolor = PlayerColor(currentPlayer);
 	PlayerColor otherPlayer = ttt::getNextPlayer(playercolor);
 
+	outTensor.zero_();
 	for (int x = 0; x < 3; x++)
 	{
 		for (int y = 0; y < 3; y++)
