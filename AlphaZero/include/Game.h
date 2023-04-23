@@ -18,6 +18,7 @@ public:
 	virtual int gameOverReward(const std::string& state, int currentPlayer) = 0;
 	virtual int getPlayerWon(const std::string& state) = 0;
 	virtual torch::Tensor convertStateToNeuralNetInput(const std::string& state, int currentPlayer) = 0;
+	virtual void convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Tensor outTensor) = 0;
 	virtual std::vector<int> getAllPossibleMoves(const std::string& state, int currentPlayer) = 0;
 	virtual std::string makeMove(const std::string& state, int move, int currentPlayer) = 0;
 	virtual int getNextPlayer(int currentPlayer) = 0;

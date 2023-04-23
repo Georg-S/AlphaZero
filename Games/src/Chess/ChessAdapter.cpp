@@ -114,23 +114,28 @@ static void setPiecesInTensor(const ceg::Pieces& pieces, uint64_t en_passant, at
 
 torch::Tensor ChessAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer)
 {
+
+	torch::Tensor result = torch::zeros({ 1,14,8,8 });
+	convertStateToNeuralNetInput(state, currentPlayer, result[0]);
+
+	return result;
+}
+
+void ChessAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Tensor outTensor)
+{
 	constexpr int perPlayerSize = 7;
 	ceg::BitBoard board(state);
 	ceg::PieceColor currentColor = ceg::PieceColor(currentPlayer);
-	torch::Tensor result = torch::zeros({ 1,14,8,8 });
-
-	if (currentColor == ceg::PieceColor::WHITE) 
+	if (currentColor == ceg::PieceColor::WHITE)
 	{
-		setPiecesInTensor(board.white_pieces, board.en_passant_mask, result[0], 0);
-		setPiecesInTensor(board.black_pieces, 0LL, result[0], perPlayerSize);
+		setPiecesInTensor(board.white_pieces, board.en_passant_mask, outTensor, 0);
+		setPiecesInTensor(board.black_pieces, 0LL, outTensor, perPlayerSize);
 	}
 	else
 	{
-		setPiecesInTensor(board.black_pieces, board.en_passant_mask, result[0], 0);
-		setPiecesInTensor(board.white_pieces, 0LL, result[0], perPlayerSize);
+		setPiecesInTensor(board.black_pieces, board.en_passant_mask, outTensor, 0);
+		setPiecesInTensor(board.white_pieces, 0LL, outTensor, perPlayerSize);
 	}
-
-	return result;
 }
 
 bool ChessAdapter::isGameOver(const std::string& state)

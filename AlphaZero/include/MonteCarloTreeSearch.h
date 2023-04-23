@@ -45,7 +45,7 @@ public:
 	void clear();
 
 private:
-	int addToInput(torch::Tensor inputTensor);
+	int addToInput(ExpansionData data);
 	void calculateOutput(NeuralNetwork* net);
 	std::pair<torch::Tensor, torch::Tensor> getOutput(size_t index);
 
@@ -54,6 +54,7 @@ private:
 	torch::Tensor m_outputValues;
 	torch::DeviceType m_device;
 	size_t m_inputSize = 0;
+	size_t m_maxSize = 0;
 	size_t m_outputSize = 0;
 	std::map<std::string, std::vector<std::pair<int, float>>> m_probabilities;
 	std::map<std::string, float> m_values;
@@ -90,10 +91,10 @@ private:
 	Game* m_game = nullptr;
 	std::set<std::string> m_visited; // Only save the actual state string in this set -> this saves us some space
 	// Use boost flat_map, this reduces memory consumption quite a bit
-	boost::container::flat_map<const std::string*, boost::container::flat_map<int, int>> m_visitCount;
-	boost::container::flat_map<const std::string*, boost::container::flat_map<int, float>> m_qValues;
-	boost::container::flat_map<const std::string*, std::vector<std::pair<int, float>>> m_probabilities;
-	boost::container::flat_set<const std::string*> m_loopDetection;
+	std::map<const std::string*, boost::container::flat_map<int, int>> m_visitCount;
+	std::map<const std::string*, boost::container::flat_map<int, float>> m_qValues;
+	std::map<const std::string*, std::vector<std::pair<int, float>>> m_probabilities;
+	std::set<const std::string*> m_loopDetection;
 
 	struct BackPropData
 	{

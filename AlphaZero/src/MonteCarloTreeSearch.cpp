@@ -18,14 +18,16 @@ void MonteCarloTreeSearchCache::addToExpansion(ExpansionData&& data)
 
 void MonteCarloTreeSearchCache::convertToNeuralInput()
 {
-	if (MOCK_EXPAND)
-		return;
+	torch::NoGradGuard no_grad;
+	//if (MOCK_EXPAND)
+	//	return;
 	for (const auto& state : toExpand)
-		addToInput(m_game->convertStateToNeuralNetInput(state.state, state.currentPlayer));
+		addToInput(state);
 }
 
 void MonteCarloTreeSearchCache::expand(NeuralNetwork* net)
 {
+	torch::NoGradGuard no_grad;
 	m_values.clear();
 	m_probabilities.clear();
 
@@ -55,6 +57,7 @@ void MonteCarloTreeSearchCache::expand(NeuralNetwork* net)
 				m_probabilities[state.state].emplace_back(move, *(probs[move].data_ptr<float>()));
 		}
 	}
+
 	toExpand.clear();
 }
 
@@ -70,12 +73,24 @@ void MonteCarloTreeSearchCache::clear()
 	m_outputValues = torch::Tensor{};
 }
 
-int MonteCarloTreeSearchCache::addToInput(torch::Tensor inputTensor)
+int MonteCarloTreeSearchCache::addToInput(ExpansionData data)
 {
-	if (m_input.numel() == 0)
-		m_input = inputTensor;
-	else
-		m_input = torch::cat({ m_input, inputTensor }, 0);
+	if (m_maxSize == 0) 
+	{
+		m_input = m_game->convertStateToNeuralNetInput(data.state, data.currentPlayer);
+		m_maxSize++;
+	}
+	else if (m_inputSize >= m_maxSize)
+	{
+		auto tens = m_game->convertStateToNeuralNetInput(data.state, data.currentPlayer);
+		m_input = torch::cat({ m_input, tens }, 0);
+		m_maxSize++;
+	}
+	else 
+	{
+		m_game->convertStateToNeuralNetInput(data.state, data.currentPlayer, m_input[m_inputSize]);
+	}
+
 	return m_inputSize++;
 }
 
@@ -84,11 +99,10 @@ void MonteCarloTreeSearchCache::calculateOutput(NeuralNetwork* net)
 	if (m_inputSize == 0)
 		return;
 
-	m_input = m_input.to(m_device);
-	auto rawOutput = net->calculate(m_input);
+	auto device_input = m_input.to(m_device);
+	auto rawOutput = net->calculate(device_input);
 	m_outputSize = m_inputSize;
 	m_inputSize = 0;
-	m_input = torch::Tensor{};
 
 	m_outputValues = std::get<0>(rawOutput).detach().to(torch::kCPU);
 	m_outputProbabilities = std::get<1>(rawOutput).detach().to(torch::kCPU);
