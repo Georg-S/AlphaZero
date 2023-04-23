@@ -19,8 +19,8 @@ void MonteCarloTreeSearchCache::addToExpansion(ExpansionData&& data)
 void MonteCarloTreeSearchCache::convertToNeuralInput()
 {
 	torch::NoGradGuard no_grad;
-	//if (MOCK_EXPAND)
-	//	return;
+	if (MOCK_EXPAND)
+		return;
 	for (const auto& state : toExpand)
 		addToInput(state);
 }
@@ -104,8 +104,8 @@ void MonteCarloTreeSearchCache::calculateOutput(NeuralNetwork* net)
 	m_outputSize = m_currentInputSize;
 	m_currentInputSize = 0;
 
-	m_outputValues = std::get<0>(rawOutput).detach().to(torch::kCPU);
-	m_outputProbabilities = std::get<1>(rawOutput).detach().to(torch::kCPU);
+	m_outputValues = std::get<0>(rawOutput).to(torch::kCPU);
+	m_outputProbabilities = std::get<1>(rawOutput).to(torch::kCPU);
 }
 
 std::pair<torch::Tensor, torch::Tensor> MonteCarloTreeSearchCache::getOutput(size_t index)
