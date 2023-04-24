@@ -15,6 +15,9 @@ public:
 	std::string getInitialGameState() override;
 	torch::Tensor convertStateToNeuralNetInput(const std::string& state, int currentPlayer) override;
 	void convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Tensor outTensor) override;
+	torch::Tensor convertStateToNeuralNetInput(const ttt::Board& board, int currentPlayer) const;
+	void convertStateToNeuralNetInput(const ttt::Board& board, int currentPlayer, torch::Tensor outTensor) const;
+	std::vector<int> getAllPossibleMoves(const ttt::Board& board, int currentPlayer) const;
 	std::vector<int> getAllPossibleMoves(const std::string& state, int currentPlayer) override;
 	int getNextPlayer(int currentPlayer) override;
 	int gameOverReward(const std::string& state, int currentPlayer) override;

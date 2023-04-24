@@ -10,6 +10,7 @@ set(AlphaZeroFiles
 	"include/RingBuffer.h"
 	"include/AlphaZeroUtility.h"
 	"include/MultiThreadingNeuralNetManager.h"
+	"include/MonteCarloTreeSearchTemplate.h"
 	"src/MultiThreadingNeuralNetManager.cpp"
 	"src/AlphaZeroTraining.cpp"
 	"src/MonteCarloTreeSearch.cpp"

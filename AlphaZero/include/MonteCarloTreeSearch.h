@@ -14,7 +14,6 @@
 #include <torch/torch.h>
 #pragma warning(pop)
 #include "AlphaZeroUtility.h"
-#include "MultiThreadingNeuralNetManager.h"
 #include "Game.h"
 #include "NeuralNetworks/NeuralNetwork.h"
 

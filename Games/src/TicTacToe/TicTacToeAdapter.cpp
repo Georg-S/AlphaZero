@@ -15,22 +15,29 @@ std::string TicTacToeAdapter::getInitialGameState()
 
 std::vector<int> TicTacToeAdapter::getAllPossibleMoves(const std::string& state, int currentPlayer)
 {
-	Board board = Board(state);
-
-	return ttt::getAllPossibleMoves<int>(board);
+	return ttt::getAllPossibleMoves<int>(Board(state));
 }
 
 torch::Tensor TicTacToeAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer)
 {
-	torch::Tensor neuralInput = torch::zeros({ 1,2,3,3 });
-	convertStateToNeuralNetInput(state, currentPlayer, neuralInput[0]);
-
-	return neuralInput;
+	return convertStateToNeuralNetInput(Board(state), currentPlayer);
 }
 
 void TicTacToeAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Tensor outTensor)
 {
-	Board board = Board(state);
+	convertStateToNeuralNetInput(Board(state), currentPlayer, outTensor);
+}
+
+torch::Tensor TicTacToeAdapter::convertStateToNeuralNetInput(const ttt::Board& board, int currentPlayer) const
+{
+	torch::Tensor neuralInput = torch::zeros({ 1,2,3,3 });
+	convertStateToNeuralNetInput(board, currentPlayer, neuralInput[0]);
+
+	return neuralInput;
+}
+
+void TicTacToeAdapter::convertStateToNeuralNetInput(const ttt::Board& board, int currentPlayer, torch::Tensor outTensor) const
+{
 	PlayerColor playercolor = PlayerColor(currentPlayer);
 	PlayerColor otherPlayer = ttt::getNextPlayer(playercolor);
 
@@ -45,6 +52,11 @@ void TicTacToeAdapter::convertStateToNeuralNetInput(const std::string& state, in
 				outTensor[1][x][y] = 1;
 		}
 	}
+}
+
+std::vector<int> TicTacToeAdapter::getAllPossibleMoves(const ttt::Board& board, int currentPlayer) const
+{
+	return ttt::getAllPossibleMoves<int>(board);
 }
 
 int TicTacToeAdapter::getNextPlayer(int currentPlayer)
