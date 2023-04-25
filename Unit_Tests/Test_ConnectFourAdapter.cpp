@@ -5,20 +5,14 @@
 #include <ConnectFour/ConnectFourAdapter.h>
 #include <ConnectFour/ConnectFour.h>
 #include <ConnectFour/Renderer.h>
+
 #include "TestConfig.h"
+#include "Test_Utility.h"
+
 
 using namespace cn4;
 
 static ConnectFourAdapter adap = ConnectFourAdapter();
-
-static void renderBoard(const Board& board)
-{
-	Renderer renderer = Renderer();
-	while (!renderer.isQuit())
-		renderer.update(board);
-
-	renderer.quit();
-}
 
 static void renderBoard(const std::string& boardStr)
 {

@@ -8,7 +8,9 @@
 #include <vector>
 #include <MultiThreadingNeuralNetManager.h>
 #include <MonteCarloTreeSearchTemplate.h>
+
 #include "TestConfig.h"
+#include "Test_Utility.h"
 
 #if RunTests
 

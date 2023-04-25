@@ -4,7 +4,9 @@ enable_testing()
 set_target_properties(gmock gmock_main gtest gtest_main PROPERTIES FOLDER GoogleTestTargets)
 
 set(TESTSOURCES 
+    "Test_Utility.h"
     "TestConfig.h"
+    "Test_Utility.cpp"
     "Test_NeuralNet.cpp"
     "Test_TicTacToeAdapter.cpp"
     "Test_RingBuffer.cpp"

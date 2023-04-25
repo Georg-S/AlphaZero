@@ -3,19 +3,11 @@
 #include <TicTacToe/Renderer.h>
 #include <string>
 #include "TestConfig.h"
+#include "Test_Utility.h"
 
 using namespace ttt;
 
 TicTacToeAdapter adap = TicTacToeAdapter();
-
-static void renderBoard(const Board& board) 
-{
-	Renderer renderer = Renderer();
-	while (!renderer.isQuit())
-		renderer.update(board);
-
-	renderer.quit();
-}
 
 static void renderBoard(const std::string& boardStr) 
 {

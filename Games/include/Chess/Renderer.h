@@ -15,6 +15,7 @@ namespace chess
 		void render(const RenderInformation& renderInfo);
 		void render_promotion_selection(ceg::PieceColor color);
 		void render_board(const std::string& FEN_board_str);
+		void render_board(const ceg::BitBoard& board);
 		int getWindowWidth() const;
 		int getWindowHeight() const;
 		bool is_quit() const;

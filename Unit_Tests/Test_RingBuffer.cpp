@@ -4,11 +4,6 @@
 
 #if RunTests
 
-TEST(RingBuffer, creation)
-{
-	RingBuffer rbuf = RingBuffer<int>(3);
-}
-
 TEST(RingBuffer, addWorks)
 {
 	RingBuffer rbuf = RingBuffer<int>(3);

@@ -7,6 +7,7 @@
 #include <NeuralNetworks/DefaultNeuralNet.h>
 
 #include "TestConfig.h"
+#include "Test_Utility.h"
 
 static ChessAdapter adap = ChessAdapter();
 static ceg::ChessEngine chessEngine = ceg::ChessEngine();
@@ -32,7 +33,6 @@ TEST(ChessAdapter, test_get_initial_state)
 
 	ASSERT_EQ(converted, adap.getInitialGameState());
 }
-
 
 TEST(ChessAdapter, test_get_all_possible_moves_returns_right_amount_of_moves_in_beginning)
 {
