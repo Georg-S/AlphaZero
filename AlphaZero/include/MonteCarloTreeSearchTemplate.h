@@ -16,7 +16,7 @@
 #include "AlphaZeroUtility.h"
 #include "NeuralNetworks/NeuralNetwork.h"
 
-template <typename Board, typename GameT>
+template <typename BoardT, typename GameT, bool mockExpansion = true>
 class MonteCarloTreeSearchCacheT
 {
 public:
@@ -24,7 +24,7 @@ public:
 
 	struct ExpansionDataT
 	{
-		Board state;
+		BoardT state;
 		int currentPlayer;
 
 		friend bool operator<(const ExpansionDataT& lhs, const ExpansionDataT& rhs)
@@ -46,11 +46,9 @@ public:
 		toExpand.emplace(std::move(data));
 	}
 
-	void convertToNeuralInput() 
+	void convertToNeuralInput()
 	{
 		torch::NoGradGuard no_grad;
-		//if (MOCK_EXPAND)
-		//	return;
 		for (const auto& state : toExpand)
 			addToInput(state);
 	}
@@ -61,18 +59,19 @@ public:
 		m_values.clear();
 		m_probabilities.clear();
 
-		//if (MOCK_EXPAND)
-		//{
-		//	size_t counter = 0;
-		//	for (const auto& state : toExpand)
-		//	{
-		//		m_values[state.state] = ALZ::getRandomNumber(-1.0, 1.0);
+		if constexpr (mockExpansion)
+		{
+			size_t counter = 0;
+			for (const auto& state : toExpand)
+			{
+				m_values[state.state] = ALZ::getRandomNumber(-1.0, 1.0);
 
-		//		for (const auto& move : m_game->getAllPossibleMoves(state.state, state.currentPlayer))
-		//			m_probabilities[state.state].emplace_back(move, ALZ::getRandomNumber(0.0, 1.0));
-		//	}
-		//}
-		//else
+				for (const auto& move : m_game->getAllPossibleMoves(state.state, state.currentPlayer))
+					m_probabilities[state.state].emplace_back(move, ALZ::getRandomNumber(0.0, 1.0));
+			}
+			m_currentInputSize = 0;
+		}
+		else
 		{
 			calculateOutput(net);
 
@@ -113,7 +112,7 @@ private:
 		return m_currentInputSize++;
 	}
 
-	void calculateOutput(NeuralNetwork* net) 
+	void calculateOutput(NeuralNetwork* net)
 	{
 		if (m_currentInputSize == 0)
 			return;
@@ -127,7 +126,7 @@ private:
 		m_outputProbabilities = std::get<1>(rawOutput).to(torch::kCPU);
 	}
 
-	std::pair<torch::Tensor, torch::Tensor> getOutput(size_t index) 
+	std::pair<torch::Tensor, torch::Tensor> getOutput(size_t index)
 	{
 		assert(index < m_outputSize);
 
@@ -141,10 +140,56 @@ private:
 	size_t m_currentInputSize = 0;
 	size_t m_maxSize = 0;
 	size_t m_outputSize = 0;
-	std::map<Board, std::vector<std::pair<int, float>>> m_probabilities;
-	std::map<Board, float> m_values;
+	std::map<BoardT, std::vector<std::pair<int, float>>> m_probabilities;
+	std::map<BoardT, float> m_values;
 	std::set<ExpansionDataT> toExpand;
 	GameT* m_game;
+};
+
+template <typename BoardT, typename GameT>
+class MonteCarloTreeSearchT
+{
+public:
+	MonteCarloTreeSearchT(int actionCount, torch::DeviceType device, Game* game, MonteCarloTreeSearchCache* cache = nullptr, float cpuct = 1.0);
+	void search(int count, const std::string& strState, NeuralNetwork* net, int currentPlayer);
+	float search(const std::string& strState, NeuralNetwork* net, int currentPlayer);
+	bool startSearchWithoutExpansion(const std::string& strState, int currentPlayer, int count);
+	bool expandAndContinueSearchWithoutExpansion(const std::string& strState, int currentPlayer);
+	std::vector<std::pair<int, float>> getProbabilities(const std::string& state, float temperature = 1.0);
+	long long getMemSize() const;
+
+private:
+	float searchWithoutExpansion(std::string strState, int currentPlayer, bool* expansionNeeded);
+	bool runMultipleSearches(const std::string& strState, int currentPlayer);
+	void backpropagateValue(float value);
+	void deferredExpansion();
+	float expandNewEncounteredState(const std::string& strState, int currentPlayer, NeuralNetwork* net);
+	int getActionWithHighestUpperConfidenceBound(const std::string* statePtr, int currentPlayer);
+	float calculateUpperConfidenceBound(const std::string* statePtr, int action, float probability, unsigned int stateVisitCountSum);
+	unsigned int getVisitCountSum(const std::string* statePtr) const;
+
+	int m_actionCount = -1;
+	int m_mctsCount = 0;
+	torch::DeviceType m_device = torch::kCPU;
+	float m_cpuct = -1.0;
+	MonteCarloTreeSearchCacheT<BoardT, GameT>* m_cache;
+	GameT* m_game = nullptr;
+	std::set<BoardT> m_visited; // Only save the actual state string in this set -> this saves us some space
+	// Use boost flat_map, this reduces memory consumption quite a bit
+	std::map<const BoardT*, boost::container::flat_map<int, int>> m_visitCount;
+	std::map<const BoardT*, boost::container::flat_map<int, float>> m_qValues;
+	std::map<const BoardT*, std::vector<std::pair<int, float>>> m_probabilities;
+	std::set<const BoardT*> m_loopDetection;
+
+	struct BackPropData
+	{
+		BackPropData(std::string state, int player) : state(std::move(state)), player(player) {};
+
+		std::string state;
+		int player;
+		int bestAction = -1;
+	};
+	std::vector<BackPropData> m_backProp;
 };
 
 
