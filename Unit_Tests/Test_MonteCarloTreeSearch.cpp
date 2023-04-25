@@ -7,6 +7,7 @@
 #include <thread>
 #include <vector>
 #include <MultiThreadingNeuralNetManager.h>
+#include <MonteCarloTreeSearchTemplate.h>
 #include "TestConfig.h"
 
 #if RunTests
@@ -149,6 +150,18 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_get
 	std::vector<float> probs = getAllActionProbabilities(mcts.getProbabilities(state), tttAdap.getActionCount());
 
 	ASSERT_GT(probs[7], probs[6]);
+}
+
+TEST(MonteCarloTreeSearch, test_tt_template_mcts)
+{
+	DefaultNeuralNet net(2, 3, 3, 9);
+	MonteCarloTreeSearchCacheT<ttt::Board, TicTacToeAdapter> mcts = MonteCarloTreeSearchCacheT<ttt::Board, TicTacToeAdapter>(torch::kCPU, &tttAdap);
+	auto initialState =	ttt::Board(tttAdap.getInitialGameState());
+	mcts.addToExpansion({ initialState, tttAdap.getInitialPlayer()});
+	mcts.convertToNeuralInput();
+	mcts.expand(&net);
+
+	ASSERT_EQ(1, 1);
 }
 
 #endif //RunTests
