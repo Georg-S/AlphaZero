@@ -150,13 +150,19 @@ template <typename BoardT, typename GameT>
 class MonteCarloTreeSearchT
 {
 public:
-	MonteCarloTreeSearchT(int actionCount, torch::DeviceType device, Game* game, MonteCarloTreeSearchCache* cache = nullptr, float cpuct = 1.0);
+	MonteCarloTreeSearchT(MonteCarloTreeSearchCache* cache, GameT* game, torch::DeviceType device, float cpuct = 1.0)
+		: m_cache(cache)
+		, m_game(game)
+		, m_device(device)
+		, m_actionCount(game->getActionCount())
+		, m_cpuct(cpuct)
+	{
+	}
 	void search(int count, const std::string& strState, NeuralNetwork* net, int currentPlayer);
 	float search(const std::string& strState, NeuralNetwork* net, int currentPlayer);
 	bool startSearchWithoutExpansion(const std::string& strState, int currentPlayer, int count);
 	bool expandAndContinueSearchWithoutExpansion(const std::string& strState, int currentPlayer);
 	std::vector<std::pair<int, float>> getProbabilities(const std::string& state, float temperature = 1.0);
-	long long getMemSize() const;
 
 private:
 	float searchWithoutExpansion(std::string strState, int currentPlayer, bool* expansionNeeded);
@@ -164,31 +170,70 @@ private:
 	void backpropagateValue(float value);
 	void deferredExpansion();
 	float expandNewEncounteredState(const std::string& strState, int currentPlayer, NeuralNetwork* net);
-	int getActionWithHighestUpperConfidenceBound(const std::string* statePtr, int currentPlayer);
-	float calculateUpperConfidenceBound(const std::string* statePtr, int action, float probability, unsigned int stateVisitCountSum);
-	unsigned int getVisitCountSum(const std::string* statePtr) const;
+	int getActionWithHighestUpperConfidenceBound(const std::string* statePtr, int currentPlayer) 
+	{
+		float maxUtility = std::numeric_limits<float>::lowest();
+		int bestAction = -1;
 
-	int m_actionCount = -1;
-	int m_mctsCount = 0;
-	torch::DeviceType m_device = torch::kCPU;
-	float m_cpuct = -1.0;
+		const auto stateVisitCountSum = getVisitCountSum(statePtr);
+		for (const auto& [action, probability] : m_probabilities[statePtr])
+		{
+			float utility = calculateUpperConfidenceBound(statePtr, action, probability, stateVisitCountSum);
+
+			if (utility > maxUtility)
+			{
+				maxUtility = utility;
+				bestAction = action;
+			}
+		}
+
+		return bestAction;
+	}
+
+	float calculateUpperConfidenceBound(const std::string* statePtr, int action, float probability, unsigned int stateVisitCountSum) 
+	{
+		const float buf = sqrt(stateVisitCountSum) / (1 + m_visitCount[statePtr][action]);
+
+		return m_qValues[statePtr][action] + m_cpuct * probability * buf;
+	}
+
+	unsigned int getVisitCountSum(const std::string* statePtr) const 
+	{
+		assert(statePtr);
+		unsigned int countSum = 0;
+		const auto iter = m_visitCount.find(statePtr);
+		if (iter == m_visitCount.end())
+			return 0;
+		for (const auto& [action, visitCount] : iter->second)
+			countSum += visitCount;
+
+		return countSum;
+	};
+
+	struct BackPropData
+	{
+		BackPropData(BoardT board, int player)
+			: state(std::move(state))
+			, player(player)
+		{
+		};
+		BoardT state;
+		int player;
+		int bestAction = -1;
+	};
+
 	MonteCarloTreeSearchCacheT<BoardT, GameT>* m_cache;
 	GameT* m_game = nullptr;
+	torch::DeviceType m_device = torch::kCPU;
+	int m_actionCount = -1;
+	float m_cpuct = -1.0;
+	int m_mctsCount = 0;
 	std::set<BoardT> m_visited; // Only save the actual state string in this set -> this saves us some space
 	// Use boost flat_map, this reduces memory consumption quite a bit
 	std::map<const BoardT*, boost::container::flat_map<int, int>> m_visitCount;
 	std::map<const BoardT*, boost::container::flat_map<int, float>> m_qValues;
 	std::map<const BoardT*, std::vector<std::pair<int, float>>> m_probabilities;
 	std::set<const BoardT*> m_loopDetection;
-
-	struct BackPropData
-	{
-		BackPropData(std::string state, int player) : state(std::move(state)), player(player) {};
-
-		std::string state;
-		int player;
-		int bestAction = -1;
-	};
 	std::vector<BackPropData> m_backProp;
 };
 

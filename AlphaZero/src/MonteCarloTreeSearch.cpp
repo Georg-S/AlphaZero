@@ -140,17 +140,13 @@ float MonteCarloTreeSearch::search(const std::string& strState, NeuralNetwork* n
 {
 	m_backProp.clear();
 	bool expansionNeeded = false;
-	float value = searchWithoutExpansion(strState, currentPlayer, &expansionNeeded);
+	const float value = searchWithoutExpansion(strState, currentPlayer, &expansionNeeded);
 	assert(!m_backProp.empty());
 
 	if (expansionNeeded)
-	{
-		value = expandNewEncounteredState(m_backProp.back().state, m_backProp.back().player, net);
-		m_backProp.pop_back();
-	}
+		return -expand(net);
 
 	backpropagateValue(value);
-
 	return -value;
 }
 
@@ -163,7 +159,7 @@ bool MonteCarloTreeSearch::startSearchWithoutExpansion(const std::string& strSta
 
 bool MonteCarloTreeSearch::expandAndContinueSearchWithoutExpansion(const std::string& strState, int currentPlayer)
 {
-	deferredExpansion();
+	finishExpansion();
 
 	return runMultipleSearches(strState, currentPlayer);
 }
@@ -255,30 +251,28 @@ void MonteCarloTreeSearch::backpropagateValue(float value)
 	}
 }
 
-void MonteCarloTreeSearch::deferredExpansion()
+float MonteCarloTreeSearch::expand(NeuralNetwork* net)
+{
+	m_cache->addToExpansion({ m_backProp.back().state, m_backProp.back().player});
+	m_cache->convertToNeuralInput();
+	m_cache->expand(net);
+
+	return finishExpansion();
+}
+
+float MonteCarloTreeSearch::finishExpansion()
 {
 	assert(!m_backProp.empty());
 	const auto [iter, success] = m_visited.emplace(std::move(m_backProp.back().state));
 	const auto statePtr = &(*iter);
-	float value = m_cache->m_values[*statePtr];
+	const float value = m_cache->m_values[*statePtr];
 	m_probabilities[statePtr] = m_cache->m_probabilities[*statePtr];
-	if (m_probabilities[statePtr].empty())
-		std::cout << "Problem" << std::endl;
+	assert(!m_probabilities[statePtr].empty());
 
 	m_backProp.pop_back();
 	backpropagateValue(value);
-}
 
-float MonteCarloTreeSearch::expandNewEncounteredState(const std::string& strState, int currentPlayer, NeuralNetwork* net)
-{
-	m_cache->addToExpansion({ strState , currentPlayer });
-	m_cache->convertToNeuralInput();
-	m_cache->expand(net);
-	const auto [iter, success] = m_visited.emplace(strState);
-	const auto statePtr = &(*iter);
-	m_probabilities[statePtr] = m_cache->m_probabilities[*statePtr];
-
-	return m_cache->m_values[strState];
+	return value;
 }
 
 int MonteCarloTreeSearch::getActionWithHighestUpperConfidenceBound(const std::string* statePtr, int currentPlayer)

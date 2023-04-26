@@ -76,8 +76,8 @@ private:
 	float searchWithoutExpansion(std::string strState, int currentPlayer, bool* expansionNeeded);
 	bool runMultipleSearches(const std::string& strState, int currentPlayer);
 	void backpropagateValue(float value);
-	void deferredExpansion();
-	float expandNewEncounteredState(const std::string& strState, int currentPlayer, NeuralNetwork* net);
+	float expand(NeuralNetwork* net);
+	float finishExpansion();
 	int getActionWithHighestUpperConfidenceBound(const std::string* statePtr, int currentPlayer);
 	float calculateUpperConfidenceBound(const std::string* statePtr, int action, float probability, unsigned int stateVisitCountSum);
 	unsigned int getVisitCountSum(const std::string* statePtr) const;

@@ -18,7 +18,7 @@ torch::DeviceType device = torch::kCPU;
 static TicTacToeAdapter tttAdap = TicTacToeAdapter();
 static ChessAdapter chessAdap = ChessAdapter();
 
-std::vector<float> getAllActionProbabilities(const std::vector<std::pair<int,float>>& probab, size_t actionCount) 
+static std::vector<float> getAllActionProbabilities(const std::vector<std::pair<int,float>>& probab, size_t actionCount) 
 {
 	auto probs = std::vector<float>(actionCount, 0.f);
 	for (const auto& [action, prob] : probab) 
