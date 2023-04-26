@@ -16,7 +16,7 @@
 #include "AlphaZeroUtility.h"
 #include "NeuralNetworks/NeuralNetwork.h"
 
-template <typename BoardT, typename GameT, bool mockExpansion = true>
+template <typename GameStateT, typename GameT, bool mockExpansion = true>
 class MonteCarloTreeSearchCacheT
 {
 public:
@@ -24,7 +24,7 @@ public:
 
 	struct ExpansionDataT
 	{
-		BoardT state;
+		GameStateT state;
 		int currentPlayer;
 
 		friend bool operator<(const ExpansionDataT& lhs, const ExpansionDataT& rhs)
@@ -140,13 +140,13 @@ private:
 	size_t m_currentInputSize = 0;
 	size_t m_maxSize = 0;
 	size_t m_outputSize = 0;
-	std::map<BoardT, std::vector<std::pair<int, float>>> m_probabilities;
-	std::map<BoardT, float> m_values;
+	std::map<GameStateT, std::vector<std::pair<int, float>>> m_probabilities;
+	std::map<GameStateT, float> m_values;
 	std::set<ExpansionDataT> toExpand;
 	GameT* m_game;
 };
 
-template <typename BoardT, typename GameT>
+template <typename GameStateT, typename GameT>
 class MonteCarloTreeSearchT
 {
 public:
@@ -158,18 +158,151 @@ public:
 		, m_cpuct(cpuct)
 	{
 	}
-	void search(int count, const std::string& strState, NeuralNetwork* net, int currentPlayer);
-	float search(const std::string& strState, NeuralNetwork* net, int currentPlayer);
-	bool startSearchWithoutExpansion(const std::string& strState, int currentPlayer, int count);
-	bool expandAndContinueSearchWithoutExpansion(const std::string& strState, int currentPlayer);
-	std::vector<std::pair<int, float>> getProbabilities(const std::string& state, float temperature = 1.0);
+
+	void search(size_t count, const GameStateT& state, NeuralNetwork* net, int currentPlayer)
+	{
+		for (size_t i = 0; i < count; i++)
+		{
+			search(state, net, currentPlayer);
+			m_loopDetection.clear();
+		}
+	}
+
+	float search(const GameStateT& state, NeuralNetwork* net, int currentPlayer)
+	{
+		m_backProp.clear();
+		bool expansionNeeded = false;
+		const float value = searchWithoutExpansion(state, currentPlayer, &expansionNeeded);
+		assert(!m_backProp.empty());
+
+		if (expansionNeeded)
+			return -expand(net);
+
+		backpropagateValue(value);
+		return -value;
+	}
+
+	bool startSearchWithoutExpansion(const GameStateT& state, int currentPlayer, int count)
+	{
+		m_mctsCount = count;
+
+		return runMultipleSearches(state, currentPlayer);
+	}
+
+	bool expandAndContinueSearchWithoutExpansion(const GameStateT& state, int currentPlayer)
+	{
+		finishExpansion();
+
+		return runMultipleSearches(state, currentPlayer);
+	}
+
+	std::vector<std::pair<int, float>> getProbabilities(const GameStateT& state, float temperature = 1.0) 
+	{
+		const auto statePtr = &(*m_visited.find(state));
+		assert(statePtr);
+
+		const int countSum = getVisitCountSum(statePtr);
+		std::vector<std::pair<int, float>> probs;
+		probs.reserve(m_probabilities[statePtr].size());
+
+		for (const auto& [action, visitCount] : m_visitCount[statePtr])
+		{
+			const float probability = static_cast<float>(pow(visitCount, 1.f / temperature)) / countSum;
+			probs.emplace_back(action, probability);
+		}
+
+		return probs;
+	}
 
 private:
-	float searchWithoutExpansion(std::string strState, int currentPlayer, bool* expansionNeeded);
-	bool runMultipleSearches(const std::string& strState, int currentPlayer);
-	void backpropagateValue(float value);
-	void deferredExpansion();
-	float expandNewEncounteredState(const std::string& strState, int currentPlayer, NeuralNetwork* net);
+	float searchWithoutExpansion(GameStateT gameState, int currentPlayer, bool* expansionNeeded) 
+	{
+		while (true) // Iterate until we reach a "leaf state" (a state not yet expanded or a game over state)
+		{
+			if (m_game->isGameOver(gameState))
+				return m_game->gameOverReward(gameState, currentPlayer);
+
+			m_backProp.emplace_back(std::move(gameState), currentPlayer);
+			const auto& currentState(m_backProp.back().state);
+
+			auto currentStateItr = m_visited.find(currentState);
+			if (currentStateItr == m_visited.end())
+			{
+				m_cache->addToExpansion({ currentState, currentPlayer });
+				*expansionNeeded = true;
+				return 0;
+			}
+
+			auto statePtr = &(*currentStateItr);
+			m_loopDetection.emplace(statePtr);
+			int bestAction = getActionWithHighestUpperConfidenceBound(statePtr, currentPlayer);
+			m_backProp.back().bestAction = bestAction;
+			gameState = m_game->makeMove(currentState, bestAction, currentPlayer);
+
+			auto nextStateItr = m_visited.find(gameState);
+			if (nextStateItr != m_visited.end())
+			{
+				if (m_loopDetection.find(&(*nextStateItr)) != m_loopDetection.end())
+					return 0;
+			}
+			currentPlayer = m_game->getNextPlayer(currentPlayer);
+		}
+	}
+
+	bool runMultipleSearches(const GameStateT& strState, int currentPlayer) 
+	{
+		bool expansionNeeded = false;
+		while (m_mctsCount--)
+		{
+			m_loopDetection.clear();
+			float value = searchWithoutExpansion(strState, currentPlayer, &expansionNeeded);
+			if (expansionNeeded)
+				return true;
+			else
+				backpropagateValue(value);
+		}
+		return false;
+	}
+
+	void backpropagateValue(float value) 
+	{
+		while (!m_backProp.empty())
+		{
+			value = -value;
+			auto& backProp = m_backProp.back();
+			auto& state = backProp.state;
+			auto statePtr = &(*m_visited.find(state));
+			auto bestAction = backProp.bestAction;
+			m_qValues[statePtr][bestAction] = (m_visitCount[statePtr][bestAction] * m_qValues[statePtr][bestAction] + value) / (m_visitCount[statePtr][bestAction] + 1);
+			m_visitCount[statePtr][bestAction] += 1;
+			m_backProp.pop_back();
+		}
+	}
+
+	float expand(NeuralNetwork* net) 
+	{
+		m_cache->addToExpansion({ m_backProp.back().state, m_backProp.back().player });
+		m_cache->convertToNeuralInput();
+		m_cache->expand(net);
+
+		return finishExpansion();
+	}
+
+	float finishExpansion() 
+	{
+		assert(!m_backProp.empty());
+		const auto [iter, success] = m_visited.emplace(std::move(m_backProp.back().state));
+		const auto statePtr = &(*iter);
+		const float value = m_cache->m_values[*statePtr];
+		m_probabilities[statePtr] = m_cache->m_probabilities[*statePtr];
+		assert(!m_probabilities[statePtr].empty());
+
+		m_backProp.pop_back();
+		backpropagateValue(value);
+
+		return value;
+	}
+
 	int getActionWithHighestUpperConfidenceBound(const std::string* statePtr, int currentPlayer) 
 	{
 		float maxUtility = std::numeric_limits<float>::lowest();
@@ -212,30 +345,29 @@ private:
 
 	struct BackPropData
 	{
-		BackPropData(BoardT board, int player)
+		BackPropData(GameStateT board, int player)
 			: state(std::move(state))
 			, player(player)
 		{
 		};
-		BoardT state;
+		GameStateT state;
 		int player;
 		int bestAction = -1;
 	};
 
-	MonteCarloTreeSearchCacheT<BoardT, GameT>* m_cache;
+	MonteCarloTreeSearchCacheT<GameStateT, GameT>* m_cache;
 	GameT* m_game = nullptr;
 	torch::DeviceType m_device = torch::kCPU;
 	int m_actionCount = -1;
 	float m_cpuct = -1.0;
 	int m_mctsCount = 0;
-	std::set<BoardT> m_visited; // Only save the actual state string in this set -> this saves us some space
+	std::set<GameStateT> m_visited; // Only save the actual state string in this set -> this saves us some space
 	// Use boost flat_map, this reduces memory consumption quite a bit
-	std::map<const BoardT*, boost::container::flat_map<int, int>> m_visitCount;
-	std::map<const BoardT*, boost::container::flat_map<int, float>> m_qValues;
-	std::map<const BoardT*, std::vector<std::pair<int, float>>> m_probabilities;
-	std::set<const BoardT*> m_loopDetection;
+	std::map<const GameStateT*, boost::container::flat_map<int, int>> m_visitCount;
+	std::map<const GameStateT*, boost::container::flat_map<int, float>> m_qValues;
+	std::map<const GameStateT*, std::vector<std::pair<int, float>>> m_probabilities;
+	std::set<const GameStateT*> m_loopDetection;
 	std::vector<BackPropData> m_backProp;
 };
-
 
 #endif //DEEPREINFORCEMENTLEARNING_MONTECARLOTREESEARCHTEMPLATE_H
