@@ -16,11 +16,14 @@
 #include "AlphaZeroUtility.h"
 #include "NeuralNetworks/NeuralNetwork.h"
 
+template <typename GameStateT, typename GameT>
+class MonteCarloTreeSearchT;
+
 template <typename GameStateT, typename GameT, bool mockExpansion = true>
 class MonteCarloTreeSearchCacheT
 {
 public:
-	friend class MonteCarloTreeSearch;
+	friend class MonteCarloTreeSearchT<GameStateT, GameT>;
 
 	struct ExpansionDataT
 	{
@@ -150,7 +153,7 @@ template <typename GameStateT, typename GameT>
 class MonteCarloTreeSearchT
 {
 public:
-	MonteCarloTreeSearchT(MonteCarloTreeSearchCache* cache, GameT* game, torch::DeviceType device, float cpuct = 1.0)
+	MonteCarloTreeSearchT(MonteCarloTreeSearchCacheT<GameStateT, GameT>* cache, GameT* game, torch::DeviceType device, float cpuct = 1.0)
 		: m_cache(cache)
 		, m_game(game)
 		, m_device(device)
@@ -303,7 +306,7 @@ private:
 		return value;
 	}
 
-	int getActionWithHighestUpperConfidenceBound(const std::string* statePtr, int currentPlayer) 
+	int getActionWithHighestUpperConfidenceBound(const GameStateT* statePtr, int currentPlayer) 
 	{
 		float maxUtility = std::numeric_limits<float>::lowest();
 		int bestAction = -1;
@@ -323,14 +326,14 @@ private:
 		return bestAction;
 	}
 
-	float calculateUpperConfidenceBound(const std::string* statePtr, int action, float probability, unsigned int stateVisitCountSum) 
+	float calculateUpperConfidenceBound(const GameStateT* statePtr, int action, float probability, unsigned int stateVisitCountSum)
 	{
 		const float buf = sqrt(stateVisitCountSum) / (1 + m_visitCount[statePtr][action]);
 
 		return m_qValues[statePtr][action] + m_cpuct * probability * buf;
 	}
 
-	unsigned int getVisitCountSum(const std::string* statePtr) const 
+	unsigned int getVisitCountSum(const GameStateT* statePtr) const
 	{
 		assert(statePtr);
 		unsigned int countSum = 0;

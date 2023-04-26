@@ -66,7 +66,12 @@ int TicTacToeAdapter::getNextPlayer(int currentPlayer)
 
 int TicTacToeAdapter::gameOverReward(const std::string& state, int currentPlayer)
 {
-	int playerWon = getPlayerWon(state);
+	return gameOverReward(ttt::Board(state), currentPlayer);
+}
+
+int TicTacToeAdapter::gameOverReward(const ttt::Board& board, int currentPlayer) const
+{
+	int playerWon = getPlayerWon(board);
 
 	if (playerWon == currentPlayer)
 		return 1;
@@ -77,17 +82,26 @@ int TicTacToeAdapter::gameOverReward(const std::string& state, int currentPlayer
 
 bool TicTacToeAdapter::isGameOver(const std::string& state)
 {
-	Board board = Board(state);
+	return isGameOver(Board(state));
+}
 
+bool TicTacToeAdapter::isGameOver(const ttt::Board& board) const
+{
 	return ttt::isGameOver(board);
 }
 
 std::string TicTacToeAdapter::makeMove(const std::string& state, int move, int currentPlayer)
 {
-	Board board = Board(state);
+	auto result = makeMove(ttt::Board(state), move, currentPlayer);
+
+	return result.toString();
+}
+
+ttt::Board TicTacToeAdapter::makeMove(ttt::Board board, int move, int currentPlayer) const
+{
 	board.makeMove(move, PlayerColor(currentPlayer));
 
-	return board.toString();
+	return board;
 }
 
 int TicTacToeAdapter::getActionCount() const
@@ -97,8 +111,11 @@ int TicTacToeAdapter::getActionCount() const
 
 int TicTacToeAdapter::getPlayerWon(const std::string& state)
 {
-	Board board = Board(state);
+	return getPlayerWon(Board(state));
+}
 
+int TicTacToeAdapter::getPlayerWon(const ttt::Board& board) const
+{
 	if (playerWon(board, PlayerColor::CROSS))
 		return static_cast<int>(PlayerColor::CROSS);
 	if (playerWon(board, PlayerColor::DOT))

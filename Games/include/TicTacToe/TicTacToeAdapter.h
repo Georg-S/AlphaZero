@@ -12,6 +12,7 @@ public:
 	TicTacToeAdapter() = default;
 	int getInitialPlayer() override;
 	int getPlayerWon(const std::string& state) override;
+	int getPlayerWon(const ttt::Board& board) const;
 	std::string getInitialGameState() override;
 	torch::Tensor convertStateToNeuralNetInput(const std::string& state, int currentPlayer) override;
 	void convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Tensor outTensor) override;
@@ -21,8 +22,11 @@ public:
 	std::vector<int> getAllPossibleMoves(const std::string& state, int currentPlayer) override;
 	int getNextPlayer(int currentPlayer) override;
 	int gameOverReward(const std::string& state, int currentPlayer) override;
+	int gameOverReward(const ttt::Board& board, int currentPlayer) const;
 	bool isGameOver(const std::string& state) override;
+	bool isGameOver(const ttt::Board& board) const;
 	std::string makeMove(const std::string& state, int move, int currentPlayer) override;
+	ttt::Board makeMove(ttt::Board board, int move, int currentPlayer) const;
 	int getActionCount() const override;
 
 private:

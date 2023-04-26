@@ -18,10 +18,10 @@ torch::DeviceType device = torch::kCPU;
 static TicTacToeAdapter tttAdap = TicTacToeAdapter();
 static ChessAdapter chessAdap = ChessAdapter();
 
-static std::vector<float> getAllActionProbabilities(const std::vector<std::pair<int,float>>& probab, size_t actionCount) 
+static std::vector<float> getAllActionProbabilities(const std::vector<std::pair<int, float>>& probab, size_t actionCount)
 {
 	auto probs = std::vector<float>(actionCount, 0.f);
-	for (const auto& [action, prob] : probab) 
+	for (const auto& [action, prob] : probab)
 		probs[action] = prob;
 
 	return probs;
@@ -50,6 +50,17 @@ TEST(MonteCarloTreeSearch, test_mcts_ttt_draw_board)
 	int result = mcts.search("OXXXXOOOX", &net, 1);
 
 	ASSERT_EQ(result, 0);
+}
+
+TEST(MonteCarloTreeSearch, test_tt_template_mcts_t)
+{
+	DefaultNeuralNet net(2, 3, 3, 9);
+	auto mctsCache = MonteCarloTreeSearchCacheT<ttt::Board, TicTacToeAdapter>(torch::kCPU, &tttAdap);
+	auto mcts = MonteCarloTreeSearchT<ttt::Board, TicTacToeAdapter>(&mctsCache, &tttAdap, device);
+	auto board = ttt::Board("XOXOXOOXX");
+	float result = mcts.search(board, &net, 1);
+
+	ASSERT_FLOAT_EQ(result, -1);
 }
 
 
@@ -114,7 +125,7 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_win
 		buffer.convertToNeuralInput();
 		buffer.expand(&net);
 
-		while (mcts.expandAndContinueSearchWithoutExpansion(state, 2)) 
+		while (mcts.expandAndContinueSearchWithoutExpansion(state, 2))
 		{
 			buffer.convertToNeuralInput();
 			buffer.expand(&net);
@@ -152,18 +163,6 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_get
 	std::vector<float> probs = getAllActionProbabilities(mcts.getProbabilities(state), tttAdap.getActionCount());
 
 	ASSERT_GT(probs[7], probs[6]);
-}
-
-TEST(MonteCarloTreeSearch, test_tt_template_mcts)
-{
-	DefaultNeuralNet net(2, 3, 3, 9);
-	MonteCarloTreeSearchCacheT<ttt::Board, TicTacToeAdapter> mcts = MonteCarloTreeSearchCacheT<ttt::Board, TicTacToeAdapter>(torch::kCPU, &tttAdap);
-	auto initialState =	ttt::Board(tttAdap.getInitialGameState());
-	mcts.addToExpansion({ initialState, tttAdap.getInitialPlayer()});
-	mcts.convertToNeuralInput();
-	mcts.expand(&net);
-
-	ASSERT_EQ(1, 1);
 }
 
 #endif //RunTests
