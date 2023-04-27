@@ -28,3 +28,12 @@ void renderBoard(const ceg::BitBoard& board)
 
 	renderer.quit();
 }
+
+std::vector<float> getAllActionProbabilities(const std::vector<std::pair<int, float>>& probab, size_t actionCount)
+{
+	auto probs = std::vector<float>(actionCount, 0.f);
+	for (const auto& [action, prob] : probab)
+		probs[action] = prob;
+
+	return probs;
+}

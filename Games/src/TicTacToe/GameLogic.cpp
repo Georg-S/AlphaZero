@@ -97,7 +97,10 @@ std::string ttt::Board::toString() const
 
 bool ttt::operator<(const Board& lhs, const Board& rhs)
 {
-	return lhs.m_crosses < rhs.m_crosses || lhs.m_dots < rhs.m_dots;
+	if (lhs.m_crosses == rhs.m_crosses)
+		return lhs.m_dots < rhs.m_dots;
+
+	return lhs.m_crosses < rhs.m_crosses;
 }
 
 bool ttt::isGameOver(const Board& board)
