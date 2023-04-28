@@ -8,7 +8,6 @@
 #include <thread>
 #include <mutex>
 #include "AlphaZeroUtility.h"
-#include "MultiThreadingNeuralNetManager.h"
 #include "NeuralNetworks/NeuralNetwork.h"
 #include "Game.h"
 #include "RingBuffer.h"

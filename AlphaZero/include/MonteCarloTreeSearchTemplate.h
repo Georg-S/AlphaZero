@@ -16,14 +16,14 @@
 #include "AlphaZeroUtility.h"
 #include "NeuralNetworks/NeuralNetwork.h"
 
-template <typename GameStateT, typename GameT>
+template <typename GameStateT, typename GameT, bool mockExpansion>
 class MonteCarloTreeSearchT;
 
-template <typename GameStateT, typename GameT, bool mockExpansion = true>
+template <typename GameStateT, typename GameT, bool mockExpansion = false>
 class MonteCarloTreeSearchCacheT
 {
 public:
-	friend class MonteCarloTreeSearchT<GameStateT, GameT>;
+	friend class MonteCarloTreeSearchT<GameStateT, GameT, mockExpansion>;
 
 	struct ExpansionDataT
 	{
@@ -67,10 +67,11 @@ public:
 			size_t counter = 0;
 			for (const auto& state : toExpand)
 			{
-				m_values[state.state] = ALZ::getRandomNumber(-1.0, 1.0);
+				const auto allPossibleMoves = m_game->getAllPossibleMoves(state.state, state.currentPlayer);
+				m_values[state.state] = 1.0 / allPossibleMoves.size();
 
-				for (const auto& move : m_game->getAllPossibleMoves(state.state, state.currentPlayer))
-					m_probabilities[state.state].emplace_back(move, ALZ::getRandomNumber(0.0, 1.0));
+				for (const auto& move : allPossibleMoves)
+					m_probabilities[state.state].emplace_back(move, 1.0 / allPossibleMoves.size());
 			}
 			m_currentInputSize = 0;
 		}
@@ -149,11 +150,11 @@ private:
 	GameT* m_game;
 };
 
-template <typename GameStateT, typename GameT>
+template <typename GameStateT, typename GameT, bool mockExpansion = false>
 class MonteCarloTreeSearchT
 {
 public:
-	MonteCarloTreeSearchT(MonteCarloTreeSearchCacheT<GameStateT, GameT>* cache, GameT* game, torch::DeviceType device, float cpuct = 1.0)
+	MonteCarloTreeSearchT(MonteCarloTreeSearchCacheT<GameStateT, GameT, mockExpansion>* cache, GameT* game, torch::DeviceType device, float cpuct = 1.0)
 		: m_cache(cache)
 		, m_game(game)
 		, m_device(device)
@@ -177,7 +178,7 @@ public:
 		bool expansionNeeded = false;
 		const float value = searchWithoutExpansion(state, currentPlayer, &expansionNeeded);
 		// This must not happen in self play, however some Unit-tests might trigger this assertion -> therefore deactivated for now
-		//assert(!m_backProp.empty()); 
+		// assert(!m_backProp.empty()); 
 
 		if (expansionNeeded)
 			return -expand(net);
@@ -200,7 +201,7 @@ public:
 		return runMultipleSearches(state, currentPlayer);
 	}
 
-	std::vector<std::pair<int, float>> getProbabilities(const GameStateT& state, float temperature = 1.0) 
+	std::vector<std::pair<int, float>> getProbabilities(const GameStateT& state, float temperature = 1.0)
 	{
 		const auto statePtr = &(*m_visited.find(state));
 		assert(statePtr);
@@ -219,7 +220,7 @@ public:
 	}
 
 private:
-	float searchWithoutExpansion(GameStateT gameState, int currentPlayer, bool* expansionNeeded) 
+	float searchWithoutExpansion(GameStateT gameState, int currentPlayer, bool* expansionNeeded)
 	{
 		while (true) // Iterate until we reach a "leaf state" (a state not yet expanded or a game over state)
 		{
@@ -253,7 +254,7 @@ private:
 		}
 	}
 
-	bool runMultipleSearches(const GameStateT& strState, int currentPlayer) 
+	bool runMultipleSearches(const GameStateT& strState, int currentPlayer)
 	{
 		bool expansionNeeded = false;
 		while (m_mctsCount--)
@@ -268,7 +269,7 @@ private:
 		return false;
 	}
 
-	void backpropagateValue(float value) 
+	void backpropagateValue(float value)
 	{
 		while (!m_backProp.empty())
 		{
@@ -283,7 +284,7 @@ private:
 		}
 	}
 
-	float expand(NeuralNetwork* net) 
+	float expand(NeuralNetwork* net)
 	{
 		m_cache->addToExpansion({ m_backProp.back().state, m_backProp.back().player });
 		m_cache->convertToNeuralInput();
@@ -292,7 +293,7 @@ private:
 		return finishExpansion();
 	}
 
-	float finishExpansion() 
+	float finishExpansion()
 	{
 		assert(!m_backProp.empty());
 		const auto [iter, success] = m_visited.emplace(std::move(m_backProp.back().state));
@@ -307,7 +308,7 @@ private:
 		return value;
 	}
 
-	int getActionWithHighestUpperConfidenceBound(const GameStateT* statePtr, int currentPlayer) 
+	int getActionWithHighestUpperConfidenceBound(const GameStateT* statePtr, int currentPlayer)
 	{
 		float maxUtility = std::numeric_limits<float>::lowest();
 		int bestAction = -1;
@@ -359,7 +360,7 @@ private:
 		int bestAction = -1;
 	};
 
-	MonteCarloTreeSearchCacheT<GameStateT, GameT>* m_cache;
+	MonteCarloTreeSearchCacheT<GameStateT, GameT, mockExpansion>* m_cache;
 	GameT* m_game = nullptr;
 	torch::DeviceType m_device = torch::kCPU;
 	int m_actionCount = -1;

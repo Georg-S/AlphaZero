@@ -10,7 +10,6 @@
 #include <TicTacToe/TicTacToeAdapter.h>
 #include <TicTacToe/TicTacToe.h>
 #include <TicTacToe/MiniMaxAi.h>
-#include <MultiThreadingNeuralNetManager.h>
 #include "Evaluation.h"
 #include "TrainingParameters.h"
 

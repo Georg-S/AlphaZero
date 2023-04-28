@@ -5,7 +5,6 @@
 #include <tuple>
 #include <thread>
 #include <vector>
-#include <MultiThreadingNeuralNetManager.h>
 #include <MonteCarloTreeSearchTemplate.h>
 
 #include "TestConfig.h"
@@ -13,49 +12,49 @@
 
 #if RunTests
 
-torch::DeviceType device = torch::kCPU;
+static torch::DeviceType device = torch::kCPU;
 static TicTacToeAdapter tttAdap = TicTacToeAdapter();
 static DefaultNeuralNet net(2, 3, 3, 9);
 
-TEST(MonteCarloTreeSearch, test_mcts_ttt_draw_board)
+TEST(MCTS_TicTacToe, test_mcts_ttt_draw_board)
 {
 	const std::string boardStr = "OXXXXOOOX";
-	auto mctsCache = MonteCarloTreeSearchCacheT<ttt::Board, TicTacToeAdapter>(torch::kCPU, &tttAdap);
-	auto mcts = MonteCarloTreeSearchT<ttt::Board, TicTacToeAdapter>(&mctsCache, &tttAdap, device);
 	auto board = ttt::Board(boardStr);
+	auto mctsCache = MonteCarloTreeSearchCacheT<ttt::Board, TicTacToeAdapter, true>(torch::kCPU, &tttAdap);
+	auto mcts = MonteCarloTreeSearchT<ttt::Board, TicTacToeAdapter, true>(&mctsCache, &tttAdap, device);
 	float result = mcts.search(board, &net, 1);
 
 	ASSERT_FLOAT_EQ(result, 0);
 }
 
-TEST(MonteCarloTreeSearch, test_mcts_ttt_player_one_wins)
+TEST(MCTS_TicTacToe, test_mcts_ttt_player_one_wins)
 {
 	const std::string boardStr = "XOXOXOOXX";
-	auto mctsCache = MonteCarloTreeSearchCacheT<ttt::Board, TicTacToeAdapter>(torch::kCPU, &tttAdap);
-	auto mcts = MonteCarloTreeSearchT<ttt::Board, TicTacToeAdapter>(&mctsCache, &tttAdap, device);
+	auto mctsCache = MonteCarloTreeSearchCacheT<ttt::Board, TicTacToeAdapter, true>(torch::kCPU, &tttAdap);
+	auto mcts = MonteCarloTreeSearchT<ttt::Board, TicTacToeAdapter, true>(&mctsCache, &tttAdap, device);
 	auto board = ttt::Board(boardStr);
 	float result = mcts.search(board, &net, 1);
 
 	ASSERT_FLOAT_EQ(result, -1);
 }
 
-TEST(MonteCarloTreeSearch, test_mcts_ttt_player_two_wins)
+TEST(MCTS_TicTacToe, test_mcts_ttt_player_two_wins)
 {
 	const std::string boardStr = "XXOOOXOXX";
-	auto mctsCache = MonteCarloTreeSearchCacheT<ttt::Board, TicTacToeAdapter>(torch::kCPU, &tttAdap);
-	auto mcts = MonteCarloTreeSearchT<ttt::Board, TicTacToeAdapter>(&mctsCache, &tttAdap, device);
 	auto board = ttt::Board(boardStr);
+	auto mctsCache = MonteCarloTreeSearchCacheT<ttt::Board, TicTacToeAdapter, true>(torch::kCPU, &tttAdap);
+	auto mcts = MonteCarloTreeSearchT<ttt::Board, TicTacToeAdapter, true>(&mctsCache, &tttAdap, device);
 	float result = mcts.search(board, &net, 2);
 
 	ASSERT_FLOAT_EQ(result, -1);
 }
 
-TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_one_move_possible)
+TEST(MCTS_TicTacToe, test_ttt_get_probabilities_one_move_possible)
 {
 	const std::string boardStr = "XXOO-XOXX";
-	auto mctsCache = MonteCarloTreeSearchCacheT<ttt::Board, TicTacToeAdapter>(torch::kCPU, &tttAdap);
-	auto mcts = MonteCarloTreeSearchT<ttt::Board, TicTacToeAdapter>(&mctsCache, &tttAdap, device);
 	auto board = ttt::Board(boardStr);
+	auto mctsCache = MonteCarloTreeSearchCacheT<ttt::Board, TicTacToeAdapter, true>(torch::kCPU, &tttAdap);
+	auto mcts = MonteCarloTreeSearchT<ttt::Board, TicTacToeAdapter, true>(&mctsCache, &tttAdap, device);
 	auto moves = tttAdap.getAllPossibleMoves(board, 2);
 	mcts.search(4, board, &net, 2);
 
@@ -72,12 +71,12 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_one_move_possible)
 	ASSERT_FLOAT_EQ(probs[8], 0);
 }
 
-TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_wins)
+TEST(MCTS_TicTacToe, test_ttt_get_probabilities_two_moves_possible_one_wins_mock_expansion)
 {
 	const std::string boardStr = "OXOXOXX--";
-	auto mctsCache = MonteCarloTreeSearchCacheT<ttt::Board, TicTacToeAdapter>(torch::kCPU, &tttAdap);
-	auto mcts = MonteCarloTreeSearchT<ttt::Board, TicTacToeAdapter>(&mctsCache, &tttAdap, device);
 	auto board = ttt::Board(boardStr);
+	auto mctsCache = MonteCarloTreeSearchCacheT<ttt::Board, TicTacToeAdapter, true>(torch::kCPU, &tttAdap);
+	auto mcts = MonteCarloTreeSearchT<ttt::Board, TicTacToeAdapter, true>(&mctsCache, &tttAdap, device);
 	mcts.search(100, board, &net, 2);
 
 	std::vector<float> probs = getAllActionProbabilities(mcts.getProbabilities(board), tttAdap.getActionCount());
@@ -85,12 +84,25 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_win
 	ASSERT_GT(probs[8], probs[7]);
 }
 
-TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_wins_with_delayed_expansion)
+TEST(MCTS_TicTacToe, test_ttt_get_probabilities_two_moves_possible_one_wins_real_expansion)
 {
 	const std::string boardStr = "OXOXOXX--";
-	auto mctsCache = MonteCarloTreeSearchCacheT<ttt::Board, TicTacToeAdapter>(torch::kCPU, &tttAdap);
-	auto mcts = MonteCarloTreeSearchT<ttt::Board, TicTacToeAdapter>(&mctsCache, &tttAdap, device);
 	auto board = ttt::Board(boardStr);
+	auto mctsCache = MonteCarloTreeSearchCacheT<ttt::Board, TicTacToeAdapter, false>(torch::kCPU, &tttAdap);
+	auto mcts = MonteCarloTreeSearchT<ttt::Board, TicTacToeAdapter, false>(&mctsCache, &tttAdap, device);
+	mcts.search(100, board, &net, 2);
+
+	std::vector<float> probs = getAllActionProbabilities(mcts.getProbabilities(board), tttAdap.getActionCount());
+
+	ASSERT_GT(probs[8], probs[7]);
+}
+
+TEST(MCTS_TicTacToe, test_ttt_get_probabilities_two_moves_possible_one_wins_with_delayed_expansion)
+{
+	const std::string boardStr = "OXOXOXX--";
+	auto board = ttt::Board(boardStr);
+	auto mctsCache = MonteCarloTreeSearchCacheT<ttt::Board, TicTacToeAdapter, true>(torch::kCPU, &tttAdap);
+	auto mcts = MonteCarloTreeSearchT<ttt::Board, TicTacToeAdapter, true>(&mctsCache, &tttAdap, device);
 
 	bool expansionNeeded = mcts.startSearchWithoutExpansion(board, 2, 50);
 	if (expansionNeeded)
@@ -110,12 +122,12 @@ TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_win
 	ASSERT_GT(probs[8], probs[7]);
 }
 
-TEST(MonteCarloTreeSearch, test_ttt_get_probabilities_two_moves_possible_one_gets_draw)
+TEST(MCTS_TicTacToe, test_ttt_get_probabilities_two_moves_possible_one_gets_draw)
 {
 	const std::string boardStr = "OXOXXO--X";
-	auto mctsCache = MonteCarloTreeSearchCacheT<ttt::Board, TicTacToeAdapter>(torch::kCPU, &tttAdap);
-	auto mcts = MonteCarloTreeSearchT<ttt::Board, TicTacToeAdapter>(&mctsCache, &tttAdap, device);
 	auto board = ttt::Board(boardStr);
+	auto mctsCache = MonteCarloTreeSearchCacheT<ttt::Board, TicTacToeAdapter, true>(torch::kCPU, &tttAdap);
+	auto mcts = MonteCarloTreeSearchT<ttt::Board, TicTacToeAdapter, true>(&mctsCache, &tttAdap, device);
 
 	mcts.search(100, board, &net, 2);
 	std::vector<float> probs = getAllActionProbabilities(mcts.getProbabilities(board), tttAdap.getActionCount());

@@ -47,7 +47,6 @@ EvalResult TicTacToeHandler::evalTicTacToeMultiThreaded(std::string netName, tor
 
 	auto toEval = std::make_unique<DefaultNeuralNet>(2, 3, 3, 9, netName, device);
 	toEval->setToEval();
-	MultiThreadingNeuralNetManager threadManager = MultiThreadingNeuralNetManager(threadCount, threadCount, toEval.get(), device);
 	ttt::MiniMaxAi minimaxAi = ttt::MiniMaxAi();
 	EvalResult result = {};
 	evaluation.eval(toEval.get(), &minimaxAi, &adap,  100, result, 100);
