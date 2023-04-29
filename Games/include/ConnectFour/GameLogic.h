@@ -28,6 +28,7 @@ namespace cn4
 		void makeMove(int column, PlayerColor color);
 		PlayerColor at(int column, int row) const;
 		std::string toString() const;
+		friend bool operator<(const Board& lhs, const Board& rhs);
 
 	private:
 		uint64_t m_yellowPieces = 0;
@@ -35,7 +36,7 @@ namespace cn4
 		uint64_t m_occupied = 0;
 		int m_occupiedColumnSize[boardWidth] = {};
 	};
-	
+
 	PlayerColor getPlayerWon(const Board& board);
 	bool isGameOver(const Board& board);
 	PlayerColor getNextPlayer(PlayerColor color);

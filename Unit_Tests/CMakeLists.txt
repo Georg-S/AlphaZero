@@ -24,6 +24,18 @@ add_executable(Unit_Tests ${TESTSOURCES})
 target_link_libraries(Unit_Tests gtest gtest_main AlphaZero Games)
 add_test(NAME Unit_Tests COMMAND Unit_Tests)
 
+#   create image folder and copy files into it
+add_custom_command(TARGET Unit_Tests 
+    POST_BUILD 
+    COMMAND ${CMAKE_COMMAND} -E make_directory 
+    "$<TARGET_FILE_DIR:Unit_Tests>/Images")
+
+add_custom_command(TARGET Unit_Tests
+                    POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_directory
+                    "${CMAKE_SOURCE_DIR}/Images"
+                    "$<TARGET_FILE_DIR:Unit_Tests>/Images")
+
 if (MSVC)
   target_compile_options(Unit_Tests PRIVATE "/MP")
 

@@ -90,6 +90,14 @@ std::string cn4::Board::toString() const
 	return str;
 }
 
+bool cn4::operator<(const Board& lhs, const Board& rhs)
+{
+	if (lhs.m_yellowPieces == rhs.m_yellowPieces)
+		return lhs.m_redPieces < rhs.m_redPieces;
+
+	return lhs.m_yellowPieces < rhs.m_yellowPieces;
+}
+
 cn4::PlayerColor cn4::getPlayerWon(const Board& board)
 {
 	if (hasPlayerWon(board.redPieces()))

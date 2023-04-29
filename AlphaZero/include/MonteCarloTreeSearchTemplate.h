@@ -184,7 +184,7 @@ public:
 			return -expand(net);
 
 		backpropagateValue(value);
-		return -value;
+		return value;
 	}
 
 	bool startSearchWithoutExpansion(const GameStateT& state, int currentPlayer, int count)

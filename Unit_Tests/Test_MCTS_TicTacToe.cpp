@@ -35,7 +35,7 @@ TEST(MCTS_TicTacToe, test_mcts_ttt_player_one_wins)
 	auto board = ttt::Board(boardStr);
 	float result = mcts.search(board, &net, 1);
 
-	ASSERT_FLOAT_EQ(result, -1);
+	ASSERT_FLOAT_EQ(result, 1);
 }
 
 TEST(MCTS_TicTacToe, test_mcts_ttt_player_two_wins)
@@ -46,7 +46,7 @@ TEST(MCTS_TicTacToe, test_mcts_ttt_player_two_wins)
 	auto mcts = MonteCarloTreeSearchT<ttt::Board, TicTacToeAdapter, true>(&mctsCache, &tttAdap, device);
 	float result = mcts.search(board, &net, 2);
 
-	ASSERT_FLOAT_EQ(result, -1);
+	ASSERT_FLOAT_EQ(result, 1);
 }
 
 TEST(MCTS_TicTacToe, test_ttt_get_probabilities_one_move_possible)
