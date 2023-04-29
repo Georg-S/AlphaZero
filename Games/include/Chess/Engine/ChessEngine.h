@@ -49,8 +49,8 @@ namespace ceg
 		bool is_field_occupied(const ceg::BitBoard& board, int x, int y) const;
 		PieceColor get_piece_color(const ceg::BitBoard& board, int x, int y) const;
 		void set_piece(ceg::BitBoard& board, Piece piece, PieceColor color, int x, int y) const;
-		bool is_check_mate(ceg::BitBoard& board, PieceColor color) const;
-		bool is_stale_mate(ceg::BitBoard& board, PieceColor color) const;
+		bool is_check_mate(const ceg::BitBoard& board, PieceColor color) const;
+		bool is_stale_mate(const ceg::BitBoard& board, PieceColor color) const;
 		uint64_t perft(const std::string& FEN_str, int depth) const;
 		std::set<std::string> perft_get_set(const std::string& FEN_str, int depth) const;
 		std::map<std::string, int> perft_get_map(const std::string& FEN_str, int depth) const;

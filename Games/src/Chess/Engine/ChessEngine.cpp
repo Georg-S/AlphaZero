@@ -178,7 +178,7 @@ void ceg::ChessEngine::set_piece(ceg::BitBoard& board, Piece piece, PieceColor c
 	board.update_occupied();
 }
 
-bool ceg::ChessEngine::is_check_mate(ceg::BitBoard& board, PieceColor color) const
+bool ceg::ChessEngine::is_check_mate(const ceg::BitBoard& board, PieceColor color) const
 {
 	auto possible_moves = move_generator->get_all_possible_moves(board, to_bool(color));
 	auto check_info = move_generator->get_check_info(board, to_bool(color));
@@ -189,7 +189,7 @@ bool ceg::ChessEngine::is_check_mate(ceg::BitBoard& board, PieceColor color) con
 	return false;
 }
 
-bool ceg::ChessEngine::is_stale_mate(ceg::BitBoard& board, PieceColor color) const
+bool ceg::ChessEngine::is_stale_mate(const ceg::BitBoard& board, PieceColor color) const
 {
 	auto possible_moves = move_generator->get_all_possible_moves(board, to_bool(color));
 	auto check_info = move_generator->get_check_info(board, to_bool(color));
