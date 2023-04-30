@@ -8,6 +8,16 @@ int TicTacToeAdapter::getInitialPlayer() const
 	return initialPlayer;
 }
 
+int TicTacToeAdapter::getNextPlayer(int currentPlayer) const
+{
+	return static_cast<int>(ttt::getNextPlayer(PlayerColor(currentPlayer)));
+}
+
+Board TicTacToeAdapter::getInitialGameState() const
+{
+	return Board("---------");
+}
+
 int TicTacToeAdapter::getPlayerWon(const ttt::Board& board) const
 {
 	if (playerWon(board, PlayerColor::CROSS))
@@ -16,11 +26,6 @@ int TicTacToeAdapter::getPlayerWon(const ttt::Board& board) const
 		return static_cast<int>(PlayerColor::DOT);
 
 	return static_cast<int>(PlayerColor::NONE);
-}
-
-Board TicTacToeAdapter::getInitialGameState() const
-{
-	return Board("---------");
 }
 
 torch::Tensor TicTacToeAdapter::convertStateToNeuralNetInput(const ttt::Board& board, int currentPlayer) const
@@ -52,11 +57,6 @@ void TicTacToeAdapter::convertStateToNeuralNetInput(const ttt::Board& board, int
 std::vector<int> TicTacToeAdapter::getAllPossibleMoves(const ttt::Board& board, int currentPlayer) const
 {
 	return ttt::getAllPossibleMoves<int>(board);
-}
-
-int TicTacToeAdapter::getNextPlayer(int currentPlayer) const
-{
-	return static_cast<int>(ttt::getNextPlayer(PlayerColor(currentPlayer)));
 }
 
 int TicTacToeAdapter::gameOverReward(const ttt::Board& board, int currentPlayer) const

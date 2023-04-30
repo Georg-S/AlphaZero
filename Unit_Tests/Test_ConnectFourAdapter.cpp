@@ -120,34 +120,34 @@ TEST(ConnectFourAdapter, test_is_game_over_player_two_wins)
 
 TEST(ConnectFourAdapter, test_make_move_player_one_empty_board)
 {
-	std::string state = "000000000000000000000000000000000000000000";
-	state = adap.makeMove(state, 1, 1);
+	auto board = Board("000000000000000000000000000000000000000000");
+	auto state = adap.makeMove(board, 1, 1);
 
-	ASSERT_EQ(state, "010000000000000000000000000000000000000000");
+	ASSERT_EQ(state.toString(), "010000000000000000000000000000000000000000");
 }
 
 TEST(ConnectFourAdapter, test_make_move_player_two_empty_board)
 {
-	std::string state = "000000000000000000000000000000000000000000";
-	state = adap.makeMove(state, 1, 2);
+	auto board = Board("000000000000000000000000000000000000000000");
+	auto state = adap.makeMove(board, 1, 2);
 
-	ASSERT_EQ(state, "020000000000000000000000000000000000000000");
+	ASSERT_EQ(state.toString(), "020000000000000000000000000000000000000000");
 }
 
 TEST(ConnectFourAdapter, test_make_move_player_one)
 {
-	std::string state = "121212120000000000000000000000000000000000";
-	state = adap.makeMove(state, 1, 1);
+	auto board = Board("121212120000000000000000000000000000000000");
+	auto state = adap.makeMove(board, 1, 1);
 
-	ASSERT_EQ(state, "121212121000000000000000000000000000000000");
+	ASSERT_EQ(state.toString(), "121212121000000000000000000000000000000000");
 }
 
 TEST(ConnectFourAdapter, test_make_move_player_two)
 {
-	std::string state = "121212120000000000000000000000000000000000";
-	state = adap.makeMove(state, 1, 2);
+	auto board = Board("121212120000000000000000000000000000000000");
+	auto state = adap.makeMove(board, 1, 2);
 
-	ASSERT_EQ(state, "121212122000000000000000000000000000000000");
+	ASSERT_EQ(state.toString(), "121212122000000000000000000000000000000000");
 }
 
 TEST(ConnectFourAdapter, test_conversion_to_string_and_back)

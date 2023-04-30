@@ -2,94 +2,25 @@
 
 using namespace cn4;
 
-std::string ConnectFourAdapter::makeMove(const std::string& state, int move, int currentPlayer)
+int ConnectFourAdapter::getInitialPlayer() const
 {
-	auto board = makeMove(Board(state), move, currentPlayer);
-
-	return board.toString();
+	return static_cast<int>(PlayerColor::YELLOW);
 }
 
-cn4::Board ConnectFourAdapter::makeMove(const cn4::Board& board, int move, int currentPlayer) const
+int ConnectFourAdapter::getNextPlayer(int currentPlayer) const
 {
-	Board result = board;
-	result.makeMove(move, PlayerColor(currentPlayer));
-
-	return result;
+	return cn4::getNextPlayer(currentPlayer);
 }
 
-int ConnectFourAdapter::getActionCount() const
-{
-	return m_actionCount;
-}
-
-std::string ConnectFourAdapter::getInitialGameState()
+Board ConnectFourAdapter::getInitialGameState() const
 {
 	static const std::string startState = "000000000000000000000000000000000000000000";
-	return startState;
-}
-
-bool ConnectFourAdapter::isGameOver(const std::string& state)
-{
-	return isGameOver(Board(state));
-}
-
-bool ConnectFourAdapter::isGameOver(const cn4::Board& board) const
-{
-	return cn4::isGameOver(board);
-}
-
-int ConnectFourAdapter::getPlayerWon(const std::string& state)
-{
-	return getPlayerWon(Board(state));
+	return Board(startState);
 }
 
 int ConnectFourAdapter::getPlayerWon(const cn4::Board& board) const
 {
 	return static_cast<int>(cn4::getPlayerWon(board));
-}
-
-int ConnectFourAdapter::gameOverReward(const std::string& state, int currentPlayer)
-{
-	return gameOverReward(Board(state), currentPlayer);
-}
-
-int ConnectFourAdapter::gameOverReward(const cn4::Board& board, int currentPlayer) const
-{
-	int playerWon = static_cast<int>(cn4::getPlayerWon(board));
-
-	if (playerWon == currentPlayer)
-		return 1;
-	else if (playerWon != 0)
-		return -1;
-	return 0;
-}
-
-int ConnectFourAdapter::getNextPlayer(int currentPlayer)
-{
-	return cn4::getNextPlayer(currentPlayer);
-}
-
-int ConnectFourAdapter::getInitialPlayer()
-{
-	return static_cast<int>(PlayerColor::YELLOW);
-}
-
-std::vector<int> ConnectFourAdapter::getAllPossibleMoves(const std::string& state, int currentPlayer)
-{
-	return getAllPossibleMoves(Board(state), currentPlayer);
-}
-
-std::vector<int> ConnectFourAdapter::getAllPossibleMoves(const cn4::Board& board, int currentPlayer) const
-{
-	return cn4::getAllPossibleMoves(board);
-}
-
-torch::Tensor ConnectFourAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer)
-{
-	torch::Tensor neuralInput = torch::zeros({ 1,2, boardWidth, boardHeight });
-	convertStateToNeuralNetInput(state, currentPlayer, neuralInput[0]);
-
-	return neuralInput;
 }
 
 torch::Tensor ConnectFourAdapter::convertStateToNeuralNetInput(const cn4::Board& board, int currentPlayer) const
@@ -98,12 +29,6 @@ torch::Tensor ConnectFourAdapter::convertStateToNeuralNetInput(const cn4::Board&
 	convertStateToNeuralNetInput(board, currentPlayer, neuralInput[0]);
 
 	return neuralInput;
-}
-
-void ConnectFourAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Tensor outTensor)
-{
-	Board board = Board(state);
-	convertStateToNeuralNetInput(board, currentPlayer, outTensor);
 }
 
 void ConnectFourAdapter::convertStateToNeuralNetInput(const cn4::Board& board, int currentPlayer, torch::Tensor outTensor) const
@@ -122,4 +47,38 @@ void ConnectFourAdapter::convertStateToNeuralNetInput(const cn4::Board& board, i
 				outTensor[1][x][y] = 1;
 		}
 	}
+}
+
+std::vector<int> ConnectFourAdapter::getAllPossibleMoves(const cn4::Board& board, int currentPlayer) const
+{
+	return cn4::getAllPossibleMoves(board);
+}
+
+int ConnectFourAdapter::gameOverReward(const cn4::Board& board, int currentPlayer) const
+{
+	int playerWon = static_cast<int>(cn4::getPlayerWon(board));
+
+	if (playerWon == currentPlayer)
+		return 1;
+	else if (playerWon != 0)
+		return -1;
+	return 0;
+}
+
+bool ConnectFourAdapter::isGameOver(const cn4::Board& board) const
+{
+	return cn4::isGameOver(board);
+}
+
+cn4::Board ConnectFourAdapter::makeMove(const cn4::Board& board, int move, int currentPlayer) const
+{
+	Board result = board;
+	result.makeMove(move, PlayerColor(currentPlayer));
+
+	return result;
+}
+
+int ConnectFourAdapter::getActionCount() const
+{
+	return m_actionCount;
 }
