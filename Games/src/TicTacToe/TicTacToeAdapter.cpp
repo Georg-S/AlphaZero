@@ -2,30 +2,25 @@
 
 using namespace ttt;
 
-int TicTacToeAdapter::getInitialPlayer()
+int TicTacToeAdapter::getInitialPlayer() const
 {
 	constexpr int initialPlayer = static_cast<int>(PlayerColor::CROSS);
 	return initialPlayer;
 }
 
-std::string TicTacToeAdapter::getInitialGameState()
+int TicTacToeAdapter::getPlayerWon(const ttt::Board& board) const
 {
-	return "---------";
+	if (playerWon(board, PlayerColor::CROSS))
+		return static_cast<int>(PlayerColor::CROSS);
+	if (playerWon(board, PlayerColor::DOT))
+		return static_cast<int>(PlayerColor::DOT);
+
+	return static_cast<int>(PlayerColor::NONE);
 }
 
-std::vector<int> TicTacToeAdapter::getAllPossibleMoves(const std::string& state, int currentPlayer)
+Board TicTacToeAdapter::getInitialGameState() const
 {
-	return ttt::getAllPossibleMoves<int>(Board(state));
-}
-
-torch::Tensor TicTacToeAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer)
-{
-	return convertStateToNeuralNetInput(Board(state), currentPlayer);
-}
-
-void TicTacToeAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Tensor outTensor)
-{
-	convertStateToNeuralNetInput(Board(state), currentPlayer, outTensor);
+	return Board("---------");
 }
 
 torch::Tensor TicTacToeAdapter::convertStateToNeuralNetInput(const ttt::Board& board, int currentPlayer) const
@@ -59,14 +54,9 @@ std::vector<int> TicTacToeAdapter::getAllPossibleMoves(const ttt::Board& board, 
 	return ttt::getAllPossibleMoves<int>(board);
 }
 
-int TicTacToeAdapter::getNextPlayer(int currentPlayer)
+int TicTacToeAdapter::getNextPlayer(int currentPlayer) const
 {
 	return static_cast<int>(ttt::getNextPlayer(PlayerColor(currentPlayer)));
-}
-
-int TicTacToeAdapter::gameOverReward(const std::string& state, int currentPlayer)
-{
-	return gameOverReward(ttt::Board(state), currentPlayer);
 }
 
 int TicTacToeAdapter::gameOverReward(const ttt::Board& board, int currentPlayer) const
@@ -80,21 +70,9 @@ int TicTacToeAdapter::gameOverReward(const ttt::Board& board, int currentPlayer)
 	return 0;
 }
 
-bool TicTacToeAdapter::isGameOver(const std::string& state)
-{
-	return isGameOver(Board(state));
-}
-
 bool TicTacToeAdapter::isGameOver(const ttt::Board& board) const
 {
 	return ttt::isGameOver(board);
-}
-
-std::string TicTacToeAdapter::makeMove(const std::string& state, int move, int currentPlayer)
-{
-	auto result = makeMove(ttt::Board(state), move, currentPlayer);
-
-	return result.toString();
 }
 
 ttt::Board TicTacToeAdapter::makeMove(ttt::Board board, int move, int currentPlayer) const
@@ -107,19 +85,4 @@ ttt::Board TicTacToeAdapter::makeMove(ttt::Board board, int move, int currentPla
 int TicTacToeAdapter::getActionCount() const
 {
 	return m_actionCount;
-}
-
-int TicTacToeAdapter::getPlayerWon(const std::string& state)
-{
-	return getPlayerWon(Board(state));
-}
-
-int TicTacToeAdapter::getPlayerWon(const ttt::Board& board) const
-{
-	if (playerWon(board, PlayerColor::CROSS))
-		return static_cast<int>(PlayerColor::CROSS);
-	if (playerWon(board, PlayerColor::DOT))
-		return static_cast<int>(PlayerColor::DOT);
-
-	return static_cast<int>(PlayerColor::NONE);
 }
