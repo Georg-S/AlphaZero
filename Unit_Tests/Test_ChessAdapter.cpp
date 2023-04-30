@@ -9,10 +9,11 @@
 #include "TestConfig.h"
 #include "Test_Utility.h"
 
-static ChessAdapter adap = ChessAdapter();
-static ceg::ChessEngine chessEngine = ceg::ChessEngine();
 
 #if RunTests
+
+static ChessAdapter adap = ChessAdapter();
+static ceg::ChessEngine chessEngine = ceg::ChessEngine();
 
 TEST(ChessAdapter, test_conversion_to_string_and_back_doesnt_change_board_positions)
 {

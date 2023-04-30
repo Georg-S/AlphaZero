@@ -92,6 +92,44 @@ TEST(MonteCarloTreeSearch, test_chess_check_black_one_move_wins_2)
 	ASSERT_EQ(winningMove, mctsBestMove);
 }
 
+TEST(MonteCarloTreeSearch, test_chess_check_one_move_loses)
+{
+	const std::string boardStr = "8/6rK/r7/8/8/8/8/k7 w - - 0 1";
+	const ceg::BitBoard board(boardStr);
+	auto gameState = ChessAdapter::GameState(board, static_cast<int>(ceg::PieceColor::WHITE));
+
+	const int winningMove = chess::getIntFromMove({ 7,1,6,1 });
+	auto mctsCache = MonteCarloTreeSearchCacheT<ChessAdapter::GameState, ChessAdapter, true>(device, &chessAdap);
+	auto mcts = MonteCarloTreeSearchT<ChessAdapter::GameState, ChessAdapter, true>(&mctsCache, &chessAdap, device);
+	mcts.search(1000, gameState, &neuralNet, static_cast<int>(ceg::PieceColor::WHITE));
+	auto probabilities = mcts.getProbabilities(gameState);
+	int mctsBestMove = ALZ::getBestAction(probabilities);
+
+	ASSERT_EQ(winningMove, mctsBestMove);
+}
+
+TEST(MonteCarloTreeSearch, test_chess_check_one_move_loses_with_but_perform_other_color_mcts_before)
+{
+	const std::string boardStr = "8/7K/r7/8/8/6r1/8/k7 b - - 0 1";
+	const ceg::BitBoard board(boardStr);
+	auto gameState = ChessAdapter::GameState(board, static_cast<int>(ceg::PieceColor::BLACK));
+
+	auto mctsCache = MonteCarloTreeSearchCacheT<ChessAdapter::GameState, ChessAdapter, true>(device, &chessAdap);
+	auto mcts = MonteCarloTreeSearchT<ChessAdapter::GameState, ChessAdapter, true>(&mctsCache, &chessAdap, device);
+	mcts.search(1000, gameState, &neuralNet, static_cast<int>(ceg::PieceColor::BLACK));
+
+	const std::string boardStr2 = "8/6rK/r7/8/8/8/8/k7 w - - 0 1";
+	const ceg::BitBoard board2(boardStr2);
+	auto gameState2 = ChessAdapter::GameState(board2, static_cast<int>(ceg::PieceColor::WHITE));
+
+	const int winningMove = chess::getIntFromMove({ 7,1,6,1 });
+	mcts.search(1000, gameState2, &neuralNet, static_cast<int>(ceg::PieceColor::WHITE));
+	auto probabilities = mcts.getProbabilities(gameState2);
+	int mctsBestMove = ALZ::getBestAction(probabilities);
+
+	ASSERT_EQ(winningMove, mctsBestMove);
+}
+
 #if RunLongTests
 
 TEST(MonteCarloTreeSearch, test_chess_check_mate_in_two)

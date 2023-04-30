@@ -4,6 +4,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(AlphaZeroFiles
 	"include/AlphaZeroTraining.h"
+	"include/AlphaZeroTrainingTemplate.h"
 	"include/Game.h"
 	"include/MonteCarloTreeSearch.h"
 	"include/ReplayElement.h"
