@@ -8,7 +8,6 @@
 #include <omp.h>
 #include <vector>
 #include <AlphaZeroUtility.h>
-#include <MonteCarloTreeSearch.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
 #include <TicTacToe/TicTacToeAdapter.h>
 #include "TestConfig.h"

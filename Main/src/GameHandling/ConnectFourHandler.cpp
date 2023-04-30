@@ -3,14 +3,14 @@
 void ConnectFourHandler::connectFourAgainstNeuralNetAi(cn4::PlayerColor playerColor, std::string netName,
 	int countMcts, bool probabilistic, torch::DeviceType device)
 {
-	ConnectFourAdapter adap = ConnectFourAdapter();
-	auto neuralNet = std::make_unique<DefaultNeuralNet>(2, 7, 6, 7, preTrainedPath + "/" + netName, device);
-	neuralNet->setToEval();
-	NeuralNetAi* ai = new NeuralNetAi(neuralNet.get(), &adap, 7, countMcts, probabilistic, device);
-	cn4::PlayerColor aiColor = (cn4::PlayerColor)((int)playerColor % 2 + 1);
-	ConnectFour connectFour = ConnectFour(aiColor, ai);
+	//ConnectFourAdapter adap = ConnectFourAdapter();
+	//auto neuralNet = std::make_unique<DefaultNeuralNet>(2, 7, 6, 7, preTrainedPath + "/" + netName, device);
+	//neuralNet->setToEval();
+	//NeuralNetAi* ai = new NeuralNetAi(neuralNet.get(), &adap, 7, countMcts, probabilistic, device);
+	//cn4::PlayerColor aiColor = (cn4::PlayerColor)((int)playerColor % 2 + 1);
+	//ConnectFour connectFour = ConnectFour(aiColor, ai);
 
-	connectFour.gameLoop();
+	//connectFour.gameLoop();
 }
 
 void ConnectFourHandler::connectFourAgainstMiniMaxAi(int depth, cn4::PlayerColor color)
@@ -27,43 +27,43 @@ void ConnectFourHandler::startTwoPlayerConnectFourGame()
 	connect.gameLoop();
 }
 
-void ConnectFourHandler::evalConnectFour(bool multiThreaded)
+//void ConnectFourHandler::evalConnectFour(bool multiThreaded)
+//{
+//	constexpr int multiThreadingThreads = 10;
+//	EvalResult result;
+//	std::ofstream myfile;
+//	myfile.open(std::to_string(evalMCTSCount) + "_100_200k_001.csv");
+//
+//	myfile << "Iteration; Wins; Draws; Losses \n";
+//
+//	const int miniMaxDepth = 5;
+//	const int threads = multiThreaded ? multiThreadingThreads : 1;
+//
+//	result = evalConnectFourMultiThreaded(preTrainedPath + "/start", miniMaxDepth, torch::kCUDA, threads);
+//
+//	writeEvaluationResultToFile(0, result, myfile);
+//
+//	for (int i = 0; i < 25; i++)
+//	{
+//		std::string path = preTrainedPath + "/iteration" + std::to_string(i);
+//		std::cout << path << std::endl;
+//
+//		result = evalConnectFourMultiThreaded(path, miniMaxDepth, torch::kCUDA, threads);
+//
+//		writeEvaluationResultToFile(i + 1, result, myfile);
+//	}
+//
+//	myfile.close();
+//}
+//
+//void ConnectFourHandler::writeEvaluationResultToFile(int iteration, const EvalResult& result, std::ofstream& file)
+//{
+//	file << std::to_string(iteration) << ";" << std::to_string(result.wins) << ";" << std::to_string(result.draws) << ";" << std::to_string(result.losses) << std::endl;
+//}
+
+AlphaZeroTrainingParameters ConnectFourHandler::getDefaultConnectFourTrainingParameters() const
 {
-	constexpr int multiThreadingThreads = 10;
-	EvalResult result;
-	std::ofstream myfile;
-	myfile.open(std::to_string(evalMCTSCount) + "_100_200k_001.csv");
-
-	myfile << "Iteration; Wins; Draws; Losses \n";
-
-	const int miniMaxDepth = 5;
-	const int threads = multiThreaded ? multiThreadingThreads : 1;
-
-	result = evalConnectFourMultiThreaded(preTrainedPath + "/start", miniMaxDepth, torch::kCUDA, threads);
-
-	writeEvaluationResultToFile(0, result, myfile);
-
-	for (int i = 0; i < 25; i++)
-	{
-		std::string path = preTrainedPath + "/iteration" + std::to_string(i);
-		std::cout << path << std::endl;
-
-		result = evalConnectFourMultiThreaded(path, miniMaxDepth, torch::kCUDA, threads);
-
-		writeEvaluationResultToFile(i + 1, result, myfile);
-	}
-
-	myfile.close();
-}
-
-void ConnectFourHandler::writeEvaluationResultToFile(int iteration, const EvalResult& result, std::ofstream& file)
-{
-	file << std::to_string(iteration) << ";" << std::to_string(result.wins) << ";" << std::to_string(result.draws) << ";" << std::to_string(result.losses) << std::endl;
-}
-
-AlphaZeroTraining::Parameters ConnectFourHandler::getDefaultConnectFourTrainingParameters() const
-{
-	auto params = AlphaZeroTraining::Parameters{};
+	auto params = AlphaZeroTrainingParameters{};
 	params.MAX_REPLAY_MEMORY_SIZE = 100000;
 	params.neuralNetPath = trainingPath;
 	params.TRAINING_DONT_USE_DRAWS = false;
@@ -81,20 +81,20 @@ AlphaZeroTraining::Parameters ConnectFourHandler::getDefaultConnectFourTrainingP
 	return params;
 }
 
-EvalResult ConnectFourHandler::evalConnectFourMultiThreaded(std::string netName, int miniMaxDepth, torch::DeviceType device, int threadCount)
-{
-	Evaluation evaluation = Evaluation(device, evalMCTSCount);
-	auto toEval = std::make_unique<DefaultNeuralNet>(2, 7, 6, 7, netName, device);
-	toEval->setToEval();
-	cn4::NegaMaxAi miniMaxAi = cn4::NegaMaxAi(miniMaxDepth);
-	ConnectFourAdapter adap = ConnectFourAdapter();
-	EvalResult result = {};
-	evaluation.eval(toEval.get(), &miniMaxAi, &adap, 100, result, 100);
+//EvalResult ConnectFourHandler::evalConnectFourMultiThreaded(std::string netName, int miniMaxDepth, torch::DeviceType device, int threadCount)
+//{
+//	Evaluation evaluation = Evaluation<cn4::Board, ConnectFourAdapter, false>(device, evalMCTSCount);
+//	auto toEval = std::make_unique<DefaultNeuralNet>(2, 7, 6, 7, netName, device);
+//	toEval->setToEval();
+//	cn4::NegaMaxAi miniMaxAi = cn4::NegaMaxAi(miniMaxDepth);
+//	ConnectFourAdapter adap = ConnectFourAdapter();
+//	EvalResult result = {};
+//	evaluation.eval(toEval.get(), &miniMaxAi, &adap, 100, result, 100);
+//
+//	return result;
+//}
 
-	return result;
-}
-
-void ConnectFourHandler::setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params)
+void ConnectFourHandler::setTrainingParameters(AlphaZeroTrainingT<cn4::Board, ConnectFourAdapter>& training, const TrainingParameters& params)
 {
 	auto defaultParams = getDefaultConnectFourTrainingParameters();
 	auto trainingParams = params.getAlphaZeroParams(trainingPath, defaultParams);
@@ -108,9 +108,9 @@ void ConnectFourHandler::runTraining(const TrainingParameters& params)
 	auto neuralNet = std::make_unique<DefaultNeuralNet>(2, 7, 6, 7, device);
 	neuralNet->setLearningRate(params.learningRate);
 	neuralNet->setToTraining();
-	AlphaZeroTraining training = AlphaZeroTraining(7, neuralNet.get(), device);
+	auto training = AlphaZeroTrainingT<cn4::Board, ConnectFourAdapter>(&adap, neuralNet.get(), device);
 	setTrainingParameters(training, params);
 
 	ALZ::ScopedTimer timer{};
-	training.runTraining(&adap);
+	training.runTraining();
 }

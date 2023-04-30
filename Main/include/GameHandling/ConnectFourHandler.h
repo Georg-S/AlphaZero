@@ -5,7 +5,7 @@
 #include <string>
 #include <chrono>
 #include <fstream>
-#include <AlphaZeroTraining.h>
+#include <AlphaZeroTrainingTemplate.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
 #include <ConnectFour/ConnectFourAdapter.h>
 #include <ConnectFour/ConnectFour.h>
@@ -24,12 +24,12 @@ public:
 	void runTraining(const TrainingParameters& params);
 	void startTwoPlayerConnectFourGame();
 	void evalConnectFour(bool multiThreaded = true);
-	void setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params);
+	void setTrainingParameters(AlphaZeroTrainingT<cn4::Board, ConnectFourAdapter>& training, const TrainingParameters& params);
 
 private:
-	EvalResult evalConnectFourMultiThreaded(std::string netName, int miniMaxDepth, torch::DeviceType device, int threadCount);
-	void writeEvaluationResultToFile(int iteration, const EvalResult& result, std::ofstream& file);
-	AlphaZeroTraining::Parameters getDefaultConnectFourTrainingParameters() const;
+	//EvalResult evalConnectFourMultiThreaded(std::string netName, int miniMaxDepth, torch::DeviceType device, int threadCount);
+	//void writeEvaluationResultToFile(int iteration, const EvalResult& result, std::ofstream& file);
+	AlphaZeroTrainingParameters getDefaultConnectFourTrainingParameters() const;
 
 	inline static const std::string trainingPath = "NeuralNets/Training/ConnectFour";
 	inline static const std::string preTrainedPath = "NeuralNets/PreTrained/ConnectFour";

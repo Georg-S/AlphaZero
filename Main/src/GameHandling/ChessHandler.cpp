@@ -3,13 +3,14 @@
 void ChessHandler::chessAgainstNeuralNetAi(ceg::PieceColor playerColor, std::string netName, int mctsCount, bool randomize,
 	torch::DeviceType device)
 {
-	auto chessNet = std::make_unique<DefaultNeuralNet>(14, 8, 8, 4096, preTrainedPath + "/" + netName, device);
-	chessNet->setToEval();
-	ChessAdapter adap = ChessAdapter();
-	NeuralNetAi neuralNetAi = NeuralNetAi(chessNet.get(), &adap, 4096, mctsCount, randomize, device);
-	Chess chess = Chess(&neuralNetAi, playerColor);
+	//auto chessNet = std::make_unique<DefaultNeuralNet>(14, 8, 8, 4096, preTrainedPath + "/" + netName, device);
+	//chessNet->setToEval();
+	//ChessAdapter adap = ChessAdapter();
+	//auto cache = MonteCarloTreeSearchCacheT<ChessAdapter::GameState, ChessAdapter>(device, &adap);
+	//auto neuralNetAi = NeuralNetAi<ChessAdapter::GameState, ChessAdapter>(chessNet.get(), &adap, &cache, 4096, mctsCount, randomize, device);
+	//Chess chess = Chess(&neuralNetAi, playerColor);
 
-	chess.game_loop();
+	//chess.game_loop();
 }
 
 void ChessHandler::startTwoPlayerChessGame()
@@ -18,9 +19,9 @@ void ChessHandler::startTwoPlayerChessGame()
 	chess.game_loop();
 }
 
-AlphaZeroTraining::Parameters ChessHandler::getDefaultChessTrainingParameters() const
+AlphaZeroTrainingParameters ChessHandler::getDefaultChessTrainingParameters() const
 {
-	auto params = AlphaZeroTraining::Parameters{};
+	auto params = AlphaZeroTrainingParameters{};
 	params.MAX_REPLAY_MEMORY_SIZE = 300000;
 	params.neuralNetPath = trainingPath;
 	params.TRAINING_DONT_USE_DRAWS = false;
@@ -39,7 +40,7 @@ AlphaZeroTraining::Parameters ChessHandler::getDefaultChessTrainingParameters() 
 	return params;
 }
 
-void ChessHandler::setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params, int currentIteration)
+void ChessHandler::setTrainingParameters(AlphaZeroTrainingT<ChessAdapter::GameState, ChessAdapter>& training, const TrainingParameters& params, int currentIteration)
 {
 	auto defaultParams = getDefaultChessTrainingParameters();
 	auto trainingParams = params.getAlphaZeroParams(trainingPath, defaultParams);
@@ -88,11 +89,11 @@ void ChessHandler::runTraining(const TrainingParameters& params)
 
 	neuralNet->setLearningRate(params.learningRate);
 	neuralNet->setToTraining();
-	AlphaZeroTraining training = AlphaZeroTraining(4096, neuralNet.get(), device);
+	auto training = AlphaZeroTrainingT<ChessAdapter::GameState, ChessAdapter>(&adap, neuralNet.get(), device);
 	setTrainingParameters(training, params, currentIteration);
 
 	ALZ::ScopedTimer timer{};
-	training.runTraining(&adap);
+	training.runTraining();
 }
 
 void ChessHandler::chessAgainstMiniMaxAi(int miniMaxDepth, ceg::PieceColor playerColor)

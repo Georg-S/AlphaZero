@@ -12,7 +12,6 @@ set(GameHandlingFiles
     "include/GameHandling/TrainingParameters.h"
     "src/GameHandling/ChessHandler.cpp"
     "src/GameHandling/ConnectFourHandler.cpp"
-    "src/GameHandling/Evaluation.cpp"
     "src/GameHandling/TicTacToeHandler.cpp"
     )
 

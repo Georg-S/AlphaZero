@@ -3,7 +3,6 @@
 #include <string>
 #include <Chess/Engine/BitBoard.h>
 #include <Chess/ChessAdapter.h>
-#include <MonteCarloTreeSearch.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
 
 #include "TestConfig.h"
@@ -17,22 +16,22 @@ static ceg::ChessEngine chessEngine = ceg::ChessEngine();
 
 TEST(ChessAdapter, test_conversion_to_string_and_back_doesnt_change_board_positions)
 {
-	ceg::BitBoard board = ceg::BitBoard(adap.getInitialGameState());
-	chessEngine.make_move(board, ceg::Move(1, 1, 1, 3));
+	auto state = adap.getInitialGameState();
+	chessEngine.make_move(state.board, ceg::Move(1, 1, 1, 3));
 
-	auto before = ceg::to_FEN_string(board, true);
-	board = ceg::BitBoard(before);
-	auto after = ceg::to_FEN_string(board, true);
+	auto before = ceg::to_FEN_string(state.board, true);
+	state.board = ceg::BitBoard(before);
+	auto after = ceg::to_FEN_string(state.board, true);
 
 	ASSERT_EQ(before, after);
 }
 
 TEST(ChessAdapter, test_get_initial_state)
 {
-	ceg::BitBoard board = ceg::BitBoard(adap.getInitialGameState());
-	std::string converted = ceg::to_FEN_string(board, false);
+	auto state = adap.getInitialGameState();
+	std::string converted = ceg::to_FEN_string(state.board, false);
 
-	ASSERT_EQ(converted, adap.getInitialGameState());
+	ASSERT_EQ(converted, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -");
 }
 
 TEST(ChessAdapter, test_get_all_possible_moves_returns_right_amount_of_moves_in_beginning)

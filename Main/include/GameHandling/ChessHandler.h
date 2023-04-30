@@ -4,8 +4,8 @@
 #include <chrono>
 #include <regex>
 #include <filesystem>
-#include <AlphaZeroTraining.h>
 #include <Chess/ChessAiAdapter.h>
+#include <AlphaZeroTrainingTemplate.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
 #include <Chess/Chess.h>
 #include <Chess/ChessAdapter.h>
@@ -22,10 +22,11 @@ public:
 	void chessAgainstMiniMaxAi(int miniMaxDepth, ceg::PieceColor playerColor);
 	void runTraining(const TrainingParameters& params);
 	static void startTwoPlayerChessGame();
-	void setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params, int currentIteration);
+	void setTrainingParameters(AlphaZeroTrainingT<ChessAdapter::GameState, ChessAdapter>& training
+		, const TrainingParameters& params, int currentIteration);
 
 private:
-	AlphaZeroTraining::Parameters getDefaultChessTrainingParameters() const;
+	AlphaZeroTrainingParameters getDefaultChessTrainingParameters() const;
 
 	inline static const std::string preTrainedPath = "NeuralNets/PreTrained/Chess";
 	inline static const std::string trainingPath = "NeuralNets/Training/Chess";

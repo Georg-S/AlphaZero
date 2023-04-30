@@ -3,16 +3,10 @@ project(AlphaZero)
 set(CMAKE_CXX_STANDARD 17)
 
 set(AlphaZeroFiles
-	"include/AlphaZeroTraining.h"
 	"include/AlphaZeroTrainingTemplate.h"
-	"include/Game.h"
-	"include/MonteCarloTreeSearch.h"
-	"include/ReplayElement.h"
 	"include/RingBuffer.h"
 	"include/AlphaZeroUtility.h"
 	"include/MonteCarloTreeSearchTemplate.h"
-	"src/AlphaZeroTraining.cpp"
-	"src/MonteCarloTreeSearch.cpp"
 	"src/AlphaZeroUtility.cpp"
 	)
 

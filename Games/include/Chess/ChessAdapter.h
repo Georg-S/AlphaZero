@@ -1,7 +1,7 @@
 #ifndef DEEPREINFORCEMENTLEARNING_REDUCEDCHESSADAPTER_H
 #define DEEPREINFORCEMENTLEARNING_REDUCEDCHESSADAPTER_H
 
-#include <Game.h>
+#include <torch/torch.h>
 #include "Chess/Engine/ChessEngine.h"
 
 namespace chess
@@ -10,7 +10,7 @@ namespace chess
 	int getIntFromMove(const ceg::Move& move);
 }
 
-class ChessAdapter : public Game
+class ChessAdapter
 {
 public:
 	struct GameState
@@ -19,7 +19,7 @@ public:
 		int currentPlayer;
 
 		GameState() = default;
-		GameState(ceg::BitBoard board, int currentPlayer) 
+		GameState(ceg::BitBoard board, int currentPlayer)
 			: board(std::move(board))
 			, currentPlayer(currentPlayer)
 		{
@@ -75,24 +75,24 @@ public:
 	};
 
 	ChessAdapter();
-	std::vector<int> getAllPossibleMoves(const std::string& state, int currentPlayer) override;
+	std::vector<int> getAllPossibleMoves(const std::string& state, int currentPlayer);
 	std::vector<int> getAllPossibleMoves(const GameState& gameState, int currentPlayer) const;
-	int getInitialPlayer() override;
-	std::string getInitialGameState() override;
-	int getPlayerWon(const std::string& state) override;
+	int getInitialPlayer();
+	GameState getInitialGameState();
+	int getPlayerWon(const std::string& state);
 	int getPlayerWon(const GameState& gameState) const;
-	int getNextPlayer(int currentPlayer) override;
-	std::string makeMove(const std::string& state, int move, int currentPlayer) override;
+	int getNextPlayer(int currentPlayer);
+	std::string makeMove(const std::string& state, int move, int currentPlayer);
 	GameState makeMove(GameState state, int move, int currentPlayer); // TODO make const
-	torch::Tensor convertStateToNeuralNetInput(const std::string& state, int currentPlayer) override;
+	torch::Tensor convertStateToNeuralNetInput(const std::string& state, int currentPlayer);
 	torch::Tensor convertStateToNeuralNetInput(const GameState& state, int currentPlayer) const;
-	void convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Tensor outTensor) override;
+	void convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Tensor outTensor);
 	void convertStateToNeuralNetInput(const GameState& state, int currentPlayer, torch::Tensor outTensor) const;
-	bool isGameOver(const std::string& state) override;
+	bool isGameOver(const std::string& state);
 	bool isGameOver(const GameState& state) const;
-	int gameOverReward(const std::string& state, int currentPlayer) override;
+	int gameOverReward(const std::string& state, int currentPlayer);
 	int gameOverReward(const GameState& state, int currentPlayer) const;
-	int getActionCount() const override;
+	int getActionCount() const;
 
 private:
 	static constexpr int m_actionCount = 4096;

@@ -44,6 +44,8 @@ static torch::DeviceType device = torch::kCUDA;
 static TicTacToeAdapter tttAdap = TicTacToeAdapter();
 static DefaultNeuralNet tttNet = DefaultNeuralNet(2, 3, 3, 9, device);
 
+#if RunTrainingTest
+
 TEST(Training, test_tic_tac_toe_training)
 {
 	auto trainingParams = AlphaZeroTrainingParameters{};
@@ -66,5 +68,7 @@ TEST(Training, test_tic_tac_toe_training)
 	training.setTrainingParams(trainingParams);
 	training.runTraining();
 }
+
+#endif //RunTrainingTest
 
 #endif //RunTests

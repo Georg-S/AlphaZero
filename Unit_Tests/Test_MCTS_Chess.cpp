@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 #include <MonteCarloTreeSearchTemplate.h>
-#include <MonteCarloTreeSearch.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
 #include <Chess/ChessAdapter.h>
 #include <tuple>

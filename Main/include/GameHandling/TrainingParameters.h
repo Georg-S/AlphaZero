@@ -4,7 +4,7 @@
 // Libtorch has many warnings which clutter the output, so we ignore them
 #pragma warning(push, 0)
 #include <torch/torch.h>
-#include <AlphaZeroTraining.h>
+#include <AlphaZeroTrainingTemplate.h>
 #pragma warning(pop)
 
 struct TrainingParameters
@@ -25,24 +25,23 @@ struct TrainingParameters
 	int cpuThreads;
 	torch::DeviceType device;
 
-	AlphaZeroTraining::Parameters getAlphaZeroParams(std::string neuralNetPath, const AlphaZeroTraining::Parameters& param = {}) const
+	AlphaZeroTrainingParameters getAlphaZeroParams(std::string neuralNetPath, AlphaZeroTrainingParameters param = {}) const
 	{
-		auto parameters = param;
-		parameters.neuralNetPath = std::move(neuralNetPath);
-		parameters.MAX_REPLAY_MEMORY_SIZE = replayMemorySize;
-		parameters.TRAINING_DONT_USE_DRAWS = !useDraws;
-		parameters.RESTRICT_GAME_LENGTH = restrictGameLength;
-		parameters.DRAW_AFTER_COUNT_OF_STEPS = maxGameLength;
-		parameters.TRAINING_ITERATIONS = trainingIterations;
-		parameters.SELF_PLAY_MCTS_COUNT = selfPlayMctsCount;
-		parameters.SELFPLAY_BATCH_SIZE = selfPlayBatchSize;
-		parameters.NUM_SELF_PLAY_GAMES = selfPlayGamesCount;
-		parameters.TRAINING_BATCH_SIZE = trainingBatchSize;
-		parameters.SAVE_ITERATION_COUNT = saveIterationCount;
-		parameters.RANDOM_MOVE_COUNT = randomizedMoveCount;
-		parameters.NUMBER_CPU_THREADS = cpuThreads;
+		param.neuralNetPath = std::move(neuralNetPath);
+		param.MAX_REPLAY_MEMORY_SIZE = replayMemorySize;
+		param.TRAINING_DONT_USE_DRAWS = !useDraws;
+		param.RESTRICT_GAME_LENGTH = restrictGameLength;
+		param.DRAW_AFTER_COUNT_OF_STEPS = maxGameLength;
+		param.TRAINING_ITERATIONS = trainingIterations;
+		param.SELF_PLAY_MCTS_COUNT = selfPlayMctsCount;
+		param.SELFPLAY_BATCH_SIZE = selfPlayBatchSize;
+		param.NUM_SELF_PLAY_GAMES = selfPlayGamesCount;
+		param.TRAINING_BATCH_SIZE = trainingBatchSize;
+		param.SAVE_ITERATION_COUNT = saveIterationCount;
+		param.RANDOM_MOVE_COUNT = randomizedMoveCount;
+		param.NUMBER_CPU_THREADS = cpuThreads;
 
-		return parameters;
+		return param;
 	}
 };
 

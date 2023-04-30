@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-#include <MonteCarloTreeSearch.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
 #include <TicTacToe/TicTacToeAdapter.h>
 #include <tuple>

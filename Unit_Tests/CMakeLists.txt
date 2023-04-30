@@ -15,7 +15,6 @@ set(TESTSOURCES
     "Test_MCTS_ConnectFour.cpp"
     "Test_MCTS_Chess.cpp"
     "Test_Training.cpp"
-    "Test_MonteCarloTreeSearch.cpp"
     "Test_ConnectFourAdapter.cpp"
     "Test_ChessAdapter.cpp"
     )

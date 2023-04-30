@@ -51,9 +51,9 @@ int ChessAdapter::getInitialPlayer()
 	return static_cast<int>(ceg::PieceColor::WHITE);
 }
 
-std::string ChessAdapter::getInitialGameState()
+ChessAdapter::GameState ChessAdapter::getInitialGameState()
 {
-	return "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -";
+	return GameState(ceg::BitBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"), static_cast<int>(ceg::PieceColor::WHITE));
 }
 
 int ChessAdapter::getPlayerWon(const std::string& state)

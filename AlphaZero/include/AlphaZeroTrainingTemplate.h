@@ -8,14 +8,13 @@
 #include <thread>
 #include <mutex>
 #include <RingBuffer.h>
-#include "Game.h"
 #include "AlphaZeroUtility.h"
 #include "NeuralNetworks/NeuralNetwork.h"
 #include "MonteCarloTreeSearchTemplate.h"
 
 using namespace ALZ;
 
-struct AlphaZeroTrainingParameters 
+struct AlphaZeroTrainingParameters
 {
 	std::string neuralNetPath;
 
