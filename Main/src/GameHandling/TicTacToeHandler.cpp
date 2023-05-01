@@ -16,48 +16,46 @@ void TicTacToeHandler::startTwoPlayerTicTacToeGame()
 	ttt.gameLoop();
 }
 
-//void TicTacToeHandler::evalTicTacToe(bool multiThreaded)
-//{
-//	constexpr int multiThreadingThreadCount = 10;
-//	std::ofstream myfile;
-//	myfile.open(std::to_string(evalMCTSCount) + "_50_100k_001.csv");
-//	myfile << "Iteration; Wins; Draws; Losses \n";
-//	EvalResult result;
-//
-//	const int threads = multiThreaded ? multiThreadingThreadCount : 1;
-//
-//	result = evalTicTacToeMultiThreaded(preTrainedPath + "/start", torch::kCUDA, threads);
-//
-//	writeEvaluationResultToFile(0, result, myfile);
-//
-//	for (int i = 0; i < 40; i++)
-//	{
-//		std::string path = preTrainedPath + "/iteration" + std::to_string(i);
-//		std::cout << path << std::endl;
-//		result = evalTicTacToeMultiThreaded(path, torch::kCUDA, threads);
-//
-//		writeEvaluationResultToFile(i + 1, result, myfile);
-//	}
-//}
-//
-//EvalResult TicTacToeHandler::evalTicTacToeMultiThreaded(std::string netName, torch::DeviceType device, int threadCount)
-//{
-//	TicTacToeAdapter adap = TicTacToeAdapter();
-//	Evaluation evaluation = Evaluation<ttt::Board, TicTacToeAdapter, false>(device, evalMCTSCount);
-//
-//	auto toEval = std::make_unique<DefaultNeuralNet>(2, 3, 3, 9, netName, device);
-//	toEval->setToEval();
-//	ttt::MiniMaxAi minimaxAi = ttt::MiniMaxAi();
-//	EvalResult result = {};
-//	evaluation.eval(toEval.get(), &minimaxAi, &adap,  100, result, 100);
-//
-//	return result;
-//}
-//
-//void TicTacToeHandler::writeEvaluationResultToFile(int iteration, const EvalResult& result, std::ofstream& file)
-//{
-//	file << std::to_string(iteration) << ";" << std::to_string(result.wins) << ";" << std::to_string(result.draws) << ";" << std::to_string(result.losses) << std::endl;
-//}
+void TicTacToeHandler::evalTicTacToe()
+{
+	constexpr int multiThreadingThreadCount = 10;
+	std::ofstream myfile;
+	myfile.open(std::to_string(evalMCTSCount) + "_50_100k_001.csv");
+	myfile << "Iteration; Wins; Draws; Losses \n";
+	EvalResult result;
+
+	result = evalTicTacToe(preTrainedPath + "/start", torch::kCUDA);
+
+	writeEvaluationResultToFile(0, result, myfile);
+
+	for (int i = 0; i < 40; i++)
+	{
+		std::string path = preTrainedPath + "/iteration" + std::to_string(i);
+		std::cout << path << std::endl;
+		result = evalTicTacToe(path, torch::kCUDA);
+
+		writeEvaluationResultToFile(i + 1, result, myfile);
+	}
+}
+
+EvalResult TicTacToeHandler::evalTicTacToe(std::string netName, torch::DeviceType device)
+{
+	TicTacToeAdapter adap = TicTacToeAdapter();
+	Evaluation evaluation = Evaluation<ttt::Board, TicTacToeAdapter, false>(device, evalMCTSCount, &adap);
+
+	auto toEval = std::make_unique<DefaultNeuralNet>(2, 3, 3, 9, netName, device);
+	toEval->setToEval();
+	ttt::MiniMaxAi minimaxAi = ttt::MiniMaxAi();
+	EvalResult result = {};
+	evaluation.eval(toEval.get(), &minimaxAi, 100, result, 100);
+
+	return result;
+}
+
+void TicTacToeHandler::writeEvaluationResultToFile(int iteration, const EvalResult& result, std::ofstream& file)
+{
+	file << std::to_string(iteration) << ";" << std::to_string(result.wins) << ";" << std::to_string(result.draws) << ";" << std::to_string(result.losses) << std::endl;
+}
 
 AlphaZeroTrainingParameters TicTacToeHandler::getDefaultTicTacToeTrainingParameters() const
 {
@@ -104,12 +102,12 @@ void TicTacToeHandler::setTrainingParameters(AlphaZeroTraining<ttt::Board, TicTa
 void TicTacToeHandler::ticTacToeAgainstNeuralNetAi(ttt::PlayerColor playerColor, std::string netName, int countMcts, bool probabilistic,
 	torch::DeviceType device)
 {
-	//TicTacToeAdapter adap = TicTacToeAdapter();
-	//DefaultNeuralNet neuralNet = DefaultNeuralNet(2, 3, 3, 9, preTrainedPath + "/" + netName, device);
-	//neuralNet.setToEval();
-	//NeuralNetAi ai = NeuralNetAi(&neuralNet, &adap, 9, countMcts, probabilistic, device);
-	//PlayerColor aiColor = getNextPlayer(playerColor);
-	//TicTacToe ttt = TicTacToe(&ai, aiColor);
+	TicTacToeAdapter adap = TicTacToeAdapter();
+	DefaultNeuralNet neuralNet = DefaultNeuralNet(2, 3, 3, 9, preTrainedPath + "/" + netName, device);
+	neuralNet.setToEval();
+	auto ai = NeuralNetAi<ttt::Board, TicTacToeAdapter>(&neuralNet, &adap, countMcts, probabilistic, device);
+	PlayerColor aiColor = getNextPlayer(playerColor);
+	TicTacToe ttt = TicTacToe(&ai, aiColor);
 
-	//ttt.gameLoop();
+	ttt.gameLoop();
 }

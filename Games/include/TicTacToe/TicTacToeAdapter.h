@@ -24,6 +24,8 @@ public:
 	bool isGameOver(const ttt::Board& board) const;
 	ttt::Board makeMove(ttt::Board board, int move, int currentPlayer) const;
 	int getActionCount() const;
+	ttt::Board getGameStateFromString(const std::string str, int currentPlayer);
+	std::string getStringFromGameState(const ttt::Board& board);
 private:
 	static constexpr int m_actionCount = 9;
 };

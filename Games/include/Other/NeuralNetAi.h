@@ -2,6 +2,7 @@
 #define DEEPREINFORCEMENTLEARNING_NEURALNETAI_H
 
 #include <cfloat>
+#include <memory>
 #include <NeuralNetworks/NeuralNetwork.h>
 #include <MonteCarloTreeSearch.h>
 #include <AlphaZeroUtility.h>
@@ -12,21 +13,23 @@ template <typename GameState, typename Game, bool mockExpansion = false>
 class NeuralNetAi : public Ai
 {
 public:
-	NeuralNetAi(NeuralNetwork* net, Game* game, MonteCarloTreeSearchCache<GameState, Game, mockExpansion>* cache, 
-		int mctsCount = 50, bool probabilistic = false, torch::DeviceType device = torch::kCPU)
+	NeuralNetAi(NeuralNetwork* net, Game* game, int mctsCount = 50, bool probabilistic = false, torch::DeviceType device = torch::kCPU)
 		: m_net(net)
 		, m_game(game)
 		, m_mctsCount(mctsCount)
 		, m_probabilistic(probabilistic)	
 		, m_device(device)
 	{
-		m_mcts = MonteCarloTreeSearch<GameState, Game, mockExpansion>(cache, m_game, device);
+		m_cache = std::make_unique< MonteCarloTreeSearchCache<GameState, Game, mockExpansion>>(device, m_game);
+		m_mcts = std::make_unique<MonteCarloTreeSearch<GameState, Game, mockExpansion>>(m_cache.get(), m_game, device);
 	}
 
-	std::string getMove(const std::string& state, int color) override
+	int getMove(const std::string& stateStr, int color) override
 	{
-		m_mcts.search(m_mctsCount, state, m_net, color);
-		auto probs = m_mcts.getProbabilities(state);
+		auto state = m_game->getGameStateFromString(stateStr, color);
+		
+		m_mcts->search(m_mctsCount, state, m_net, color);
+		auto probs = m_mcts->getProbabilities(state);
 
 		if (m_probabilistic)
 			return ALZ::getRandomAction(probs);
@@ -35,7 +38,8 @@ public:
 	}
 
 private:
-	MonteCarloTreeSearch<GameState, Game> m_mcts;
+	std::unique_ptr<MonteCarloTreeSearchCache<GameState, Game, mockExpansion>> m_cache;
+	std::unique_ptr<MonteCarloTreeSearch<GameState, Game, mockExpansion>> m_mcts;
 	NeuralNetwork* m_net;
 	Game* m_game;
 	int m_mctsCount;

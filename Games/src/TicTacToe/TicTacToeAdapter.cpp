@@ -86,3 +86,13 @@ int TicTacToeAdapter::getActionCount() const
 {
 	return m_actionCount;
 }
+
+ttt::Board TicTacToeAdapter::getGameStateFromString(const std::string str, int currentPlayer) const
+{
+	return ttt::Board(str);
+}
+
+std::string TicTacToeAdapter::getStringFromGameState(const ttt::Board& board) const
+{
+	return board.toString();
+}
