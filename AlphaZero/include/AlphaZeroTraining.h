@@ -36,10 +36,10 @@ struct AlphaZeroTrainingParameters
 	int DRAW_AFTER_COUNT_OF_STEPS = 75;
 };
 
-template <typename GameStateT>
-struct ReplayElementT
+template <typename GameState>
+struct ReplayElement
 {
-	ReplayElementT(GameStateT state, int currentPlayer, std::vector<std::pair<int, float>> probs, float result)
+	ReplayElement(GameState state, int currentPlayer, std::vector<std::pair<int, float>> probs, float result)
 		: state(std::move(state))
 		, currentPlayer(currentPlayer)
 		, mctsProbabilities(std::move(probs))
@@ -47,17 +47,17 @@ struct ReplayElementT
 	{
 	}
 
-	GameStateT state;
+	GameState state;
 	int currentPlayer;
 	std::vector<std::pair<int, float>> mctsProbabilities;
 	float result;
 };
 
-template <typename GameStateT, typename GameT, bool mockExpansion = false>
-class AlphaZeroTrainingT
+template <typename GameState, typename Game, bool mockExpansion = false>
+class AlphaZeroTraining
 {
 public:
-	AlphaZeroTrainingT(GameT* game, NeuralNetwork* currentBest, torch::DeviceType device = torch::kCPU)
+	AlphaZeroTraining(Game* game, NeuralNetwork* currentBest, torch::DeviceType device = torch::kCPU)
 		: m_game(game)
 		, m_net(currentBest)
 		, m_actionCount(game->getActionCount())
@@ -83,7 +83,7 @@ public:
 	void setTrainingParams(AlphaZeroTrainingParameters params) 
 	{
 		m_params = std::move(params);
-		m_replayMemory = RingBuffer<ReplayElementT<GameStateT>>(m_params.MAX_REPLAY_MEMORY_SIZE);
+		m_replayMemory = RingBuffer<ReplayElement<GameState>>(m_params.MAX_REPLAY_MEMORY_SIZE);
 	}
 
 private:
@@ -94,7 +94,7 @@ private:
 
 		std::vector<std::thread> threadPool;
 		for (size_t i = 0; i < m_params.NUMBER_CPU_THREADS; i++)
-			threadPool.push_back(std::thread(&AlphaZeroTrainingT::selfPlayBuf, this));
+			threadPool.push_back(std::thread(&AlphaZeroTraining::selfPlayBuf, this));
 
 		for (auto& thread : threadPool)
 			thread.join();
@@ -127,20 +127,20 @@ private:
 
 	struct SelfPlayState
 	{
-		SelfPlayState(GameStateT currentState, int currentPlayer, int actionCount, torch::DeviceType device, GameT* game, MonteCarloTreeSearchCache<GameStateT, GameT, mockExpansion>* cache)
+		SelfPlayState(GameState currentState, int currentPlayer, int actionCount, torch::DeviceType device, Game* game, MonteCarloTreeSearchCache<GameState, Game, mockExpansion>* cache)
 			: currentState(std::move(currentState))
 			, currentPlayer(currentPlayer)
-			, mcts(MonteCarloTreeSearch<GameStateT, GameT, mockExpansion>(cache, game, device))
+			, mcts(MonteCarloTreeSearch<GameState, Game, mockExpansion>(cache, game, device))
 		{
 		}
 
-		GameStateT currentState;
+		GameState currentState;
 		int currentPlayer;
 		bool continueMcts = false;
 		int netBufferIndex = -1;
 		int currentStep = 0;
-		MonteCarloTreeSearch<GameStateT, GameT, mockExpansion> mcts;
-		std::vector<ReplayElementT<GameStateT>> trainingData;
+		MonteCarloTreeSearch<GameState, Game, mockExpansion> mcts;
+		std::vector<ReplayElement<GameState>> trainingData;
 	};
 
 
@@ -153,11 +153,11 @@ private:
 	This has the benefit that we can collect the (neural net input) data for all games and calculate the neural net output once.
 	The result is a big performance improvement, since GPUs are fast in calculating multiple data at once.
 	*/
-	std::vector<ReplayElementT<GameStateT>> selfPlay(int batchSize) 
+	std::vector<ReplayElement<GameState>> selfPlay(int batchSize) 
 	{
 		assert(batchSize != 0);
-		std::vector<ReplayElementT<GameStateT>> resultingTrainingsData;
-		auto netInputBuffer = MonteCarloTreeSearchCache<GameStateT, GameT, mockExpansion>(m_device, m_game);
+		std::vector<ReplayElement<GameState>> resultingTrainingsData;
+		auto netInputBuffer = MonteCarloTreeSearchCache<GameState, Game, mockExpansion>(m_device, m_game);
 		auto currentStatesData = std::vector<SelfPlayState>(batchSize, { m_game->getInitialGameState(), m_game->getInitialPlayer(), m_game->getActionCount(), m_device, m_game, &netInputBuffer });
 		/*
 		Use a vector of pointers to the gamedata for iterating,
@@ -231,7 +231,7 @@ private:
 		return resultingTrainingsData;
 	}
 
-	void addResult(std::vector<ReplayElementT<GameStateT>>& elements, int winner) 
+	void addResult(std::vector<ReplayElement<GameState>>& elements, int winner) 
 	{
 		for (auto& elem : elements)
 		{
@@ -257,7 +257,7 @@ private:
 
 		std::vector<std::thread> threadPool;
 		for (size_t i = 0; i < conversionCpuThreads; i++)
-			threadPool.push_back(std::thread(&AlphaZeroTrainingT::trainNetMultiThreaded, this));
+			threadPool.push_back(std::thread(&AlphaZeroTraining::trainNetMultiThreaded, this));
 
 		for (auto& thread : threadPool)
 			thread.join();
@@ -276,7 +276,7 @@ private:
 				m_trainingBatchIndex++;
 			}
 
-			std::vector<ReplayElementT<GameStateT>> batch = m_replayMemory.getRandomSample(m_params.TRAINING_BATCH_SIZE);
+			std::vector<ReplayElement<GameState>> batch = m_replayMemory.getRandomSample(m_params.TRAINING_BATCH_SIZE);
 			torch::Tensor neuralInput = convertSampleToNeuralInput(batch);
 			torch::Tensor valueTarget = convertToValueTarget(batch);
 			torch::Tensor probsTarget = convertToProbsTarget(batch);
@@ -293,7 +293,7 @@ private:
 		}
 	}
 
-	torch::Tensor convertSampleToNeuralInput(const std::vector<ReplayElementT<GameStateT>>& sample)
+	torch::Tensor convertSampleToNeuralInput(const std::vector<ReplayElement<GameState>>& sample)
 	{
 		const int sampleSize = sample.size();
 		torch::Tensor neuralInput;
@@ -316,7 +316,7 @@ private:
 		return neuralInput;
 	}
 
-	torch::Tensor convertToValueTarget(const std::vector<ReplayElementT<GameStateT>>& sample)
+	torch::Tensor convertToValueTarget(const std::vector<ReplayElement<GameState>>& sample)
 	{
 		const int sampleSize = sample.size();
 		torch::Tensor valueTarget = torch::zeros({ sampleSize, 1 });
@@ -327,7 +327,7 @@ private:
 		return valueTarget;
 	}
 
-	torch::Tensor convertToProbsTarget(const std::vector<ReplayElementT<GameStateT>>& sample)
+	torch::Tensor convertToProbsTarget(const std::vector<ReplayElement<GameState>>& sample)
 	{
 		int sampleSize = sample.size();
 		torch::Tensor probsTarget = torch::zeros({ sampleSize, m_actionCount });
@@ -347,7 +347,7 @@ private:
 			m_net->save(m_params.neuralNetPath + "/iteration" + std::to_string(iteration));
 	}
 
-	GameT* m_game;
+	Game* m_game;
 	NeuralNetwork* m_net;
 	int m_actionCount = -1;
 	torch::DeviceType m_device;
@@ -355,7 +355,7 @@ private:
 	size_t m_trainingBatchIndex = 0;
 	std::mutex m_mut;
 	AlphaZeroTrainingParameters m_params;
-	RingBuffer<ReplayElementT<GameStateT>> m_replayMemory;
+	RingBuffer<ReplayElement<GameState>> m_replayMemory;
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_ALPHAZEROTRAININGTEMPLATE_H

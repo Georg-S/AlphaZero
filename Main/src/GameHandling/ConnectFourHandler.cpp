@@ -94,7 +94,7 @@ AlphaZeroTrainingParameters ConnectFourHandler::getDefaultConnectFourTrainingPar
 //	return result;
 //}
 
-void ConnectFourHandler::setTrainingParameters(AlphaZeroTrainingT<cn4::Board, ConnectFourAdapter>& training, const TrainingParameters& params)
+void ConnectFourHandler::setTrainingParameters(AlphaZeroTraining<cn4::Board, ConnectFourAdapter>& training, const TrainingParameters& params)
 {
 	auto defaultParams = getDefaultConnectFourTrainingParameters();
 	auto trainingParams = params.getAlphaZeroParams(trainingPath, defaultParams);
@@ -108,7 +108,7 @@ void ConnectFourHandler::runTraining(const TrainingParameters& params)
 	auto neuralNet = std::make_unique<DefaultNeuralNet>(2, 7, 6, 7, device);
 	neuralNet->setLearningRate(params.learningRate);
 	neuralNet->setToTraining();
-	auto training = AlphaZeroTrainingT<cn4::Board, ConnectFourAdapter>(&adap, neuralNet.get(), device);
+	auto training = AlphaZeroTraining<cn4::Board, ConnectFourAdapter>(&adap, neuralNet.get(), device);
 	setTrainingParameters(training, params);
 
 	ALZ::ScopedTimer timer{};

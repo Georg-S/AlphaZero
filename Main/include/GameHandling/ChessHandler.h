@@ -5,7 +5,7 @@
 #include <regex>
 #include <filesystem>
 #include <Chess/ChessAiAdapter.h>
-#include <AlphaZeroTrainingTemplate.h>
+#include <AlphaZeroTraining.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
 #include <Chess/Chess.h>
 #include <Chess/ChessAdapter.h>
@@ -22,7 +22,7 @@ public:
 	void chessAgainstMiniMaxAi(int miniMaxDepth, ceg::PieceColor playerColor);
 	void runTraining(const TrainingParameters& params);
 	static void startTwoPlayerChessGame();
-	void setTrainingParameters(AlphaZeroTrainingT<ChessAdapter::GameState, ChessAdapter>& training
+	void setTrainingParameters(AlphaZeroTraining<ChessAdapter::GameState, ChessAdapter>& training
 		, const TrainingParameters& params, int currentIteration);
 
 private:

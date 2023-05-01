@@ -87,14 +87,14 @@ void TicTacToeHandler::runTraining(const TrainingParameters& params)
 	auto neuralNet = std::make_unique<DefaultNeuralNet>(2, 3, 3, 9, device);
 	neuralNet->setLearningRate(params.learningRate);
 	neuralNet->setToTraining();
-	auto training = AlphaZeroTrainingT<ttt::Board, TicTacToeAdapter, false>(&adap, neuralNet.get(), device);
+	auto training = AlphaZeroTraining<ttt::Board, TicTacToeAdapter, false>(&adap, neuralNet.get(), device);
 	setTrainingParameters(training, params);
 
 	ALZ::ScopedTimer timer{};
 	training.runTraining();
 }
 
-void TicTacToeHandler::setTrainingParameters(AlphaZeroTrainingT<ttt::Board, TicTacToeAdapter>& training, const TrainingParameters& params)
+void TicTacToeHandler::setTrainingParameters(AlphaZeroTraining<ttt::Board, TicTacToeAdapter>& training, const TrainingParameters& params)
 {
 	auto defaultParams = getDefaultTicTacToeTrainingParameters();
 	auto trainingParams = params.getAlphaZeroParams(trainingPath, defaultParams);

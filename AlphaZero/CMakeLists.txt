@@ -3,7 +3,7 @@ project(AlphaZero)
 set(CMAKE_CXX_STANDARD 17)
 
 set(AlphaZeroFiles
-	"include/AlphaZeroTrainingTemplate.h"
+	"include/AlphaZeroTraining.h"
 	"include/RingBuffer.h"
 	"include/AlphaZeroUtility.h"
 	"include/MonteCarloTreeSearch.h"

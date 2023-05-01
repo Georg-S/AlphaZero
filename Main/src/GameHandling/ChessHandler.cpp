@@ -40,7 +40,7 @@ AlphaZeroTrainingParameters ChessHandler::getDefaultChessTrainingParameters() co
 	return params;
 }
 
-void ChessHandler::setTrainingParameters(AlphaZeroTrainingT<ChessAdapter::GameState, ChessAdapter>& training, const TrainingParameters& params, int currentIteration)
+void ChessHandler::setTrainingParameters(AlphaZeroTraining<ChessAdapter::GameState, ChessAdapter>& training, const TrainingParameters& params, int currentIteration)
 {
 	auto defaultParams = getDefaultChessTrainingParameters();
 	auto trainingParams = params.getAlphaZeroParams(trainingPath, defaultParams);
@@ -89,7 +89,7 @@ void ChessHandler::runTraining(const TrainingParameters& params)
 
 	neuralNet->setLearningRate(params.learningRate);
 	neuralNet->setToTraining();
-	auto training = AlphaZeroTrainingT<ChessAdapter::GameState, ChessAdapter>(&adap, neuralNet.get(), device);
+	auto training = AlphaZeroTraining<ChessAdapter::GameState, ChessAdapter>(&adap, neuralNet.get(), device);
 	setTrainingParameters(training, params, currentIteration);
 
 	ALZ::ScopedTimer timer{};
