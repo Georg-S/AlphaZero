@@ -72,9 +72,8 @@ public:
 			};
 
 			const auto res = memcmp(lhsArr, rhsArr, std::size(lhsArr) * sizeof(lhsArr[0]));
-			if (res < 0)
-				return true;
-			return false;
+
+			return res < 0;
 		}
 	};
 
