@@ -23,12 +23,12 @@ public:
 	void connectFourAgainstMiniMaxAi(int depth, cn4::PlayerColor playerColor);
 	void runTraining(const TrainingParameters& params);
 	void startTwoPlayerConnectFourGame();
-	void evalConnectFour(bool multiThreaded = true);
 	void setTrainingParameters(AlphaZeroTraining<cn4::Board, ConnectFourAdapter>& training, const TrainingParameters& params);
+	void evalConnectFour();
 
 private:
-	//EvalResult evalConnectFourMultiThreaded(std::string netName, int miniMaxDepth, torch::DeviceType device, int threadCount);
-	//void writeEvaluationResultToFile(int iteration, const EvalResult& result, std::ofstream& file);
+	EvalResult evalConnectFour(std::string netName, int miniMaxDepth, torch::DeviceType device);
+	void writeEvaluationResultToFile(int iteration, const EvalResult& result, std::ofstream& file);
 	AlphaZeroTrainingParameters getDefaultConnectFourTrainingParameters() const;
 
 	inline static const std::string trainingPath = "NeuralNets/Training/ConnectFour";

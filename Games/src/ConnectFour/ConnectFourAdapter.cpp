@@ -82,3 +82,13 @@ int ConnectFourAdapter::getActionCount() const
 {
 	return m_actionCount;
 }
+
+cn4::Board ConnectFourAdapter::getGameStateFromString(const std::string str, int currentPlayer) const
+{
+	return cn4::Board(str);
+}
+
+std::string ConnectFourAdapter::getStringFromGameState(const cn4::Board& board) const
+{
+	return board.toString();
+}

@@ -24,7 +24,9 @@ public:
 	int gameOverReward(const cn4::Board& board, int currentPlayer) const;
 	bool isGameOver(const cn4::Board& board) const;
 	cn4::Board makeMove(const cn4::Board& board, int move, int currentPlayer) const;
-	int getActionCount() const ;
+	int getActionCount() const;
+	cn4::Board getGameStateFromString(const std::string str, int currentPlayer) const;
+	std::string getStringFromGameState(const cn4::Board& board) const;
 private:
 	static constexpr int m_actionCount = 7;
 };
