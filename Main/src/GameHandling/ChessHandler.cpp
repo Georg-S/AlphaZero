@@ -3,14 +3,14 @@
 void ChessHandler::chessAgainstNeuralNetAi(ceg::PieceColor playerColor, std::string netName, int mctsCount, bool randomize,
 	torch::DeviceType device)
 {
-	//auto chessNet = std::make_unique<DefaultNeuralNet>(14, 8, 8, 4096, preTrainedPath + "/" + netName, device);
-	//chessNet->setToEval();
-	//ChessAdapter adap = ChessAdapter();
-	//auto cache = MonteCarloTreeSearchCache<ChessAdapter::GameState, ChessAdapter>(device, &adap);
-	//auto neuralNetAi = NeuralNetAi<ChessAdapter::GameState, ChessAdapter>(chessNet.get(), &adap, &cache, 4096, mctsCount, randomize, device);
-	//Chess chess = Chess(&neuralNetAi, playerColor);
+	ChessAdapter adap = ChessAdapter();
+	auto chessNet = std::make_unique<DefaultNeuralNet>(14, 8, 8, 4096, preTrainedPath + "/" + netName, device);
+	chessNet->setToEval();
+	auto cache = MonteCarloTreeSearchCache<ChessAdapter::GameState, ChessAdapter>(device, &adap);
+	auto neuralNetAi = NeuralNetAi<ChessAdapter::GameState, ChessAdapter, false>(chessNet.get(), &adap, mctsCount, randomize, device);
+	Chess chess = Chess(&neuralNetAi, playerColor);
 
-	//chess.game_loop();
+	chess.game_loop();
 }
 
 void ChessHandler::startTwoPlayerChessGame()

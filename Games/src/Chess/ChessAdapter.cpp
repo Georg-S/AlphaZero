@@ -156,3 +156,14 @@ int ChessAdapter::getActionCount() const
 {
 	return m_actionCount;
 }
+
+ChessAdapter::GameState ChessAdapter::getGameStateFromString(const std::string str, int currentPlayer) const
+{
+	auto [player, board] = chessEngine->get_player_and_board_from_fen_string(str);
+	return GameState(board, static_cast<int>(player));
+}
+
+std::string ChessAdapter::getStringFromGameState(const GameState& board) const
+{
+	return ceg::to_FEN_string(board.board, ceg::PieceColor(board.currentPlayer) == ceg::PieceColor::BLACK);
+}

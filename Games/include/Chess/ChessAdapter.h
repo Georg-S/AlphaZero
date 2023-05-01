@@ -90,6 +90,8 @@ public:
 	bool isGameOver(const GameState& state) const;
 	GameState makeMove(GameState state, int move, int currentPlayer) const;
 	int getActionCount() const;
+	GameState getGameStateFromString(const std::string str, int currentPlayer) const;
+	std::string getStringFromGameState(const GameState& board) const;
 
 private:
 	static constexpr int m_actionCount = 4096;
