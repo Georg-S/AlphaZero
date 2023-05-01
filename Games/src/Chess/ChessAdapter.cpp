@@ -22,88 +22,9 @@ int chess::getIntFromMove(const ceg::Move& move)
 	return from | to;
 }
 
-ChessAdapter::ChessAdapter()
-{
-	chessEngine = std::make_unique<ceg::ChessEngine>();
-}
-
-std::vector<int> ChessAdapter::getAllPossibleMoves(const std::string& state, int currentPlayer)
-{
-	ceg::BitBoard board(state);
-	return getAllPossibleMoves(GameState(board, currentPlayer), currentPlayer);
-}
-
-std::vector<int> ChessAdapter::getAllPossibleMoves(const GameState& gameState, int currentPlayer) const
-{
-	const auto moves = chessEngine->get_all_possible_moves(gameState.board, ceg::PieceColor(currentPlayer));
-
-	auto result = std::vector<int>();
-	result.reserve(moves.size());
-
-	for (const auto& move : moves)
-		result.emplace_back(chess::getIntFromMove(move));
-
-	return result;
-}
-
-int ChessAdapter::getInitialPlayer()
-{
-	return static_cast<int>(ceg::PieceColor::WHITE);
-}
-
-ChessAdapter::GameState ChessAdapter::getInitialGameState()
-{
-	return GameState(ceg::BitBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"), static_cast<int>(ceg::PieceColor::WHITE));
-}
-
-int ChessAdapter::getPlayerWon(const std::string& state)
-{
-	ceg::BitBoard board(state);
-	return getPlayerWon(GameState(board, 2)); // Player doesn't matter -> will be deleted soon
-}
-
-int ChessAdapter::getPlayerWon(const GameState& gameState) const
-{
-	if (chessEngine->is_check_mate(gameState.board, ceg::PieceColor::WHITE))
-		return static_cast<int>(ceg::PieceColor::BLACK);
-	if (chessEngine->is_check_mate(gameState.board, ceg::PieceColor::BLACK))
-		return static_cast<int>(ceg::PieceColor::WHITE);
-
-	return static_cast<int>(ceg::PieceColor::NONE);
-}
-
-int ChessAdapter::getNextPlayer(int currentPlayer)
-{
-	auto color = ceg::PieceColor(currentPlayer);
-	assert(color != ceg::PieceColor::NONE);
-
-	return static_cast<int>(chessEngine->get_next_player(color));
-}
-
-std::string ChessAdapter::makeMove(const std::string& state, int move, int currentPlayer)
-{
-	ceg::BitBoard board(state);
-	auto mMove = chess::getMoveFromInt(move);
-	chessEngine->make_move(board, mMove);
-
-	int nextPlayer = getNextPlayer(currentPlayer);
-	auto result = ceg::to_FEN_string(board, ceg::PieceColor(nextPlayer) == ceg::PieceColor::BLACK);
-
-	return result;
-}
-
-ChessAdapter::GameState ChessAdapter::makeMove(GameState state, int move, int currentPlayer)
-{
-	auto mMove = chess::getMoveFromInt(move);
-	chessEngine->make_move(state.board, mMove);
-	state.currentPlayer = static_cast<int>(getNextPlayer(currentPlayer));
-
-	return state;
-}
-
 static void convertPiecesToTensor(uint64_t pieces, at::Tensor destination)
 {
-	while (pieces) 
+	while (pieces)
 	{
 		int index = ceg::get_bit_index_lsb(pieces);
 		ceg::reset_lsb(pieces);
@@ -126,16 +47,42 @@ static void setPiecesInTensor(const ceg::Pieces& pieces, uint64_t en_passant, at
 	convertPiecesToTensor(pieces.queens, destination[startIndex + 4]);
 	convertPiecesToTensor(pieces.king, destination[startIndex + 5]);
 	// Put castling and en_passant into the same plane to save some memory
-	convertPiecesToTensor(pieces.castling, destination[startIndex + 6]);	
+	convertPiecesToTensor(pieces.castling, destination[startIndex + 6]);
 	convertPiecesToTensor(en_passant, destination[startIndex + 6]);
 }
 
-torch::Tensor ChessAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer)
+ChessAdapter::ChessAdapter()
 {
-	torch::Tensor result = torch::zeros({ 1,14,8,8 });
-	convertStateToNeuralNetInput(state, currentPlayer, result[0]);
+	chessEngine = std::make_unique<ceg::ChessEngine>();
+}
 
-	return result;
+int ChessAdapter::getInitialPlayer() const
+{
+	return static_cast<int>(ceg::PieceColor::WHITE);
+}
+
+int ChessAdapter::getNextPlayer(int currentPlayer) const
+{
+	auto color = ceg::PieceColor(currentPlayer);
+	assert(color != ceg::PieceColor::NONE);
+
+	return static_cast<int>(chessEngine->get_next_player(color));
+}
+
+ChessAdapter::GameState ChessAdapter::getInitialGameState() const
+{
+	static const std::string initialGameStateStr = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -";
+	return GameState(ceg::BitBoard(initialGameStateStr), static_cast<int>(ceg::PieceColor::WHITE));
+}
+
+int ChessAdapter::getPlayerWon(const GameState& gameState) const
+{
+	if (chessEngine->is_check_mate(gameState.board, ceg::PieceColor::WHITE))
+		return static_cast<int>(ceg::PieceColor::BLACK);
+	if (chessEngine->is_check_mate(gameState.board, ceg::PieceColor::BLACK))
+		return static_cast<int>(ceg::PieceColor::WHITE);
+
+	return static_cast<int>(ceg::PieceColor::NONE);
 }
 
 torch::Tensor ChessAdapter::convertStateToNeuralNetInput(const GameState& state, int currentPlayer) const
@@ -144,25 +91,6 @@ torch::Tensor ChessAdapter::convertStateToNeuralNetInput(const GameState& state,
 	convertStateToNeuralNetInput(state, currentPlayer, result[0]);
 
 	return result;
-}
-
-void ChessAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Tensor outTensor)
-{
-	constexpr int perPlayerSize = 7;
-	ceg::BitBoard board(state);
-	ceg::PieceColor currentColor = ceg::PieceColor(currentPlayer);
-
-	outTensor.zero_();
-	if (currentColor == ceg::PieceColor::WHITE)
-	{
-		setPiecesInTensor(board.white_pieces, board.en_passant_mask, outTensor, 0);
-		setPiecesInTensor(board.black_pieces, 0LL, outTensor, perPlayerSize);
-	}
-	else
-	{
-		setPiecesInTensor(board.black_pieces, board.en_passant_mask, outTensor, 0);
-		setPiecesInTensor(board.white_pieces, 0LL, outTensor, perPlayerSize);
-	}
 }
 
 void ChessAdapter::convertStateToNeuralNetInput(const GameState& state, int currentPlayer, torch::Tensor outTensor) const
@@ -184,30 +112,17 @@ void ChessAdapter::convertStateToNeuralNetInput(const GameState& state, int curr
 	}
 }
 
-bool ChessAdapter::isGameOver(const std::string& state)
+std::vector<int> ChessAdapter::getAllPossibleMoves(const GameState& gameState, int currentPlayer) const
 {
-	auto [player, board] = chessEngine->get_player_and_board_from_fen_string(state);
+	const auto moves = chessEngine->get_all_possible_moves(gameState.board, ceg::PieceColor(currentPlayer));
 
-	return chessEngine->is_game_over(board, player);
-}
+	auto result = std::vector<int>();
+	result.reserve(moves.size());
 
-bool ChessAdapter::isGameOver(const GameState& state) const
-{
-	return chessEngine->is_game_over(state.board, ceg::PieceColor(state.currentPlayer));
-}
+	for (const auto& move : moves)
+		result.emplace_back(chess::getIntFromMove(move));
 
-int ChessAdapter::gameOverReward(const std::string& state, int currentPlayer)
-{
-	auto color = ceg::PieceColor(currentPlayer);
-	auto otherColor = chessEngine->get_next_player(color);
-	ceg::BitBoard board(state);
-
-	if (chessEngine->is_check_mate(board, color))
-		return -1;
-	else if (chessEngine->is_check_mate(board, otherColor))
-		return 1;
-
-	return 0;
+	return result;
 }
 
 int ChessAdapter::gameOverReward(const GameState& state, int currentPlayer) const
@@ -221,6 +136,20 @@ int ChessAdapter::gameOverReward(const GameState& state, int currentPlayer) cons
 		return 1;
 
 	return 0;
+}
+
+bool ChessAdapter::isGameOver(const GameState& state) const
+{
+	return chessEngine->is_game_over(state.board, ceg::PieceColor(state.currentPlayer));
+}
+
+ChessAdapter::GameState ChessAdapter::makeMove(GameState state, int move, int currentPlayer) const
+{
+	auto mMove = chess::getMoveFromInt(move);
+	chessEngine->make_move(state.board, mMove);
+	state.currentPlayer = static_cast<int>(getNextPlayer(currentPlayer));
+
+	return state;
 }
 
 int ChessAdapter::getActionCount() const

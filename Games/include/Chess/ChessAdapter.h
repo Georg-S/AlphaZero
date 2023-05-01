@@ -75,23 +75,16 @@ public:
 	};
 
 	ChessAdapter();
-	std::vector<int> getAllPossibleMoves(const std::string& state, int currentPlayer);
-	std::vector<int> getAllPossibleMoves(const GameState& gameState, int currentPlayer) const;
-	int getInitialPlayer();
-	GameState getInitialGameState();
-	int getPlayerWon(const std::string& state);
+	int getInitialPlayer() const;
+	int getNextPlayer(int currentPlayer) const;
+	GameState getInitialGameState() const;
 	int getPlayerWon(const GameState& gameState) const;
-	int getNextPlayer(int currentPlayer);
-	std::string makeMove(const std::string& state, int move, int currentPlayer);
-	GameState makeMove(GameState state, int move, int currentPlayer); // TODO make const
-	torch::Tensor convertStateToNeuralNetInput(const std::string& state, int currentPlayer);
 	torch::Tensor convertStateToNeuralNetInput(const GameState& state, int currentPlayer) const;
-	void convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Tensor outTensor);
 	void convertStateToNeuralNetInput(const GameState& state, int currentPlayer, torch::Tensor outTensor) const;
-	bool isGameOver(const std::string& state);
-	bool isGameOver(const GameState& state) const;
-	int gameOverReward(const std::string& state, int currentPlayer);
+	std::vector<int> getAllPossibleMoves(const GameState& gameState, int currentPlayer) const;
 	int gameOverReward(const GameState& state, int currentPlayer) const;
+	bool isGameOver(const GameState& state) const;
+	GameState makeMove(GameState state, int move, int currentPlayer) const;
 	int getActionCount() const;
 
 private:
