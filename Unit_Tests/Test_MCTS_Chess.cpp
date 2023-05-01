@@ -107,6 +107,23 @@ TEST(MCTS_Chess, test_chess_check_one_move_loses)
 	ASSERT_EQ(winningMove, mctsBestMove);
 }
 
+TEST(MCTS_Chess, test_chess_check_one_move_wins_with_promotion)
+{
+	const std::string boardStr = "k7/8/8/8/8/8/pr6/7K b - - 0 1";
+	const ceg::BitBoard board(boardStr);
+	auto gameState = ChessAdapter::GameState(board, static_cast<int>(ceg::PieceColor::BLACK));
+
+	const int winningMove = chess::getIntFromMove({ 0,6,0,7 });
+	auto mctsCache = MonteCarloTreeSearchCache<ChessAdapter::GameState, ChessAdapter, true>(device, &chessAdap);
+	auto mcts = MonteCarloTreeSearch<ChessAdapter::GameState, ChessAdapter, true>(&mctsCache, &chessAdap, device);
+	mcts.search(1000, gameState, &neuralNet, static_cast<int>(ceg::PieceColor::BLACK));
+	auto probabilities = mcts.getProbabilities(gameState);
+	int mctsBestMove = ALZ::getBestAction(probabilities);
+	auto mv = chess::getMoveFromInt(mctsBestMove);
+
+	ASSERT_EQ(winningMove, mctsBestMove);
+}
+
 TEST(MCTS_Chess, test_chess_check_one_move_loses_with_but_perform_other_color_mcts_before)
 {
 	const std::string boardStr = "8/7K/r7/8/8/6r1/8/k7 b - - 0 1";

@@ -146,7 +146,7 @@ bool ChessAdapter::isGameOver(const GameState& state) const
 ChessAdapter::GameState ChessAdapter::makeMove(GameState state, int move, int currentPlayer) const
 {
 	auto mMove = chess::getMoveFromInt(move);
-	chessEngine->make_move(state.board, mMove);
+	chessEngine->make_move_with_auto_promo(state.board, mMove);
 	state.currentPlayer = static_cast<int>(getNextPlayer(currentPlayer));
 
 	return state;
