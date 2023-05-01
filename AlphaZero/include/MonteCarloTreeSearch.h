@@ -155,6 +155,13 @@ template <typename GameState, typename Game, bool mockExpansion = false>
 class MonteCarloTreeSearch
 {
 public:
+	struct StateInformation
+	{
+		boost::container::flat_map<int, int> m_visitCount;
+		boost::container::flat_map<int, float> m_qValues;
+		std::vector<std::pair<int, float>> m_probabilities;
+	};
+
 	MonteCarloTreeSearch(MonteCarloTreeSearchCache<GameState, Game, mockExpansion>* cache, Game* game, torch::DeviceType device, float cpuct = 1.0)
 		: m_cache(cache)
 		, m_game(game)
@@ -202,16 +209,17 @@ public:
 		return runMultipleSearches(state, currentPlayer);
 	}
 
-	std::vector<std::pair<int, float>> getProbabilities(const GameState& state, float temperature = 1.0)
+	std::vector<std::pair<int, float>> getProbabilities(const GameState& state, float temperature = 1.0) const
 	{
-		const auto statePtr = &(*m_visited.find(state));
-		assert(statePtr);
+		auto stateIter = m_visitedState.find(state);
+		const auto& currentStateInfo = stateIter->second;
+		assert(stateIter != m_visitedState.end());
 
-		const int countSum = getVisitCountSum(statePtr);
+		const int countSum = getVisitCountSum(currentStateInfo);
 		std::vector<std::pair<int, float>> probs;
-		probs.reserve(m_probabilities[statePtr].size());
+		probs.reserve(currentStateInfo.m_probabilities.size());
 
-		for (const auto& [action, visitCount] : m_visitCount[statePtr])
+		for (const auto& [action, visitCount] : currentStateInfo.m_visitCount)
 		{
 			const float probability = static_cast<float>(pow(visitCount, 1.f / temperature)) / countSum;
 			probs.emplace_back(action, probability);
@@ -231,24 +239,23 @@ private:
 			m_backProp.emplace_back(std::move(gameState), currentPlayer);
 			const auto& currentState = m_backProp.back().state;
 
-			auto currentStateItr = m_visited.find(currentState);
-			if (currentStateItr == m_visited.end())
+			auto currentStateItr = m_visitedState.find(currentState);
+			if (currentStateItr == m_visitedState.end())
 			{
 				m_cache->addToExpansion({ currentState, currentPlayer });
 				*expansionNeeded = true;
 				return 0;
 			}
 
-			auto statePtr = &(*currentStateItr);
-			m_loopDetection.emplace(statePtr);
-			int bestAction = getActionWithHighestUpperConfidenceBound(statePtr, currentPlayer);
+			m_loopDetection.emplace(&(currentStateItr->first));
+			int bestAction = getActionWithHighestUpperConfidenceBound(currentStateItr->second, currentPlayer);
 			m_backProp.back().bestAction = bestAction;
 			gameState = m_game->makeMove(currentState, bestAction, currentPlayer);
 
-			auto nextStateItr = m_visited.find(gameState);
-			if (nextStateItr != m_visited.end())
+			auto nextStateItr = m_visitedState.find(gameState);
+			if (nextStateItr != m_visitedState.end())
 			{
-				if (m_loopDetection.find(&(*nextStateItr)) != m_loopDetection.end())
+				if (m_loopDetection.find(&(nextStateItr->first)) != m_loopDetection.end())
 					return 0;
 			}
 			currentPlayer = m_game->getNextPlayer(currentPlayer);
@@ -277,10 +284,11 @@ private:
 			value = -value;
 			auto& backProp = m_backProp.back();
 			auto& state = backProp.state;
-			auto statePtr = &(*m_visited.find(state));
+			auto& currentStateInfo = m_visitedState.find(state)->second;
 			auto bestAction = backProp.bestAction;
-			m_qValues[statePtr][bestAction] = (m_visitCount[statePtr][bestAction] * m_qValues[statePtr][bestAction] + value) / (m_visitCount[statePtr][bestAction] + 1);
-			m_visitCount[statePtr][bestAction] += 1;
+			currentStateInfo.m_qValues[bestAction] = (currentStateInfo.m_visitCount[bestAction] * currentStateInfo.m_qValues[bestAction] + value) / (currentStateInfo.m_visitCount[bestAction] + 1);
+			currentStateInfo.m_visitCount[bestAction] += 1;
+
 			m_backProp.pop_back();
 		}
 	}
@@ -297,11 +305,10 @@ private:
 	float finishExpansion()
 	{
 		assert(!m_backProp.empty());
-		const auto [iter, success] = m_visited.emplace(std::move(m_backProp.back().state));
-		const auto statePtr = &(*iter);
-		const float value = m_cache->m_values[*statePtr];
-		m_probabilities[statePtr] = m_cache->m_probabilities[*statePtr];
-		assert(!m_probabilities[statePtr].empty());
+		const auto& currentState = m_backProp.back().state;
+		const float value = m_cache->m_values[currentState];
+		const auto [iter, success] = m_visitedState.emplace(std::move(currentState), StateInformation());
+		iter->second.m_probabilities = m_cache->m_probabilities[iter->first];
 
 		m_backProp.pop_back();
 		backpropagateValue(value);
@@ -309,15 +316,18 @@ private:
 		return value;
 	}
 
-	int getActionWithHighestUpperConfidenceBound(const GameState* statePtr, int currentPlayer)
+	int getActionWithHighestUpperConfidenceBound(const StateInformation& stateInfo, int currentPlayer) const
 	{
 		float maxUtility = std::numeric_limits<float>::lowest();
 		int bestAction = -1;
 
-		const auto stateVisitCountSum = getVisitCountSum(statePtr);
-		for (const auto& [action, probability] : m_probabilities[statePtr])
+		const auto stateVisitCountSum = getVisitCountSum(stateInfo);
+		if (stateVisitCountSum == 0)
+			return stateInfo.m_probabilities.front().first;
+
+		for (const auto& [action, probability] : stateInfo.m_probabilities)
 		{
-			float utility = calculateUpperConfidenceBound(statePtr, action, probability, stateVisitCountSum);
+			float utility = calculateUpperConfidenceBound(stateInfo, action, probability, stateVisitCountSum);
 
 			if (utility > maxUtility)
 			{
@@ -325,25 +335,31 @@ private:
 				bestAction = action;
 			}
 		}
+		assert(bestAction != -1);
 
 		return bestAction;
 	}
 
-	float calculateUpperConfidenceBound(const GameState* statePtr, int action, float probability, unsigned int stateVisitCountSum)
+	float calculateUpperConfidenceBound(const StateInformation& stateInfo, int action, float probability, unsigned int stateVisitCountSum) const
 	{
-		const float buf = sqrt(stateVisitCountSum) / (1 + m_visitCount[statePtr][action]);
+		float stateVisitCount = 0.f;
+		float stateQvalue = 0.f;
+		auto visitCountIter = stateInfo.m_visitCount.find(action);
+		if (visitCountIter != stateInfo.m_visitCount.end()) 
+		{
+			stateVisitCount = visitCountIter->second;
+			stateQvalue = stateInfo.m_qValues.at(action);
+		}
 
-		return m_qValues[statePtr][action] + m_cpuct * probability * buf;
+		const float buf = sqrt(stateVisitCountSum) / (1.0 + stateVisitCount);
+
+		return stateQvalue + m_cpuct * probability * buf;
 	}
 
-	unsigned int getVisitCountSum(const GameState* statePtr) const
+	unsigned int getVisitCountSum(const StateInformation& stateInfo) const
 	{
-		assert(statePtr);
 		unsigned int countSum = 0;
-		const auto iter = m_visitCount.find(statePtr);
-		if (iter == m_visitCount.end())
-			return 0;
-		for (const auto& [action, visitCount] : iter->second)
+		for (const auto& [action, visitCount] : stateInfo.m_visitCount)
 			countSum += visitCount;
 
 		return countSum;
@@ -367,11 +383,9 @@ private:
 	int m_actionCount = -1;
 	float m_cpuct = -1.0;
 	int m_mctsCount = 0;
-	std::set<GameState> m_visited; // Only save the actual state string in this set -> this saves us some space
+
+	std::map<GameState, StateInformation> m_visitedState;
 	// Use boost flat_map, this reduces memory consumption quite a bit
-	std::map<const GameState*, boost::container::flat_map<int, int>> m_visitCount;
-	std::map<const GameState*, boost::container::flat_map<int, float>> m_qValues;
-	std::map<const GameState*, std::vector<std::pair<int, float>>> m_probabilities;
 	std::set<const GameState*> m_loopDetection;
 	std::vector<BackPropData> m_backProp;
 };
