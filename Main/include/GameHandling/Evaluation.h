@@ -22,10 +22,10 @@
 //	struct SelfPlayState
 //	{
 //		SelfPlayState(GameState currentState, int currentPlayer, torch::DeviceType device
-//			, Game* game, MonteCarloTreeSearchCacheT<GameState, Game, mockExpansion>* cache)
+//			, Game* game, MonteCarloTreeSearchCache<GameState, Game, mockExpansion>* cache)
 //			: currentState(currentState)
 //			, currentPlayer(currentPlayer)
-//			, mcts(MonteCarloTreeSearchT<GameState, Game, mockExpansion>(cache, game, device))
+//			, mcts(MonteCarloTreeSearch<GameState, Game, mockExpansion>(cache, game, device))
 //		{
 //		}
 //
@@ -35,7 +35,7 @@
 //		int netBufferIndex = -1;
 //		int currentStep = 0;
 //		int color = -1;
-//		MonteCarloTreeSearchT<GameState, Game, mockExpansion> mcts;
+//		MonteCarloTreeSearch<GameState, Game, mockExpansion> mcts;
 //	};
 //
 //	Evaluation(torch::DeviceType device, int mctsCount)
@@ -46,7 +46,7 @@
 //
 //	void eval(NeuralNetwork* net, Ai* miniMaxAi, Game* game, int batchSize, EvalResult& outEval, int numberEvalGames)
 //	{
-//		auto netInputBuffer = MonteCarloTreeSearchCacheT<GameState, Game, mockExpansion>(m_device, game);
+//		auto netInputBuffer = MonteCarloTreeSearchCache<GameState, Game, mockExpansion>(m_device, game);
 //		int playerBuf = game->getInitialPlayer();
 //		auto currentStatesData = std::vector<SelfPlayState>(batchSize, { game->getInitialGameState(), game->getInitialPlayer(), game->getActionCount(), m_device, game, &netInputBuffer });
 //		for (auto& currentState : currentStatesData)

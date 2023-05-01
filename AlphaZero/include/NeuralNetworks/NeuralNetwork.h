@@ -1,5 +1,6 @@
 #ifndef DEEPREINFORCEMENTLEARNING_NEURALNETWORK_H
 #define DEEPREINFORCEMENTLEARNING_NEURALNETWORK_H
+
 #include <string>
 #include <tuple>
 // Libtorch has many warnings which clutter the output, so we ignore them

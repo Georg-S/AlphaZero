@@ -6,7 +6,7 @@ void ChessHandler::chessAgainstNeuralNetAi(ceg::PieceColor playerColor, std::str
 	//auto chessNet = std::make_unique<DefaultNeuralNet>(14, 8, 8, 4096, preTrainedPath + "/" + netName, device);
 	//chessNet->setToEval();
 	//ChessAdapter adap = ChessAdapter();
-	//auto cache = MonteCarloTreeSearchCacheT<ChessAdapter::GameState, ChessAdapter>(device, &adap);
+	//auto cache = MonteCarloTreeSearchCache<ChessAdapter::GameState, ChessAdapter>(device, &adap);
 	//auto neuralNetAi = NeuralNetAi<ChessAdapter::GameState, ChessAdapter>(chessNet.get(), &adap, &cache, 4096, mctsCount, randomize, device);
 	//Chess chess = Chess(&neuralNetAi, playerColor);
 

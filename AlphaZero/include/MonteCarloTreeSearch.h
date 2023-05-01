@@ -13,21 +13,22 @@
 #pragma warning(push, 0)
 #include <torch/torch.h>
 #pragma warning(pop)
+
 #include "AlphaZeroUtility.h"
 #include "NeuralNetworks/NeuralNetwork.h"
 
-template <typename GameStateT, typename GameT, bool mockExpansion>
-class MonteCarloTreeSearchT;
+template <typename GameState, typename Game, bool mockExpansion>
+class MonteCarloTreeSearch;
 
-template <typename GameStateT, typename GameT, bool mockExpansion = false>
-class MonteCarloTreeSearchCacheT
+template <typename GameState, typename Game, bool mockExpansion = false>
+class MonteCarloTreeSearchCache
 {
 public:
-	friend class MonteCarloTreeSearchT<GameStateT, GameT, mockExpansion>;
+	friend class MonteCarloTreeSearch<GameState, Game, mockExpansion>;
 
 	struct ExpansionDataT
 	{
-		GameStateT state;
+		GameState state;
 		int currentPlayer;
 
 		friend bool operator<(const ExpansionDataT& lhs, const ExpansionDataT& rhs)
@@ -36,13 +37,13 @@ public:
 		}
 	};
 
-	MonteCarloTreeSearchCacheT(torch::DeviceType device, GameT* game)
+	MonteCarloTreeSearchCache(torch::DeviceType device, Game* game)
 		: m_device(device)
 		, m_game(game)
 	{
 	}
-	MonteCarloTreeSearchCacheT(const MonteCarloTreeSearchCacheT&) = delete;
-	MonteCarloTreeSearchCacheT& operator=(const MonteCarloTreeSearchCacheT&) = delete;
+	MonteCarloTreeSearchCache(const MonteCarloTreeSearchCache&) = delete;
+	MonteCarloTreeSearchCache& operator=(const MonteCarloTreeSearchCache&) = delete;
 
 	void addToExpansion(ExpansionDataT&& data)
 	{
@@ -144,17 +145,17 @@ private:
 	size_t m_currentInputSize = 0;
 	size_t m_maxSize = 0;
 	size_t m_outputSize = 0;
-	std::map<GameStateT, std::vector<std::pair<int, float>>> m_probabilities;
-	std::map<GameStateT, float> m_values;
+	std::map<GameState, std::vector<std::pair<int, float>>> m_probabilities;
+	std::map<GameState, float> m_values;
 	std::set<ExpansionDataT> toExpand;
-	GameT* m_game;
+	Game* m_game;
 };
 
-template <typename GameStateT, typename GameT, bool mockExpansion = false>
-class MonteCarloTreeSearchT
+template <typename GameState, typename Game, bool mockExpansion = false>
+class MonteCarloTreeSearch
 {
 public:
-	MonteCarloTreeSearchT(MonteCarloTreeSearchCacheT<GameStateT, GameT, mockExpansion>* cache, GameT* game, torch::DeviceType device, float cpuct = 1.0)
+	MonteCarloTreeSearch(MonteCarloTreeSearchCache<GameState, Game, mockExpansion>* cache, Game* game, torch::DeviceType device, float cpuct = 1.0)
 		: m_cache(cache)
 		, m_game(game)
 		, m_device(device)
@@ -163,7 +164,7 @@ public:
 	{
 	}
 
-	void search(size_t count, const GameStateT& state, NeuralNetwork* net, int currentPlayer)
+	void search(size_t count, const GameState& state, NeuralNetwork* net, int currentPlayer)
 	{
 		for (size_t i = 0; i < count; i++)
 		{
@@ -172,7 +173,7 @@ public:
 		}
 	}
 
-	float search(const GameStateT& state, NeuralNetwork* net, int currentPlayer)
+	float search(const GameState& state, NeuralNetwork* net, int currentPlayer)
 	{
 		m_backProp.clear();
 		bool expansionNeeded = false;
@@ -187,21 +188,21 @@ public:
 		return value;
 	}
 
-	bool startSearchWithoutExpansion(const GameStateT& state, int currentPlayer, int count)
+	bool startSearchWithoutExpansion(const GameState& state, int currentPlayer, int count)
 	{
 		m_mctsCount = count;
 
 		return runMultipleSearches(state, currentPlayer);
 	}
 
-	bool expandAndContinueSearchWithoutExpansion(const GameStateT& state, int currentPlayer)
+	bool expandAndContinueSearchWithoutExpansion(const GameState& state, int currentPlayer)
 	{
 		finishExpansion();
 
 		return runMultipleSearches(state, currentPlayer);
 	}
 
-	std::vector<std::pair<int, float>> getProbabilities(const GameStateT& state, float temperature = 1.0)
+	std::vector<std::pair<int, float>> getProbabilities(const GameState& state, float temperature = 1.0)
 	{
 		const auto statePtr = &(*m_visited.find(state));
 		assert(statePtr);
@@ -220,7 +221,7 @@ public:
 	}
 
 private:
-	float searchWithoutExpansion(GameStateT gameState, int currentPlayer, bool* expansionNeeded)
+	float searchWithoutExpansion(GameState gameState, int currentPlayer, bool* expansionNeeded)
 	{
 		while (true) // Iterate until we reach a "leaf state" (a state not yet expanded or a game over state)
 		{
@@ -254,7 +255,7 @@ private:
 		}
 	}
 
-	bool runMultipleSearches(const GameStateT& strState, int currentPlayer)
+	bool runMultipleSearches(const GameState& strState, int currentPlayer)
 	{
 		bool expansionNeeded = false;
 		while (m_mctsCount--)
@@ -308,7 +309,7 @@ private:
 		return value;
 	}
 
-	int getActionWithHighestUpperConfidenceBound(const GameStateT* statePtr, int currentPlayer)
+	int getActionWithHighestUpperConfidenceBound(const GameState* statePtr, int currentPlayer)
 	{
 		float maxUtility = std::numeric_limits<float>::lowest();
 		int bestAction = -1;
@@ -328,14 +329,14 @@ private:
 		return bestAction;
 	}
 
-	float calculateUpperConfidenceBound(const GameStateT* statePtr, int action, float probability, unsigned int stateVisitCountSum)
+	float calculateUpperConfidenceBound(const GameState* statePtr, int action, float probability, unsigned int stateVisitCountSum)
 	{
 		const float buf = sqrt(stateVisitCountSum) / (1 + m_visitCount[statePtr][action]);
 
 		return m_qValues[statePtr][action] + m_cpuct * probability * buf;
 	}
 
-	unsigned int getVisitCountSum(const GameStateT* statePtr) const
+	unsigned int getVisitCountSum(const GameState* statePtr) const
 	{
 		assert(statePtr);
 		unsigned int countSum = 0;
@@ -350,28 +351,28 @@ private:
 
 	struct BackPropData
 	{
-		BackPropData(GameStateT board, int player)
+		BackPropData(GameState board, int player)
 			: state(std::move(board))
 			, player(player)
 		{
 		};
-		GameStateT state;
+		GameState state;
 		int player;
 		int bestAction = -1;
 	};
 
-	MonteCarloTreeSearchCacheT<GameStateT, GameT, mockExpansion>* m_cache;
-	GameT* m_game = nullptr;
+	MonteCarloTreeSearchCache<GameState, Game, mockExpansion>* m_cache;
+	Game* m_game = nullptr;
 	torch::DeviceType m_device = torch::kCPU;
 	int m_actionCount = -1;
 	float m_cpuct = -1.0;
 	int m_mctsCount = 0;
-	std::set<GameStateT> m_visited; // Only save the actual state string in this set -> this saves us some space
+	std::set<GameState> m_visited; // Only save the actual state string in this set -> this saves us some space
 	// Use boost flat_map, this reduces memory consumption quite a bit
-	std::map<const GameStateT*, boost::container::flat_map<int, int>> m_visitCount;
-	std::map<const GameStateT*, boost::container::flat_map<int, float>> m_qValues;
-	std::map<const GameStateT*, std::vector<std::pair<int, float>>> m_probabilities;
-	std::set<const GameStateT*> m_loopDetection;
+	std::map<const GameState*, boost::container::flat_map<int, int>> m_visitCount;
+	std::map<const GameState*, boost::container::flat_map<int, float>> m_qValues;
+	std::map<const GameState*, std::vector<std::pair<int, float>>> m_probabilities;
+	std::set<const GameState*> m_loopDetection;
 	std::vector<BackPropData> m_backProp;
 };
 

@@ -10,7 +10,7 @@
 #include <RingBuffer.h>
 #include "AlphaZeroUtility.h"
 #include "NeuralNetworks/NeuralNetwork.h"
-#include "MonteCarloTreeSearchTemplate.h"
+#include "MonteCarloTreeSearch.h"
 
 using namespace ALZ;
 
@@ -127,10 +127,10 @@ private:
 
 	struct SelfPlayState
 	{
-		SelfPlayState(GameStateT currentState, int currentPlayer, int actionCount, torch::DeviceType device, GameT* game, MonteCarloTreeSearchCacheT<GameStateT, GameT, mockExpansion>* cache)
+		SelfPlayState(GameStateT currentState, int currentPlayer, int actionCount, torch::DeviceType device, GameT* game, MonteCarloTreeSearchCache<GameStateT, GameT, mockExpansion>* cache)
 			: currentState(std::move(currentState))
 			, currentPlayer(currentPlayer)
-			, mcts(MonteCarloTreeSearchT<GameStateT, GameT, mockExpansion>(cache, game, device))
+			, mcts(MonteCarloTreeSearch<GameStateT, GameT, mockExpansion>(cache, game, device))
 		{
 		}
 
@@ -139,7 +139,7 @@ private:
 		bool continueMcts = false;
 		int netBufferIndex = -1;
 		int currentStep = 0;
-		MonteCarloTreeSearchT<GameStateT, GameT, mockExpansion> mcts;
+		MonteCarloTreeSearch<GameStateT, GameT, mockExpansion> mcts;
 		std::vector<ReplayElementT<GameStateT>> trainingData;
 	};
 
@@ -157,7 +157,7 @@ private:
 	{
 		assert(batchSize != 0);
 		std::vector<ReplayElementT<GameStateT>> resultingTrainingsData;
-		auto netInputBuffer = MonteCarloTreeSearchCacheT<GameStateT, GameT, mockExpansion>(m_device, m_game);
+		auto netInputBuffer = MonteCarloTreeSearchCache<GameStateT, GameT, mockExpansion>(m_device, m_game);
 		auto currentStatesData = std::vector<SelfPlayState>(batchSize, { m_game->getInitialGameState(), m_game->getInitialPlayer(), m_game->getActionCount(), m_device, m_game, &netInputBuffer });
 		/*
 		Use a vector of pointers to the gamedata for iterating,

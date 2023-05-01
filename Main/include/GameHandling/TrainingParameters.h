@@ -4,8 +4,8 @@
 // Libtorch has many warnings which clutter the output, so we ignore them
 #pragma warning(push, 0)
 #include <torch/torch.h>
-#include <AlphaZeroTrainingTemplate.h>
 #pragma warning(pop)
+#include <AlphaZeroTrainingTemplate.h>
 
 struct TrainingParameters
 {

@@ -3,7 +3,7 @@
 
 #include <cfloat>
 #include <NeuralNetworks/NeuralNetwork.h>
-#include <MonteCarloTreeSearchTemplate.h>
+#include <MonteCarloTreeSearch.h>
 #include <AlphaZeroUtility.h>
 #include "Utility.h"
 #include "Ai.h"
@@ -12,7 +12,7 @@ template <typename GameState, typename Game, bool mockExpansion = false>
 class NeuralNetAi : public Ai
 {
 public:
-	NeuralNetAi(NeuralNetwork* net, Game* game, MonteCarloTreeSearchCacheT<GameState, Game, mockExpansion>* cache, 
+	NeuralNetAi(NeuralNetwork* net, Game* game, MonteCarloTreeSearchCache<GameState, Game, mockExpansion>* cache, 
 		int mctsCount = 50, bool probabilistic = false, torch::DeviceType device = torch::kCPU)
 		: m_net(net)
 		, m_game(game)
@@ -20,7 +20,7 @@ public:
 		, m_probabilistic(probabilistic)	
 		, m_device(device)
 	{
-		m_mcts = MonteCarloTreeSearchT<GameState, Game, mockExpansion>(cache, m_game, device);
+		m_mcts = MonteCarloTreeSearch<GameState, Game, mockExpansion>(cache, m_game, device);
 	}
 
 	std::string getMove(const std::string& state, int color) override
@@ -35,7 +35,7 @@ public:
 	}
 
 private:
-	MonteCarloTreeSearchT<GameState, Game> m_mcts;
+	MonteCarloTreeSearch<GameState, Game> m_mcts;
 	NeuralNetwork* m_net;
 	Game* m_game;
 	int m_mctsCount;

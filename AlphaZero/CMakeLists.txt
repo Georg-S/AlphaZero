@@ -6,7 +6,7 @@ set(AlphaZeroFiles
 	"include/AlphaZeroTrainingTemplate.h"
 	"include/RingBuffer.h"
 	"include/AlphaZeroUtility.h"
-	"include/MonteCarloTreeSearchTemplate.h"
+	"include/MonteCarloTreeSearch.h"
 	"src/AlphaZeroUtility.cpp"
 	)
 
