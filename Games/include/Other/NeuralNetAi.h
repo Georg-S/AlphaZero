@@ -16,15 +16,14 @@ public:
 		int mctsCount = 50, bool probabilistic = false, torch::DeviceType device = torch::kCPU)
 		: m_net(net)
 		, m_game(game)
-		, m_actionCount(game->getActionCount())
 		, m_mctsCount(mctsCount)
-		, m_device(device)
 		, m_probabilistic(probabilistic)	
+		, m_device(device)
 	{
 		m_mcts = MonteCarloTreeSearchT<GameState, Game, mockExpansion>(cache, m_game, device);
 	}
 
-	int getMove(const GameState& state, int color) override
+	std::string getMove(const std::string& state, int color) override
 	{
 		m_mcts.search(m_mctsCount, state, m_net, color);
 		auto probs = m_mcts.getProbabilities(state);
@@ -39,7 +38,6 @@ private:
 	MonteCarloTreeSearchT<GameState, Game> m_mcts;
 	NeuralNetwork* m_net;
 	Game* m_game;
-	int m_actionCount;
 	int m_mctsCount;
 	torch::DeviceType m_device;
 	bool m_probabilistic = false;

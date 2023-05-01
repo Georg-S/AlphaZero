@@ -106,8 +106,8 @@ TEST(TicTacToeAdapter, test_convert_state_to_neural_input_player_one)
 
 	auto plane1 = input[0];
 	auto plane2 = input[1];
-	float value1 = *(plane1[0][0].data_ptr<float>());
-	float value2 = *(plane2[2][2].data_ptr<float>());
+	float value1 = plane1[0][0].item<float>();
+	float value2 = plane2[2][2].item<float>();
 
 
 	ASSERT_FLOAT_EQ(value1, 1);
@@ -124,10 +124,10 @@ TEST(TicTacToeAdapter, test_convert_state_to_neural_input_player_two)
 	auto plane1 = input[0];
 	auto plane2 = input[1];
 
-	float value1 = *(plane1[2][0].data_ptr<float>());
-	float value2 = *(plane1[2][2].data_ptr<float>());
-	float value3 = *(plane2[0][0].data_ptr<float>());
-	float value4 = *(plane2[2][1].data_ptr<float>());
+	float value1 = plane1[2][0].item<float>();
+	float value2 = plane1[2][2].item<float>();
+	float value3 = plane2[0][0].item<float>();
+	float value4 = plane2[2][1].item<float>();
 
 
 	ASSERT_FLOAT_EQ(value1, 1);

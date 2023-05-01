@@ -44,7 +44,7 @@ public:
 				lhs.board.black_pieces.queens,
 				lhs.board.black_pieces.rooks,
 				lhs.board.en_passant_mask,
-				lhs.currentPlayer
+				static_cast<uint64_t>(lhs.currentPlayer)
 			};
 
 			const uint64_t rhsArr[] =
@@ -64,7 +64,7 @@ public:
 				rhs.board.black_pieces.queens,
 				rhs.board.black_pieces.rooks,
 				rhs.board.en_passant_mask,
-				rhs.currentPlayer
+				static_cast<uint64_t>(rhs.currentPlayer)
 			};
 
 			const auto res = memcmp(lhsArr, rhsArr, std::size(lhsArr) * sizeof(lhsArr[0]));
