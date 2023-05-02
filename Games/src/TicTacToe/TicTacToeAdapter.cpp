@@ -40,6 +40,8 @@ void TicTacToeAdapter::convertStateToNeuralNetInput(const ttt::Board& board, int
 {
 	PlayerColor playercolor = PlayerColor(currentPlayer);
 	PlayerColor otherPlayer = ttt::getNextPlayer(playercolor);
+	// Use accessor instead of accessing the data direct, this is way better performance wise
+	auto outTensorAccessor = outTensor.accessor<float, 3>();
 
 	outTensor.zero_();
 	for (int x = 0; x < 3; x++)
@@ -47,9 +49,9 @@ void TicTacToeAdapter::convertStateToNeuralNetInput(const ttt::Board& board, int
 		for (int y = 0; y < 3; y++)
 		{
 			if (playercolor == board.at(x, y))
-				outTensor[0][x][y] = 1;
+				outTensorAccessor[0][x][y] = 1;
 			else if (otherPlayer == board.at(x, y))
-				outTensor[1][x][y] = 1;
+				outTensorAccessor[1][x][y] = 1;
 		}
 	}
 }

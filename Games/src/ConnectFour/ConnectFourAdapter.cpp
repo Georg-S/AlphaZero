@@ -35,6 +35,8 @@ void ConnectFourAdapter::convertStateToNeuralNetInput(const cn4::Board& board, i
 {
 	PlayerColor playerColor = PlayerColor(currentPlayer);
 	PlayerColor otherPlayer = cn4::getNextPlayer(playerColor);
+	// Use accessor instead of accessing the data direct, this is way better performance wise
+	auto outTensorAccessor = outTensor.accessor<float, 3>(); 
 
 	outTensor.zero_();
 	for (int x = 0; x < boardWidth; x++)
@@ -42,9 +44,9 @@ void ConnectFourAdapter::convertStateToNeuralNetInput(const cn4::Board& board, i
 		for (int y = 0; y < boardHeight; y++)
 		{
 			if (playerColor == board.at(x, y))
-				outTensor[0][x][y] = 1;
+				outTensorAccessor[0][x][y] = 1;
 			else if (otherPlayer == board.at(x, y))
-				outTensor[1][x][y] = 1;
+				outTensorAccessor[1][x][y] = 1;
 		}
 	}
 }

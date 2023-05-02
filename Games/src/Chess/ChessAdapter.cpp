@@ -22,7 +22,7 @@ int chess::getIntFromMove(const ceg::Move& move)
 	return from | to;
 }
 
-static void convertPiecesToTensor(uint64_t pieces, at::Tensor destination)
+static void convertPiecesToTensor(uint64_t pieces, torch::TensorAccessor<float, 2> destination)
 {
 	while (pieces)
 	{
@@ -38,7 +38,7 @@ static void convertPiecesToTensor(uint64_t pieces, at::Tensor destination)
 	}
 }
 
-static void setPiecesInTensor(const ceg::Pieces& pieces, uint64_t en_passant, at::Tensor destination, size_t startIndex)
+static void setPiecesInTensor(const ceg::Pieces& pieces, uint64_t en_passant, torch::TensorAccessor<float, 3> destination, size_t startIndex)
 {
 	convertPiecesToTensor(pieces.pawns, destination[startIndex]);
 	convertPiecesToTensor(pieces.rooks, destination[startIndex + 1]);
@@ -88,6 +88,7 @@ int ChessAdapter::getPlayerWon(const GameState& gameState) const
 torch::Tensor ChessAdapter::convertStateToNeuralNetInput(const GameState& state, int currentPlayer) const
 {
 	torch::Tensor result = torch::zeros({ 1,14,8,8 });
+
 	convertStateToNeuralNetInput(state, currentPlayer, result[0]);
 
 	return result;
@@ -98,17 +99,19 @@ void ChessAdapter::convertStateToNeuralNetInput(const GameState& state, int curr
 	constexpr int perPlayerSize = 7;
 	const auto& board = state.board;
 	const ceg::PieceColor currentColor = ceg::PieceColor(currentPlayer);
+	// Use accessor instead of accessing the data direct, this is way better performance wise
+	auto outTensorAccessor = outTensor.accessor<float, 3>();
 
 	outTensor.zero_();
 	if (currentColor == ceg::PieceColor::WHITE)
 	{
-		setPiecesInTensor(board.white_pieces, board.en_passant_mask, outTensor, 0);
-		setPiecesInTensor(board.black_pieces, 0LL, outTensor, perPlayerSize);
+		setPiecesInTensor(board.white_pieces, board.en_passant_mask, outTensorAccessor, 0);
+		setPiecesInTensor(board.black_pieces, 0LL, outTensorAccessor, perPlayerSize);
 	}
 	else
 	{
-		setPiecesInTensor(board.black_pieces, board.en_passant_mask, outTensor, 0);
-		setPiecesInTensor(board.white_pieces, 0LL, outTensor, perPlayerSize);
+		setPiecesInTensor(board.black_pieces, board.en_passant_mask, outTensorAccessor, 0);
+		setPiecesInTensor(board.white_pieces, 0LL, outTensorAccessor, perPlayerSize);
 	}
 }
 
