@@ -68,4 +68,4 @@ TEST(NeuralNet, net_and_deepcopy_returns_the_same_value)
 	ASSERT_EQ(value1, value2);
 }
 
-#endif RunTests
+#endif //RunTests

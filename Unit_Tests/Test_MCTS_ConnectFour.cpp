@@ -87,5 +87,3 @@ TEST(MCTS_ConnectFour, test_mcts_cn4_two_moves_possible_one_loses_real_expansion
 }
 
 #endif //RunTests
-
-
