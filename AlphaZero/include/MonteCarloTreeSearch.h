@@ -84,11 +84,12 @@ public:
 			for (const auto& state : toExpand)
 			{
 				auto [val, probs] = getOutput(counter++);
+				auto probsAccessor = probs.template accessor<float, 1>();
 
 				m_values[state.state] = val[0].template item<float>();
 
 				for (const auto& move : m_game->getAllPossibleMoves(state.state, state.currentPlayer))
-					m_probabilities[state.state].emplace_back(move, probs[move].template item<float>());
+					m_probabilities[state.state].emplace_back(move, probsAccessor[move]);
 			}
 		}
 
