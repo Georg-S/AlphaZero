@@ -109,7 +109,7 @@ static void push_all_moves(std::vector<ceg::InternalMove>& dest, int from_index,
 	}
 }
 
-ceg::StateInformation ceg::MoveGenerator::get_state_information(Pieces* playing, ceg::Pieces* other, const BitBoard& board, 
+ceg::StateInformation ceg::MoveGenerator::get_state_information(Pieces* playing, ceg::Pieces* other, const BitBoard& board,
 	const uint64_t* pawn_normal_moves, const uint64_t* pawn_attack_moves, bool black) const
 {
 	ceg::Pieces cop_other = *other;
@@ -287,7 +287,7 @@ ceg::CheckInfo ceg::MoveGenerator::get_check_info(Pieces* player, const Pieces* 
 	return result;
 }
 
-std::vector<ceg::InternalMove> ceg::MoveGenerator::get_all_possible_moves(Pieces* playing, ceg::Pieces* other, const BitBoard& board, 
+std::vector<ceg::InternalMove> ceg::MoveGenerator::get_all_possible_moves(Pieces* playing, ceg::Pieces* other, const BitBoard& board,
 	const uint64_t* pawn_normal_moves, const uint64_t* pawn_attack_moves, bool black, const CheckInfo& info) const
 {
 	const uint64_t attacked_fields_mask = ~(info.attacked_fields);
@@ -309,13 +309,13 @@ std::vector<ceg::InternalMove> ceg::MoveGenerator::get_all_possible_moves(Pieces
 				if (!((black_queen_side_castling_mask & info.attacked_fields) | (black_queen_side_castling_occupied_mask & board.occupied))
 					&& is_bit_set(playing->castling, black_queen_tower_idx))
 					set_bit(moves, black_queen_castling_move_idx);
-				if (!((black_king_side_castling_mask & info.attacked_fields) | (black_king_side_castling_mask & board.occupied)) 
+				if (!((black_king_side_castling_mask & info.attacked_fields) | (black_king_side_castling_mask & board.occupied))
 					&& is_bit_set(playing->castling, black_king_tower_idx))
 					set_bit(moves, black_king_castling_move_idx);
 			}
 			else
 			{
-				if (!((white_queen_side_castling_mask & info.attacked_fields) | (white_queen_side_castling_occupied_mask & board.occupied)) 
+				if (!((white_queen_side_castling_mask & info.attacked_fields) | (white_queen_side_castling_occupied_mask & board.occupied))
 					&& is_bit_set(playing->castling, white_queen_tower_idx))
 					set_bit(moves, white_queen_castling_move_idx);
 				if (!((white_king_side_castling_mask & info.attacked_fields) | (white_king_side_castling_mask & board.occupied))
@@ -413,6 +413,9 @@ void ceg::MoveGenerator::make_move(BitBoard& board, const InternalMove& move, bo
 	Pieces* pieces = black ? &(board.black_pieces) : &(board.white_pieces);
 	Pieces* other = black ? &(board.white_pieces) : &(board.black_pieces);
 
+	// At the destination location no castling can be possible anymore, no matter which piece is being moved
+	clear_bit(other->castling, move.to);
+
 	if (is_bit_set(pieces->king, move.from))
 	{
 		pieces->castling = 0;
@@ -432,7 +435,6 @@ void ceg::MoveGenerator::make_move(BitBoard& board, const InternalMove& move, bo
 	else
 	{
 		clear_bit(pieces->castling, move.from);
-		clear_bit(other->castling, move.to);
 	}
 
 	if (is_bit_set(pieces->pawns, move.from))
