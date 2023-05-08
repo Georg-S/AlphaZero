@@ -44,7 +44,7 @@ std::vector<ceg::Move> ceg::ChessEngine::get_all_possible_moves_for_piece(const 
 	for (const auto& move : moves)
 	{
 		if (move.from == index)
-			result.push_back(move);
+			result.emplace_back(move);
 	}
 
 	return result;

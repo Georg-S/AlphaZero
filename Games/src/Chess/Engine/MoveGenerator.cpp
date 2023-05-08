@@ -104,7 +104,7 @@ static void push_all_moves(std::vector<ceg::InternalMove>& dest, int from_index,
 	while (moves != 0)
 	{
 		int to_index = ceg::get_bit_index_lsb(moves);
-		dest.push_back(ceg::InternalMove{ from_index, to_index });
+		dest.emplace_back(ceg::InternalMove{ from_index, to_index });
 		ceg::reset_lsb(moves);
 	}
 }
@@ -172,7 +172,6 @@ ceg::CheckInfo ceg::MoveGenerator::get_check_info(Pieces* player, const Pieces* 
 		if (moves & other->king)
 		{
 			result.check_counter++;
-			result.check_piece = 0;
 			set_bit(result.check_piece, from_index);
 			// We need to calculate the moves again with get_rook_moves because with the first calculation 
 			// we ignored the king to get every attacked field the king can't go on
@@ -200,7 +199,6 @@ ceg::CheckInfo ceg::MoveGenerator::get_check_info(Pieces* player, const Pieces* 
 
 		if (moves & other->king)
 		{
-			result.check_piece = 0;
 			set_bit(result.check_piece, from_index);
 			result.check_counter++;
 			uint64_t bishop_moves = get_bishop_moves(from_index, board.occupied);
@@ -231,7 +229,6 @@ ceg::CheckInfo ceg::MoveGenerator::get_check_info(Pieces* player, const Pieces* 
 
 		if (moves & other->king)
 		{
-			result.check_piece = 0;
 			set_bit(result.check_piece, from_index);
 
 			result.check_counter++;
@@ -259,7 +256,6 @@ ceg::CheckInfo ceg::MoveGenerator::get_check_info(Pieces* player, const Pieces* 
 		if (moves & other->king)
 		{
 			result.check_counter++;
-			result.check_piece = 0;
 			set_bit(result.check_piece, from_index);
 			result.check_mask_with_piece = 0;
 		}
@@ -276,7 +272,6 @@ ceg::CheckInfo ceg::MoveGenerator::get_check_info(Pieces* player, const Pieces* 
 		if (attack_moves & other->king)
 		{
 			result.check_counter++;
-			result.check_piece = 0;
 			set_bit(result.check_piece, from_index);
 			result.check_mask_with_piece = 0;
 		}

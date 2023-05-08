@@ -16,7 +16,8 @@ namespace ceg
 
 		int check_counter = 0;
 		uint64_t attacked_fields = 0;
-		uint64_t check_piece = ~uint64_t(0); // Check piece mask is needed for an en passant edge case
+		// Indicates which piece is causing a check (only relevant for an en passant edge case)
+		uint64_t check_piece = uint64_t(0);
 		uint64_t pin_mask[64];
 		uint64_t check_mask_with_piece = ~uint64_t(0);
 	};
@@ -78,7 +79,7 @@ namespace ceg
 		static constexpr int white_queen_tower_idx = 56;
 		static constexpr int white_king_tower_idx = 63;
 		static constexpr int black_queen_castling_move_idx = 2;
-		static constexpr int black_king_castling_move_idx = 6;	
+		static constexpr int black_king_castling_move_idx = 6;
 		static constexpr int white_queen_castling_move_idx = 58;
 		static constexpr int white_king_castling_move_idx = 62;
 		uint64_t pawn_end_of_board_mask = 0;
