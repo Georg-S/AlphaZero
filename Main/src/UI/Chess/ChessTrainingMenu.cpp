@@ -41,12 +41,12 @@ void ChessTrainingMenu::initDefaultValues()
 	trainingUi->MaxGameLengthInput->setText("80");
 	trainingUi->TrainingIterationsInput->setText("40");
 	trainingUi->SelfPlayMCTSCountInput->setText("800");
-	trainingUi->SelfPlayBatchSizeInput->setText("100");
+	trainingUi->SelfPlayBatchSizeInput->setText("200");
 	trainingUi->SelfPlayGamesCountInput->setText("1000");
 	trainingUi->TrainingBatchSizeInput->setText("2000");
 	trainingUi->SaveIterationCountInput->setText("1");
 	trainingUi->RandomizedMoveCountInput->setText("20");
-	trainingUi->LearningRateInput->setText("0.01");
+	trainingUi->LearningRateInput->setText("0.1");
 	trainingUi->FilterCountInput->setText("512");
 	trainingUi->GPURadio->setChecked(true);
 	trainingUi->MaxGameLengthInput->setEnabled(true);
