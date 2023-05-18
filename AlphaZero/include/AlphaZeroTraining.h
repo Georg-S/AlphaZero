@@ -137,7 +137,6 @@ private:
 		GameState currentState;
 		int currentPlayer;
 		bool continueMcts = false;
-		int netBufferIndex = -1;
 		int currentStep = 0;
 		MonteCarloTreeSearch<GameState, Game, mockExpansion> mcts;
 		std::vector<ReplayElement<GameState>> trainingData;
@@ -182,7 +181,6 @@ private:
 				auto& currentState = currentStateObj.currentState;
 				auto& continueMcts = currentStateObj.continueMcts;
 				auto& currentPlayer = currentStateObj.currentPlayer;
-				auto& netInputIndex = currentStateObj.netBufferIndex;
 				auto& trainingData = currentStateObj.trainingData;
 				auto& currentStep = currentStateObj.currentStep;
 

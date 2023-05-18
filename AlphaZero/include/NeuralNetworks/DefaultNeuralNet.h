@@ -10,7 +10,7 @@ class DefaultNeuralNet : public NeuralNetwork
 public:
 	DefaultNeuralNet(int64_t numPlanes, int64_t width, int64_t height, int64_t numOutputs, torch::DeviceType device = torch::kCPU);
 	DefaultNeuralNet(int64_t numPlanes, int64_t width, int64_t height, int64_t numOutputs, std::string fileName, torch::DeviceType device = torch::kCPU);
-	DefaultNeuralNet(CutDownAlphaGoZeroNet&& net, torch::DeviceType device);
+	DefaultNeuralNet(const DefaultNeuralNet& other, CutDownAlphaGoZeroNet&& net);
 	~DefaultNeuralNet() = default;
 	void load(std::string fileName) override;
 	void save(std::string fileName) override;
@@ -29,6 +29,8 @@ public:
 	std::unique_ptr<NeuralNetwork> deepCopy() const override;
 
 private:
+	void loadNeuralNet(const std::string& path);
+
 	CutDownAlphaGoZeroNet m_net = nullptr;
 	float m_learningRate = 0.01;
 	int64_t m_numPlanes;

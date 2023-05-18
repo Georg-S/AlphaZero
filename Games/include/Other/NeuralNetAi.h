@@ -43,8 +43,8 @@ private:
 	NeuralNetwork* m_net;
 	Game* m_game;
 	int m_mctsCount;
-	torch::DeviceType m_device;
 	bool m_probabilistic = false;
+	torch::DeviceType m_device;
 };
 
 #endif //DEEPREINFORCEMENTLEARNING_NEURALNETAI_H

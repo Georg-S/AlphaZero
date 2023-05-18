@@ -18,7 +18,6 @@ void TicTacToeHandler::startTwoPlayerTicTacToeGame()
 
 void TicTacToeHandler::evalTicTacToe()
 {
-	constexpr int multiThreadingThreadCount = 10;
 	std::ofstream myfile;
 	myfile.open(std::to_string(evalMCTSCount) + "_50_100k_001.csv");
 	myfile << "Iteration; Wins; Draws; Losses \n";

@@ -23,21 +23,25 @@ DefaultNeuralNet::DefaultNeuralNet(int64_t numPlanes, int64_t width, int64_t hei
 	, m_device(device)
 {
 	m_net = CutDownAlphaGoZeroNet(numPlanes, width, height, numOutputs);
-	load(fileName);
+	loadNeuralNet(fileName);
 	m_net->to(device);
 	// By default if we load a neural net, we are in eval mode (interference / production)
 	m_net->eval();
 }
 
-DefaultNeuralNet::DefaultNeuralNet(CutDownAlphaGoZeroNet&& net, torch::DeviceType device)
+DefaultNeuralNet::DefaultNeuralNet(const DefaultNeuralNet& other, CutDownAlphaGoZeroNet&& net)
 	: m_net(std::move(net))
-	, m_device(device)
+	, m_numPlanes(other.m_numPlanes)
+	, m_width(other.m_width)
+	, m_height(other.m_height)
+	, m_numOutputs(other.m_numOutputs)
+	, m_device(other.m_device)
 {
 };
 
 void DefaultNeuralNet::load(std::string fileName)
 {
-	torch::load(m_net, fileName);
+	loadNeuralNet(fileName);
 }
 
 void DefaultNeuralNet::save(std::string fileName)
@@ -104,5 +108,10 @@ std::unique_ptr<NeuralNetwork> DefaultNeuralNet::deepCopy() const
 	cloned->load(inpArchive);
 	cloned->to(m_device);
 
-	return std::make_unique<DefaultNeuralNet>(std::move(cloned), m_device);
+	return std::make_unique<DefaultNeuralNet>(*this, std::move(cloned));
+}
+
+void DefaultNeuralNet::loadNeuralNet(const std::string& path)
+{
+	torch::load(m_net, path);
 }

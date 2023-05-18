@@ -32,16 +32,15 @@ public:
 		GameState currentState;
 		int currentPlayer;
 		bool continueMcts = false;
-		int netBufferIndex = -1;
 		int currentStep = 0;
 		int color = -1;
 		MonteCarloTreeSearch<GameState, Game, mockExpansion> mcts;
 	};
 
 	Evaluation(torch::DeviceType device, int mctsCount, Game* game)
-		: m_device(device)
+		: m_game(game)
 		, m_mctsCount(mctsCount)
-		, m_game(game)
+		, m_device(device)
 	{
 	}
 
@@ -78,7 +77,6 @@ public:
 				auto& currentState = currentStateObj.currentState;
 				auto& continueMcts = currentStateObj.continueMcts;
 				auto& currentPlayer = currentStateObj.currentPlayer;
-				auto& netInputIndex = currentStateObj.netBufferIndex;
 				auto& currentStep = currentStateObj.currentStep;
 				const auto& colorBuf = currentStateObj.color;
 
