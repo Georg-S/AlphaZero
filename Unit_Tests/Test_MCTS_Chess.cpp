@@ -13,7 +13,7 @@
 
 static torch::DeviceType device = torch::kCUDA;
 static ChessAdapter chessAdap = ChessAdapter();
-static DefaultNeuralNet neuralNet = DefaultNeuralNet(14, 8, 8, 4096, device);
+static DefaultNeuralNet net = DefaultNeuralNet(14, 8, 8, 4096, device);
 
 static void debugChessMoves(ChessAdapter::GameState state, std::initializer_list<int> moves)
 {
@@ -34,9 +34,9 @@ TEST(MCTS_Chess, test_chess_one_move_wins_white_mock_expansion)
 	auto gameState = ChessAdapter::GameState(board, static_cast<int>(ceg::PieceColor::WHITE));
 
 	const int winningMove = chess::getIntFromMove({ 0,6,0,7 });
-	auto mctsCache = MonteCarloTreeSearchCache<ChessAdapter::GameState, ChessAdapter, true>(device, &chessAdap);
+	auto mctsCache = MonteCarloTreeSearchCache<ChessAdapter::GameState, ChessAdapter, true>(device, &chessAdap, &net);
 	auto mcts = MonteCarloTreeSearch<ChessAdapter::GameState, ChessAdapter, true>(&mctsCache, &chessAdap, device);
-	mcts.search(100, gameState, &neuralNet, static_cast<int>(ceg::PieceColor::WHITE));
+	mcts.search(100, gameState, static_cast<int>(ceg::PieceColor::WHITE));
 	auto probabilities = mcts.getProbabilities(gameState);
 	int mctsBestMove = ALZ::getBestAction(probabilities);
 
@@ -50,9 +50,9 @@ TEST(MCTS_Chess, test_chess_one_move_wins_white_real_expansion)
 	auto gameState = ChessAdapter::GameState(board, static_cast<int>(ceg::PieceColor::WHITE));
 
 	const int winningMove = chess::getIntFromMove({ 0,6,0,7 });
-	auto mctsCache = MonteCarloTreeSearchCache<ChessAdapter::GameState, ChessAdapter, false>(device, &chessAdap);
+	auto mctsCache = MonteCarloTreeSearchCache<ChessAdapter::GameState, ChessAdapter, false>(device, &chessAdap, &net);
 	auto mcts = MonteCarloTreeSearch<ChessAdapter::GameState, ChessAdapter, false>(&mctsCache, &chessAdap, device);
-	mcts.search(100, gameState, &neuralNet, static_cast<int>(ceg::PieceColor::WHITE));
+	mcts.search(100, gameState, static_cast<int>(ceg::PieceColor::WHITE));
 	auto probabilities = mcts.getProbabilities(gameState);
 	int mctsBestMove = ALZ::getBestAction(probabilities);
 
@@ -66,9 +66,9 @@ TEST(MCTS_Chess, test_chess_one_move_wins_black)
 	auto gameState = ChessAdapter::GameState(board, static_cast<int>(ceg::PieceColor::BLACK));
 
 	const int winningMove = chess::getIntFromMove({ 7,7,1,1 });
-	auto mctsCache = MonteCarloTreeSearchCache<ChessAdapter::GameState, ChessAdapter, true>(device, &chessAdap);
+	auto mctsCache = MonteCarloTreeSearchCache<ChessAdapter::GameState, ChessAdapter, true>(device, &chessAdap, &net);
 	auto mcts = MonteCarloTreeSearch<ChessAdapter::GameState, ChessAdapter, true>(&mctsCache, &chessAdap, device);
-	mcts.search(100, gameState, &neuralNet, static_cast<int>(ceg::PieceColor::BLACK));
+	mcts.search(100, gameState, static_cast<int>(ceg::PieceColor::BLACK));
 	auto probabilities = mcts.getProbabilities(gameState);
 	int mctsBestMove = ALZ::getBestAction(probabilities);
 
@@ -82,9 +82,9 @@ TEST(MCTS_Chess, test_chess_check_black_one_move_wins_2)
 	auto gameState = ChessAdapter::GameState(board, static_cast<int>(ceg::PieceColor::BLACK));
 
 	const int winningMove = chess::getIntFromMove({ 1,2,1,0 });
-	auto mctsCache = MonteCarloTreeSearchCache<ChessAdapter::GameState, ChessAdapter, true>(device, &chessAdap);
+	auto mctsCache = MonteCarloTreeSearchCache<ChessAdapter::GameState, ChessAdapter, true>(device, &chessAdap, &net);
 	auto mcts = MonteCarloTreeSearch<ChessAdapter::GameState, ChessAdapter, true>(&mctsCache, &chessAdap, device);
-	mcts.search(100, gameState, &neuralNet, static_cast<int>(ceg::PieceColor::BLACK));
+	mcts.search(100, gameState, static_cast<int>(ceg::PieceColor::BLACK));
 	auto probabilities = mcts.getProbabilities(gameState);
 	int mctsBestMove = ALZ::getBestAction(probabilities);
 
@@ -98,9 +98,9 @@ TEST(MCTS_Chess, test_chess_check_one_move_loses)
 	auto gameState = ChessAdapter::GameState(board, static_cast<int>(ceg::PieceColor::WHITE));
 
 	const int winningMove = chess::getIntFromMove({ 7,1,6,1 });
-	auto mctsCache = MonteCarloTreeSearchCache<ChessAdapter::GameState, ChessAdapter, true>(device, &chessAdap);
+	auto mctsCache = MonteCarloTreeSearchCache<ChessAdapter::GameState, ChessAdapter, true>(device, &chessAdap, &net);
 	auto mcts = MonteCarloTreeSearch<ChessAdapter::GameState, ChessAdapter, true>(&mctsCache, &chessAdap, device);
-	mcts.search(1000, gameState, &neuralNet, static_cast<int>(ceg::PieceColor::WHITE));
+	mcts.search(1000, gameState, static_cast<int>(ceg::PieceColor::WHITE));
 	auto probabilities = mcts.getProbabilities(gameState);
 	int mctsBestMove = ALZ::getBestAction(probabilities);
 
@@ -114,9 +114,9 @@ TEST(MCTS_Chess, test_chess_check_one_move_wins_with_promotion)
 	auto gameState = ChessAdapter::GameState(board, static_cast<int>(ceg::PieceColor::BLACK));
 
 	const int winningMove = chess::getIntFromMove({ 0,6,0,7 });
-	auto mctsCache = MonteCarloTreeSearchCache<ChessAdapter::GameState, ChessAdapter, true>(device, &chessAdap);
+	auto mctsCache = MonteCarloTreeSearchCache<ChessAdapter::GameState, ChessAdapter, true>(device, &chessAdap, &net);
 	auto mcts = MonteCarloTreeSearch<ChessAdapter::GameState, ChessAdapter, true>(&mctsCache, &chessAdap, device);
-	mcts.search(1000, gameState, &neuralNet, static_cast<int>(ceg::PieceColor::BLACK));
+	mcts.search(1000, gameState, static_cast<int>(ceg::PieceColor::BLACK));
 	auto probabilities = mcts.getProbabilities(gameState);
 	int mctsBestMove = ALZ::getBestAction(probabilities);
 	auto mv = chess::getMoveFromInt(mctsBestMove);
@@ -130,16 +130,16 @@ TEST(MCTS_Chess, test_chess_check_one_move_loses_with_but_perform_other_color_mc
 	const ceg::BitBoard board(boardStr);
 	auto gameState = ChessAdapter::GameState(board, static_cast<int>(ceg::PieceColor::BLACK));
 
-	auto mctsCache = MonteCarloTreeSearchCache<ChessAdapter::GameState, ChessAdapter, true>(device, &chessAdap);
+	auto mctsCache = MonteCarloTreeSearchCache<ChessAdapter::GameState, ChessAdapter, true>(device, &chessAdap, &net);
 	auto mcts = MonteCarloTreeSearch<ChessAdapter::GameState, ChessAdapter, true>(&mctsCache, &chessAdap, device);
-	mcts.search(1000, gameState, &neuralNet, static_cast<int>(ceg::PieceColor::BLACK));
+	mcts.search(1000, gameState, static_cast<int>(ceg::PieceColor::BLACK));
 
 	const std::string boardStr2 = "8/6rK/r7/8/8/8/8/k7 w - - 0 1";
 	const ceg::BitBoard board2(boardStr2);
 	auto gameState2 = ChessAdapter::GameState(board2, static_cast<int>(ceg::PieceColor::WHITE));
 
 	const int winningMove = chess::getIntFromMove({ 7,1,6,1 });
-	mcts.search(1000, gameState2, &neuralNet, static_cast<int>(ceg::PieceColor::WHITE));
+	mcts.search(1000, gameState2, static_cast<int>(ceg::PieceColor::WHITE));
 	auto probabilities = mcts.getProbabilities(gameState2);
 	int mctsBestMove = ALZ::getBestAction(probabilities);
 

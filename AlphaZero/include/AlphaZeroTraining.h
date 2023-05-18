@@ -157,7 +157,7 @@ private:
 	{
 		assert(batchSize != 0);
 		std::vector<ReplayElement<GameState>> resultingTrainingsData;
-		auto netInputBuffer = MonteCarloTreeSearchCache<GameState, Game, mockExpansion>(m_device, m_game);
+		auto netInputBuffer = MonteCarloTreeSearchCache<GameState, Game, mockExpansion>(m_device, m_game, m_net);
 		auto currentStatesData = std::vector<SelfPlayState>(batchSize, { m_game->getInitialGameState(), m_game->getInitialPlayer(), m_game->getActionCount(), m_device, m_game, &netInputBuffer });
 		/*
 		Use a vector of pointers to the gamedata for iterating,
@@ -172,7 +172,7 @@ private:
 		{
 			netInputBuffer.convertToNeuralInput();
 			m_mut.lock();
-			netInputBuffer.expand(m_net);
+			netInputBuffer.expand();
 			m_mut.unlock();
 
 			for (size_t i = 0; i < currentStates.size(); i++)

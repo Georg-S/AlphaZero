@@ -37,9 +37,10 @@ public:
 		}
 	};
 
-	MonteCarloTreeSearchCache(torch::DeviceType device, Game* game)
+	MonteCarloTreeSearchCache(torch::DeviceType device, Game* game, NeuralNetwork* net)
 		: m_device(device)
 		, m_game(game)
+		, m_net(net)
 	{
 	}
 	MonteCarloTreeSearchCache(const MonteCarloTreeSearchCache&) = delete;
@@ -57,7 +58,7 @@ public:
 			addToInput(state);
 	}
 
-	void expand(NeuralNetwork* net) // convertToNeuralInput must be called before calling this
+	void expand() // convertToNeuralInput must be called before calling this
 	{
 		torch::NoGradGuard no_grad;
 		m_values.clear();
@@ -78,7 +79,7 @@ public:
 		}
 		else
 		{
-			calculateOutput(net);
+			calculateOutput();
 
 			size_t counter = 0;
 			for (const auto& state : toExpand)
@@ -118,13 +119,13 @@ private:
 		return m_currentInputSize++;
 	}
 
-	void calculateOutput(NeuralNetwork* net)
+	void calculateOutput()
 	{
 		if (m_currentInputSize == 0)
 			return;
 
 		auto device_input = m_input.to(m_device);
-		auto rawOutput = net->calculate(device_input);
+		auto rawOutput = m_net->calculate(device_input);
 		m_outputSize = m_currentInputSize;
 		m_currentInputSize = 0;
 
@@ -143,13 +144,14 @@ private:
 	torch::Tensor m_outputProbabilities;
 	torch::Tensor m_outputValues;
 	torch::DeviceType m_device;
+	Game* m_game;
+	NeuralNetwork* m_net;
 	size_t m_currentInputSize = 0;
 	size_t m_maxSize = 0;
 	size_t m_outputSize = 0;
 	std::map<GameState, std::vector<std::pair<int, float>>> m_probabilities;
 	std::map<GameState, float> m_values;
 	std::set<ExpansionDataT> toExpand;
-	Game* m_game;
 };
 
 template <typename GameState, typename Game, bool mockExpansion = false>
@@ -172,16 +174,16 @@ public:
 	{
 	}
 
-	void search(size_t count, const GameState& state, NeuralNetwork* net, int currentPlayer)
+	void search(size_t count, const GameState& state, int currentPlayer)
 	{
 		for (size_t i = 0; i < count; i++)
 		{
-			search(state, net, currentPlayer);
+			search(state, currentPlayer);
 			m_loopDetection.clear();
 		}
 	}
 
-	float search(const GameState& state, NeuralNetwork* net, int currentPlayer)
+	float search(const GameState& state, int currentPlayer)
 	{
 		m_backProp.clear();
 		bool expansionNeeded = false;
@@ -190,7 +192,7 @@ public:
 		// assert(!m_backProp.empty()); 
 
 		if (expansionNeeded)
-			return -expand(net);
+			return -expand();
 
 		backpropagateValue(value);
 		return value;
@@ -294,11 +296,11 @@ private:
 		}
 	}
 
-	float expand(NeuralNetwork* net)
+	float expand()
 	{
 		m_cache->addToExpansion({ m_backProp.back().state, m_backProp.back().player });
 		m_cache->convertToNeuralInput();
-		m_cache->expand(net);
+		m_cache->expand();
 
 		return finishExpansion();
 	}

@@ -20,7 +20,7 @@ public:
 		, m_probabilistic(probabilistic)	
 		, m_device(device)
 	{
-		m_cache = std::make_unique< MonteCarloTreeSearchCache<GameState, Game, mockExpansion>>(device, m_game);
+		m_cache = std::make_unique< MonteCarloTreeSearchCache<GameState, Game, mockExpansion>>(device, m_game, m_net);
 		m_mcts = std::make_unique<MonteCarloTreeSearch<GameState, Game, mockExpansion>>(m_cache.get(), m_game, device);
 	}
 
@@ -28,7 +28,7 @@ public:
 	{
 		auto state = m_game->getGameStateFromString(stateStr, color);
 		
-		m_mcts->search(m_mctsCount, state, m_net, color);
+		m_mcts->search(m_mctsCount, state, color);
 		auto probs = m_mcts->getProbabilities(state);
 
 		if (m_probabilistic)

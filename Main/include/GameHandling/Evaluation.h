@@ -47,7 +47,7 @@ public:
 
 	void eval(NeuralNetwork* net, Ai* miniMaxAi, int batchSize, EvalResult& outEval, int numberEvalGames)
 	{
-		auto netInputBuffer = MonteCarloTreeSearchCache<GameState, Game, mockExpansion>(m_device, m_game);
+		auto netInputBuffer = MonteCarloTreeSearchCache<GameState, Game, mockExpansion>(m_device, m_game, net);
 		int playerBuf = m_game->getInitialPlayer();
 		auto currentStatesData = std::vector<SelfPlayState>(batchSize, { m_game->getInitialGameState(), m_game->getInitialPlayer(), m_device, m_game, &netInputBuffer });
 		
@@ -69,7 +69,7 @@ public:
 		while (!currentStates.empty())
 		{
 			netInputBuffer.convertToNeuralInput();
-			netInputBuffer.expand(net);
+			netInputBuffer.expand();
 
 			for (size_t i = 0; i < currentStates.size(); i++)
 			{
