@@ -1,26 +1,31 @@
 #ifndef DEEPREINFORCEMENTLEARNING_TICTACTOEADAPTER_H
 #define DEEPREINFORCEMENTLEARNING_TICTACTOEADAPTER_H
 
-#include <string>
 #include <vector>
-#include <Game.h>
+// Libtorch has many warnings which clutter the output, so we ignore them
+#pragma warning(push, 0)
+#include <torch/torch.h>
+#pragma warning(pop)
+
 #include "GameLogic.h"
 
-class TicTacToeAdapter : public Game
+class TicTacToeAdapter
 {
 public:
 	TicTacToeAdapter() = default;
-	int getInitialPlayer() override;
-	int getPlayerWon(const std::string& state) override;
-	std::string getInitialGameState() override;
-	torch::Tensor convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Device device = torch::kCPU) override;
-	std::vector<int> getAllPossibleMoves(const std::string& state, int currentPlayer) override;
-	int getNextPlayer(int currentPlayer) override;
-	int gameOverReward(const std::string& state, int currentPlayer) override;
-	bool isGameOver(const std::string& state) override;
-	std::string makeMove(const std::string& state, int move, int currentPlayer) override;
-	int getActionCount() const override;
-
+	int getInitialPlayer() const;
+	int getNextPlayer(int currentPlayer) const;
+	ttt::Board getInitialGameState() const;
+	int getPlayerWon(const ttt::Board& board) const;
+	torch::Tensor convertStateToNeuralNetInput(const ttt::Board& board, int currentPlayer) const;
+	void convertStateToNeuralNetInput(const ttt::Board& board, int currentPlayer, torch::Tensor outTensor) const;
+	std::vector<int> getAllPossibleMoves(const ttt::Board& board, int currentPlayer) const;
+	int gameOverReward(const ttt::Board& board, int currentPlayer) const;
+	bool isGameOver(const ttt::Board& board) const;
+	ttt::Board makeMove(ttt::Board board, int move, int currentPlayer) const;
+	int getActionCount() const;
+	ttt::Board getGameStateFromString(const std::string str, int currentPlayer) const;
+	std::string getStringFromGameState(const ttt::Board& board) const;
 private:
 	static constexpr int m_actionCount = 9;
 };

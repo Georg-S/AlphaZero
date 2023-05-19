@@ -2,8 +2,9 @@
 #include <chrono>
 #include <NeuralNetworks/CutDownAlphaGoZeroNet.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
+#include "TestConfig.h"
 
-#if 1
+#if RunTests
 
 TEST(NeuralNet, net_returns_same_value_for_single_element_and_batch)
 {
@@ -19,11 +20,11 @@ TEST(NeuralNet, net_returns_same_value_for_single_element_and_batch)
 
 	auto result = net.calculate(inputSingleElement);
 	torch::Tensor resultTens = std::get<1>(result);
-	float singleValue1 = *(resultTens[0][0].data_ptr<float>());
+	float singleValue1 = resultTens[0][0].item<float>();
 
 	result = net.calculate(inputBatch);
 	resultTens = std::get<1>(result);
-	float batchValue1 = *(resultTens[0][0].data_ptr<float>());
+	float batchValue1 = resultTens[0][0].item<float>();
 
 	ASSERT_FLOAT_EQ(singleValue1, batchValue1);
 }
@@ -35,7 +36,7 @@ TEST(NeuralNet, net_returns_same_value_after_save_and_load)
 	CutDownAlphaGoZeroNet net = CutDownAlphaGoZeroNet(1, 3, 3, 9);
 	auto result = net->forward(input);
 	torch::Tensor resultTens = std::get<1>(result);
-	float value1 = *(resultTens[0][0].data_ptr<float>());
+	float value1 = resultTens[0][0].item<float>();
 
 	torch::save(net, "unit_test_net");
 
@@ -43,9 +44,28 @@ TEST(NeuralNet, net_returns_same_value_after_save_and_load)
 	torch::load(net2, "unit_test_net");
 	auto result2 = net2->forward(input);
 	torch::Tensor resultTens2 = std::get<1>(result2);
-	float value2 = *(resultTens2[0][0].data_ptr<float>());
+	float value2 = resultTens2[0][0].item<float>();
 
 	ASSERT_EQ(value1, value2);
 }
 
-#endif
+TEST(NeuralNet, net_and_deepcopy_returns_the_same_value)
+{
+	torch::Tensor input = torch::rand({ 1,1,3,3 });
+
+	DefaultNeuralNet net = DefaultNeuralNet(1, 3, 3, 9);
+	net.setToEval();
+	auto result = net.calculate(input);
+	torch::Tensor resultTens = std::get<1>(result);
+	float value1 = resultTens[0][0].item<float>();
+
+	auto deepCopy = net.deepCopy();
+	deepCopy->setToEval();
+	auto result2 = deepCopy->calculate(input);
+	torch::Tensor resultTens2 = std::get<1>(result2);
+	float value2 = resultTens2[0][0].item<float>();
+
+	ASSERT_EQ(value1, value2);
+}
+
+#endif //RunTests

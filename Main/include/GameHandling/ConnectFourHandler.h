@@ -12,7 +12,7 @@
 #include <ConnectFour/NegaMaxAi.h>
 #include <Other/NeuralNetAi.h>
 #include "Evaluation.h"
-#include "TrainingParameters.h"
+#include "TrainingUtility.h"
 
 
 class ConnectFourHandler
@@ -23,15 +23,13 @@ public:
 	void connectFourAgainstMiniMaxAi(int depth, cn4::PlayerColor playerColor);
 	void runTraining(const TrainingParameters& params);
 	void startTwoPlayerConnectFourGame();
-	void traininingPerformanceTest(torch::DeviceType device);
-	void evalConnectFour(bool multiThreaded = true);
-	void setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params);
+	void setTrainingParameters(AlphaZeroTraining<cn4::Board, ConnectFourAdapter>& training, const TrainingParameters& params, int currentIteration);
+	void evalConnectFour();
 
 private:
-	EvalResult evalConnectFourMultiThreaded(std::string netName, int miniMaxDepth, torch::DeviceType device, int threadCount);
+	EvalResult evalConnectFour(std::string netName, int miniMaxDepth, torch::DeviceType device);
 	void writeEvaluationResultToFile(int iteration, const EvalResult& result, std::ofstream& file);
-	AlphaZeroTraining::Parameters getDefaultConnectFourTrainingParameters() const;
-	void loadPerformanceTestParameters(AlphaZeroTraining& connectFourZero);
+	AlphaZeroTrainingParameters getDefaultConnectFourTrainingParameters() const;
 
 	inline static const std::string trainingPath = "NeuralNets/Training/ConnectFour";
 	inline static const std::string preTrainedPath = "NeuralNets/PreTrained/ConnectFour";

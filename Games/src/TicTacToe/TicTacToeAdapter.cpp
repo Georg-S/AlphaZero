@@ -2,54 +2,68 @@
 
 using namespace ttt;
 
-int TicTacToeAdapter::getInitialPlayer()
+int TicTacToeAdapter::getInitialPlayer() const
 {
 	constexpr int initialPlayer = static_cast<int>(PlayerColor::CROSS);
 	return initialPlayer;
 }
 
-std::string TicTacToeAdapter::getInitialGameState()
+int TicTacToeAdapter::getNextPlayer(int currentPlayer) const
 {
-	return "---------";
+	return static_cast<int>(ttt::getNextPlayer(PlayerColor(currentPlayer)));
 }
 
-std::vector<int> TicTacToeAdapter::getAllPossibleMoves(const std::string& state, int currentPlayer)
+Board TicTacToeAdapter::getInitialGameState() const
 {
-	Board board = Board(state);
-
-	return ttt::getAllPossibleMoves<int>(board);
+	return Board("---------");
 }
 
-torch::Tensor TicTacToeAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Device device)
+int TicTacToeAdapter::getPlayerWon(const ttt::Board& board) const
 {
-	Board board = Board(state);
+	if (playerWon(board, PlayerColor::CROSS))
+		return static_cast<int>(PlayerColor::CROSS);
+	if (playerWon(board, PlayerColor::DOT))
+		return static_cast<int>(PlayerColor::DOT);
+
+	return static_cast<int>(PlayerColor::NONE);
+}
+
+torch::Tensor TicTacToeAdapter::convertStateToNeuralNetInput(const ttt::Board& board, int currentPlayer) const
+{
+	torch::Tensor neuralInput = torch::zeros({ 1,2,3,3 });
+	convertStateToNeuralNetInput(board, currentPlayer, neuralInput[0]);
+
+	return neuralInput;
+}
+
+void TicTacToeAdapter::convertStateToNeuralNetInput(const ttt::Board& board, int currentPlayer, torch::Tensor outTensor) const
+{
 	PlayerColor playercolor = PlayerColor(currentPlayer);
 	PlayerColor otherPlayer = ttt::getNextPlayer(playercolor);
-	torch::Tensor neuralInput = torch::zeros({ 1,2,3,3 });
+	// Use accessor instead of accessing the data direct, this is way better performance wise
+	auto outTensorAccessor = outTensor.accessor<float, 3>();
 
+	outTensor.zero_();
 	for (int x = 0; x < 3; x++)
 	{
 		for (int y = 0; y < 3; y++)
 		{
 			if (playercolor == board.at(x, y))
-				neuralInput[0][0][x][y] = 1;
+				outTensorAccessor[0][x][y] = 1;
 			else if (otherPlayer == board.at(x, y))
-				neuralInput[0][1][x][y] = 1;
+				outTensorAccessor[1][x][y] = 1;
 		}
 	}
-	neuralInput = neuralInput.to(device);
-
-	return neuralInput;
 }
 
-int TicTacToeAdapter::getNextPlayer(int currentPlayer)
+std::vector<int> TicTacToeAdapter::getAllPossibleMoves(const ttt::Board& board, int currentPlayer) const
 {
-	return static_cast<int>(ttt::getNextPlayer(PlayerColor(currentPlayer)));
+	return ttt::getAllPossibleMoves<int>(board);
 }
 
-int TicTacToeAdapter::gameOverReward(const std::string& state, int currentPlayer)
+int TicTacToeAdapter::gameOverReward(const ttt::Board& board, int currentPlayer) const
 {
-	int playerWon = getPlayerWon(state);
+	int playerWon = getPlayerWon(board);
 
 	if (playerWon == currentPlayer)
 		return 1;
@@ -58,19 +72,16 @@ int TicTacToeAdapter::gameOverReward(const std::string& state, int currentPlayer
 	return 0;
 }
 
-bool TicTacToeAdapter::isGameOver(const std::string& state)
+bool TicTacToeAdapter::isGameOver(const ttt::Board& board) const
 {
-	Board board = Board(state);
-
 	return ttt::isGameOver(board);
 }
 
-std::string TicTacToeAdapter::makeMove(const std::string& state, int move, int currentPlayer)
+ttt::Board TicTacToeAdapter::makeMove(ttt::Board board, int move, int currentPlayer) const
 {
-	Board board = Board(state);
 	board.makeMove(move, PlayerColor(currentPlayer));
 
-	return board.toString();
+	return board;
 }
 
 int TicTacToeAdapter::getActionCount() const
@@ -78,14 +89,12 @@ int TicTacToeAdapter::getActionCount() const
 	return m_actionCount;
 }
 
-int TicTacToeAdapter::getPlayerWon(const std::string& state)
+ttt::Board TicTacToeAdapter::getGameStateFromString(const std::string str, int currentPlayer) const
 {
-	Board board = Board(state);
+	return ttt::Board(str);
+}
 
-	if (playerWon(board, PlayerColor::CROSS))
-		return static_cast<int>(PlayerColor::CROSS);
-	if (playerWon(board, PlayerColor::DOT))
-		return static_cast<int>(PlayerColor::DOT);
-
-	return static_cast<int>(PlayerColor::NONE);
+std::string TicTacToeAdapter::getStringFromGameState(const ttt::Board& board) const
+{
+	return board.toString();
 }

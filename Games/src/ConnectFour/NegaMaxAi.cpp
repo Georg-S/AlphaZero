@@ -61,9 +61,9 @@ int cn4::NegaMaxAi::negamax(const Board& board, int depth, PlayerColor currentPl
 
 void cn4::NegaMaxAi::orderMoves(std::vector<int>& moves) const
 {
-	constexpr int middle = 3;
-	std::sort(moves.begin(), moves.end(), [middle](int a, int b)
+	std::sort(moves.begin(), moves.end(), [](int a, int b)
 	{
+		constexpr int middle = 3;
 		return abs(middle - a) < abs(middle - b);
 	});
 }

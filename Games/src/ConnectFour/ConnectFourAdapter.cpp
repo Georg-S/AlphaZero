@@ -2,35 +2,63 @@
 
 using namespace cn4;
 
-std::string ConnectFourAdapter::makeMove(const std::string& state, int move, int currentPlayer)
+int ConnectFourAdapter::getInitialPlayer() const
 {
-	Board board = Board(state);
-	PlayerColor playerColor = PlayerColor(currentPlayer);
-	board.makeMove(move, playerColor);
-
-	return board.toString();
+	return static_cast<int>(PlayerColor::YELLOW);
 }
 
-int ConnectFourAdapter::getActionCount() const
+int ConnectFourAdapter::getNextPlayer(int currentPlayer) const
 {
-	return m_actionCount;
+	return cn4::getNextPlayer(currentPlayer);
 }
 
-std::string ConnectFourAdapter::getInitialGameState()
+Board ConnectFourAdapter::getInitialGameState() const
 {
 	static const std::string startState = "000000000000000000000000000000000000000000";
-	return startState;
+	return Board(startState);
 }
 
-bool ConnectFourAdapter::isGameOver(const std::string& state)
+int ConnectFourAdapter::getPlayerWon(const cn4::Board& board) const
 {
-	Board board = Board(state);
-	return cn4::isGameOver(board);
+	return static_cast<int>(cn4::getPlayerWon(board));
 }
 
-int ConnectFourAdapter::gameOverReward(const std::string& state, int currentPlayer)
+torch::Tensor ConnectFourAdapter::convertStateToNeuralNetInput(const cn4::Board& board, int currentPlayer) const
 {
-	int playerWon = getPlayerWon(state);
+	torch::Tensor neuralInput = torch::zeros({ 1,2, boardWidth, boardHeight });
+	convertStateToNeuralNetInput(board, currentPlayer, neuralInput[0]);
+
+	return neuralInput;
+}
+
+void ConnectFourAdapter::convertStateToNeuralNetInput(const cn4::Board& board, int currentPlayer, torch::Tensor outTensor) const
+{
+	PlayerColor playerColor = PlayerColor(currentPlayer);
+	PlayerColor otherPlayer = cn4::getNextPlayer(playerColor);
+	// Use accessor instead of accessing the data direct, this is way better performance wise
+	auto outTensorAccessor = outTensor.accessor<float, 3>(); 
+
+	outTensor.zero_();
+	for (int x = 0; x < boardWidth; x++)
+	{
+		for (int y = 0; y < boardHeight; y++)
+		{
+			if (playerColor == board.at(x, y))
+				outTensorAccessor[0][x][y] = 1;
+			else if (otherPlayer == board.at(x, y))
+				outTensorAccessor[1][x][y] = 1;
+		}
+	}
+}
+
+std::vector<int> ConnectFourAdapter::getAllPossibleMoves(const cn4::Board& board, int currentPlayer) const
+{
+	return cn4::getAllPossibleMoves(board);
+}
+
+int ConnectFourAdapter::gameOverReward(const cn4::Board& board, int currentPlayer) const
+{
+	int playerWon = static_cast<int>(cn4::getPlayerWon(board));
 
 	if (playerWon == currentPlayer)
 		return 1;
@@ -39,48 +67,30 @@ int ConnectFourAdapter::gameOverReward(const std::string& state, int currentPlay
 	return 0;
 }
 
-int ConnectFourAdapter::getPlayerWon(const std::string& state)
+bool ConnectFourAdapter::isGameOver(const cn4::Board& board) const
 {
-	cn4::Board board = Board(state);
-
-	return static_cast<int>(cn4::getPlayerWon(board));
+	return cn4::isGameOver(board);
 }
 
-int ConnectFourAdapter::getNextPlayer(int currentPlayer)
+cn4::Board ConnectFourAdapter::makeMove(const cn4::Board& board, int move, int currentPlayer) const
 {
-	return cn4::getNextPlayer(currentPlayer);
+	Board result = board;
+	result.makeMove(move, PlayerColor(currentPlayer));
+
+	return result;
 }
 
-int ConnectFourAdapter::getInitialPlayer()
+int ConnectFourAdapter::getActionCount() const
 {
-	return static_cast<int>(PlayerColor::YELLOW);
+	return m_actionCount;
 }
 
-std::vector<int> ConnectFourAdapter::getAllPossibleMoves(const std::string& state, int currentPlayer)
+cn4::Board ConnectFourAdapter::getGameStateFromString(const std::string str, int currentPlayer) const
 {
-	Board board = Board(state);
-
-	return cn4::getAllPossibleMoves(board);
+	return cn4::Board(str);
 }
 
-torch::Tensor ConnectFourAdapter::convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Device device)
+std::string ConnectFourAdapter::getStringFromGameState(const cn4::Board& board) const
 {
-	Board board = Board(state);
-	PlayerColor playerColor = PlayerColor(currentPlayer);
-	PlayerColor otherPlayer = cn4::getNextPlayer(playerColor);
-	torch::Tensor neuralInput = torch::zeros({ 1,2, boardWidth, boardHeight });
-
-	for (int x = 0; x < boardWidth; x++)
-	{
-		for (int y = 0; y < boardHeight; y++)
-		{
-			if (playerColor == board.at(x, y))
-				neuralInput[0][0][x][y] = 1;
-			else if (otherPlayer == board.at(x, y))
-				neuralInput[0][1][x][y] = 1;
-		}
-	}
-	neuralInput = neuralInput.to(device);
-
-	return neuralInput;
+	return board.toString();
 }

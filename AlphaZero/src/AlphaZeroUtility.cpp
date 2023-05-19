@@ -1,6 +1,5 @@
 #include "AlphaZeroUtility.h"
 
-//TODO is this good and valid?
 static std::mt19937 createRNG()
 {
 	auto id = std::this_thread::get_id();
@@ -12,7 +11,6 @@ static std::mt19937 createRNG()
 	return std::mt19937(seed);
 }
 
-//TODO is this good and valid?
 thread_local std::mt19937 generator = createRNG();
 
 long long ALZ::getCurrentTime()
@@ -47,18 +45,38 @@ std::mt19937& ALZ::getRNG()
 	return generator;
 }
 
-int ALZ::getRandomIndex(const std::vector<float>& probs, float sumOfProbs)
+int ALZ::getRandomAction(const std::vector<std::pair<int, float>>& probs)
 {
 	assert(!probs.empty());
+	float sumOfProbs = 0.0;
+	for (const auto& [action, prob] : probs)
+		sumOfProbs += prob;
+
 	double randomNum = getRandomNumber(0.0, sumOfProbs);
 
 	double accumulate = 0.f;
-	for(int i = 0; i < probs.size(); i++)
+	for (const auto& [action, prob] : probs)
 	{
-		accumulate += probs[i];
+		accumulate += prob;
 		if (accumulate >= randomNum)
-			return i;
+			return action;
 	}
 
 	return probs.size() - 1;
+}
+
+int ALZ::getBestAction(const std::vector<std::pair<int, float>>& probabilities)
+{
+	float bestProb = -INFINITY;
+	int bestAction = INT_MAX;
+	for (const auto& [action, prob] : probabilities)
+	{
+		if (prob > bestProb)
+		{
+			bestProb = prob;
+			bestAction = action;
+		}
+	}
+
+	return bestAction;
 }

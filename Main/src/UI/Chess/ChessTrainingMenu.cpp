@@ -40,13 +40,14 @@ void ChessTrainingMenu::initDefaultValues()
 	trainingUi->RestrictGameLengthYesRadio->setChecked(true);
 	trainingUi->MaxGameLengthInput->setText("80");
 	trainingUi->TrainingIterationsInput->setText("40");
-	trainingUi->SelfPlayMCTSCountInput->setText("200");
-	trainingUi->SelfPlayGamesCountInput->setText("250");
-	trainingUi->TrainingBatchSizeInput->setText("100");
+	trainingUi->SelfPlayMCTSCountInput->setText("800");
+	trainingUi->SelfPlayBatchSizeInput->setText("200");
+	trainingUi->SelfPlayGamesCountInput->setText("1000");
+	trainingUi->TrainingBatchSizeInput->setText("2000");
 	trainingUi->SaveIterationCountInput->setText("1");
 	trainingUi->RandomizedMoveCountInput->setText("20");
-	trainingUi->LearningRateInput->setText("0.01");
-	trainingUi->FilterCountInput->setText("512");
+	trainingUi->LearningRateInput->setText("0.1");
+	trainingUi->ContinueTrainingYesRadio->setChecked(true);
 	trainingUi->GPURadio->setChecked(true);
 	trainingUi->MaxGameLengthInput->setEnabled(true);
 	trainingUi->MaxGameLengthLabel->setEnabled(true);
@@ -57,8 +58,8 @@ void ChessTrainingMenu::initInputValidators()
 {
 	trainingUi->MaxGameLengthInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->ReplayMemorySizeInput->setValidator(new QIntValidator(0, INT32_MAX, this));
-	trainingUi->FilterCountInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->SelfPlayMCTSCountInput->setValidator(new QIntValidator(0, INT32_MAX, this));
+	trainingUi->SelfPlayBatchSizeInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->TrainingBatchSizeInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->SaveIterationCountInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->SelfPlayGamesCountInput->setValidator(new QIntValidator(0, INT32_MAX, this));
@@ -70,7 +71,7 @@ void ChessTrainingMenu::initInputValidators()
 
 TrainingParameters ChessTrainingMenu::getParametersFromInput()
 {
-	TrainingParameters params;
+	TrainingParameters params = {};
 
 	torch::DeviceType device = torch::kCPU;
 	if (trainingUi->GPURadio->isChecked())
@@ -85,12 +86,13 @@ TrainingParameters ChessTrainingMenu::getParametersFromInput()
 	params.replayMemorySize = trainingUi->ReplayMemorySizeInput->text().toInt();
 	params.trainingIterations = trainingUi->TrainingIterationsInput->text().toInt();
 	params.selfPlayMctsCount = trainingUi->SelfPlayMCTSCountInput->text().toInt();
+	params.selfPlayBatchSize = trainingUi->SelfPlayBatchSizeInput->text().toInt();
 	params.selfPlayGamesCount = trainingUi->SelfPlayGamesCountInput->text().toInt();
 	params.trainingBatchSize = trainingUi->TrainingBatchSizeInput->text().toInt();
 	params.saveIterationCount = trainingUi->SaveIterationCountInput->text().toInt();
 	params.randomizedMoveCount = trainingUi->RandomizedMoveCountInput->text().toInt();
 	params.learningRate = trainingUi->LearningRateInput->text().toFloat();
-	params.filterCount = trainingUi->FilterCountInput->text().toInt();
+	params.continueTraining = trainingUi->ContinueTrainingYesRadio->isChecked();
 	params.device = device;
 	params.cpuThreads = trainingUi->CpuThreadsInput->text().toInt();
 

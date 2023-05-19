@@ -2,24 +2,19 @@
 #include <TicTacToe/TicTacToeAdapter.h>
 #include <TicTacToe/Renderer.h>
 #include <string>
+#include "TestConfig.h"
+#include "Test_Utility.h"
 
 using namespace ttt;
 
 TicTacToeAdapter adap = TicTacToeAdapter();
 
-static void renderBoard(const Board& board) 
-{
-	Renderer renderer = Renderer();
-	while (!renderer.isQuit())
-		renderer.update(board);
-
-	renderer.quit();
-}
-
 static void renderBoard(const std::string& boardStr) 
 {
 	renderBoard(Board(boardStr));
 }
+
+#if RunTests
 
 TEST(TicTacToeAdapter, test_getNextPlayer)
 {
@@ -111,8 +106,8 @@ TEST(TicTacToeAdapter, test_convert_state_to_neural_input_player_one)
 
 	auto plane1 = input[0];
 	auto plane2 = input[1];
-	float value1 = *(plane1[0][0].data_ptr<float>());
-	float value2 = *(plane2[2][2].data_ptr<float>());
+	float value1 = plane1[0][0].item<float>();
+	float value2 = plane2[2][2].item<float>();
 
 
 	ASSERT_FLOAT_EQ(value1, 1);
@@ -129,10 +124,10 @@ TEST(TicTacToeAdapter, test_convert_state_to_neural_input_player_two)
 	auto plane1 = input[0];
 	auto plane2 = input[1];
 
-	float value1 = *(plane1[2][0].data_ptr<float>());
-	float value2 = *(plane1[2][2].data_ptr<float>());
-	float value3 = *(plane2[0][0].data_ptr<float>());
-	float value4 = *(plane2[2][1].data_ptr<float>());
+	float value1 = plane1[2][0].item<float>();
+	float value2 = plane1[2][2].item<float>();
+	float value3 = plane2[0][0].item<float>();
+	float value4 = plane2[2][1].item<float>();
 
 
 	ASSERT_FLOAT_EQ(value1, 1);
@@ -143,7 +138,8 @@ TEST(TicTacToeAdapter, test_convert_state_to_neural_input_player_two)
 
 TEST(TicTacToeAdapter, test_get_all_possible_moves)
 {
-	std::vector<int> moves = adap.getAllPossibleMoves("-X-------", 1);
+	auto board = ttt::Board("-X-------");
+	std::vector<int> moves = adap.getAllPossibleMoves(board, 1);
 
 	ASSERT_EQ(moves.size(), 8);
 	ASSERT_EQ(moves[1], 2);
@@ -157,53 +153,58 @@ TEST(TicTacToeAdapter, test_get_all_possible_moves)
 
 TEST(TicTacToeAdapter, test_get_all_possible_moves_board_full)
 {
-	std::vector<int> moves = adap.getAllPossibleMoves("XOXOXOXOX", 1);
+	auto board = ttt::Board("XOXOXOXOX");
+	std::vector<int> moves = adap.getAllPossibleMoves(board, 1);
 
 	ASSERT_EQ(moves.size(), 0);
 }
 
 TEST(TicTacToeAdapter, test_is_game_over_draw)
 {
-	bool gameOver = adap.isGameOver("OXXXXOOOX");
+	auto board = ttt::Board("OXXXXOOOX");
+	bool gameOver = adap.isGameOver(board);
 
 	ASSERT_EQ(gameOver, true);
 }
 
 TEST(TicTacToeAdapter, test_is_game_over_false)
 {
-	bool gameOver = adap.isGameOver("OXXXXOOO-");
+	auto board = ttt::Board("OXXXXOOO-");
+	bool gameOver = adap.isGameOver(board);
 
 	ASSERT_EQ(gameOver, false);
 }
 
 TEST(TicTacToeAdapter, test_is_game_over_player_one_won)
 {
-	bool gameOver = adap.isGameOver("--XOOX--X");
+	auto board = ttt::Board("--XOOX--X");
+	bool gameOver = adap.isGameOver(board);
 
 	ASSERT_EQ(gameOver, true);
 }
 
 TEST(TicTacToeAdapter, test_is_game_over_player_two_won)
 {
-	bool gameOver = adap.isGameOver("X-O-OXO-X");
+	auto board = ttt::Board("X-O-OXO-X");
+	bool gameOver = adap.isGameOver(board);
 
 	ASSERT_EQ(gameOver, true);
 }
 
 TEST(TicTacToeAdapter, test_make_move)
 {
-	std::string state = "-X-O--X--";
-	state = adap.makeMove(state, 2, 2);
+	auto board = ttt::Board("-X-O--X--");
+	auto state = adap.makeMove(board, 2, 2);
 
-	ASSERT_EQ(state, "-XOO--X--");
+	ASSERT_EQ(state.toString(), "-XOO--X--");
 }
 
 TEST(TicTacToeAdapter, test_make_invalid_move)
 {
-	std::string state = "-X-O--X--";
-	state = adap.makeMove(state, 3, 2);
+	auto board = ttt::Board("-X-O--X--");
+	auto state = adap.makeMove(board, 3, 2);
 
-	ASSERT_EQ(state, "-X-O--X--");
+	ASSERT_EQ(state.toString(), "-X-O--X--");
 }
 
 TEST(TicTacToeAdapter, test_convert_string_to_board)
@@ -236,3 +237,5 @@ TEST(TicTacToeAdapter, test_convert_string_to_board_and_back)
 
 	ASSERT_EQ(state, converted);
 }
+
+#endif //RunTests

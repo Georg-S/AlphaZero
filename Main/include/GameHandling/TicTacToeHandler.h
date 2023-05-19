@@ -10,9 +10,8 @@
 #include <TicTacToe/TicTacToeAdapter.h>
 #include <TicTacToe/TicTacToe.h>
 #include <TicTacToe/MiniMaxAi.h>
-#include <MultiThreadingNeuralNetManager.h>
 #include "Evaluation.h"
-#include "TrainingParameters.h"
+#include "TrainingUtility.h"
 
 class TicTacToeHandler
 {
@@ -21,16 +20,14 @@ public:
 	void ticTacToeAgainstNeuralNetAi(ttt::PlayerColor playerColor, std::string netName, int countMcts, bool probabilistic, torch::DeviceType device);
 	void ticTacToeAgainstMiniMaxAi(ttt::PlayerColor playerColor);
 	void runTraining(const TrainingParameters& params);
-	void setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params);
+	void setTrainingParameters(AlphaZeroTraining<ttt::Board, TicTacToeAdapter>& training, const TrainingParameters& params, int currentIteration);
 	void startTwoPlayerTicTacToeGame();
-	void traininingPerformanceTest(torch::DeviceType device);
-	void evalTicTacToe(bool multiThreaded = true);
+	void evalTicTacToe();
 
 private:
-	EvalResult evalTicTacToeMultiThreaded(std::string netName, torch::DeviceType device, int threadCount);
+	EvalResult evalTicTacToe(std::string netName, torch::DeviceType device);
 	void writeEvaluationResultToFile(int iteration, const EvalResult& result, std::ofstream& file);
-	AlphaZeroTraining::Parameters getDefaultTicTacToeTrainingParameters() const;
-	void loadPerformanceTestParameters(AlphaZeroTraining& ticTacToeZero);
+	AlphaZeroTrainingParameters getDefaultTicTacToeTrainingParameters() const;
 
 	inline static const std::string trainingPath = "NeuralNets/Training/TicTacToe";
 	inline static const std::string preTrainedPath = "NeuralNets/PreTrained/TicTacToe";

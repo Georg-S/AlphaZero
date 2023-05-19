@@ -3,10 +3,10 @@
 void ChessHandler::chessAgainstNeuralNetAi(ceg::PieceColor playerColor, std::string netName, int mctsCount, bool randomize,
 	torch::DeviceType device)
 {
+	ChessAdapter adap = ChessAdapter();
 	auto chessNet = std::make_unique<DefaultNeuralNet>(14, 8, 8, 4096, preTrainedPath + "/" + netName, device);
 	chessNet->setToEval();
-	ChessAdapter adap = ChessAdapter();
-	NeuralNetAi neuralNetAi = NeuralNetAi(chessNet.get(), &adap, 4096, mctsCount, randomize, device);
+	auto neuralNetAi = NeuralNetAi<ChessAdapter::GameState, ChessAdapter, false>(chessNet.get(), &adap, mctsCount, randomize, device);
 	Chess chess = Chess(&neuralNetAi, playerColor);
 
 	chess.game_loop();
@@ -18,24 +18,9 @@ void ChessHandler::startTwoPlayerChessGame()
 	chess.game_loop();
 }
 
-void ChessHandler::traininingPerformanceTest(torch::DeviceType device)
+AlphaZeroTrainingParameters ChessHandler::getDefaultChessTrainingParameters() const
 {
-	auto chessNet = std::make_unique<DefaultNeuralNet>(14, 8, 8, 4096, device);
-	chessNet->setToTraining();
-	ChessAdapter adap = ChessAdapter();
-	AlphaZeroTraining alphaZero = AlphaZeroTraining(4096, chessNet.get(), device);
-	loadPerformanceTestParameters(alphaZero);
-
-	uint64_t before = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-	alphaZero.runTraining(&adap);
-	int64_t after = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-
-	std::cout << (after - before) / 1000.f << std::endl;
-}
-
-AlphaZeroTraining::Parameters ChessHandler::getDefaultChessTrainingParameters() const
-{
-	auto params = AlphaZeroTraining::Parameters{};
+	auto params = AlphaZeroTrainingParameters{};
 	params.MAX_REPLAY_MEMORY_SIZE = 300000;
 	params.neuralNetPath = trainingPath;
 	params.TRAINING_DONT_USE_DRAWS = false;
@@ -49,23 +34,16 @@ AlphaZeroTraining::Parameters ChessHandler::getDefaultChessTrainingParameters() 
 	params.TRAINING_BATCH_SIZE = 100;
 	params.SAVE_ITERATION_COUNT = 1;
 	params.RANDOM_MOVE_COUNT = 20;
+	params.SELFPLAY_BATCH_SIZE = 10;
 
 	return params;
 }
 
-void ChessHandler::loadPerformanceTestParameters(AlphaZeroTraining& chessZero)
+void ChessHandler::setTrainingParameters(AlphaZeroTraining<ChessAdapter::GameState, ChessAdapter>& training, const TrainingParameters& params, int currentIteration)
 {
-	auto params = getDefaultChessTrainingParameters();
-	params.TRAINING_ITERATIONS = 1;
-	params.NUM_SELF_PLAY_GAMES = 1;
-	params.SELF_PLAY_MCTS_COUNT = 800;
-
-	chessZero.setTrainingParams(params);
-}
-
-void ChessHandler::setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params)
-{
-	auto trainingParams = params.getAlphaZeroParams(trainingPath);
+	auto defaultParams = getDefaultChessTrainingParameters();
+	auto trainingParams = params.getAlphaZeroParams(trainingPath, defaultParams);
+	trainingParams.CURRENT_ITERATION = currentIteration;
 	training.setTrainingParams(trainingParams);
 }
 
@@ -73,14 +51,27 @@ void ChessHandler::runTraining(const TrainingParameters& params)
 {
 	ChessAdapter adap = ChessAdapter();
 	torch::DeviceType device = params.device;
-	auto neuralNet = std::make_unique<DefaultNeuralNet>(14, 8, 8, 4096, device);
+	std::unique_ptr<DefaultNeuralNet> neuralNet = nullptr;
+	int currentIteration = 0;
+	const auto [netName, highestIteration] = getHighestExistingNetAndIteration(trainingPath);
+	if (!params.continueTraining || highestIteration == -1)
+	{
+		neuralNet = std::make_unique<DefaultNeuralNet>(14, 8, 8, 4096, device);
+	}
+	else 
+	{
+		std::cout << "Continue training with net: " << netName << std::endl;
+		neuralNet = std::make_unique<DefaultNeuralNet>(14, 8, 8, 4096, netName, device);
+		currentIteration = highestIteration + 1;
+	}
+
 	neuralNet->setLearningRate(params.learningRate);
 	neuralNet->setToTraining();
-	AlphaZeroTraining training = AlphaZeroTraining(4096, neuralNet.get(), device);
-	setTrainingParameters(training, params);
+	auto training = AlphaZeroTraining<ChessAdapter::GameState, ChessAdapter>(&adap, neuralNet.get(), device);
+	setTrainingParameters(training, params, currentIteration);
 
 	ALZ::ScopedTimer timer{};
-	training.runTraining(&adap);
+	training.runTraining();
 }
 
 void ChessHandler::chessAgainstMiniMaxAi(int miniMaxDepth, ceg::PieceColor playerColor)

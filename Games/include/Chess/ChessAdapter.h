@@ -1,7 +1,11 @@
 #ifndef DEEPREINFORCEMENTLEARNING_REDUCEDCHESSADAPTER_H
 #define DEEPREINFORCEMENTLEARNING_REDUCEDCHESSADAPTER_H
 
-#include <Game.h>
+// Libtorch has many warnings which clutter the output, so we ignore them
+#pragma warning(push, 0)
+#include <torch/torch.h>
+#pragma warning(pop)
+
 #include "Chess/Engine/ChessEngine.h"
 
 namespace chess
@@ -10,20 +14,83 @@ namespace chess
 	int getIntFromMove(const ceg::Move& move);
 }
 
-class ChessAdapter : public Game
+class ChessAdapter
 {
 public:
+	struct GameState
+	{
+		ceg::BitBoard board;
+		int currentPlayer;
+
+		GameState() = default;
+		GameState(ceg::BitBoard board, int currentPlayer)
+			: board(std::move(board))
+			, currentPlayer(currentPlayer)
+		{
+		}
+
+		friend bool operator<(const GameState& lhs, const GameState& rhs)
+		{
+			const uint64_t lhsArr[] =
+			{
+				lhs.board.white_pieces.bishops,
+				lhs.board.white_pieces.castling,
+				lhs.board.white_pieces.king,
+				lhs.board.white_pieces.knights,
+				lhs.board.white_pieces.pawns,
+				lhs.board.white_pieces.queens,
+				lhs.board.white_pieces.rooks,
+				lhs.board.black_pieces.bishops,
+				lhs.board.black_pieces.castling,
+				lhs.board.black_pieces.king,
+				lhs.board.black_pieces.knights,
+				lhs.board.black_pieces.pawns,
+				lhs.board.black_pieces.queens,
+				lhs.board.black_pieces.rooks,
+				lhs.board.en_passant_mask,
+				static_cast<uint64_t>(lhs.currentPlayer)
+			};
+
+			const uint64_t rhsArr[] =
+			{
+				rhs.board.white_pieces.bishops,
+				rhs.board.white_pieces.castling,
+				rhs.board.white_pieces.king,
+				rhs.board.white_pieces.knights,
+				rhs.board.white_pieces.pawns,
+				rhs.board.white_pieces.queens,
+				rhs.board.white_pieces.rooks,
+				rhs.board.black_pieces.bishops,
+				rhs.board.black_pieces.castling,
+				rhs.board.black_pieces.king,
+				rhs.board.black_pieces.knights,
+				rhs.board.black_pieces.pawns,
+				rhs.board.black_pieces.queens,
+				rhs.board.black_pieces.rooks,
+				rhs.board.en_passant_mask,
+				static_cast<uint64_t>(rhs.currentPlayer)
+			};
+
+			const auto res = memcmp(lhsArr, rhsArr, std::size(lhsArr) * sizeof(lhsArr[0]));
+
+			return res < 0;
+		}
+	};
+
 	ChessAdapter();
-	std::vector<int> getAllPossibleMoves(const std::string& state, int currentPlayer) override;
-	int getInitialPlayer() override;
-	std::string getInitialGameState() override;
-	int getPlayerWon(const std::string& state) override;
-	int getNextPlayer(int currentPlayer) override;
-	std::string makeMove(const std::string& state, int move, int currentPlayer) override;
-	torch::Tensor convertStateToNeuralNetInput(const std::string& state, int currentPlayer, torch::Device device = torch::kCPU) override;
-	bool isGameOver(const std::string& state) override;
-	int gameOverReward(const std::string& state, int currentPlayer) override;
-	int getActionCount() const override;
+	int getInitialPlayer() const;
+	int getNextPlayer(int currentPlayer) const;
+	GameState getInitialGameState() const;
+	int getPlayerWon(const GameState& gameState) const;
+	torch::Tensor convertStateToNeuralNetInput(const GameState& state, int currentPlayer) const;
+	void convertStateToNeuralNetInput(const GameState& state, int currentPlayer, torch::Tensor outTensor) const;
+	std::vector<int> getAllPossibleMoves(const GameState& gameState, int currentPlayer) const;
+	int gameOverReward(const GameState& state, int currentPlayer) const;
+	bool isGameOver(const GameState& state) const;
+	GameState makeMove(GameState state, int move, int currentPlayer) const;
+	int getActionCount() const;
+	GameState getGameStateFromString(const std::string str, int currentPlayer) const;
+	std::string getStringFromGameState(const GameState& board) const;
 
 private:
 	static constexpr int m_actionCount = 4096;

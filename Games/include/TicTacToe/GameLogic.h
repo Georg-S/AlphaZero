@@ -37,6 +37,7 @@ namespace ttt
 		uint32_t getPieces(PlayerColor color) const;
 		uint32_t occupied() const;
 		std::string toString() const;
+		friend bool operator<(const Board& lhs, const Board& rhs);
 
 		static constexpr uint32_t fullBoard = 511;
 	private:

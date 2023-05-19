@@ -2,15 +2,17 @@
 #define DEEPREINFORCEMENTLEARNING_CHESSHANDLER_H
 
 #include <chrono>
-#include <AlphaZeroTraining.h>
+#include <regex>
+#include <filesystem>
 #include <Chess/ChessAiAdapter.h>
+#include <AlphaZeroTraining.h>
 #include <NeuralNetworks/DefaultNeuralNet.h>
 #include <Chess/Chess.h>
 #include <Chess/ChessAdapter.h>
 #include <Chess/Engine/NegamaxAI.h>
 #include <Other/NeuralNetAi.h>
 #include "Evaluation.h"
-#include "TrainingParameters.h"
+#include "TrainingUtility.h"
 
 class ChessHandler
 {
@@ -20,12 +22,11 @@ public:
 	void chessAgainstMiniMaxAi(int miniMaxDepth, ceg::PieceColor playerColor);
 	void runTraining(const TrainingParameters& params);
 	static void startTwoPlayerChessGame();
-	void traininingPerformanceTest(torch::DeviceType device);
-	void setTrainingParameters(AlphaZeroTraining& training, const TrainingParameters& params);
+	void setTrainingParameters(AlphaZeroTraining<ChessAdapter::GameState, ChessAdapter>& training
+		, const TrainingParameters& params, int currentIteration);
 
 private:
-	AlphaZeroTraining::Parameters getDefaultChessTrainingParameters() const;
-	void loadPerformanceTestParameters(AlphaZeroTraining& chessZero);
+	AlphaZeroTrainingParameters getDefaultChessTrainingParameters() const;
 
 	inline static const std::string preTrainedPath = "NeuralNets/PreTrained/Chess";
 	inline static const std::string trainingPath = "NeuralNets/Training/Chess";

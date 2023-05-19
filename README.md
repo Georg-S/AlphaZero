@@ -52,6 +52,7 @@ Tested with the following:
 -	cuDNN v8.1.1
 -	Visual Studio 2019 (Community)
 -	Qt 5.14.2
+-	Boost 1.82
 
 Install the following:
 
@@ -63,6 +64,7 @@ Install the following:
 -	SDL2_image
 -	Visual Studio 2019 (you need the MSVC)
 -	Qt
+-	Boost
 
 
 Set the following Enviroment Variables:
@@ -80,6 +82,8 @@ pointing to for example C:/Code/libraries/SDL2/lib/x64
 pointing to for example C:/Code/libraries/SDL2_image/include
 -	SDL2IMAGE_BIN        
 pointing to for example C:/Code/libraries/SDL2_image/lib/x64
+-	BOOST_ROOT
+pointing to for example C:/Libraries/boost_1_82_0
 
 
 If you want to build in Debug you must make sure that (in the CMakeLists.txt file in the most upper folder):
@@ -105,7 +109,7 @@ If u want to run the project directly out of Visual Studio, you must set the fol
 
 Tested with the following:
 -	gcc 9.3.0
-- cmake 3.18.4
+-	cmake 3.18.4
 -	Cuda Toolkit 10.1
 -	libtorch cuda 10.2
 -	Qt 5.9.7
@@ -119,6 +123,7 @@ Install the following:
 -	SDL2
 -	SDL2_image
 -	Qt
+-	Boost
 
 Set the following Enviroment Variable:
 -	LIBTORCH      pointing to your downloaded/installed libtorch folder

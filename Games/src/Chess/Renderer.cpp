@@ -45,9 +45,14 @@ void Renderer::render(const RenderInformation& renderInfo)
 
 void Renderer::render_board(const std::string& FEN_board_str)
 {
+	render_board(ceg::BitBoard(FEN_board_str));
+}
+
+void chess::Renderer::render_board(const ceg::BitBoard& board)
+{
 	sdl_handler->clear();
 	render_chess_board();
-	render_pieces(FEN_board_str);
+	render_pieces(board);
 	sdl_handler->update();
 }
 
