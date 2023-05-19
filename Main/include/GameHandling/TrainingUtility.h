@@ -6,6 +6,10 @@
 #include <torch/torch.h>
 #pragma warning(pop)
 #include <AlphaZeroTraining.h>
+#include <regex>
+#include <filesystem>
+
+std::pair<std::string, int> getHighestExistingNetAndIteration(const std::string& path);
 
 struct TrainingParameters
 {
@@ -21,7 +25,7 @@ struct TrainingParameters
 	int trainingBatchSize;
 	int saveIterationCount;
 	int randomizedMoveCount;
-	int filterCount;
+	bool continueTraining;
 	int cpuThreads;
 	torch::DeviceType device;
 

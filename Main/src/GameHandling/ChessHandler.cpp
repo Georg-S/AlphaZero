@@ -47,35 +47,14 @@ void ChessHandler::setTrainingParameters(AlphaZeroTraining<ChessAdapter::GameSta
 	training.setTrainingParams(trainingParams);
 }
 
-static std::pair<std::string, int> getHighestExistingNetAndIteration(const std::string& path) 
-{
-	std::string res = "";
-	int highestExistingNet = -1;
-	std::smatch baseMatch;
-	for (const auto& entry : std::filesystem::directory_iterator(path)) 
-	{
-		auto pathString = entry.path().string();
-		if (std::regex_search(pathString, baseMatch, std::regex("\\d+")))
-		{
-			int iteration = std::stoi(baseMatch[0]);
-			if (iteration > highestExistingNet) 
-			{
-				res = pathString;
-				highestExistingNet = iteration;
-			}
-		}
-	}
-
-	return { res, highestExistingNet };
-}
-
 void ChessHandler::runTraining(const TrainingParameters& params)
 {
 	ChessAdapter adap = ChessAdapter();
 	torch::DeviceType device = params.device;
 	std::unique_ptr<DefaultNeuralNet> neuralNet = nullptr;
+	int currentIteration = 0;
 	const auto [netName, highestIteration] = getHighestExistingNetAndIteration(trainingPath);
-	if (highestIteration == -1)
+	if (!params.continueTraining || highestIteration == -1)
 	{
 		neuralNet = std::make_unique<DefaultNeuralNet>(14, 8, 8, 4096, device);
 	}
@@ -83,8 +62,8 @@ void ChessHandler::runTraining(const TrainingParameters& params)
 	{
 		std::cout << "Continue training with net: " << netName << std::endl;
 		neuralNet = std::make_unique<DefaultNeuralNet>(14, 8, 8, 4096, netName, device);
+		currentIteration = highestIteration + 1;
 	}
-	int currentIteration = highestIteration + 1;
 
 	neuralNet->setLearningRate(params.learningRate);
 	neuralNet->setToTraining();

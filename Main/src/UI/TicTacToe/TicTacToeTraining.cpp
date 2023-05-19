@@ -27,7 +27,7 @@ void TicTacToeTraining::initDefaultValues()
 	trainingUi->SaveIterationCountInput->setText("1");
 	trainingUi->RandomizedMoveCountInput->setText("3");
 	trainingUi->LearningRateInput->setText("0.01");
-	trainingUi->FilterCountInput->setText("512");
+	trainingUi->ContinueTrainingNoRadio->setChecked(true);
 	trainingUi->GPURadio->setChecked(true);
 	trainingUi->CpuThreadsInput->setText("1");
 }
@@ -36,7 +36,6 @@ void TicTacToeTraining::initInputValidators()
 {
 	trainingUi->MaxGameLengthInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->ReplayMemorySizeInput->setValidator(new QIntValidator(0, INT32_MAX, this));
-	trainingUi->FilterCountInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->SelfPlayMCTSCountInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->SelfPlayBatchSizeInput->setValidator(new QIntValidator(0, INT32_MAX, this));
 	trainingUi->TrainingBatchSizeInput->setValidator(new QIntValidator(0, INT32_MAX, this));
@@ -50,7 +49,7 @@ void TicTacToeTraining::initInputValidators()
 
 TrainingParameters TicTacToeTraining::getParametersFromInput()
 {
-	TrainingParameters params;
+	TrainingParameters params = {};
 
 	torch::DeviceType device = torch::kCPU;
 	if (trainingUi->GPURadio->isChecked())
@@ -71,7 +70,7 @@ TrainingParameters TicTacToeTraining::getParametersFromInput()
 	params.saveIterationCount = trainingUi->SaveIterationCountInput->text().toInt();
 	params.randomizedMoveCount = trainingUi->RandomizedMoveCountInput->text().toInt();
 	params.learningRate = trainingUi->LearningRateInput->text().toFloat();
-	params.filterCount = trainingUi->FilterCountInput->text().toInt();
+	params.continueTraining = trainingUi->ContinueTrainingYesRadio->isChecked();
 	params.device = device;
 	params.cpuThreads = trainingUi->CpuThreadsInput->text().toInt();
 

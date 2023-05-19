@@ -12,7 +12,7 @@
 #include <Chess/Engine/NegamaxAI.h>
 #include <Other/NeuralNetAi.h>
 #include "Evaluation.h"
-#include "TrainingParameters.h"
+#include "TrainingUtility.h"
 
 class ChessHandler
 {

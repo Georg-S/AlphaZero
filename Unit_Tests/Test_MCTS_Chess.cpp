@@ -119,7 +119,6 @@ TEST(MCTS_Chess, test_chess_check_one_move_wins_with_promotion)
 	mcts.search(1000, gameState, static_cast<int>(ceg::PieceColor::BLACK));
 	auto probabilities = mcts.getProbabilities(gameState);
 	int mctsBestMove = ALZ::getBestAction(probabilities);
-	auto mv = chess::getMoveFromInt(mctsBestMove);
 
 	ASSERT_EQ(winningMove, mctsBestMove);
 }

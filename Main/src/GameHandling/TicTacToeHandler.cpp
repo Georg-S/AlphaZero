@@ -79,22 +79,36 @@ AlphaZeroTrainingParameters TicTacToeHandler::getDefaultTicTacToeTrainingParamet
 void TicTacToeHandler::runTraining(const TrainingParameters& params)
 {
 	TicTacToeAdapter adap = TicTacToeAdapter();
-
 	torch::DeviceType device = params.device;
-	auto neuralNet = std::make_unique<DefaultNeuralNet>(2, 3, 3, 9, device);
+	std::unique_ptr<DefaultNeuralNet> neuralNet;
+
+	int currentIteration = 0;
+	const auto [netName, highestIteration] = getHighestExistingNetAndIteration(trainingPath);
+	if (!params.continueTraining || highestIteration == -1)
+	{
+		neuralNet = std::make_unique<DefaultNeuralNet>(2, 3, 3, 9, device);
+	}
+	else
+	{
+		std::cout << "Continue training with net: " << netName << std::endl;
+		neuralNet = std::make_unique<DefaultNeuralNet>(2, 3, 3, 9, netName, device);
+		currentIteration = highestIteration + 1;
+	}
+	
 	neuralNet->setLearningRate(params.learningRate);
 	neuralNet->setToTraining();
 	auto training = AlphaZeroTraining<ttt::Board, TicTacToeAdapter, false>(&adap, neuralNet.get(), device);
-	setTrainingParameters(training, params);
+	setTrainingParameters(training, params, currentIteration);
 
 	ALZ::ScopedTimer timer{};
 	training.runTraining();
 }
 
-void TicTacToeHandler::setTrainingParameters(AlphaZeroTraining<ttt::Board, TicTacToeAdapter>& training, const TrainingParameters& params)
+void TicTacToeHandler::setTrainingParameters(AlphaZeroTraining<ttt::Board, TicTacToeAdapter>& training, const TrainingParameters& params, int currentIteration)
 {
 	auto defaultParams = getDefaultTicTacToeTrainingParameters();
 	auto trainingParams = params.getAlphaZeroParams(trainingPath, defaultParams);
+	trainingParams.CURRENT_ITERATION = currentIteration;
 	training.setTrainingParams(trainingParams);
 }
 

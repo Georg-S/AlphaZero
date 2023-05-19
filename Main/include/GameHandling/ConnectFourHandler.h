@@ -12,7 +12,7 @@
 #include <ConnectFour/NegaMaxAi.h>
 #include <Other/NeuralNetAi.h>
 #include "Evaluation.h"
-#include "TrainingParameters.h"
+#include "TrainingUtility.h"
 
 
 class ConnectFourHandler
@@ -23,7 +23,7 @@ public:
 	void connectFourAgainstMiniMaxAi(int depth, cn4::PlayerColor playerColor);
 	void runTraining(const TrainingParameters& params);
 	void startTwoPlayerConnectFourGame();
-	void setTrainingParameters(AlphaZeroTraining<cn4::Board, ConnectFourAdapter>& training, const TrainingParameters& params);
+	void setTrainingParameters(AlphaZeroTraining<cn4::Board, ConnectFourAdapter>& training, const TrainingParameters& params, int currentIteration);
 	void evalConnectFour();
 
 private:

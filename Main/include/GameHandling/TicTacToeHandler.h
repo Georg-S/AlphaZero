@@ -11,7 +11,7 @@
 #include <TicTacToe/TicTacToe.h>
 #include <TicTacToe/MiniMaxAi.h>
 #include "Evaluation.h"
-#include "TrainingParameters.h"
+#include "TrainingUtility.h"
 
 class TicTacToeHandler
 {
@@ -20,7 +20,7 @@ public:
 	void ticTacToeAgainstNeuralNetAi(ttt::PlayerColor playerColor, std::string netName, int countMcts, bool probabilistic, torch::DeviceType device);
 	void ticTacToeAgainstMiniMaxAi(ttt::PlayerColor playerColor);
 	void runTraining(const TrainingParameters& params);
-	void setTrainingParameters(AlphaZeroTraining<ttt::Board, TicTacToeAdapter>& training, const TrainingParameters& params);
+	void setTrainingParameters(AlphaZeroTraining<ttt::Board, TicTacToeAdapter>& training, const TrainingParameters& params, int currentIteration);
 	void startTwoPlayerTicTacToeGame();
 	void evalTicTacToe();
 
