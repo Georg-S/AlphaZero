@@ -82,7 +82,7 @@ pointing to for example C:/Code/libraries/SDL2/lib/x64
 pointing to for example C:/Code/libraries/SDL2_image/include
 -	SDL2IMAGE_BIN        
 pointing to for example C:/Code/libraries/SDL2_image/lib/x64
--	BOOST_ROOT
+-	BOOST_ROOT        
 pointing to for example C:/Libraries/boost_1_82_0
 
 
