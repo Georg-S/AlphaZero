@@ -68,7 +68,7 @@ Install the following:
 
 
 Set the following Enviroment Variables:
--	QT_64_MSVC2017		   
+-	QT_MSVC_64		   
 pointing to for example C:/Qt/Qt5.14.2/5.14.2/msvc2017_64
 -	Libtorch_DEBUG		   
 pointing to for example C:/Code/libraries/libtorch_debug
