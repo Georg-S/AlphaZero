@@ -30,6 +30,7 @@ namespace ceg
 		~NegamaxAI();
 		ceg::InternalMove get_move(const ceg::BitBoard& board, bool color_is_black, int depth = 5);
 		ceg::InternalMove get_move(const ceg::BitBoard& board, bool color_is_black, int min_depth, int max_depth, long long time_in_ms);
+		static int static_board_evaluation(const ceg::BitBoard& board, bool current_player_black);
 
 	private:
 		ceg::InternalMove iterative_deepening(const ceg::BitBoard& board, bool color_is_black, int in_min_depth, int max_depth, long long max_time_in_ms);
@@ -42,12 +43,11 @@ namespace ceg
 		ceg::InternalMove get_random_move(const std::vector<ceg::InternalMove>& moves) const;
 		void sort_possible_moves(const ceg::BitBoard& board, std::vector<ceg::InternalMove>& moves, bool color_is_black, const ceg::InternalMove& tt_move) const;
 		int evaluate_board_negamax(const ceg::BitBoard& board, bool color_is_black, int depth, int alpha, int beta);
-		int static_board_evaluation(const ceg::BitBoard& board, bool current_player_black) const;
-		int get_pieces_value(const ceg::BitBoard& board, ceg::Pieces pieces, bool black_pieces) const;
+		static int get_pieces_value(const ceg::BitBoard& board, ceg::Pieces pieces, bool black_pieces);
 		void hash_piece(uint64_t& current_hash, uint64_t piece, int table_index) const;
 		std::vector<ceg::InternalMove> get_best_moves(const std::vector<ceg::InternalMove>& moves) const;
-		int get_piece_count(uint64_t piece) const;
-		bool is_end_game(const BitBoard& board) const;
+		static int get_piece_count(uint64_t piece);
+		static bool is_end_game(const BitBoard& board);
 
 		std::vector<ceg::InternalMove> evaluated_moves;
 		std::mutex m_mutex;

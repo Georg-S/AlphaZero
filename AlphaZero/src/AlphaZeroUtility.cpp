@@ -1,5 +1,7 @@
 #include "AlphaZeroUtility.h"
 
+#include <chrono>
+
 static std::mt19937 createRNG()
 {
 	auto id = std::this_thread::get_id();

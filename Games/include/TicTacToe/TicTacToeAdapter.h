@@ -17,6 +17,7 @@ public:
 	int getNextPlayer(int currentPlayer) const;
 	ttt::Board getInitialGameState() const;
 	int getPlayerWon(const ttt::Board& board) const;
+	float evaluateBoard(const ttt::Board& board, int currentPlayer) const;
 	torch::Tensor convertStateToNeuralNetInput(const ttt::Board& board, int currentPlayer) const;
 	void convertStateToNeuralNetInput(const ttt::Board& board, int currentPlayer, torch::Tensor outTensor) const;
 	std::vector<int> getAllPossibleMoves(const ttt::Board& board, int currentPlayer) const;

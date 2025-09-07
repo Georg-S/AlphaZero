@@ -7,6 +7,7 @@
 #pragma warning(pop)
 
 #include "Chess/Engine/ChessEngine.h"
+#include "Chess/Engine/NegamaxAI.h"
 
 namespace chess
 {
@@ -82,6 +83,7 @@ public:
 	int getNextPlayer(int currentPlayer) const;
 	GameState getInitialGameState() const;
 	int getPlayerWon(const GameState& gameState) const;
+	float evaluateBoard(const GameState& gameState, int currentPlayer) const;
 	torch::Tensor convertStateToNeuralNetInput(const GameState& state, int currentPlayer) const;
 	void convertStateToNeuralNetInput(const GameState& state, int currentPlayer, torch::Tensor outTensor) const;
 	std::vector<int> getAllPossibleMoves(const GameState& gameState, int currentPlayer) const;

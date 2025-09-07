@@ -85,6 +85,27 @@ int ChessAdapter::getPlayerWon(const GameState& gameState) const
 	return static_cast<int>(ceg::PieceColor::NONE);
 }
 
+float ChessAdapter::evaluateBoard(const GameState& state, int currentPlayer) const
+{
+	auto color = ceg::PieceColor(currentPlayer);
+	auto otherColor = chessEngine->get_next_player(color);
+
+	if (chessEngine->is_game_over(state.board, color))
+	{
+		if (chessEngine->is_check_mate(state.board, color))
+			return -1.0;
+		else if (chessEngine->is_check_mate(state.board, otherColor))
+			return 1.0;
+		return 0.0;
+	}
+	auto value = ceg::NegamaxAI::static_board_evaluation(state.board, color == ceg::PieceColor::BLACK) / 2000.0;
+	// We need to move the result into the territory of -1.0, and 1.0
+	float returnValue = value / 2000.0;
+	returnValue = std::clamp(returnValue, -1.0f, 1.0f);
+
+	return returnValue;
+}
+
 torch::Tensor ChessAdapter::convertStateToNeuralNetInput(const GameState& state, int currentPlayer) const
 {
 	torch::Tensor result = torch::zeros({ 1,14,8,8 });

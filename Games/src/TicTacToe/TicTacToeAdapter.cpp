@@ -28,6 +28,18 @@ int TicTacToeAdapter::getPlayerWon(const ttt::Board& board) const
 	return static_cast<int>(PlayerColor::NONE);
 }
 
+float TicTacToeAdapter::evaluateBoard(const ttt::Board& board, int currentPlayer) const
+{
+	PlayerColor playercolor = PlayerColor(currentPlayer);
+	PlayerColor nextPlayer = PlayerColor(ttt::getNextPlayer(currentPlayer));
+	if (playerWon(board, playercolor))
+		return 1.0;
+	if (playerWon(board, nextPlayer))
+		return -1.0;
+
+	return 0.0;
+}
+
 torch::Tensor TicTacToeAdapter::convertStateToNeuralNetInput(const ttt::Board& board, int currentPlayer) const
 {
 	torch::Tensor neuralInput = torch::zeros({ 1,2,3,3 });

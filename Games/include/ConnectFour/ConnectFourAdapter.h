@@ -18,6 +18,7 @@ public:
 	int getNextPlayer(int currentPlayer) const;
 	cn4::Board getInitialGameState() const;
 	int getPlayerWon(const cn4::Board& board) const;
+	float evaluateBoard(const cn4::Board& board, int currentPlayer) const;
 	torch::Tensor convertStateToNeuralNetInput(const cn4::Board& board, int currentPlayer) const;
 	void convertStateToNeuralNetInput(const cn4::Board& board, int currentPlayer, torch::Tensor outTensor) const;
 	std::vector<int> getAllPossibleMoves(const cn4::Board& board, int currentPlayer) const;

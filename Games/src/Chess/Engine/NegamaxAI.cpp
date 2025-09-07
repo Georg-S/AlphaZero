@@ -23,6 +23,17 @@ ceg::InternalMove ceg::NegamaxAI::get_move(const ceg::BitBoard& board, bool colo
 	return iterative_deepening(board, color_is_black, min_depth, max_depth, time_in_ms);
 }
 
+int ceg::NegamaxAI::static_board_evaluation(const ceg::BitBoard& board, bool current_player_black)
+{
+	int black_val = get_pieces_value(board, board.black_pieces, true);
+	int white_val = get_pieces_value(board, board.white_pieces, false);
+
+	if (current_player_black)
+		return black_val - white_val;
+	else
+		return white_val - black_val;
+}
+
 ceg::InternalMove ceg::NegamaxAI::iterative_deepening(const ceg::BitBoard& board, bool color_is_black, int min_depth, int max_depth, long long max_time_in_ms)
 {
 	assert(min_depth >= 0);
@@ -303,18 +314,7 @@ int ceg::NegamaxAI::evaluate_board_negamax(const ceg::BitBoard& board, bool colo
 	return -move_value;
 }
 
-int ceg::NegamaxAI::static_board_evaluation(const ceg::BitBoard& board, bool current_player_black) const
-{
-	int black_val = get_pieces_value(board, board.black_pieces, true);
-	int white_val = get_pieces_value(board, board.white_pieces, false);
-
-	if (current_player_black)
-		return black_val - white_val;
-	else
-		return white_val - black_val;
-}
-
-int ceg::NegamaxAI::get_pieces_value(const ceg::BitBoard& board, Pieces pieces, bool black_pieces) const
+int ceg::NegamaxAI::get_pieces_value(const ceg::BitBoard& board, Pieces pieces, bool black_pieces)
 {
 	constexpr int pawn_value = 100;
 	constexpr int knight_value = 320;
@@ -429,7 +429,7 @@ std::vector<ceg::InternalMove> ceg::NegamaxAI::get_best_moves(const std::vector<
 	return best_moves;
 }
 
-int ceg::NegamaxAI::get_piece_count(uint64_t piece) const
+int ceg::NegamaxAI::get_piece_count(uint64_t piece)
 {
 	int count = 0;
 	while (piece)
@@ -440,7 +440,7 @@ int ceg::NegamaxAI::get_piece_count(uint64_t piece) const
 	return count;
 }
 
-bool ceg::NegamaxAI::is_end_game(const BitBoard& board) const
+bool ceg::NegamaxAI::is_end_game(const BitBoard& board)
 {
 	int black_queens = get_piece_count(board.black_pieces.queens);
 	int white_queens = get_piece_count(board.white_pieces.queens);

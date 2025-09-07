@@ -23,6 +23,17 @@ int ConnectFourAdapter::getPlayerWon(const cn4::Board& board) const
 	return static_cast<int>(cn4::getPlayerWon(board));
 }
 
+float ConnectFourAdapter::evaluateBoard(const cn4::Board& board, int currentPlayer) const
+{
+	auto otherPlayer = static_cast<int>(cn4::getNextPlayer(currentPlayer));
+	auto playerWon = getPlayerWon(board);
+	if (playerWon == currentPlayer)
+		return 1.0;
+	if (playerWon == otherPlayer)
+		return -1.0;
+	return 0.0;
+}
+
 torch::Tensor ConnectFourAdapter::convertStateToNeuralNetInput(const cn4::Board& board, int currentPlayer) const
 {
 	torch::Tensor neuralInput = torch::zeros({ 1,2, boardWidth, boardHeight });

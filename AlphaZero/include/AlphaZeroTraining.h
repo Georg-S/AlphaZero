@@ -6,6 +6,7 @@
 #include <time.h>
 #include <cfloat>
 #include <thread>
+#include <filesystem>
 #include <mutex>
 #include <RingBuffer.h>
 #include "AlphaZeroUtility.h"
@@ -67,8 +68,12 @@ public:
 
 	void runTraining() 
 	{
-		if (m_params.CURRENT_ITERATION == 0)
+		if (m_params.CURRENT_ITERATION == 0) 
+		{
+			if (!std::filesystem::exists(m_params.neuralNetPath))
+				std::filesystem::create_directories(m_params.neuralNetPath);
 			m_net->save(m_params.neuralNetPath + "/start");
+		}
 
 		for (size_t iteration = m_params.CURRENT_ITERATION; iteration < (m_params.CURRENT_ITERATION + m_params.TRAINING_ITERATIONS); iteration++)
 		{
@@ -186,7 +191,8 @@ private:
 
 				if (m_params.RESTRICT_GAME_LENGTH && (currentStep >= m_params.DRAW_AFTER_COUNT_OF_STEPS))
 				{
-					addResult(trainingData, 0);
+					const auto value = m_game->evaluateBoard(currentState, currentPlayer);
+					addResult(trainingData, currentPlayer, value);
 					if (!m_params.TRAINING_DONT_USE_DRAWS)
 						merge(resultingTrainingsData, trainingData);
 
@@ -218,7 +224,8 @@ private:
 
 				if (m_game->isGameOver(currentState))
 				{
-					addResult(trainingData, m_game->getPlayerWon(currentState));
+					const auto value = m_game->evaluateBoard(currentState, currentPlayer);
+					addResult(trainingData, currentPlayer, value);
 					merge(resultingTrainingsData, trainingData);
 					currentStates.erase(currentStates.begin() + i); // Instead of erase it is thinkable to restart the game here
 					i--;
@@ -229,17 +236,15 @@ private:
 		return resultingTrainingsData;
 	}
 
-	void addResult(std::vector<ReplayElement<GameState>>& elements, int winner) 
+	/// value should be betweeen -1.0 and 1.0
+	void addResult(std::vector<ReplayElement<GameState>>& elements, int player, float value) 
 	{
 		for (auto& elem : elements)
 		{
-			int player = elem.currentPlayer;
-			if (player == winner)
-				elem.result = 1;
-			else if (winner == 0)
-				elem.result = 0;
+			if (elem.currentPlayer == player)
+				elem.result = value;
 			else
-				elem.result = -1;
+				elem.result = -value;
 		}
 	}
 
