@@ -26,7 +26,7 @@ AlphaZeroTrainingParameters ChessHandler::getDefaultChessTrainingParameters() co
 	params.TRAINING_DONT_USE_DRAWS = false;
 	params.RESTRICT_GAME_LENGTH = true;
 
-	params.DRAW_AFTER_COUNT_OF_STEPS = 100;
+	params.DRAW_AFTER_COUNT_OF_STEPS = 200;
 	params.TRAINING_ITERATIONS = 10000;
 	params.MIN_REPLAY_MEMORY_SIZE = 100;
 	params.SELF_PLAY_MCTS_COUNT = mctsCount;

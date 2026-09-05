@@ -38,7 +38,7 @@ void ChessTrainingMenu::initDefaultValues()
 	trainingUi->ReplayMemorySizeInput->setText("200000");
 	trainingUi->UseDrawsYesRadio->setChecked(true);
 	trainingUi->RestrictGameLengthYesRadio->setChecked(true);
-	trainingUi->MaxGameLengthInput->setText("80");
+	trainingUi->MaxGameLengthInput->setText("200");
 	trainingUi->TrainingIterationsInput->setText("40");
 	trainingUi->SelfPlayMCTSCountInput->setText("800");
 	trainingUi->SelfPlayBatchSizeInput->setText("200");

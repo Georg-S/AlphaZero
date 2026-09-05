@@ -24,7 +24,10 @@ struct PolicyHeadImpl : public torch::nn::Module
 		auto pol = torch::relu(normPolicy(convPolicy(input)));
 		pol = pol.view({ batchSize, -1 });
 		pol = linearPolicy(pol);
-		pol = torch::softmax(pol, 1);
+		// Returns log probabilities. This way the loss in the training (-(probs * probsTarget))
+		// is a proper cross entropy loss and the gradient is not scaled by the probability itself.
+		// Consumers which need actual probabilities have to apply exp() on the output.
+		pol = torch::log_softmax(pol, 1);
 
 		return pol;
 	}

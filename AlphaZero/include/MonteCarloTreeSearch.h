@@ -90,7 +90,8 @@ public:
 				m_values[state.state] = val[0].template item<float>();
 
 				for (const auto& move : m_game->getAllPossibleMoves(state.state, state.currentPlayer))
-					m_probabilities[state.state].emplace_back(move, probsAccessor[move]);
+					// The net returns log probabilities, therefore exp is needed here
+					m_probabilities[state.state].emplace_back(move, std::exp(probsAccessor[move]));
 			}
 		}
 
@@ -215,12 +216,16 @@ public:
 	std::vector<std::pair<int, float>> getProbabilities(const GameState& state, float temperature = 1.0) const
 	{
 		auto stateIter = m_visitedState.find(state);
-		const auto& currentStateInfo = stateIter->second;
 		assert(stateIter != m_visitedState.end());
+		const auto& currentStateInfo = stateIter->second;
 
 		const int countSum = getVisitCountSum(currentStateInfo);
 		std::vector<std::pair<int, float>> probs;
 		probs.reserve(currentStateInfo.m_probabilities.size());
+
+		// No search was completed at this state -> fall back to the (prior) probabilities of the neural net
+		if (countSum == 0)
+			return currentStateInfo.m_probabilities;
 
 		for (const auto& [action, visitCount] : currentStateInfo.m_visitCount)
 		{

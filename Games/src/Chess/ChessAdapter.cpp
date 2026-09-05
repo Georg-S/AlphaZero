@@ -98,12 +98,10 @@ float ChessAdapter::evaluateBoard(const GameState& state, int currentPlayer) con
 			return 1.0;
 		return 0.0;
 	}
-	auto value = ceg::NegamaxAI::static_board_evaluation(state.board, color == ceg::PieceColor::BLACK) / 2000.0;
+	// static_board_evaluation returns the material value from the current player's perspective
 	// We need to move the result into the territory of -1.0, and 1.0
-	float returnValue = value / 2000.0;
-	returnValue = std::clamp(returnValue, -1.0f, 1.0f);
-
-	return returnValue;
+	const float value = static_cast<float>(ceg::NegamaxAI::static_board_evaluation(state.board, color == ceg::PieceColor::BLACK)) / 2000.0f;
+	return std::clamp(value, -1.0f, 1.0f);
 }
 
 torch::Tensor ChessAdapter::convertStateToNeuralNetInput(const GameState& state, int currentPlayer) const
