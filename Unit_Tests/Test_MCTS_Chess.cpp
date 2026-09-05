@@ -11,7 +11,7 @@
 
 #if RunTests
 
-static torch::DeviceType device = torch::kCUDA;
+static torch::DeviceType device = (torch::cuda::is_available() ? torch::kCUDA : torch::kCPU);
 static ChessAdapter chessAdap = ChessAdapter();
 static DefaultNeuralNet net = DefaultNeuralNet(14, 8, 8, 4096, device);
 

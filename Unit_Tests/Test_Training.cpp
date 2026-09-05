@@ -10,7 +10,7 @@
 
 #if RunTests
 
-static torch::DeviceType device = torch::kCUDA;
+static torch::DeviceType device = (torch::cuda::is_available() ? torch::kCUDA : torch::kCPU);
 static TicTacToeAdapter tttAdap = TicTacToeAdapter();
 static DefaultNeuralNet tttNet = DefaultNeuralNet(2, 3, 3, 9, device);
 

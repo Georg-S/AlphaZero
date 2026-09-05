@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 project(Main)
 set(CMAKE_CXX_STANDARD 17)
 
-find_package(Qt6Widgets REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
 set(GameHandlingFiles
     "include/GameHandling/ChessHandler.h"
@@ -74,7 +74,7 @@ set(QtUIFiles
     "include/UI/TicTacToe/TicTacToeMain.ui"
 )
 
-set(MainFile "src/main")
+set(MainFile "src/main.cpp")
 
 source_group("" FILES ${MainFile})
 source_group("\\GameHandling" FILES ${GameHandlingFiles})
