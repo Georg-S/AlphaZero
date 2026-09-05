@@ -7,7 +7,6 @@
 #pragma warning(pop)
 
 #include "Chess/Engine/ChessEngine.h"
-#include "Chess/Engine/NegamaxAI.h"
 
 namespace chess
 {

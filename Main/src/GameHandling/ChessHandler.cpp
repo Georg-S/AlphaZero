@@ -22,19 +22,23 @@ AlphaZeroTrainingParameters ChessHandler::getDefaultChessTrainingParameters() co
 {
 	auto params = AlphaZeroTrainingParameters{};
 	params.MAX_REPLAY_MEMORY_SIZE = 300000;
+	params.MAX_REPLAY_MEMORY_SIZE = 500000;
+	params.MIN_REPLAY_MEMORY_SIZE = 10000;
 	params.neuralNetPath = trainingPath;
 	params.TRAINING_DONT_USE_DRAWS = false;
 	params.RESTRICT_GAME_LENGTH = true;
 
-	params.DRAW_AFTER_COUNT_OF_STEPS = 200;
+	// AlphaZero uses a maximum of 512 steps for chess, 256 keeps the worst case
+	// self-play cost per game bounded while still allowing long games
+	params.DRAW_AFTER_COUNT_OF_STEPS = 256;
 	params.TRAINING_ITERATIONS = 10000;
-	params.MIN_REPLAY_MEMORY_SIZE = 100;
 	params.SELF_PLAY_MCTS_COUNT = mctsCount;
-	params.NUM_SELF_PLAY_GAMES = 1000;
-	params.TRAINING_BATCH_SIZE = 100;
+	params.NUM_SELF_PLAY_GAMES = 200;
+	params.TRAINING_BATCH_SIZE = 512;
 	params.SAVE_ITERATION_COUNT = 1;
 	params.RANDOM_MOVE_COUNT = 20;
-	params.SELFPLAY_BATCH_SIZE = 10;
+	params.SELFPLAY_BATCH_SIZE = 200;
+	params.NUMBER_CPU_THREADS = 8;
 
 	return params;
 }

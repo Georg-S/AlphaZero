@@ -220,12 +220,10 @@ public:
 		const auto& currentStateInfo = stateIter->second;
 
 		const int countSum = getVisitCountSum(currentStateInfo);
+		assert(countSum != 0);
 		std::vector<std::pair<int, float>> probs;
 		probs.reserve(currentStateInfo.m_probabilities.size());
 
-		// No search was completed at this state -> fall back to the (prior) probabilities of the neural net
-		if (countSum == 0)
-			return currentStateInfo.m_probabilities;
 
 		for (const auto& [action, visitCount] : currentStateInfo.m_visitCount)
 		{

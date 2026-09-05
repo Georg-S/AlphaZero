@@ -90,18 +90,14 @@ float ChessAdapter::evaluateBoard(const GameState& state, int currentPlayer) con
 	auto color = ceg::PieceColor(currentPlayer);
 	auto otherColor = chessEngine->get_next_player(color);
 
-	if (chessEngine->is_game_over(state.board, color))
-	{
-		if (chessEngine->is_check_mate(state.board, color))
-			return -1.0;
-		else if (chessEngine->is_check_mate(state.board, otherColor))
-			return 1.0;
-		return 0.0;
-	}
-	// static_board_evaluation returns the material value from the current player's perspective
-	// We need to move the result into the territory of -1.0, and 1.0
-	const float value = static_cast<float>(ceg::NegamaxAI::static_board_evaluation(state.board, color == ceg::PieceColor::BLACK)) / 2000.0f;
-	return std::clamp(value, -1.0f, 1.0f);
+	if (chessEngine->is_check_mate(state.board, color))
+		return -1.0;
+	else if (chessEngine->is_check_mate(state.board, otherColor))
+		return 1.0;
+
+	// Non terminal states are considered a draw. Games exceeding the maximum game length
+	// are terminated and assigned a drawn outcome as well (see AlphaZeroTraining::selfPlay)
+	return 0.0;
 }
 
 torch::Tensor ChessAdapter::convertStateToNeuralNetInput(const GameState& state, int currentPlayer) const
