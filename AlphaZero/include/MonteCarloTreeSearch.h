@@ -213,6 +213,15 @@ public:
 		return runMultipleSearches(state, currentPlayer);
 	}
 
+	/// Adds Dirichlet noise to the prior probabilities of the root state during expansion (as done in AlphaZero).
+	/// p = (1 - epsilon) * p + epsilon * Dirichlet(alpha)
+	/// epsilon = 0 (default) disables the noise.
+	void setDirichletNoise(float epsilon, float alpha)
+	{
+		m_dirichletEpsilon = epsilon;
+		m_dirichletAlpha = alpha;
+	}
+
 	std::vector<std::pair<int, float>> getProbabilities(const GameState& state, float temperature = 1.0) const
 	{
 		auto stateIter = m_visitedState.find(state);
@@ -270,6 +279,9 @@ private:
 
 	bool runMultipleSearches(const GameState& strState, int currentPlayer)
 	{
+		// Remember the root state, Dirichlet noise is only applied to the root expansion
+		m_rootState = &strState;
+
 		bool expansionNeeded = false;
 		while (m_mctsCount--)
 		{
@@ -316,10 +328,41 @@ private:
 		const auto [iter, success] = m_visitedState.emplace(std::move(currentState), StateInformation());
 		iter->second.m_probabilities = m_cache->m_probabilities[iter->first];
 
+		// Add exploration noise to the prior probabilities of the root state (as done in AlphaZero)
+		if (m_dirichletEpsilon > 0.0f && m_rootState != nullptr && statesEqual(iter->first, *m_rootState))
+			applyDirichletNoise(iter->second.m_probabilities);
+
 		m_backProp.pop_back();
 		backpropagateValue(value);
 
 		return value;
+	}
+
+	static bool statesEqual(const GameState& lhs, const GameState& rhs)
+	{
+		return !(lhs < rhs) && !(rhs < lhs);
+	}
+
+	void applyDirichletNoise(std::vector<std::pair<int, float>>& probabilities) const
+	{
+		std::gamma_distribution<float> distribution(m_dirichletAlpha, 1.0f);
+		auto& rng = ALZ::getRNG();
+
+		std::vector<float> noise;
+		noise.reserve(probabilities.size());
+		float noiseSum = 0.0f;
+		for (size_t i = 0; i < probabilities.size(); i++)
+		{
+			noise.push_back(distribution(rng));
+			noiseSum += noise.back();
+		}
+
+		for (size_t i = 0; i < probabilities.size(); i++)
+		{
+			const float normalizedNoise = noise[i] / noiseSum;
+			probabilities[i].second = (1.0f - m_dirichletEpsilon) * probabilities[i].second
+				+ m_dirichletEpsilon * normalizedNoise;
+		}
 	}
 
 	int getActionWithHighestUpperConfidenceBound(const StateInformation& stateInfo, int currentPlayer) const
@@ -389,6 +432,9 @@ private:
 	int m_actionCount = -1;
 	float m_cpuct = -1.0;
 	int m_mctsCount = 0;
+	const GameState* m_rootState = nullptr;
+	float m_dirichletEpsilon = 0.0f;
+	float m_dirichletAlpha = 1.0f;
 
 	std::map<GameState, StateInformation> m_visitedState;
 	// Use boost flat_map, this reduces memory consumption quite a bit

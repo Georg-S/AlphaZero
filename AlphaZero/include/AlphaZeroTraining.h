@@ -35,6 +35,10 @@ struct AlphaZeroTrainingParameters
 
 	bool RESTRICT_GAME_LENGTH = true;
 	int DRAW_AFTER_COUNT_OF_STEPS = 75;
+
+	// Dirichlet exploration noise which is added to the prior probabilities of the root state (as done in AlphaZero)
+	float DIRICHLET_EPSILON = 0.25f;
+	float DIRICHLET_ALPHA = 1.0f;
 };
 
 template <typename GameState>
@@ -163,6 +167,9 @@ private:
 		std::vector<ReplayElement<GameState>> resultingTrainingsData;
 		auto netInputBuffer = MonteCarloTreeSearchCache<GameState, Game, mockExpansion>(m_device, m_game, m_net);
 		auto currentStatesData = std::vector<SelfPlayState>(batchSize, { m_game->getInitialGameState(), m_game->getInitialPlayer(), m_game->getActionCount(), m_device, m_game, &netInputBuffer });
+	// Root exploration noise (as done in AlphaZero)
+	for (auto& elem : currentStatesData)
+		elem.mcts.setDirichletNoise(m_params.DIRICHLET_EPSILON, m_params.DIRICHLET_ALPHA);
 		/*
 		Use a vector of pointers to the gamedata for iterating,
 		then all of the game data can be destroyed at once.
@@ -191,7 +198,10 @@ private:
 
 				if (m_params.RESTRICT_GAME_LENGTH && (currentStep >= m_params.DRAW_AFTER_COUNT_OF_STEPS))
 				{
-					const auto value = m_game->evaluateBoard(currentState, currentPlayer);
+					// "Chess and shogi games exceeding a maximum number of steps (determined by typical
+					// game length) were terminated and assigned a drawn outcome"
+					// (AlphaZero paper, arXiv:1712.01815, appendix, differences to AlphaGo Zero, point 5)
+					constexpr float value = 0.0f;
 					addResult(trainingData, currentPlayer, value);
 					if (!m_params.TRAINING_DONT_USE_DRAWS)
 						merge(resultingTrainingsData, trainingData);
@@ -237,7 +247,7 @@ private:
 	}
 
 	/// value should be betweeen -1.0 and 1.0
-	void addResult(std::vector<ReplayElement<GameState>>& elements, int player, float value) 
+	void addResult(std::vector<ReplayElement<GameState>>& elements, int player, float value)
 	{
 		for (auto& elem : elements)
 		{

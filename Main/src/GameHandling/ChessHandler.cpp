@@ -31,6 +31,8 @@ AlphaZeroTrainingParameters ChessHandler::getDefaultChessTrainingParameters() co
 	// AlphaZero uses a maximum of 512 steps for chess, 256 keeps the worst case
 	// self-play cost per game bounded while still allowing long games
 	params.DRAW_AFTER_COUNT_OF_STEPS = 256;
+	params.DIRICHLET_ALPHA = 0.3f;
+	params.DIRICHLET_EPSILON = 0.25f;
 	params.TRAINING_ITERATIONS = 10000;
 	params.SELF_PLAY_MCTS_COUNT = mctsCount;
 	params.NUM_SELF_PLAY_GAMES = 200;
