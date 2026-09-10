@@ -1,5 +1,6 @@
 /[Ll]ibrary/
 /[Bb]uild/
+/build-release/
 
 /cmake_refresh_VS2019.bat
 /out/

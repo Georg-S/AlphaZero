@@ -42,7 +42,9 @@ void ChessTrainingMenu::initDefaultValues()
 	trainingUi->MaxGameLengthInput->setText("256");
 	trainingUi->TrainingIterationsInput->setText("100");
 	trainingUi->SelfPlayMCTSCountInput->setText("800");
-	trainingUi->SelfPlayBatchSizeInput->setText("200");
+	// Keep batch size * CPU threads == self play games count so all CPU threads are used.
+	// (200 games / 8 threads = 25 games per batch)
+	trainingUi->SelfPlayBatchSizeInput->setText("25");
 	trainingUi->SelfPlayGamesCountInput->setText("200");
 	trainingUi->TrainingBatchSizeInput->setText("512");
 	trainingUi->SaveIterationCountInput->setText("1");

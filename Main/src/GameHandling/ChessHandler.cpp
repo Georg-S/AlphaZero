@@ -37,7 +37,12 @@ AlphaZeroTrainingParameters ChessHandler::getDefaultChessTrainingParameters() co
 	params.TRAINING_BATCH_SIZE = 512;
 	params.SAVE_ITERATION_COUNT = 1;
 	params.RANDOM_MOVE_COUNT = 20;
-	params.SELFPLAY_BATCH_SIZE = 200;
+	// NOTE: The self play games are processed in batches of SELFPLAY_BATCH_SIZE which are
+	// distributed over NUMBER_CPU_THREADS threads. If SELFPLAY_BATCH_SIZE equals
+	// NUM_SELF_PLAY_GAMES only a single thread does all the work (all other threads return
+	// immediately), which wastes the CPU. Keep batch size * thread count == game count so all
+	// threads are used. (200 games / 8 threads = 25 games per batch)
+	params.SELFPLAY_BATCH_SIZE = 25;
 	params.NUMBER_CPU_THREADS = 8;
 
 	return params;

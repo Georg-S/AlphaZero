@@ -7,6 +7,8 @@
 #include <limits>
 #include <utility>
 #include <mutex>
+#include <atomic>
+#include <iterator>
 #include <boost/container/flat_map.hpp>
 #include <boost/container/flat_set.hpp>
 // Libtorch has many warnings which clutter the output, so we ignore them
@@ -25,6 +27,12 @@ class MonteCarloTreeSearchCache
 {
 public:
 	friend class MonteCarloTreeSearch<GameState, Game, mockExpansion>;
+
+	// Statistics about how often the neural net is queried during self play. Used for
+	// performance analysis (e.g. by the Benchmark target). Relaxed atomics so that the
+	// overhead is negligible compared to a neural net forward pass.
+	inline static std::atomic<uint64_t> s_forwardCalls{ 0 };
+	inline static std::atomic<uint64_t> s_forwardSamples{ 0 };
 
 	struct ExpansionDataT
 	{
@@ -54,8 +62,29 @@ public:
 	void convertToNeuralInput()
 	{
 		torch::NoGradGuard no_grad;
-		for (const auto& state : toExpand)
-			addToInput(state);
+
+		if (toExpand.size() > m_maxSize)
+		{
+			// Grow the input buffer in a single step. Growing it one row at a time via
+			// torch::cat would repeatedly reallocate and copy the whole tensor, which is
+			// quadratic in the batch size.
+			auto first = m_game->convertStateToNeuralNetInput(toExpand.begin()->state, toExpand.begin()->currentPlayer);
+			m_input = torch::zeros({ static_cast<int64_t>(toExpand.size()), first.size(1), first.size(2), first.size(3) });
+			m_input[0] = first[0];
+			m_maxSize = toExpand.size();
+
+			size_t index = 1;
+			for (auto it = std::next(toExpand.begin()); it != toExpand.end(); ++it, ++index)
+				m_game->convertStateToNeuralNetInput(it->state, it->currentPlayer, m_input[index]);
+		}
+		else
+		{
+			size_t index = 0;
+			for (const auto& state : toExpand)
+				m_game->convertStateToNeuralNetInput(state.state, state.currentPlayer, m_input[index++]);
+		}
+
+		m_currentInputSize = toExpand.size();
 	}
 
 	void expand() // convertToNeuralInput must be called before calling this
@@ -99,33 +128,17 @@ public:
 	}
 
 private:
-	int addToInput(ExpansionDataT data)
-	{
-		if (m_maxSize == 0)
-		{
-			m_input = m_game->convertStateToNeuralNetInput(data.state, data.currentPlayer);
-			m_maxSize++;
-		}
-		else if (m_currentInputSize >= m_maxSize)
-		{
-			torch::Tensor tens = m_game->convertStateToNeuralNetInput(data.state, data.currentPlayer);
-			m_input = torch::cat({ m_input, tens }, 0);
-			m_maxSize++;
-		}
-		else
-		{
-			m_game->convertStateToNeuralNetInput(data.state, data.currentPlayer, m_input[m_currentInputSize]);
-		}
-
-		return m_currentInputSize++;
-	}
-
 	void calculateOutput()
 	{
 		if (m_currentInputSize == 0)
 			return;
 
-		auto device_input = m_input.to(m_device);
+		// Only evaluate the rows that are actually part of the current batch. m_input may be
+		// larger (it grows to the biggest batch seen so far), and feeding the stale trailing
+		// rows to the network would waste a lot of compute.
+		auto device_input = m_input.narrow(0, 0, static_cast<int64_t>(m_currentInputSize)).to(m_device);
+		s_forwardCalls.fetch_add(1, std::memory_order_relaxed);
+		s_forwardSamples.fetch_add(m_currentInputSize, std::memory_order_relaxed);
 		auto rawOutput = m_net->calculate(device_input);
 		m_outputSize = m_currentInputSize;
 		m_currentInputSize = 0;
@@ -164,6 +177,9 @@ public:
 		boost::container::flat_map<int, int> m_visitCount;
 		boost::container::flat_map<int, float> m_qValues;
 		std::vector<std::pair<int, float>> m_probabilities;
+		// Running sum of m_visitCount, maintained incrementally in backpropagateValue so
+		// that it does not have to be recomputed for every node on every simulation.
+		unsigned int m_visitCountSum = 0;
 	};
 
 	MonteCarloTreeSearch(MonteCarloTreeSearchCache<GameState, Game, mockExpansion>* cache, Game* game, torch::DeviceType device, float cpuct = 1.0)
@@ -239,24 +255,28 @@ private:
 	{
 		while (true) // Iterate until we reach a "leaf state" (a state not yet expanded or a game over state)
 		{
-			if (m_game->isGameOver(gameState))
-				return m_game->gameOverReward(gameState, currentPlayer);
-
-			m_backProp.emplace_back(std::move(gameState), currentPlayer);
-			const auto& currentState = m_backProp.back().state;
-
-			auto currentStateItr = m_visitedState.find(currentState);
+			auto currentStateItr = m_visitedState.find(gameState);
 			if (currentStateItr == m_visitedState.end())
 			{
-				m_cache->addToExpansion({ currentState, currentPlayer });
+				// Only states which are NOT game over are ever added to m_visitedState (see below).
+				// Therefore a state that was already expanded can never be a game over state, which
+				// allows us to skip the very expensive isGameOver() call (a full move generation for
+				// chess) for every already visited node along the descent. It is now only evaluated
+				// once for each newly discovered leaf instead of once per visited node.
+				if (m_game->isGameOver(gameState))
+					return m_game->gameOverReward(gameState, currentPlayer);
+
+				m_backProp.emplace_back(std::move(gameState), currentPlayer);
+				m_cache->addToExpansion({ m_backProp.back().state, currentPlayer });
 				*expansionNeeded = true;
 				return 0;
 			}
 
+			m_backProp.emplace_back(gameState, currentPlayer);
 			m_loopDetection.emplace(&(currentStateItr->first));
 			int bestAction = getActionWithHighestUpperConfidenceBound(currentStateItr->second, currentPlayer);
 			m_backProp.back().bestAction = bestAction;
-			gameState = m_game->makeMove(currentState, bestAction, currentPlayer);
+			gameState = m_game->makeMove(currentStateItr->first, bestAction, currentPlayer);
 
 			auto nextStateItr = m_visitedState.find(gameState);
 			if (nextStateItr != m_visitedState.end())
@@ -294,6 +314,7 @@ private:
 			auto bestAction = backProp.bestAction;
 			currentStateInfo.m_qValues[bestAction] = (currentStateInfo.m_visitCount[bestAction] * currentStateInfo.m_qValues[bestAction] + value) / (currentStateInfo.m_visitCount[bestAction] + 1);
 			currentStateInfo.m_visitCount[bestAction] += 1;
+			currentStateInfo.m_visitCountSum += 1;
 
 			m_backProp.pop_back();
 		}
@@ -364,11 +385,7 @@ private:
 
 	unsigned int getVisitCountSum(const StateInformation& stateInfo) const
 	{
-		unsigned int countSum = 0;
-		for (const auto& [action, visitCount] : stateInfo.m_visitCount)
-			countSum += visitCount;
-
-		return countSum;
+		return stateInfo.m_visitCountSum;
 	};
 
 	struct BackPropData

@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <time.h>
 #include <cfloat>
 #include <thread>
@@ -35,6 +36,10 @@ struct AlphaZeroTrainingParameters
 
 	bool RESTRICT_GAME_LENGTH = true;
 	int DRAW_AFTER_COUNT_OF_STEPS = 75;
+
+	// Prints how long self play and the actual training step took for each iteration.
+	// Useful to find out which part of the training loop is the bottleneck.
+	bool PRINT_SECTION_TIMING = false;
 };
 
 template <typename GameState>
@@ -68,6 +73,12 @@ public:
 
 	void runTraining() 
 	{
+		// Our own self play / training conversion threads already keep the CPU busy. libtorch
+		// would additionally spawn its own intra-op thread pool for every CPU tensor operation
+		// and oversubscribe the CPU, so limit it to a single thread (the heavy lifting runs on
+		// the GPU anyway).
+		torch::set_num_threads(1);
+
 		if (m_params.CURRENT_ITERATION == 0) 
 		{
 			if (!std::filesystem::exists(m_params.neuralNetPath))
@@ -79,8 +90,24 @@ public:
 		{
 			ALZ::ScopedTimer timer = ALZ::ScopedTimer("Iteration took: ");
 			std::cout << "Current Iteration " << iteration << std::endl;
+			const auto forwardCallsBefore = MonteCarloTreeSearchCache<GameState, Game, mockExpansion>::s_forwardCalls.load(std::memory_order_relaxed);
+			const auto forwardSamplesBefore = MonteCarloTreeSearchCache<GameState, Game, mockExpansion>::s_forwardSamples.load(std::memory_order_relaxed);
+			const auto selfPlayStart = ALZ::getCurrentTime();
 			selfPlay();
+			const auto selfPlayEnd = ALZ::getCurrentTime();
 			trainNet();
+			const auto trainEnd = ALZ::getCurrentTime();
+			if (m_params.PRINT_SECTION_TIMING)
+			{
+				const auto selfPlayMs = selfPlayEnd - selfPlayStart;
+				const auto forwardCalls = MonteCarloTreeSearchCache<GameState, Game, mockExpansion>::s_forwardCalls.load(std::memory_order_relaxed) - forwardCallsBefore;
+				const auto forwardSamples = MonteCarloTreeSearchCache<GameState, Game, mockExpansion>::s_forwardSamples.load(std::memory_order_relaxed) - forwardSamplesBefore;
+				const double selfPlaySeconds = selfPlayMs / 1000.0;
+				std::cout << "  self play: " << selfPlayMs << " ms, "
+					<< "training: " << (trainEnd - selfPlayEnd) << " ms, "
+					<< "net forwards: " << forwardCalls << " (" << forwardSamples << " samples, "
+					<< static_cast<long long>(forwardSamples / std::max(0.001, selfPlaySeconds)) << " samples/s)" << std::endl;
+			}
 			save(iteration);
 		}
 	}
